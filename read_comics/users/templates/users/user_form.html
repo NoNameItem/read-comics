@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags static socialaccount %}
+
+{% block title %}Edit profile{% endblock %}
+
+{% block page_header %}
+  Edit profile
+{% endblock %}
+
+{% block page_vendor_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/vendors/css/pickers/pickadate/pickadate.css" %}">
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "users/css/social.css" %}">
+{% endblock %}
+
+{% block page_content %}
+  <section id="page-account-settings">
+    <div class="row">
+      <div class="col-12">
+        <div class="row">
+          <!-- left menu section -->
+          <div class="col-md-3 mb-2 mb-md-0 pills-stacked">
+            <ul class="nav nav-pills flex-column">
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {% if not show_tab or show_tab == 'info' %}active{% endif %}"
+                   id="account-pill-info" data-toggle="pill"
+                   href="#account-vertical-info" aria-expanded="false">
+                  <i class="fad fa-info-circle"></i>
+                  <span>Info</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {% if show_tab == 'password' %}active{% endif %}"
+                   id="account-pill-password" data-toggle="pill"
+                   href="#account-vertical-password" aria-expanded="false">
+                  <i class="fad fa-lock-alt"></i>
+                  <span>Change Password</span>
+                </a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link d-flex align-items-center {% if show_tab == 'social' %}active{% endif %}"
+                   id="account-pill-social" data-toggle="pill"
+                   href="#account-vertical-connections" aria-expanded="false">
+                  <i class="fad fa-share-alt"></i>
+                  <span>Social accounts</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+          <!-- right content section -->
+          <div class="col-md-9">
+            <div class="card">
+              <div class="card-content">
+                <div class="card-body">
+                  <h3>@{{ user.username }}</h3>
+                <hr>
+                  <div class="tab-content">
+                    <div class="tab-pane {% if not show_tab or show_tab == 'info' %}active{% else %}fade{% endif %}"
+                         id="account-vertical-info" role="tabpanel"
+                         aria-labelledby="account-pill-info" aria-expanded="true">
+                      <div class="media">
+{#                        <a href="javascript: void(0);">#}
+                          <img src="{{ user.image_url }}"
+                               class="rounded mr-75 image-full-size" alt="profile image" height="64" width="64" id="user_photo">
+{#                        </a>#}
+                        <div class="media-body mt-25">
+                          <div
+                              class="col-12 px-0 d-flex flex-sm-row flex-column justify-content-start">
+                            <button id="select-photo"
+                                    class="btn btn-sm btn-light-primary ml-50 mb-50 mb-sm-0">Upload new photo
+                            </button>
+                            <button id="delete-photo" class="btn btn-sm btn-light-danger ml-50">Delete photo</button>
+                          </div>
+                          <p class="text-muted ml-1 mt-50"><small>Allowed JPG, GIF or PNG. Please select square image or
+                            it may display very strange</small></p>
+                        </div>
+                      </div>
+                                            <hr>
+                      {% crispy info_form %}
+                    </div>
+                    <div class="tab-pane {% if show_tab == 'password' %}active{% else %}fade{% endif %}"
+                         id="account-vertical-password" role="tabpanel"
+                         aria-labelledby="account-pill-password" aria-expanded="false">
+                      {% crispy password_form %}
+                    </div>
+
+                    <div class="tab-pane {% if show_tab == 'social' %}active{% else %}fade{% endif %}"
+                         id="account-vertical-connections" role="tabpanel"
+                         aria-labelledby="account-pill-connections" aria-expanded="false">
+                      <p class="text-muted my-50"><small>You can use this social accounts to login instead of your
+                        username/password</small></p>
+                      {% include "users/social/list.html" %}
+                      <hr>
+                      {% include "account/social_buttons.html" with soc_process="connect" %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+  <!-- account setting page ends -->
+{% endblock %}
+
+{% block vendor_js %}
+  <script src="{% static "_frest/vendors/js/extensions/dropzone.min.js" %}"></script>
+  <script src="{% static "_frest/vendors/js/pickers/pickadate/picker.js" %}"></script>
+  <script src="{% static "_frest/vendors/js/pickers/pickadate/picker.date.js" %}"></script>
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script>
+    let change_photo_url = "{% url "users:change_photo" %}";
+    let delete_photo_url = "{% url "users:delete_photo" %}";
+    let activeTab = "{{ show_tab }}"
+  </script>
+  <script src="{% static "users/js/edit_user.js" %}"></script>
+{% endblock %}

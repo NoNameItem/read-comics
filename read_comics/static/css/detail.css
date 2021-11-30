@@ -1,0 +1,132 @@
+.page-detail .detail-images {
+  position: relative
+}
+
+.page-detail .detail-images .detail-image-bg {
+  height: 150px;
+  -o-object-fit: cover;
+  object-fit: cover
+}
+
+.page-detail .detail-images .detail-main-image {
+  position: absolute;
+  left: 25px;
+  top: 25px;
+  box-shadow: 0 0 20px 0 rgba(0, 0, 0, .41)
+}
+
+.page-detail .detail-header-text {
+  position: absolute;
+  top: 25px;
+  left: 190px;
+  color: #FFF
+}
+
+.page-detail .detail-short-description {
+  padding-left: 12rem;
+  padding-right: 2rem;
+}
+
+.page-detail .detail-header-text .detail-header-text-color {
+  color: #FFF
+}
+
+.page-detail .detail-nav {
+  padding-left: 12rem
+}
+
+.page-detail .detail-nav .nav-item .nav-link i {
+  margin-right: 0 !important
+}
+
+.page-detail .card-header {
+  padding: 1.7rem 1.7rem 0
+}
+
+.page-detail .card-footer {
+  padding: 0 1.7rem 1.7rem;
+  font-size: 1rem
+}
+
+.page-detail .detail-body-text {
+  margin-top: 60px;
+  text-align: center !important
+}
+
+@media only screen and (max-width: 767px) {
+  .page-detail .detail-images .detail-main-image {
+    height: unset;
+    width: 120px;
+    top: 0;
+    left: 50%;
+    margin-left: -60px;
+    margin-top: 20px;
+    box-shadow: 0 0 20px 0 rgba(0, 0, 0, .41)
+  }
+
+  .page-detail .detail-nav {
+    padding-left: 1rem;
+    padding-top: 0
+
+  }
+
+  .page-detail .detail-short-description {
+    text-align: center !important;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+.page-detail .detail-info .row {
+  border-bottom: #8cbbc3 solid 1px;
+}
+
+.page-detail .detail-info .row:last-child {
+  border-bottom: none;
+}
+
+.page-detail .badge-tab .badge-tab-item {
+  width: 300px;
+  border-radius: 40px;
+}
+
+.page-detail .badge-tab .row {
+  justify-content: center;
+}
+
+.page-detail #finished-mark {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+
+.detail-full-description figure {
+  margin: 0 2rem 2rem 0;
+  width: fit-content!important;
+  max-width: 250px;
+  float: left;
+  clear: both;
+}
+
+.detail-full-description figure img {
+  width: 100%
+}
+
+.detail-full-description figure figcaption {
+  clear: both;
+  display: block;
+  font-family: Georgia, serif;
+  font-style: oblique;
+  text-align: center;
+}
+
+.detail-full-description h2 {
+    margin-bottom: 20px;
+    padding-bottom: 5px;
+    border-bottom: 1px solid #bfbfbf;
+}
+
+.detail-full-description h2, .detail-full-description h3, .detail-full-description h4 {
+    clear: both;
+}

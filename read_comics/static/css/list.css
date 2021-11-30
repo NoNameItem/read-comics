@@ -1,0 +1,49 @@
+.card-with-cover .card-profile-image img.img-border {
+  border: 5px solid #FFF;
+  width: 80px;
+  height: 80px
+}
+
+.card-with-stats .btn-float {
+  padding: 8px 14px 4px
+}
+
+.card-with-cover .card-profile-image {
+  position: absolute;
+  bottom: -40px;
+  width: 100%;
+  text-align: center
+}
+
+.card-btn-top-right {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  z-index: 10;
+}
+
+.card-btn-bottom-right {
+  position: absolute;
+  top: 170px;
+  right: 5px;
+  z-index: 10;
+}
+
+.finished .card-profile-image, .finished .card-img-top, .finished .card-header, .finished .card-body, .finished .card-footer {
+  opacity: 0.4;
+}
+
+.finished:hover .card-profile-image, .finished:hover .card-img-top, .finished:hover .card-header, .finished:hover .card-body, .finished:hover .card-footer {
+  opacity: 1;
+}
+
+.dropdown-item i {
+  font-size: 1.2rem;
+}
+
+.finished-mark {
+  position: absolute;
+  top:5px;
+  right:5px;
+  opacity: 1;
+}

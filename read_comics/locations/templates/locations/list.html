@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% load static %}
+{% load url_extras %}
+
+{% block title %}Locations{% endblock %}
+
+{% block page_header %}Locations{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  <div class="row mb-1">
+    <div class="col-auto">
+      <div class="btn-group dropright mr-1">
+        <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+          Sort by
+        </button>
+        <div class="dropdown-menu" style="">
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-issue_count' %}">Issues <i class="fad fa-sort-numeric-down-alt"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='issue_count' %}">Issues <i class="fad fa-sort-numeric-down"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-volume_count' %}">Volumes <i class="fad fa-sort-numeric-down-alt"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='volume_count' %}">Volumes <i class="fad fa-sort-numeric-down"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i class="fad fa-sort-alpha-down"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i class="fad fa-sort-alpha-down-alt"></i></a>
+        </div>
+      </div>
+    </div>
+    <div class="col-auto">
+      <div class="custom-control custom-switch custom-control-inline mt-50">
+            <input type="checkbox" class="custom-control-input" {% if only_with_issues == 'yes' %}checked{% endif %} id="only_with_issues">
+            <label class="custom-control-label mr-1" for="only_with_issues">
+            </label>
+            <span>Show only locations with issues</span>
+          </div>
+    </div>
+  </div>
+  <div class="row match-height">
+    {% for location in locations %}
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-2k-2">
+        <div class="card div-link">
+        <a class="div-default-link" href="{{ location.get_absolute_url }}"></a>
+          <img class="card-img-top img-fluid"
+               src="{% if location.square_small %}{{ location.square_small }}{% else %}{% static "images/blanks/square_small.png" %}{% endif %}"
+               alt="{{ location.name }}"
+          >
+          <div class="card-header">
+            <h4 class="card-title">{{ location.name }}</h4>
+          </div>
+          <div class="card-body">
+            <p class="card-text">
+              {{ location.short_description|default_if_none:"" }}
+            </p>
+
+          </div>
+          <div class="card-footer">
+            <ul class="list-inline list-inline-pipe font-weight-lighter font-size-xsmall">
+              <li>{{ location.volume_count }} volume{{ location.volume_count|pluralize }}</li>
+              <li>{{ location.issue_count }} issues{{ location.issue_count|pluralize }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-borderless justify-content-center mt-2">
+      {% for page in pages %}
+         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script src="{% static "js/only_with_issues.js" %}"></script>
+{% endblock %}

@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load static %}
+{% load url_extras %}
+
+{% block title %}Issues{% endblock %}
+
+{% block page_header %}Issues{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "css/list.css" %}">
+{% endblock %}
+
+{% block page_content %}
+  <div class="row mb-1">
+    <div class="col-auto">
+      <div class="btn-group dropright mr-1">
+        <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true"
+                aria-expanded="false">
+          Sort by
+        </button>
+        <div class="dropdown-menu" style="">
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i
+              class="fad fa-sort-alpha-down"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i
+              class="fad fa-sort-alpha-down-alt"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='cover_date' %}">Cover
+            date <i
+                class="fad fa-sort-numeric-down"></i></a>
+          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-cover_date' %}">Cover
+            date <i
+                class="fad fa-sort-numeric-down-alt"></i></a>
+        </div>
+      </div>
+    </div>
+    {% if request.user.is_authenticated %}
+      <div class="col-auto">
+        <div class="custom-control custom-switch custom-control-inline mt-50">
+          <input type="checkbox" class="custom-control-input" {% if hide_finished == 'yes' %}checked{% endif %}
+                 id="hide_finished">
+          <label class="custom-control-label mr-1" for="hide_finished">
+          </label>
+          <span>Hide finished issues</span>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+  <div class="row match-height">
+    {% for issue in issues %}
+      {% if breaking == "date" %}
+        {% ifchanged issue.cover_date.year %}
+          <div class="col-12 mb-25">
+            <h2><u>{{ issue.cover_date.year }}</u></h2>
+          </div>
+        {% endifchanged %}
+        {% ifchanged issue.cover_date.month %}
+          <div class="col-12 mb-1">
+            <h4>{{ issue.cover_date|date:"F Y" }}</h4>
+          </div>
+        {% endifchanged %}
+      {% endif %}
+      {% if breaking == "volume" %}
+        {% ifchanged issue.volume %}
+          <div class="col-12 mb-25">
+            <h2><u>{{ issue.volume.name }} ({{ issue.volume.start_year }})</u></h2>
+          </div>
+        {% endifchanged %}
+      {% endif %}
+      <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-2k-2">
+        <div class="card card-with-cover div-link {% if issue.finished_flg %}finished{% endif %}">
+          <a class="div-default-link" href="{{ issue.get_absolute_url }}{% if request.GET.ordering %}?ordering={{ request.GET.ordering }}{% endif %} "></a>
+          <div class="position-relative mb-2">
+            <img class="card-img-top img-fluid"
+                 src="
+
+
+                     {% if issue.thumb_size_url %}{{ issue.thumb_size_url }}{% else %}{% static "images/blanks/square_small.png" %}{% endif %}"
+                 alt="{{ volume.name }}"
+            >
+            {% if issue.volume.publisher %}
+              <div class="card-profile-image">
+                <img class="rounded-circle img-border box-shadow-1"
+                     src="
+
+
+                         {% if issue.volume.publisher.square_avatar %}{{ issue.volume.publisher.square_avatar }}{% else %}{% static "images/blanks/square_avatar.png" %}{% endif %}"
+                     alt="{{ issue.volume.publisher.name }}"
+                >
+              </div>
+            {% endif %}
+            {% if issue.finished_flg %}
+              <div class="finished-mark">
+                <i class="far fa-check-circle success fa-3x"></i>
+              </div>
+            {% endif %}
+          </div>
+          <div class="card-header">
+            <h4 class="card-title">{{ issue.volume.name }} ({{ issue.volume.start_year }}) #{{ issue.number }}</h4>
+
+          </div>
+          <div class="card-body">
+            {% if issue.name %}<h6 class="card-subtitle">{{ issue.name }}</h6>{% endif %}
+            <p class="card-text">
+              {{ issue.short_description|default_if_none:"" }}
+            </p>
+
+          </div>
+          <div class="card-footer">
+            <ul class="list-inline list-inline-pipe font-weight-lighter font-size-xsmall">
+              {% if issue.volume.publisher %}
+                <li>{{ issue.volume.publisher.name }}</li>
+              {% endif %}
+              <li>{{ issue.cover_date|default_if_none:"Cover date unknown" }}</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-borderless justify-content-center mt-2">
+      {% for page in pages %}
+         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script src="{% static "js/hide_finished.js" %}"></script>
+{% endblock %}

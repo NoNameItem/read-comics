@@ -1,0 +1,53 @@
+<div class="row">
+  {% for obj in objects %}
+    {% if break_groups %}
+      {% ifchanged obj.group_breaker %}
+        </div>
+        <h4>{{ obj.group_breaker }}</h4>
+        <div class="row">
+      {% endifchanged %}
+    {% endif %}
+    <div class="col-auto">
+      <div class="list-left d-flex badge-tab-item m-1 bg-light bg-info primary div-link">
+
+        {% if url_template_name %}
+          {% include url_template_name with parent_slug=obj.parent_slug slug=obj.slug %}
+        {% else %}
+          {% if obj.url_template_name %}
+             {% include obj.url_template_name with slug=obj.slug %}
+          {% else %}
+            <a href="{{ obj.get_absolute_url }}" class="div-default-link"></a>
+          {% endif %}
+        {% endif %}
+
+        <div class="list-icon mr-1">
+          <div class="avatar bg-rgba-primary m-0">
+            <img src="{{ obj.square_avatar }}" alt="img placeholder" height="80"
+                 width="80">
+          </div>
+        </div>
+        <div class="list-content d-flex align-items-center pr-1">
+          <div>
+            <span class="list-title">{{ obj.badge_name|default:obj.name|truncatechars:50 }}</span>
+            {% if obj.desc %}
+              <small class="text-muted d-block">{{ obj.desc }}</small>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% if pages %}
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-borderless justify-content-center mt-2">
+      {% for page in pages %}
+        <li class="page-item {{ page.disabled }} {{ page.active }}">
+          <button class="page-link"
+                  onclick="{{ get_page_function }}({{ page.num }})">{{ page.num }}</button>
+        </li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endif %}

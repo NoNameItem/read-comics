@@ -1,0 +1,199 @@
+{% load static %}
+<!DOCTYPE html>
+<html class="loading" lang="en" data-textdirection="ltr">
+<!-- BEGIN: Head-->
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+  <meta name="description" content="{% block meta_description %}{% endblock %}">
+  <meta name="keywords" content="comics {% block meta_keywords %}{% endblock %}">
+  <meta name="author" content="NoNameItem">
+  <title>{% block title %}Read-Comics.Net{% endblock %}</title>
+  <script src="https://kit.fontawesome.com/96ea38b6db.js" crossorigin="anonymous"></script>
+  <link rel="icon" href="{% static "images/favicons/favicon.png" %}">
+  <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
+        rel="stylesheet">
+
+  <!-- BEGIN: Vendor CSS-->
+  {% block vendor_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "_frest/vendors/css/vendors.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "_frest/vendors/css/ui/prism.min.css" %}">
+    <link rel="stylesheet" type="text/css" href="{% static "_frest/vendors/css/extensions/toastr.css" %}">
+  {% endblock %}
+  <!-- END: Vendor CSS-->
+
+  <!-- BEGIN: Theme CSS-->
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/bootstrap.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/bootstrap-extended.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/colors.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/components.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/themes/dark-layout.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/themes/semi-dark-layout.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/core/menu/menu-types/vertical-menu.css" %}">
+  <!-- END: Theme CSS-->
+
+  <!-- BEGIN: Page Vendor CSS-->
+  {% block page_vendor_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "_frest/css/plugins/extensions/toastr.min.css" %}">
+
+
+  {% endblock %}
+  <!-- END: Page Vendor CSS-->
+
+  <!-- BEGIN: Page CSS-->
+  {% block page_css %}
+    <link rel="stylesheet" type="text/css" href="{% static "css/common.css" %}">
+  {% endblock %}
+  <!-- END: Page CSS-->
+
+</head>
+<!-- END: Head-->
+
+<!-- BEGIN: Body-->
+
+<body class="vertical-layout vertical-menu-modern 2-columns  navbar-sticky footer-static" data-open="click"
+      data-menu="vertical-menu-modern" data-col="2-columns">
+
+{% include "blocks/layout/header/header.html" %}
+{% include "blocks/layout/main_menu/main_menu.html" %}
+
+<!-- BEGIN: Content-->
+<div class="app-content content">
+  <div class="content-overlay"></div>
+  <div class="content-wrapper">
+    <div class="content-header row">
+      <div class="content-header-left col-12 mb-2 mt-1">
+        <div class="row breadcrumbs-top">
+          <div class="col-12 col-md-auto pr-0">
+            <h5 class="content-header-title float-left pr-1 mr-0">{% block page_header %}Header{% endblock %}</h5>
+
+          </div>
+          <div class="breadcrumb-wrapper col-12 col-md-auto">
+            <ol class="breadcrumb p-0 mb-0">
+              <li class="breadcrumb-item {% if not breadcrumb %}active{% endif %}">
+                {% if breadcrumb %}
+                  <a href="{% url "home" %}"><i class="fad fa-home font-medium-2" aria-hidden="true"></i></a>
+                {% else %}
+                  <i class="fad fa-home font-medium-2" aria-hidden="true"></i>
+                {% endif %}
+                {% for item in breadcrumb %}
+                  <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
+                    {% if forloop.last %}
+                      {{ item.text }}
+                    {% else %}
+                      <a href="{{ item.url }}">{{ item.text }}</a>
+                    {% endif %}
+                  </li>
+                {% endfor %}
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="content-body">
+      {% block page_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+<!-- END: Content-->
+
+<div class="sidenav-overlay"></div>
+<div class="drag-target"></div>
+
+<!-- MODALS -->
+
+{% block modals %}
+  <div id="full-size-image-modal" class="modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+      <div class="modal-content">
+        <div class="modal-body">
+           <img id="full-size-image" src="" class="img-fluid mx-auto d-block" alt="Image">
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+<!-- BEGIN: Footer-->
+<footer class="footer footer-static footer-light">
+  <p class="clearfix mb-0">
+    <span class="float-left d-inline-block">2021 &copy; read-comics.net</span>
+    {#    <span class="float-right d-sm-inline-block d-none">#}
+    {#      Crafted with<i class="bx bxs-heart pink mx-50 font-small-3"></i>by<a class="text-uppercase" href="https://1.envato.market/pixinvent_portfolio" target="_blank">Pixinvent</a>#}
+    {#    </span>#}
+    <button class="btn btn-light-primary btn-icon scroll-top" type="button"><i class="bx bx-up-arrow-alt"></i></button>
+  </p>
+</footer>
+<!-- END: Footer-->
+
+
+<!-- BEGIN: Vendor JS-->
+<script src="{% static "_frest/vendors/js/vendors.min.js" %}"></script>
+<script src="{% static "_frest/fonts/LivIconsEvo/js/LivIconsEvo.tools.js" %}"></script>
+<script src="{% static "_frest/fonts/LivIconsEvo/js/LivIconsEvo.defaults.js" %}"></script>
+<script src="{% static "_frest/fonts/LivIconsEvo/js/LivIconsEvo.min.js" %}"></script>
+<script src="{% static "_frest/vendors/js/forms/select/select2.full.min.js" %}"></script>
+<script src="{% static "_frest/vendors/js/extensions/toastr.min.js" %}"></script>
+<script src="https://cdn.jsdelivr.net/npm/js-cookie@beta/dist/js.cookie.min.js"></script>
+<!-- BEGIN Vendor JS-->
+
+<!-- BEGIN: Page Vendor JS-->
+{% block vendor_js %}
+  <script src="{% static "_frest/vendors/js/ui/prism.min.js" %}"></script>
+{% endblock %}
+<!-- END: Page Vendor JS-->
+
+<!-- BEGIN: Theme JS-->
+<script !src="">
+  const frest_root = "/static/_frest"
+</script>
+<script src="{% static "_frest/js/scripts/configs/vertical-menu-light.js" %}"></script>
+<script src="{% static "_frest/js/core/app-menu.js" %}"></script>
+<script src="{% static "_frest/js/core/app.js" %}"></script>
+<script src="{% static "_frest/js/scripts/footer.min.js" %}"></script>
+<!-- END: Theme JS-->
+
+<!-- BEGIN: Page JS-->
+{% block page_js %}
+  <script src="{% static "js/common.js" %}"></script>
+  <script>
+    let notifications = [
+      {% for notification in dmm.notifications.all %}
+        {
+          title   : "{{ notification.subject|default_if_none:"" }}",
+          message : "{{ notification.text }}",
+          level   : "{{ notification.level_tag|default_if_none:"secondary" }}"
+        },
+
+      {% endfor %}
+
+      {% if dmm.messages.new_count > 0 %}
+        {
+          title   : "",
+          message : "You have {{ dmm.messages.new_count }} new notification{{ dmm.messages.new_count|pluralize }}",
+          level   : "info"
+        },
+      {% endif %}
+
+    ];
+    $(document).ready(function () {
+      for (let i = 0; i < notifications.length; i++) {
+        toastr[notifications[i].level](notifications[i].message, notifications[i].title);
+      }
+    });
+
+    {#let mark_all_read_url = "{% url "mark-all-message-read" %}";#}
+  </script>
+
+{% endblock %}
+<!-- END: Page JS-->
+
+</body>
+<!-- END: Body-->
+
+</html>

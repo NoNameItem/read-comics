@@ -1,0 +1,524 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ issue }}{% endblock %}
+
+{% block page_header %}{{ issue.volume.name }} ({{ issue.volume.start_year }}) #{{ issue.number }}{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/detail.css" %}">
+{% endblock %}
+
+{% block page_content %}
+  <section class="page-detail">
+    <div class="row">
+      <div class="col-12">
+        <!-- heading section start -->
+        <div class="card">
+          <div class="card-content">
+            <div class="detail-images">
+              <!-- image -->
+              <div class="img-fluid rounded-top detail-image-bg bg-primary">
+              </div>
+              <!-- image -->
+              <img src="{{ issue.thumb_size_url }}" class="detail-main-image rounded bg-white image-full-size"
+                   alt="image" width="120" data-full-size-src="{{ issue.full_size_url }}">
+              <div class="detail-header-text pr-md-2 d-none d-md-block">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}</h4>
+                <h6 class="detail-header-text-color">{{ issue.name|default_if_none:'' }}</h6>
+              </div>
+              <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
+                <i class="far fa-check-circle success fa-3x"></i>
+              </div>
+            </div>
+            <!-- detail nav tabs start -->
+            <div class="card-body px-0">
+              <div class="detail-body-text pr-md-2 d-block d-md-none">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}</h4>
+                <h6 class="detail-header-text-color">{{ issue.name }}</h6>
+              </div>
+
+              <div class="detail-short-description">
+                <p>{{ issue.short_description|default_if_none:"" }}</p>
+              </div>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
+                     href="#info"
+                     aria-controls="info" role="tab" aria-selected="false">
+                    <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
+                </li>
+
+                {% if characters_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="characters-tab" data-toggle="tab"
+                       href="#characters"
+                       aria-controls="characters" role="tab" aria-selected="false">
+                      <i class="fad fa-bat" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Characters </span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count }}</span></a>
+
+                  </li>
+                {% endif %}
+
+                {% if characters_died_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="died-tab" data-toggle="tab"
+                       href="#died"
+                       aria-controls="died" role="tab" aria-selected="false">
+                      <i class="fad fa-skull" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Characters died</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ characters_died_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if concepts_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="concepts-tab" data-toggle="tab"
+                       href="#concepts"
+                       aria-controls="concepts" role="tab" aria-selected="false">
+                      <i class="fad fa-brain" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Concepts</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ concepts_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if locations_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="locations-tab" data-toggle="tab"
+                       href="#locations"
+                       aria-controls="locations" role="tab" aria-selected="false">
+                      <i class="fad fa-map-marker-alt" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Locations</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ locations_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if objects_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="objects-tab" data-toggle="tab"
+                       href="#objects"
+                       aria-controls="objects" role="tab" aria-selected="false">
+                      <i class="fad fa-swords" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Objects</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ objects_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if authors_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="authors-tab" data-toggle="tab"
+                       href="#authors"
+                       aria-controls="authors" role="tab" aria-selected="false">
+                      <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Authors</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if story_arcs_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="story-arcs-tab" data-toggle="tab"
+                       href="#story-arcs"
+                       aria-controls="story-arcs" role="tab" aria-selected="false">
+                      <i class="fad fa-books" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Story Arcs</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ story_arcs_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if teams_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="teams-tab" data-toggle="tab"
+                       href="#teams"
+                       aria-controls="teams" role="tab" aria-selected="false">
+                      <i class="fad fa-users" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Teams</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if disbanded_teams_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="teams-disbanded-tab" data-toggle="tab"
+                       href="#teams-disbanded"
+                       aria-controls="teams-disbanded" role="tab" aria-selected="false">
+                      <i class="fad fa-users-slash" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Teams disbanded</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_teams_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if first_appearance_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-warning" id="first-appearance-tab" data-toggle="tab"
+                       href="#first-appearance"
+                       aria-controls="first-appearance" role="tab" aria-selected="false">
+                      <i class="fad fa-exclamation"></i> <span
+                        class="d-none d-md-block pl-50"> First appearances</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ first_appearance_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if request.user.is_staff > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
+                       href="#tech"
+                       aria-controls="tech" role="tab" aria-selected="false">
+                      <i class="fad fa-cogs"></i> <span
+                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                  </li>
+                {% endif %}
+              </ul>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+
+
+                <li class="nav-item pb-1">
+                  <a class="nav-link btn d-flex px-1 {% if not previous_link %}disabled{% endif %}" id="prev--link"
+                     href="{{ previous_link }}">
+                    <i class="fad fa-backward"></i> <span
+                      class="d-none d-md-block pl-50"> Previous</span>
+                  </a>
+                </li>
+
+
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ issue.download_link }}">
+                    <i class="fad fa-download"></i> <span
+                      class="d-none d-md-block pl-50"> Download ({{ issue.size|filesizeformat }})</span>
+                  </a>
+                </li>
+                {% if request.user.is_authenticated and not finished %}
+                  <li class="nav-item pb-1" id="mark-finished-btn-nav">
+                    <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">
+                      <i class="fad fa-check-circle"></i> <span
+                        class="d-none d-md-block pl-50"> Mark as finished</span>
+                    </button>
+                  </li>
+                {% endif %}
+                <li class="nav-item pb-1">
+                  <a class="nav-link btn d-flex px-1 {% if not next_link %}disabled{% endif %}" id="prev--link"
+                     href="{{ next_link }}">
+                    <i class="fad fa-forward"></i> <span
+                      class="d-none d-md-block pl-50"> Next</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- detail nav tabs ends -->
+          </div>
+        </div>
+        <!-- detail heading section ends -->
+      </div>
+    </div>
+    <div class="tab-content">
+      <!-- info tab starts -->
+      <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
+        <div class="row">
+          <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+            <div class="card">
+              <div class="card-body">
+                <div class="row  pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Volume: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <a href="{% url "volumes:detail" issue.volume.slug %}">{{ issue.volume.name }}
+                      ({{ issue.volume.start_year }})</a>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Publisher: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <a href="{% url "publishers:detail" issue.volume.publisher.slug %}">{{ issue.volume.publisher.name }}</a>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Number: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ issue.number|default_if_none:'' }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Name: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ issue.name|default_if_none:'' }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Aliases: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ issue.aliases|default_if_none:'' }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Cover date: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ issue.cover_date|default_if_none:'Unknown' }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Store date: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ issue.store_date|default_if_none:'Unknown' }}
+                  </div>
+                </div>
+
+                <div class="row pt-1">
+                  <div class="col-12">
+                    <a href="{{ issue.comicvine_url }}" target="_blank">See at ComicVine</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <img src="{{ issue.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+          </div>
+          <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
+            {{ issue.description|default:"<p>No description</p>"|safe }}
+          </div>
+        </div>
+      </div>
+      <!-- info tab ends -->
+
+      {% if request.user.is_staff %}
+        <!-- tech info tab starts -->
+        <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
+          <div class="row">
+            <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row  pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.pk }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.comicvine_id }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine Status: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.get_comicvine_status_display }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine last match: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.comicvine_last_match|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Created: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.created_dt|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Modified: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ issue.modified_dt|date:"c" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- tech info tab ends -->
+      {% endif %}
+
+      {% if characters_count > 0 %}
+        <!-- characters tab starts -->
+        <div class="tab-pane fade badge-tab" id="characters" aria-labelledby="characters-tab" role="tabpanel">
+          <h3>Characters in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.characters.all %}
+          </div>
+        </div>
+        <!-- characters tab ends -->
+      {% endif %}
+
+      {% if characters_died_count > 0 %}
+        <!-- characters died tab starts -->
+        <div class="tab-pane fade badge-tab" id="died" aria-labelledby="died-tab" role="tabpanel">
+          <h3>Died in this issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.characters_died.all %}
+          </div>
+        </div>
+        <!-- characters died tab ends -->
+      {% endif %}
+
+      {% if concepts_count > 0 %}
+        <!-- concepts tab starts -->
+        <div class="tab-pane fade badge-tab" id="concepts" aria-labelledby="concepts-tab" role="tabpanel">
+          <h3>Concepts in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.concepts.all %}
+          </div>
+        </div>
+        <!-- concepts tab ends -->
+      {% endif %}
+
+      {% if locations_count > 0 %}
+        <!-- locations tab starts -->
+        <div class="tab-pane fade badge-tab" id="locations" aria-labelledby="locations-tab" role="tabpanel">
+          <h3>Locations in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.locations.all %}
+          </div>
+        </div>
+        <!-- locations tab ends -->
+      {% endif %}
+
+      {% if objects_count > 0 %}
+        <!-- objects tab starts -->
+        <div class="tab-pane fade badge-tab" id="objects" aria-labelledby="objects-tab" role="tabpanel">
+          <h3>Objects in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.objects_in.all %}
+          </div>
+        </div>
+        <!-- objects tab ends -->
+      {% endif %}
+
+      {% if authors_count > 0 %}
+        <!-- authors tab starts -->
+        <div class="tab-pane fade badge-tab" id="authors" aria-labelledby="authors-tab" role="tabpanel">
+          <h3>Authors</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=authors %}
+          </div>
+        </div>
+        <!-- authors tab ends -->
+      {% endif %}
+
+      {% if story_arcs_count > 0 %}
+        <!-- story-arcs tab starts -->
+        <div class="tab-pane fade badge-tab" id="story-arcs" aria-labelledby="story-arcs-tab" role="tabpanel">
+          <h3>Part of story arcs</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.story_arcs.all %}
+          </div>
+        </div>
+        <!-- story-arcs tab ends -->
+      {% endif %}
+
+      {% if teams_count > 0 %}
+        <!-- teams tab starts -->
+        <div class="tab-pane fade badge-tab" id="teams" aria-labelledby="teams-tab" role="tabpanel">
+          <h3>Teams in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.teams.all %}
+          </div>
+        </div>
+        <!-- teams tab ends -->
+      {% endif %}
+
+      {% if disbanded_teams_count > 0 %}
+        <!-- teams disbanded tab starts -->
+        <div class="tab-pane fade badge-tab" id="teams-disbanded" aria-labelledby="teams-disbanded-tab" role="tabpanel">
+          <h3>Teams disbanded in issue</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issue.disbanded_teams.all %}
+          </div>
+        </div>
+        <!-- teams disbanded tab ends -->
+      {% endif %}
+
+      {% if first_appearance_count > 0 %}
+        <!-- first appearances tab starts -->
+        <div class="tab-pane fade badge-tab" id="first-appearance" aria-labelledby="first-appearance-tab"
+             role="tabpanel">
+          <div class="tab-content">
+            {% if first_appearance_characters_count > 0 %}
+              <h3>Characters first appearance</h3>
+
+              {% include "blocks/detail/badges.html" with objects=issue.first_appearance_characters.all %}
+
+            {% endif %}
+            {% if first_appearance_concepts_count > 0 %}
+              <h3>Concepts first appearance</h3>
+                {% include "blocks/detail/badges.html" with objects=issue.first_appearance_concepts.all %}
+            {% endif %}
+            {% if first_appearance_locations_count > 0 %}
+              <h3>Locations first appearance</h3>
+                {% include "blocks/detail/badges.html" with objects=issue.first_appearance_locations.all %}
+            {% endif %}
+            {% if first_appearance_objects_count > 0 %}
+              <h3>Objects first appearance</h3>
+                {% include "blocks/detail/badges.html" with objects=issue.first_appearance_objects.all %}
+            {% endif %}
+            {% if first_appearance_teams_count > 0 %}
+              <h3>Teams first appearance</h3>
+                {% include "blocks/detail/badges.html" with objects=issue.first_appearance_teams.all %}
+            {% endif %}
+          </div>
+        </div>
+        <!-- first appearance tab ends -->
+      {% endif %}
+    </div>
+  </section>
+{% endblock %}
+
+{% block modals %}
+  {{ block.super }}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script !src="">
+    let mark_read_url = "{% url "issues:mark_finished" issue.slug %}";
+  </script>
+  <script src="{% static "issues/js/detail.js" %}"></script>
+{% endblock %}

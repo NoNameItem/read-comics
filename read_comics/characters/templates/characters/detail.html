@@ -1,0 +1,482 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ character.name }}{% endblock %}
+
+{% block page_header %}{{ character.name }}{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/detail.css" %}">
+{% endblock %}
+
+{% block page_content %}
+  <section class="page-detail">
+    <div class="row">
+      <div class="col-12">
+        <!-- heading section start -->
+        <div class="card">
+          <div class="card-content">
+            <div class="detail-images">
+              <!-- image -->
+              <div class="img-fluid rounded-top detail-image-bg bg-primary">
+              </div>
+              <!-- image -->
+              <img src="{{ character.square_tiny }}" class="detail-main-image rounded bg-white image-full-size"
+                   alt="image" width="120" data-full-size-src="{{ character.full_size_url }}">
+              <div class="detail-header-text pr-md-2 d-none d-md-block">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ character.name }}</h4>
+              </div>
+            </div>
+            <!-- detail nav tabs start -->
+            <div class="card-body px-0">
+              <div class="detail-body-text pr-md-2 d-block d-md-none">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ character.name }}</h4>
+              </div>
+
+              <div class="detail-short-description">
+                <p>{{ character.short_description|default_if_none:"" }}</p>
+              </div>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
+                     href="#info"
+                     aria-controls="info" role="tab" aria-selected="false">
+                    <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
+                </li>
+
+                {% if issues_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="issues-tab" data-toggle="tab"
+                       href="#issues"
+                       aria-controls="issues" role="tab" aria-selected="false">
+                      <i class="fad fa-book-open" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Issues </span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
+
+                  </li>
+                {% endif %}
+
+                {% if volumes_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="volumes-tab" data-toggle="tab"
+                       href="#volumes"
+                       aria-controls="volumes" role="tab" aria-selected="false">
+                      <i class="fad fa-book-spells" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Volumes </span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+
+                  </li>
+                {% endif %}
+
+                {% if died_in_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="died-tab" data-toggle="tab"
+                       href="#died"
+                       aria-controls="died" role="tab" aria-selected="false">
+                      <i class="fad fa-skull" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Died in issues</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ died_in_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if authors_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="authors-tab" data-toggle="tab"
+                       href="#authors"
+                       aria-controls="authors" role="tab" aria-selected="false">
+                      <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Authors</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if friends_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-success" id="friends-tab" data-toggle="tab"
+                       href="#friends"
+                       aria-controls="friends" role="tab" aria-selected="false">
+                      <i class="fad fa-bat" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Friends</span><span
+                        class="ml-1 badge badge-pill badge-round badge-success">{{ friends_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if enemies_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="enemies-tab" data-toggle="tab"
+                       href="#enemies"
+                       aria-controls="enemies" role="tab" aria-selected="false">
+                      <i class="fad fa-user-secret" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Enemies</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ enemies_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if teams_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="teams-tab" data-toggle="tab"
+                       href="#teams"
+                       aria-controls="teams" role="tab" aria-selected="false">
+                      <i class="fad fa-users" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Teams</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if team_friends_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-success" id="team-friends-tab" data-toggle="tab"
+                       href="#team-friends"
+                       aria-controls="team-friends" role="tab" aria-selected="false">
+                      <i class="fad fa-users" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Team friends</span><span
+                        class="ml-1 badge badge-pill badge-round badge-success">{{ team_friends_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if team_enemies_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="team-enemies-tab" data-toggle="tab"
+                       href="#team-enemies"
+                       aria-controls="team-enemies" role="tab" aria-selected="false">
+                      <i class="fad fa-users" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Team enemies</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ team_friends_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if request.user.is_staff > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
+                       href="#tech"
+                       aria-controls="tech" role="tab" aria-selected="false">
+                      <i class="fad fa-cogs"></i> <span
+                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                  </li>
+                {% endif %}
+              </ul>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ character.download_link }}">
+                    <i class="fad fa-download"></i> <span
+                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- detail nav tabs ends -->
+          </div>
+        </div>
+        <!-- detail heading section ends -->
+      </div>
+    </div>
+    <div class="tab-content">
+      <!-- info tab starts -->
+      <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
+        <div class="row">
+          <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+            <div class="card">
+              <div class="card-body">
+                <div class="row  pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Name: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ character.name }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Publisher: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <a href="{% url "publishers:detail" character.publisher.slug %}">{{ character.publisher.name }}</a>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Real name: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ character.real_name|default_if_none:"" }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Aliases: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <ul>
+                      {% for alias in character.get_aliases_list %}
+                        <li>{{ alias }}</li>
+                      {% endfor %}
+
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Birth date: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ character.birth }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Gender: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ character.get_gender_display }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Powers: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <ul>
+                      {% for power in character.powers.all %}
+                        <li>{{ power.name }}</li>
+                      {% endfor %}
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>First issue: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {% if character.first_issue %}
+                      <a href="{% url "characters:issue_detail" character.slug character.first_issue.slug %}">{{ character.first_issue.volume.name }}
+                        #{{ character.first_issue.number }} {{ character.first_issue.name|default_if_none:'' }}</a>
+                    {% else %}
+                      {{ character.first_issue_name }}
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="row pt-1">
+                  <div class="col-12">
+                    <a href="{{ character.comicvine_url }}" target="_blank">See at ComicVine</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <img src="{{ character.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+          </div>
+          <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
+            {{ character.description|default:"<p>No description</p>"|safe }}
+          </div>
+        </div>
+      </div>
+      <!-- info tab ends -->
+
+      {% if request.user.is_staff %}
+        <!-- tech info tab starts -->
+        <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
+          <div class="row">
+            <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row  pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.pk }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.comicvine_id }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine Status: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.get_comicvine_status_display }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine last match: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.comicvine_last_match|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Created: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.created_dt|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Modified: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ character.modified_dt|date:"c" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- tech info tab ends -->
+      {% endif %}
+
+      {% if issues_count %}
+        <!-- issues tab starts -->
+        <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
+          <h3>Issues</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="characters/badges_urls/issue.html" %}
+          </div>
+        </div>
+        <!-- issues tab ends -->
+      {% endif %}
+
+      {% if volumes_count %}
+        <!-- volumes tab starts -->
+        <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
+          <h3>Volumes</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" %}
+          </div>
+        </div>
+        <!-- volumes tab ends -->
+      {% endif %}
+
+      {% if died_in_count %}
+        <!-- died_in tab starts -->
+        <div class="tab-pane fade badge-tab" id="died" aria-labelledby="died-tab" role="tabpanel">
+          <h3>Died in issues</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=died_in_first_page.object_list pages=died_in_pages get_page_function="getDiedPage" %}
+          </div>
+        </div>
+        <!-- died_in tab ends -->
+      {% endif %}
+
+      {% if authors_count %}
+        <!-- authors tab starts -->
+        <div class="tab-pane fade badge-tab" id="authors" aria-labelledby="authors-tab" role="tabpanel">
+          <h3>Authors</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=authors_first_page.object_list pages=authors_pages get_page_function="getAuthorsPage" %}
+          </div>
+        </div>
+        <!-- authors tab ends -->
+      {% endif %}
+
+      {% if friends_count %}
+        <!-- friends tab starts -->
+        <div class="tab-pane fade badge-tab" id="friends" aria-labelledby="friends-tab" role="tabpanel">
+          <h3>Friends</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=friends_first_page.object_list pages=friends_pages get_page_function="getFriendsPage" %}
+          </div>
+        </div>
+        <!-- friends tab ends -->
+      {% endif %}
+
+      {% if enemies_count %}
+        <!-- enemies tab starts -->
+        <div class="tab-pane fade badge-tab" id="enemies" aria-labelledby="enemies-tab" role="tabpanel">
+          <h3>Enemies</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=enemies_first_page.object_list pages=enemies_pages get_page_function="getEnemiesPage" %}
+          </div>
+        </div>
+        <!-- enemies tab ends -->
+      {% endif %}
+
+      {% if teams_count %}
+        <!-- teams tab starts -->
+        <div class="tab-pane fade badge-tab" id="teams" aria-labelledby="teams-tab" role="tabpanel">
+          <h3>Teams</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=teams_first_page.object_list pages=teams_pages get_page_function="getTeamsPage" %}
+          </div>
+        </div>
+        <!-- teams tab ends -->
+      {% endif %}
+
+      {% if team_friends_count %}
+        <!-- teams tab starts -->
+        <div class="tab-pane fade badge-tab" id="team-friends" aria-labelledby="team-friends-tab" role="tabpanel">
+          <h3>Friendly teams</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=team_friends_first_page.object_list pages=team_friends_pages get_page_function="getTeamFriendsPage" %}
+          </div>
+        </div>
+        <!-- teams tab ends -->
+      {% endif %}
+
+      {% if team_enemies_count %}
+        <!-- teams tab starts -->
+        <div class="tab-pane fade badge-tab" id="team-enemies" aria-labelledby="team-enemies-tab" role="tabpanel">
+          <h3>Enemy teams</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=team_enemies_first_page.object_list pages=team_enemies_pages get_page_function="getTeamEnemiesPage" %}
+          </div>
+        </div>
+        <!-- teams tab ends -->
+      {% endif %}
+
+    </div>
+  </section>
+{% endblock %}
+
+{% block modals %}
+  {{ block.super }}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script !src="">
+    let issuesUrl = "{% url "characters:issues" character.slug %}";
+    let volumesUrl = "{% url "characters:volumes" character.slug %}";
+    let diedUrl = "{% url "characters:died_in_issues" character.slug %}";
+    let enemiesUrl = "{% url "characters:enemies" character.slug %}";
+    let friendsUrl = "{% url "characters:friends" character.slug %}";
+    let teamsUrl = "{% url "characters:teams" character.slug %}";
+    let teamFriendsUrl = "{% url "characters:team_friends" character.slug %}";
+    let teamEnemiesUrl = "{% url "characters:team_enemies" character.slug %}";
+    let authorsUrl = "{% url "characters:authors" character.slug %}";
+  </script>
+  <script src="{% static "js/sublists.js" %}"></script>
+{% endblock %}
