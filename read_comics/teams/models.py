@@ -93,3 +93,12 @@ class Team(ImageMixin, ComicvineSyncModel):
     def get_absolute_url(self):
         from django.urls import reverse
         return reverse('teams:detail', args=[self.slug])
+
+    def get_aliases_list(self):
+        if self.aliases:
+            return self.aliases.split('\n')
+
+    @property
+    def download_link(self):
+        from django.urls import reverse
+        return reverse('teams:download', args=[self.slug])

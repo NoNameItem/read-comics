@@ -1,9 +1,9 @@
 {% extends "base.html" %}
 {% load static %}
 
-{% block title %}{{ block.super }}{% endblock %}
+{% block title %}{{ team.name }}{% endblock %}
 
-{% block page_header %}{{ block.super }}{% endblock %}
+{% block page_header %}{{ team.name }}{% endblock %}
 
 {% block vendor_css %}
   {{ block.super }}
@@ -11,12 +11,348 @@
 
 {% block page_css %}
   {{ block.super }}
+  <link rel="stylesheet" href="{% static "css/detail.css" %}">
 {% endblock %}
 
 {% block page_content %}
+  <section class="page-detail">
+    <div class="row">
+      <div class="col-12">
+        <!-- heading section start -->
+        <div class="card">
+          <div class="card-content">
+            <div class="detail-images">
+              <!-- image -->
+              <div class="img-fluid rounded-top detail-image-bg bg-primary">
+              </div>
+              <!-- image -->
+              <img src="{{ team.square_tiny }}" class="detail-main-image rounded bg-white image-full-size"
+                   alt="image" width="120" data-full-size-src="{{ team.full_size_url }}">
+              <div class="detail-header-text pr-md-2 d-none d-md-block">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ team.name }}</h4>
+              </div>
+            </div>
+            <!-- detail nav tabs start -->
+            <div class="card-body px-0">
+              <div class="detail-body-text pr-md-2 d-block d-md-none">
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ team.name }}</h4>
+              </div>
+
+              <div class="detail-short-description">
+                <p>{{ team.short_description|default_if_none:"" }}</p>
+              </div>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
+                     href="#info"
+                     aria-controls="info" role="tab" aria-selected="false">
+                    <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
+                </li>
+
+                {% if issues_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="issues-tab" data-toggle="tab"
+                       href="#issues"
+                       aria-controls="issues" role="tab" aria-selected="false">
+                      <i class="fad fa-book-open" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Issues </span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
+
+                  </li>
+                {% endif %}
+
+                {% if volumes_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="volumes-tab" data-toggle="tab"
+                       href="#volumes"
+                       aria-controls="volumes" role="tab" aria-selected="false">
+                      <i class="fad fa-book-spells" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Volumes </span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+
+                  </li>
+                {% endif %}
+
+                {% if disbanded_in_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="disbanded-tab" data-toggle="tab"
+                       href="#disbanded"
+                       aria-controls="disbanded" role="tab" aria-selected="false">
+                      <i class="fad fa-skull" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Disbanded in issues</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_in_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if characters_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="characters-tab" data-toggle="tab"
+                       href="#characters"
+                       aria-controls="characters" role="tab" aria-selected="false">
+                      <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Members</span><span
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if friends_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-success" id="friends-tab" data-toggle="tab"
+                       href="#friends"
+                       aria-controls="friends" role="tab" aria-selected="false">
+                      <i class="fad fa-bat" aria-hidden="true"></i> <span
+                        class="d-none d-md-block pl-50"> Friends</span><span
+                        class="ml-1 badge badge-pill badge-round badge-success">{{ friends_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if enemies_count > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn-light-danger" id="enemies-tab" data-toggle="tab"
+                       href="#enemies"
+                       aria-controls="enemies" role="tab" aria-selected="false">
+                      <i class="fad fa-user-secret" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Enemies</span><span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ enemies_count }}</span></a>
+                  </li>
+                {% endif %}
+
+                {% if request.user.is_staff > 0 %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
+                       href="#tech"
+                       aria-controls="tech" role="tab" aria-selected="false">
+                      <i class="fad fa-cogs"></i> <span
+                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                  </li>
+                {% endif %}
+              </ul>
+              <ul
+                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                  role="tablist">
+                <li class="nav-item pb-1">
+                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ team.download_link }}">
+                    <i class="fad fa-download"></i> <span
+                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
+                  </a>
+                </li>
+              </ul>
+            </div>
+            <!-- detail nav tabs ends -->
+          </div>
+        </div>
+        <!-- detail heading section ends -->
+      </div>
+    </div>
+    <div class="tab-content">
+      <!-- info tab starts -->
+      <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
+        <div class="row">
+          <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+            <div class="card">
+              <div class="card-body">
+                <div class="row  pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Name: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {{ team.name }}
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Publisher: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <a href="{% url "publishers:detail" team.publisher.slug %}">{{ team.publisher.name }}</a>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>Aliases: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    <ul>
+                      {% for alias in team.get_aliases_list %}
+                        <li>{{ alias }}</li>
+                      {% endfor %}
+
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="row pt-1 pb-1">
+                  <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                    <strong>First issue: </strong>
+                  </div>
+                  <div class="col-12 col-md-8 col-fhd-9">
+                    {% if team.first_issue %}
+                      <a href="{% url "teams:issue_detail" team.slug team.first_issue.slug %}">{{ team.first_issue.volume.name }}
+                        #{{ team.first_issue.number }} {{ team.first_issue.name|default_if_none:'' }}</a>
+                    {% else %}
+                      {{ team.first_issue_name }}
+                    {% endif %}
+                  </div>
+                </div>
+
+                <div class="row pt-1">
+                  <div class="col-12">
+                    <a href="{{ team.comicvine_url }}" target="_blank">See at ComicVine</a>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+            <img src="{{ team.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+          </div>
+          <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
+            {{ team.description|default:"<p>No description</p>"|safe }}
+          </div>
+        </div>
+      </div>
+      <!-- info tab ends -->
+
+      {% if request.user.is_staff %}
+        <!-- tech info tab starts -->
+        <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
+          <div class="row">
+            <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+              <div class="card">
+                <div class="card-body">
+                  <div class="row  pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.pk }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine ID: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.comicvine_id }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine Status: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.get_comicvine_status_display }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>ComicVine last match: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.comicvine_last_match|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Created: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.created_dt|date:"c" }}
+                    </div>
+                  </div>
+
+                  <div class="row pt-1 pb-1">
+                    <div class="col-12 col-md-4 col-fhd-3 pr-0">
+                      <strong>Modified: </strong>
+                    </div>
+                    <div class="col-12 col-md-8 col-fhd-9">
+                      {{ team.modified_dt|date:"c" }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- tech info tab ends -->
+      {% endif %}
+
+      {% if issues_count %}
+        <!-- issues tab starts -->
+        <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
+          <h3>Issues</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="teams/badges_urls/issue.html" %}
+          </div>
+        </div>
+        <!-- issues tab ends -->
+      {% endif %}
+
+      {% if volumes_count %}
+        <!-- volumes tab starts -->
+        <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
+          <h3>Volumes</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" %}
+          </div>
+        </div>
+        <!-- volumes tab ends -->
+      {% endif %}
+
+      {% if disbanded_in_count %}
+        <!-- disbandeded_in tab starts -->
+        <div class="tab-pane fade badge-tab" id="disbanded" aria-labelledby="disbanded-tab" role="tabpanel">
+          <h3>Disbanded in issues</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=disbanded_in_first_page.object_list pages=disbanded_in_pages get_page_function="getDisbandedPage" %}
+          </div>
+        </div>
+        <!-- died_in tab ends -->
+      {% endif %}
+
+      {% if characters_count %}
+        <!-- characters tab starts -->
+        <div class="tab-pane fade badge-tab" id="characters" aria-labelledby="characters-tab" role="tabpanel">
+          <h3>Members</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=characters_first_page.object_list pages=characters_pages get_page_function="getCharactersPage" %}
+          </div>
+        </div>
+        <!-- characters tab ends -->
+      {% endif %}
+
+      {% if friends_count %}
+        <!-- friends tab starts -->
+        <div class="tab-pane fade badge-tab" id="friends" aria-labelledby="friends-tab" role="tabpanel">
+          <h3>Friends</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=friends_first_page.object_list pages=friends_pages get_page_function="getFriendsPage" %}
+          </div>
+        </div>
+        <!-- friends tab ends -->
+      {% endif %}
+
+      {% if enemies_count %}
+        <!-- enemies tab starts -->
+        <div class="tab-pane fade badge-tab" id="enemies" aria-labelledby="enemies-tab" role="tabpanel">
+          <h3>Enemies</h3>
+          <div class="tab-content">
+            {% include "blocks/detail/badges.html" with objects=enemies_first_page.object_list pages=enemies_pages get_page_function="getEnemiesPage" %}
+          </div>
+        </div>
+        <!-- enemies tab ends -->
+      {% endif %}
+    </div>
+  </section>
 {% endblock %}
 
 {% block modals %}
+  {{ block.super }}
 {% endblock %}
 
 {% block vendor_js %}
@@ -25,4 +361,13 @@
 
 {% block page_js %}
   {{ block.super }}
+  <script>
+    let issuesUrl = "{% url "teams:issues_list" team.slug %}";
+    let volumesUrl = "{% url "teams:volumes_list" team.slug %}";
+    let disbandedUrl = "{% url "teams:disbanded_in_issues_list" team.slug %}";
+    let enemiesUrl = "{% url "teams:enemies_list" team.slug %}";
+    let friendsUrl = "{% url "teams:friends_list" team.slug %}";
+    let charactersUrl = "{% url "teams:characters_list" team.slug %}";
+  </script>
+  <script src="{% static "js/sublists.js" %}"></script>
 {% endblock %}
