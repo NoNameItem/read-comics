@@ -84,7 +84,7 @@ class StoryArc(ImageMixin, ComicvineSyncModel):
             try:
                 first_issue = Issue.objects.get(comicvine_id=self.first_issue_comicvine_id)
                 self.first_issue = first_issue
-            except Issue.DoesNotExists:
+            except Issue.DoesNotExist:
                 self.first_issue = None
 
     def get_absolute_url(self):

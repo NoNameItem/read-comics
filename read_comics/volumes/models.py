@@ -115,13 +115,13 @@ class Volume(ImageMixin, ComicvineSyncModel):
             try:
                 last_issue = Issue.objects.get(comicvine_id=self.first_issue_comicvine_id)
                 self.last_issue = last_issue
-            except Issue.DoesNotExists:
+            except Issue.DoesNotExist:
                 self.last_issue = None
         if self.tracker.has_changed('first_issue_comicvine_id'):
             try:
                 first_issue = Issue.objects.get(comicvine_id=self.first_issue_comicvine_id)
                 self.first_issue = first_issue
-            except Issue.DoesNotExists:
+            except Issue.DoesNotExist:
                 self.first_issue = None
         if self.tracker.has_changed('name') or self.tracker.has_changed('start_year'):
             self.update_issues_do_metadata()
