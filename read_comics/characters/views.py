@@ -31,7 +31,7 @@ class CharacterListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
     breadcrumb = [{'url': reverse_lazy("characters:list"), 'text': 'Characters'}]
     paginate_by = 48
     possible_order = ('issue_count', '-issue_count', 'volume_count', '-volume_count', 'name', '-name')
-    default_ordering = '-issue_count'
+    default_ordering = 'name'
     queryset = Character.objects.was_matched().annotate(
         volume_count=Count('issues__volume', distinct=True)
     ).annotate(

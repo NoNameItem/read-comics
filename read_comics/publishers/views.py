@@ -31,7 +31,7 @@ class PublisherListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
     breadcrumb = [{'url': reverse_lazy("publishers:list"), 'text': 'Publishers'}]
     paginate_by = 48
     possible_order = ('issue_count', '-issue_count', 'volume_count', '-volume_count', 'name', '-name')
-    default_ordering = '-issue_count'
+    default_ordering = 'name'
     queryset = Publisher.objects.was_matched().annotate(
         volume_count=Count('volumes', distinct=True)
     ).annotate(

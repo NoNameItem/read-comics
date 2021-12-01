@@ -31,7 +31,7 @@ class PeopleListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesM
     breadcrumb = [{'url': reverse_lazy("people:list"), 'text': 'People'}]
     paginate_by = 48
     possible_order = ('issue_count', '-issue_count', 'volume_count', '-volume_count', 'name', '-name')
-    default_ordering = '-issue_count'
+    default_ordering = 'name'
     queryset = Person.objects.was_matched().annotate(
         volume_count=Count('issues__volume', distinct=True)
     ).annotate(

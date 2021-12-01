@@ -31,7 +31,7 @@ class ConceptsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssue
     breadcrumb = [{'url': reverse_lazy("concepts:list"), 'text': 'Concepts'}]
     paginate_by = 48
     possible_order = ('issue_count', '-issue_count', 'volume_count', '-volume_count', 'name', '-name')
-    default_ordering = '-issue_count'
+    default_ordering = 'name'
     queryset = Concept.objects.was_matched().annotate(
         volume_count=Count('issues__volume', distinct=True)
     ).annotate(
