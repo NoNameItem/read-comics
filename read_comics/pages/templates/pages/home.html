@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block page_header %}Home{% endblock %}
+
+{% block page_content %}
+  <section id="widgets-Statistics">
+
+    <div class="row">
+      <div class="col-xl-3 col-sm-6">
+        <div class="card text-center div-link">
+          <a class="div-default-link" href="{% url "issues:list" %}"></a>
+          <div class="card-body">
+            <div class="badge-circle badge-circle-lg badge-circle-light-info mx-auto my-1">
+              <i class="fad fa-book-open"></i>
+            </div>
+            <p class="text-muted mb-0 line-ellipsis">Issue{{ issues_count|pluralize }}</p>
+            <h2 class="mb-0">{{ issues_count }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="card text-center div-link">
+          <a class="div-default-link" href="{% url "publishers:list" %}"></a>
+          <div class="card-body">
+            <div class="badge-circle badge-circle-lg badge-circle-light-warning mx-auto my-1">
+              <i class="fad fa-building"></i>
+            </div>
+            <p class="text-muted mb-0 line-ellipsis">Publisher{{ publishers_count|pluralize }}</p>
+            <h2 class="mb-0">{{ publishers_count }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="card text-center div-link">
+          <a class="div-default-link" href="{% url "story_arcs:list" %}"></a>
+          <div class="card-body">
+            <div class="badge-circle badge-circle-lg badge-circle-light-danger mx-auto my-1">
+              <i class="fad fa-books"></i>
+            </div>
+            <p class="text-muted mb-0 line-ellipsis">Story Arc{{ story_arcs_count|pluralize }}</p>
+            <h2 class="mb-0">{{ story_arcs_count }}</h2>
+          </div>
+        </div>
+      </div>
+      <div class="col-xl-3 col-sm-6">
+        <div class="card text-center div-link">
+          <a class="div-default-link" href="{% url "volumes:list" %}"></a>
+          <div class="card-body">
+            <div class="badge-circle badge-circle-lg badge-circle-light-primary mx-auto my-1">
+              <i class="fad fa-book-spells"></i>
+            </div>
+            <p class="text-muted mb-0 line-ellipsis">Volume{{ volumes_count|pluralize }}</p>
+            <h2 class="mb-0">{{ volumes_count }}</h2>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+{% endblock %}

@@ -106,6 +106,7 @@ LOCAL_APPS = [
     "read_comics.story_arcs.apps.StoryArcsConfig",
     "read_comics.teams.apps.TeamsConfig",
     "read_comics.volumes.apps.VolumesConfig",
+    "read_comics.pages.apps.PagesConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = (
