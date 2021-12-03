@@ -351,7 +351,7 @@ class IssueMarkFinishedView(View, LoginRequiredMixin):
             issue = Issue.objects.get(slug=slug)
             user = request.user
             issue.finished_users.add(user)
-            # r = models.ReadIssue(profile=profile, issue=issue)
+            # r = MODELS.ReadIssue(profile=profile, issue=issue)
             # r.save()
             return JsonResponse({'status': "success", 'issue_name': issue.get_full_name(),
                                  'date': formats.localize(datetime.date.today(), use_l10n=True)

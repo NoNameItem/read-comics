@@ -173,7 +173,11 @@ class Issue(ImageMixin, ComicvineSyncModel):
         ordering = ('volume__name', 'volume__start_year', 'number')
 
     def __str__(self):
-        return self.get_full_name()
+        publisher_name = self.get_publisher_name()
+        if publisher_name:
+            return f"{self.get_full_name()} ({publisher_name})"
+        else:
+            return self.get_full_name()
 
     @staticmethod
     def convert_date(s):
