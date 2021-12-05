@@ -336,7 +336,7 @@ class VolumeMarkFinishedView(View, LoginRequiredMixin):
             volume = get_object_or_404(Volume, slug=slug)
             user = request.user
             user.finished_issues.add(*volume.issues.all())
-            # r = models.ReadIssue(profile=profile, issue=issue)
+            # r = MODELS.ReadIssue(profile=profile, issue=issue)
             # r.save()
             return JsonResponse({'status': "success", 'volume_name': f"{volume.name} ({volume.start_year})",
                                  'date': formats.localize(datetime.date.today(), use_l10n=True)

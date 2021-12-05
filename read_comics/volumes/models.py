@@ -27,7 +27,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
     }
     FIELD_MAPPING = {
         'publisher': {
-            'path': 'publisher.id',
+            'path': 'publisher',
             'method': 'get_publisher'
         },
         'first_issue_name': {
@@ -97,7 +97,11 @@ class Volume(ImageMixin, ComicvineSyncModel):
         ordering = ("name", "start_year",)
 
     def __str__(self):
-        return "[Volume] %s (%s) (%s)" % (self.name, self.start_year, self.pk)
+        publisher_name = self.get_publisher_name()
+        if publisher_name:
+            return "%s (%s) (%s)" % (self.name, (self.start_year or ''), publisher_name)
+        else:
+            return "%s (%s)" % (self.name, (self.start_year or 'Start year unknown'))
 
     @property
     def full_name(self):

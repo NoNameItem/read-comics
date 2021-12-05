@@ -8,9 +8,8 @@ class TeamsConfig(AppConfig):
     name = 'read_comics.teams'
 
     def ready(self):
-        publisher_model = self.get_model('Team')
+        model = self.get_model('Team')
         watson.register(
-            publisher_model,
-            search_adapters.TeamSearchAdapter,
-            store=('name', 'short_description', 'thumb_url')
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
+            search_adapters.TeamSearchAdapter
         )

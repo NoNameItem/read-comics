@@ -21,10 +21,32 @@
         </div>
         <ul class="nav navbar-nav float-right">
           <li class="nav-item nav-search"><a class="nav-link nav-link-search"><i
-              class="ficon fad fa-search"></i></a>
+            class="ficon fad fa-search"></i></a>
             <div class="search-input">
               <div class="search-input-icon"><i class="fad fa-search "></i></div>
-              <input class="input" type="text" placeholder="Search..." tabindex="-1" data-search="starter-list">
+
+              <form class="row" id="search-form" autocomplete="off" action="{% url "search:search" %}">
+
+                <select class="form-control input col-auto" id="search_category_select" name="category" onchange="$('#search_query_input').trigger('keyup');">
+                  <option value="all" selected>All</option>
+                  <option value="characters">Characters</option>
+                  <option value="concepts">Concepts</option>
+                  <option value="issues">Issues</option>
+                  <option value="locations">Locations</option>
+                  <option value="objects">Objects</option>
+                  <option value="people">People</option>
+                  <option value="publishers">Publishers</option>
+                  <option value="story_arcs">Story Arcs</option>
+                  <option value="teams">Teams</option>
+                  <option value="volumes">Volumes</option>
+
+                </select>
+                <div class="col">
+                  <input autocomplete="off" class="input col-auto" id="search_query_input" type="text" placeholder="Search..." tabindex="-1"
+                         name="q">
+                </div>
+
+              </form>
               <div class="search-input-close"><i class="fas fa-times"></i></div>
               <ul class="search-list"></ul>
             </div>
@@ -57,7 +79,7 @@
               <a class="nav-link" id="sign-in-link"
                  href="{% url 'account_login' %}?next={{ request.get_full_path }}">
                 <span class="selected-language success font-medium-3">Sign in </span> <i
-                  class="fad fa-sign-in success font-medium-5"></i>
+                class="fad fa-sign-in success font-medium-5"></i>
               </a>
             </li>
           {% endif %}

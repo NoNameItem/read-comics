@@ -23,6 +23,7 @@ urlpatterns = [
     path("story_arcs/", include("read_comics.story_arcs.urls", namespace="story_arcs")),
     path("teams/", include("read_comics.teams.urls", namespace="teams")),
     path("volumes/", include("read_comics.volumes.urls", namespace="volumes")),
+    path("search/", include("read_comics.search.urls", namespace="search"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS

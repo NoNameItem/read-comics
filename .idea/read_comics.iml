@@ -46,6 +46,7 @@
         <option value="$MODULE_DIR$/read_comics/issues/templates" />
         <option value="$MODULE_DIR$/read_comics/concepts/templates" />
         <option value="$MODULE_DIR$/read_comics/pages/templates" />
+        <option value="$MODULE_DIR$/read_comics/search/templates" />
       </list>
     </option>
   </component>

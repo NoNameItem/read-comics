@@ -10,7 +10,6 @@ class VolumesConfig(AppConfig):
     def ready(self):
         model = self.get_model('Volume')
         watson.register(
-            model,
-            search_adapters.VolumeSearchAdapter,
-            store=('name', 'short_description', 'thumb_url', 'start_year')
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
+            search_adapters.VolumeSearchAdapter
         )

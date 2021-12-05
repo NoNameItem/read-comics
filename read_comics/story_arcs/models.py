@@ -25,7 +25,7 @@ class StoryArc(ImageMixin, ComicvineSyncModel):
     }
     FIELD_MAPPING = {
         'publisher': {
-            'path': 'publisher.id',
+            'path': 'publisher',
             'method': 'get_publisher'
         }
     }
@@ -70,7 +70,11 @@ class StoryArc(ImageMixin, ComicvineSyncModel):
         ordering = ("name", )
 
     def __str__(self):
-        return "%s (%s)" % (self.name, self.publisher)
+        publisher_name = self.get_publisher_name()
+        if publisher_name:
+            return "%s (%s)" % (self.name, publisher_name)
+        else:
+            return self.name
 
     def get_publisher_name(self):
         if self.publisher:

@@ -8,9 +8,8 @@ class ObjectsConfig(AppConfig):
     name = 'read_comics.objects'
 
     def ready(self):
-        publisher_model = self.get_model('Object')
+        model = self.get_model('Object')
         watson.register(
-            publisher_model,
-            search_adapters.ObjectSearchAdapter,
-            store=('name', 'short_description', 'thumb_url')
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
+            search_adapters.ObjectSearchAdapter
         )

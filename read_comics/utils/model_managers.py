@@ -33,7 +33,7 @@ class ComicvineSyncQuerySet(models.QuerySet):
         """
         if defaults is None:
             defaults = {}
-        defaults['name'] = str(comicvine_id)
+        defaults['name'] = defaults.get('name', str(comicvine_id))
         try:
             instance, created = self.get_or_create(comicvine_id=comicvine_id, defaults=defaults)
         except IntegrityError:

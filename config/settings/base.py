@@ -107,6 +107,7 @@ LOCAL_APPS = [
     "read_comics.teams.apps.TeamsConfig",
     "read_comics.volumes.apps.VolumesConfig",
     "read_comics.pages.apps.PagesConfig",
+    "read_comics.search.apps.SearchConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = (
@@ -128,7 +129,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "home"
+LOGIN_REDIRECT_URL = "pages:home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
@@ -388,7 +389,7 @@ REST_FRAMEWORK = {
 CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 
-LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=60))
+LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
 MONGO_URL = env("MONGO_URL")
 COMICVINE_API_KEY = env("COMICVINE_API_KEY")
 

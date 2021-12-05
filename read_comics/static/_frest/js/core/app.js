@@ -8,7 +8,7 @@
   Author URL: hhttp://www.themeforest.net/user/pixinvent
 ==========================================================================================*/
 
-; (function (window, document, $) {
+;(function (window, document, $) {
   "use strict"
   var $html = $("html")
   var $body = $("body")
@@ -43,16 +43,16 @@
         iconStyle = $("#main-menu-navigation").data("icon-style")
 
       $this.addLiviconEvo({
-        name: icon,
-        style: iconStyle,
-        duration: 0.85,
-        strokeWidth: "1.3px",
-        eventOn: "none",
-        strokeColor: menuIconColorsObj.iconStrokeColor,
-        solidColor: menuIconColorsObj.iconSolidColor,
-        fillColor: menuIconColorsObj.iconFillColor,
-        strokeColorAlt: menuIconColorsObj.iconStrokeColorAlt,
-        afterAdd: function () {
+        name           : icon,
+        style          : iconStyle,
+        duration       : 0.85,
+        strokeWidth    : "1.3px",
+        eventOn        : "none",
+        strokeColor    : menuIconColorsObj.iconStrokeColor,
+        solidColor     : menuIconColorsObj.iconSolidColor,
+        fillColor      : menuIconColorsObj.iconFillColor,
+        strokeColorAlt : menuIconColorsObj.iconStrokeColorAlt,
+        afterAdd       : function () {
           if (i === $(".main-menu-content .menu-livicon").length - 1) {
             // When hover over any menu item, start animation and stop all other animation
             $(".main-menu-content .nav-item a").on("mouseenter", function () {
@@ -70,16 +70,16 @@
 
     function updateLivicon(el) {
       el.updateLiviconEvo({
-        strokeColor: menuActiveIconColorsObj.iconStrokeColor,
-        solidColor: menuActiveIconColorsObj.iconSolidColor,
-        fillColor: menuActiveIconColorsObj.iconFillColor,
-        strokeColorAlt: menuActiveIconColorsObj.iconStrokeColorAlt
+        strokeColor    : menuActiveIconColorsObj.iconStrokeColor,
+        solidColor     : menuActiveIconColorsObj.iconSolidColor,
+        fillColor      : menuActiveIconColorsObj.iconFillColor,
+        strokeColorAlt : menuActiveIconColorsObj.iconStrokeColorAlt
       })
     }
 
     // Navigation configurations
     var config = {
-      speed: 300 // set speed to expand / collpase menu
+      speed : 300 // set speed to expand / collpase menu
     }
     if ($.app.nav.initialized === false) {
       $.app.nav.init(config)
@@ -91,40 +91,40 @@
 
     // Tooltip Initialization
     $('[data-toggle="tooltip"]').tooltip({
-      container: "body"
+      container : "body"
     })
 
     // Tooltip For Horizontal Layout - Bookmark Icons
     /* tooltip-horizontal-bookmark - Add Custom Class */
     $(".tooltip-horizontal-bookmark").tooltip({
-      customClass: "tooltip-horizontal-bookmark"
+      customClass : "tooltip-horizontal-bookmark"
     })
 
     // Top Navbars - Hide on Scroll
     if ($(".navbar-hide-on-scroll").length > 0) {
       $(".navbar-hide-on-scroll.fixed-top").headroom({
-        offset: 205,
-        tolerance: 5,
-        classes: {
+        offset    : 205,
+        tolerance : 5,
+        classes   : {
           // when element is initialised
-          initial: "headroom",
+          initial : "headroom",
           // when scrolling up
-          pinned: "headroom--pinned-top",
+          pinned : "headroom--pinned-top",
           // when scrolling down
-          unpinned: "headroom--unpinned-top"
+          unpinned : "headroom--unpinned-top"
         }
       })
       // Bottom Navbars - Hide on Scroll
       $(".navbar-hide-on-scroll.fixed-bottom").headroom({
-        offset: 205,
-        tolerance: 5,
-        classes: {
+        offset    : 205,
+        tolerance : 5,
+        classes   : {
           // when element is initialised
-          initial: "headroom",
+          initial : "headroom",
           // when scrolling up
-          pinned: "headroom--pinned-bottom",
+          pinned : "headroom--pinned-bottom",
           // when scrolling down
-          unpinned: "headroom--unpinned-bottom"
+          unpinned : "headroom--unpinned-bottom"
         }
       })
     }
@@ -162,7 +162,7 @@
     //  Notifications & messages scrollable
     $(".scrollable-container").each(function () {
       var scrollable_container = new PerfectScrollbar($(this)[0], {
-        wheelPropagation: false
+        wheelPropagation : false
       })
     })
 
@@ -179,17 +179,17 @@
       }
       // Block Element
       block_ele.block({
-        message:
+        message    :
           '<div class="bx bx-sync icon-spin font-medium-2 text-primary"></div>',
-        timeout: 2000, //unblock after 2 seconds
-        overlayCSS: {
-          backgroundColor: reloadActionOverlay,
-          cursor: "wait"
+        timeout    : 2000, //unblock after 2 seconds
+        overlayCSS : {
+          backgroundColor : reloadActionOverlay,
+          cursor          : "wait"
         },
-        css: {
-          border: 0,
-          padding: 0,
-          backgroundColor: "none"
+        css        : {
+          border          : 0,
+          padding         : 0,
+          backgroundColor : "none"
         }
       })
     })
@@ -337,6 +337,7 @@
 
       return true
     }
+
     /*
     Checks if the keyCode pressed is inside special chars
     -------------------------------------------------------
@@ -410,8 +411,8 @@
         swipeOutMenu = new Hammer(swipeOutElement)
 
         swipeOutMenu.get("pan").set({
-          direction: Hammer.DIRECTION_ALL,
-          threshold: 100
+          direction : Hammer.DIRECTION_ALL,
+          threshold : 100
         })
 
         swipeOutMenu.on("panleft", function (ev) {
@@ -482,7 +483,7 @@
     .addClass("has-sub")
 
   $(".carousel").carousel({
-    interval: 2000
+    interval : 2000
   })
 
   // Page full screen
@@ -552,7 +553,7 @@
     var scrollto = offset.top - 80 // minus fixed header height
     $("html, body").animate(
       {
-        scrollTop: scrollto
+        scrollTop : scrollto
       },
       0
     )
@@ -572,13 +573,13 @@
   i18next
     .use(window.i18nextXHRBackend)
     .init({
-      debug: false,
-      fallbackLng: "en",
-      backend: {
-        loadPath: frest_root + "/data/locales/{{lng}}.json"
+        debug         : false,
+        fallbackLng   : "en",
+        backend       : {
+          loadPath : frest_root + "/data/locales/{{lng}}.json"
+        },
+        returnObjects : true
       },
-      returnObjects: true
-    },
       function (err, t) {
         // resources have been loaded
         jqueryI18next.init(i18next, $)
@@ -603,7 +604,7 @@
   })
 
   /********************* Bookmark & Search ***********************/
-  // This variable is used for mouseenter and mouseleave events of search list
+    // This variable is used for mouseenter and mouseleave events of search list
   var $filename = $(".search-input input").data("search")
 
   // Bookmark icon click
@@ -706,8 +707,7 @@
 
       // Define variables
       var value = $(this)
-        .val()
-        .toLowerCase(), //get values of inout on keyup
+          .val(), //get values of inout on keyup
         activeClass = "",
         bookmark = false,
         liList = $("ul.search-list li") // get all the list items of the search
@@ -744,136 +744,72 @@
           $bookmarkIcon = "",
           a = 0
 
-        // getting json data from file for search results
-        $.getJSON(frest_root + "/data/" + $filename + ".json", function (
-          data
-        ) {
-          for (var i = 0; i < data.listItems.length; i++) {
-            // if current is bookmark then give class to star icon
-            if (bookmark === true) {
-              activeClass = "" // resetting active bookmark class
-              var arrList = $("ul.nav.navbar-nav.bookmark-icons li"),
-                $arrList = ""
-              // Loop to check if current seach value match with the bookmarks already there in navbar
-              for (var j = 0; j < arrList.length; j++) {
-                if (
-                  data.listItems[i].name ===
-                  arrList[j].firstChild.dataset.originalTitle
-                ) {
-                  activeClass = " warning"
-                  break
-                } else {
-                  activeClass = ""
-                }
-              }
-              $bookmarkIcon =
-                '<span class="float-right bookmark-icon bx bx-star' +
-                activeClass +
-                '"></span>'
+        // getting json data from api for search results
+        $.get(
+          search_ajax_url,
+          {
+            q : value,
+            category: $('#search_category_select').val()
+          },
+          function (data) {
+            const search_postfix_map ={
+              'all': '...',
+              'characters': ' in characters...',
+              'concepts': ' in concepts...',
+              'issues': ' in issues...',
+              'locations': ' in locations...',
+              'objects': ' in objects...',
+              'people': ' in people...',
+              'publishers': ' in publishers...',
+              'story_arcs': ' in story arcs...',
+              'teams': ' in teams...',
+              'volumes': ' in volumes...'
             }
-            // Search list item start with entered letters and create list
-            if (
-              data.listItems[i].name.toLowerCase().indexOf(value) == 0 &&
-              a < 10
-            ) {
-              if (a === 0) {
-                $activeItemClass = "current_item"
-              } else {
-                $activeItemClass = ""
-              }
-              $startList +=
-                '<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer ' +
-                $activeItemClass +
+            let category = $('#search_category_select').val();
+            let search_postfix = search_postfix_map[category];
+            let hint =
+              '<li class="auto-suggestion d-flex align-items-center current_item justify-content-between cursor-pointer ' +
                 '">' +
-                '<a class="d-flex align-items-center justify-content-between w-100" href=' +
-                data.listItems[i].url +
-                ">" +
-                '<div class="d-flex justify-content-start">' +
-                '<span class="mr-75 ' +
-                data.listItems[i].icon +
-                '" data-icon="' +
-                data.listItems[i].icon +
-                '"></span>' +
-                "<span>" +
-                data.listItems[i].name +
-                "</span>" +
-                "</div>" +
-                $bookmarkIcon +
-                "</a>" +
-                "</li>"
-              a++
-            }
-          }
-          for (var i = 0; i < data.listItems.length; i++) {
-            if (bookmark === true) {
-              activeClass = "" // resetting active bookmark class
-              var arrList = $("ul.nav.navbar-nav.bookmark-icons li"),
-                $arrList = ""
-              // Loop to check if current seach value match with the bookmarks already there in navbar
-              for (var j = 0; j < arrList.length; j++) {
-                if (
-                  data.listItems[i].name ===
-                  arrList[j].firstChild.dataset.originalTitle
-                ) {
-                  activeClass = " warning"
-                } else {
-                  activeClass = ""
-                }
-              }
-              $bookmarkIcon =
-                '<span class="float-right bookmark-icon bx bx-star' +
-                activeClass +
-                '"></span>'
-            }
-            // Search list item not start with letters and create list
-            if (
-              !(data.listItems[i].name.toLowerCase().indexOf(value) == 0) &&
-              data.listItems[i].name.toLowerCase().indexOf(value) > -1 &&
-              a < 10
-            ) {
-              if (a === 0) {
-                $activeItemClass = "current_item"
-              } else {
-                $activeItemClass = ""
-              }
-              $otherList +=
-                '<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer ' +
-                $activeItemClass +
+                '<a class="d-flex align-items-center justify-content-between w-100" href="' +
+                search_url + '?q=' + encodeURIComponent(value) + '&category=' + category +
                 '">' +
-                '<a class="d-flex align-items-center justify-content-between w-100" href=' +
-                data.listItems[i].url +
-                ">" +
                 '<div class="d-flex justify-content-start">' +
-                '<span class="mr-75 ' +
-                data.listItems[i].icon +
-                '" data-icon="' +
-                data.listItems[i].icon +
-                '"></span>' +
-                "<span>" +
-                data.listItems[i].name +
-                "</span>" +
-                "</div>" +
-                $bookmarkIcon +
-                "</a>" +
-                "</li>"
-              a++
-            }
-          }
-          if ($startList == "" && $otherList == "") {
-            $otherList =
-              '<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer">' +
-              '<a class="d-flex align-items-center justify-content-between w-100">' +
-              '<div class="d-flex justify-content-start">' +
-              '<span class="mr-75 bx bx-error-circle"></span>' +
-              "<span>No results found.</span>" +
-              "</div>" +
-              "</a>" +
-              "</li>"
-          }
+                '<span class="mr-75 fad fa-2x text-info fa-search' +
 
-          $htmlList = $startList.concat($otherList) // merging start with and other list
-          $("ul.search-list").append($htmlList) // Appending list to <ul>
-        })
+                '" ></span>' +
+                '<span class="font-medium-3 m-auto text-info text-italic">' +
+                'Search for "' + value + '"' + search_postfix +
+                "</span>" +
+                "</div>" +
+                "</a>" +
+                "</li>";
+            let items = data.results;
+            for (let i = 0; i < items.length; i++) {
+
+              hint +=
+                '<li class="auto-suggestion d-flex align-items-center justify-content-between cursor-pointer ' +
+                '">' +
+                '<a class="d-flex align-items-center justify-content-between w-100" href="' +
+                items[i].url +
+                '">' +
+                '<div class="d-flex justify-content-start">' +
+                '<span class="mr-75 fad fa-2x text-info ' +
+                items[i].meta.icon +
+                '" ></span>' +
+                '<span class="font-medium-3 m-auto text-info">' +
+                items[i].meta.search_display +
+                "</span>" +
+                "</div>" +
+                '<span class="font-medium-2 ml-auto mr-2 text-italic">' +
+                items[i].meta.section +
+                '</span>' +
+                "</a>" +
+                "</li>";
+              a++;
+            }
+            $("ul.search-list").html(hint);
+          }
+        )
       } else {
         if (bookmark === true) {
           var arrList = $("ul.nav.navbar-nav.bookmark-icons li"),
@@ -1001,6 +937,7 @@
     }
 
     if (e.keyCode === 13 && $(".search-list li.current_item").length > 0) {
+      e.preventDefault();
       var selected_item = $(".search-list li.current_item a")
       window.location = selected_item.attr("href")
       $(selected_item).trigger("click")
@@ -1011,12 +948,12 @@
   var $scrollTop = $(window).scrollTop()
   if ($scrollTop > 20) {
     $(".navbar-sticky .main-header-navbar").css({
-      "background-color": "#fff",
-      "box-shadow": "-8px 12px 18px 0 rgba(25, 42, 70, 0.13)"
+      "background-color" : "#fff",
+      "box-shadow"       : "-8px 12px 18px 0 rgba(25, 42, 70, 0.13)"
     }).addClass("navbar-dark");
     $(".navbar-static .main-header-navbar").css({
-      "background-color": "transparent",
-      "box-shadow": "none"
+      "background-color" : "transparent",
+      "box-shadow"       : "none"
     }).addClass("navbar-dark");
   }
 
@@ -1024,21 +961,21 @@
   $(window).scroll(function () {
     if ($(this).scrollTop() > 20) {
       $(".navbar-sticky .main-header-navbar").css({
-        "background-color": "#fff",
-        "box-shadow": "-8px 12px 18px 0 rgba(25, 42, 70, 0.13)"
+        "background-color" : "#fff",
+        "box-shadow"       : "-8px 12px 18px 0 rgba(25, 42, 70, 0.13)"
       }).addClass("navbar-dark");
       $(".navbar-static .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
+        "background-color" : "transparent",
+        "box-shadow"       : "none"
       }).addClass("navbar-dark");
     } else {
       $(".navbar-sticky .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
+        "background-color" : "transparent",
+        "box-shadow"       : "none"
       }).removeClass("bg-primary bg-success bg-danger bg-info bg-warning bg-white bg-dark navbar-dark")
       $(".navbar-static .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
+        "background-color" : "transparent",
+        "box-shadow"       : "none"
       }).removeClass("bg-primary bg-success bg-danger bg-info bg-warning bg-white bg-dark navbar-dark")
     }
   });
@@ -1047,8 +984,8 @@
   var $scrollTop = $(window).scrollTop()
   if ($scrollTop > 20) {
     $(".dark-layout.navbar-sticky .main-header-navbar").css({
-      "background-color": "#272e48",
-      "box-shadow": "rgba(26, 35, 59, .70) -8px 12px 18px 0px"
+      "background-color" : "#272e48",
+      "box-shadow"       : "rgba(26, 35, 59, .70) -8px 12px 18px 0px"
     }).addClass("navbar-dark");
   }
 
@@ -1056,13 +993,13 @@
   $(window).scroll(function () {
     if ($(this).scrollTop() > 20) {
       $(".dark-layout.navbar-sticky .main-header-navbar").css({
-        "background-color": "#272e48",
-        "box-shadow": "rgba(26, 35, 59, .70) -8px 12px 18px 0px"
+        "background-color" : "#272e48",
+        "box-shadow"       : "rgba(26, 35, 59, .70) -8px 12px 18px 0px"
       }).addClass("navbar-dark");
     } else {
       $(".dark-layout.navbar-sticky .main-header-navbar").css({
-        "background-color": "transparent",
-        "box-shadow": "none"
+        "background-color" : "transparent",
+        "box-shadow"       : "none"
       }).removeClass("bg-primary bg-success bg-danger bg-info bg-warning bg-white bg-dark navbar-dark")
     }
   })

@@ -3,6 +3,7 @@ import logging
 from functools import partial, wraps
 
 from crum import get_current_user
+from django.core.exceptions import EmptyResultSet
 from django.db.models import QuerySet
 from django.http import HttpRequest
 from django.template.response import TemplateResponse
@@ -16,7 +17,10 @@ class ReprEncoder(json.JSONEncoder):
     def default(self, o):
         try:
             if isinstance(o, QuerySet):
-                return str(o.query)
+                try:
+                    return str(o.query)
+                except EmptyResultSet:
+                    return 'empty'
             return json.JSONEncoder.default(self, o)
         except TypeError:
             return repr(o)

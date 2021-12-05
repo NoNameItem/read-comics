@@ -150,7 +150,9 @@
 
 <!-- BEGIN: Theme JS-->
 <script !src="">
-  const frest_root = "/static/_frest"
+  const frest_root = "/static/_frest";
+  const search_url = "{% url "search:search" %}";
+  const search_ajax_url = "{% url "search:ajax" %}";
 </script>
 <script src="{% static "_frest/js/scripts/configs/vertical-menu-light.js" %}"></script>
 <script src="{% static "_frest/js/core/app-menu.js" %}"></script>

@@ -57,27 +57,22 @@ class Issue(ImageMixin, ComicvineSyncModel):
         },
         'characters': {
             'path': 'character_credits',
-            'inner_path': 'id',
             'method': 'get_character'
         },
         'characters_died': {
             'path': 'character_died_in',
-            'inner_path': 'id',
             'method': 'get_character'
         },
         'concepts': {
             'path': 'concept_credits',
-            'inner_path': 'id',
             'method': 'get_concept'
         },
         'locations': {
             'path': 'location_credits',
-            'inner_path': 'id',
             'method': 'get_location'
         },
         'objects_in': {
             'path': 'object_credits',
-            'inner_path': 'id',
             'method': 'get_object'
         },
         'people': {
@@ -86,21 +81,18 @@ class Issue(ImageMixin, ComicvineSyncModel):
         },
         'story_arcs': {
             'path': 'story_arc_credits',
-            'inner_path': 'id',
             'method': 'get_story_arc'
         },
         'teams': {
             'path': 'team_credits',
-            'inner_path': 'id',
             'method': 'get_team'
         },
         'disbanded_teams': {
             'path': 'team_disbanded_in',
-            'inner_path': 'id',
             'method': 'get_team'
         },
         'volume': {
-            'path': 'volume.id',
+            'path': 'volume',
             'method': 'get_volume'
         },
     }
@@ -188,9 +180,16 @@ class Issue(ImageMixin, ComicvineSyncModel):
     @staticmethod
     def get_author(comicvine_author):
         comicvine_id = comicvine_author.get('id')
+        name = comicvine_author.get('name', str(comicvine_id))
         role = comicvine_author.get('role')
         from read_comics.people.models import Person
-        person, created, matched = Person.objects.get_or_create_from_comicvine(comicvine_id)
+        person, created, matched = Person.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+                'name': name
+            },
+            delay=True
+        )
         return person, {'role': role}
 
     # noinspection DuplicatedCode

@@ -8,9 +8,8 @@ class LocationsConfig(AppConfig):
     name = 'read_comics.locations'
 
     def ready(self):
-        publisher_model = self.get_model('Location')
+        model = self.get_model('Location')
         watson.register(
-            publisher_model,
-            search_adapters.LocationSearchAdapter,
-            store=('name', 'short_description', 'thumb_url')
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
+            search_adapters.LocationSearchAdapter
         )

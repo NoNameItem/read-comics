@@ -228,83 +228,183 @@ class ComicvineSyncModel(models.Model):
             return None
 
     @staticmethod
-    def get_character(comicvine_id):
+    def get_character(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.characters.models import Character
-        character, created, matched = Character.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        character, created, matched = Character.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return character
 
     @staticmethod
-    def get_concept(comicvine_id):
+    def get_concept(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.concepts.models import Concept
-        concept, created, matched = Concept.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        concept, created, matched = Concept.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return concept
 
     @staticmethod
-    def get_location(comicvine_id):
+    def get_location(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.locations.models import Location
-        location, created, matched = Location.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        location, created, matched = Location.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return location
 
     @staticmethod
-    def get_object(comicvine_id):
+    def get_object(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.objects.models import Object
-        obj, created, matched = Object.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        obj, created, matched = Object.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return obj
 
     @staticmethod
-    def get_power(comicvine_id):
+    def get_power(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.powers.models import Power
-        power, created, matched = Power.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        power, created, matched = Power.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return power
 
     @staticmethod
-    def get_story_arc(comicvine_id):
+    def get_story_arc(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.story_arcs.models import StoryArc
-        story_arc, created, matched = StoryArc.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        story_arc, created, matched = StoryArc.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return story_arc
 
     @staticmethod
-    def get_team(comicvine_id):
+    def get_team(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.teams.models import Team
-        team, created, matched = Team.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        team, created, matched = Team.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return team
 
     @staticmethod
-    def get_volume(comicvine_id):
+    def get_volume(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.volumes.models import Volume
-        volume, created, matched = Volume.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        volume, created, matched = Volume.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return volume
 
     @staticmethod
-    def get_publisher(comicvine_id):
+    def get_publisher(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.publishers.models import Publisher
-        publisher, created, matched = Publisher.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        publisher, created, matched = Publisher.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return publisher
 
     @staticmethod
-    def get_person(comicvine_id):
+    def get_person(d):
+        if not d:
+            return None
+        comicvine_id = d.get('id', None)
+        name = d.get('name', str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.people.models import Person
-        person, created, matched = Person.objects.get_or_create_from_comicvine(comicvine_id, delay=True)
+        person, created, matched = Person.objects.get_or_create_from_comicvine(
+            comicvine_id,
+            defaults={
+              'name': name
+            },
+            delay=True
+        )
         return person
 
     def _fill_field_from_document(self, document, field, source, follow_m2m):
@@ -384,7 +484,10 @@ class ComicvineSyncModel(models.Model):
             outer_item = [outer_item]
 
         for inner_document in outer_item:
-            inner_value = self._get_value_by_path(inner_document, inner_path)
+            if inner_path:
+                inner_value = self._get_value_by_path(inner_document, inner_path)
+            else:
+                inner_value = inner_document
             defaults = {}
             if method:
                 value = method(inner_value)

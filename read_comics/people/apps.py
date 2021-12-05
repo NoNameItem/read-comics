@@ -8,9 +8,8 @@ class PeopleConfig(AppConfig):
     name = 'read_comics.people'
 
     def ready(self):
-        person_model = self.get_model('Person')
+        model = self.get_model('Person')
         watson.register(
-            person_model,
-            search_adapters.PersonSearchAdapter,
-            store=('name', 'short_description', 'thumb_url', 'birth_date', 'death_date', 'hometown', 'country')
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
+            search_adapters.PersonSearchAdapter
         )

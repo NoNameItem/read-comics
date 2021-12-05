@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+{% load static %}
+{% load url_extras %}
+
+{% block title %}Search results for "{{ query }}"...{% endblock %}
+
+{% block page_header %}Search results for "{{ query }}"...{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "_frest/css/pages/search.min.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "search/css/search.css" %}">
+{% endblock %}
+
+{% block page_content %}
+  <section class="search-bar-wrapper">
+    <!-- Search Bar -->
+    <div class="search-bar">
+      <!-- input search -->
+      <form id="search-form">
+        <fieldset class="search-input form-group position-relative">
+          <input type="search" class="form-control rounded-right form-control-lg shadow pl-2" id="searchbar"
+                 placeholder="Search..." value="{{ query }}" name="q">
+          <button class="btn btn-primary search-btn rounded" type="submit">
+            <span class="d-none d-sm-block">Search</span>
+            <i class="bx bx-search d-block d-sm-none"></i>
+          </button>
+        </fieldset>
+        <input type="hidden" name="category" id="category" value="{{ category }}">
+      </form>
+      <!--/ input search -->
+    </div>
+    <div class="row search-menu">
+      <div class="col-12">
+        <!-- search menu tab -->
+        <ul class="nav nav-tabs justify-content-center justify-content-fhd-start" role="tablist">
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "all" %}active{% endif %}" id="all-tab" href="#"
+               data-category="all" role="tab" aria-selected="true">
+              <i class="fad fa-search mr-lg-50"></i>
+              <span class="d-none d-lg-block">All</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "characters" %}active{% endif %}" id="characters-tab"
+               data-category="characters" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-bat mr-lg-50"></i>
+              <span class="d-none d-lg-block">Characters</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "concepts" %}active{% endif %}" id="concepts-tab"
+               data-category="concepts" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-brain mr-lg-50"></i>
+              <span class="d-none d-lg-block">Concepts</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "issues" %}active{% endif %}" id="issues-tab"
+               data-category="issues" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-book-open mr-lg-50"></i>
+              <span class="d-none d-lg-block">Issues</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "locations" %}active{% endif %}" id="locations-tab"
+               data-category="locations" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-map-marker-alt mr-lg-50"></i>
+              <span class="d-none d-lg-block">Locations</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "objects" %}active{% endif %}" id="objects-tab"
+               data-category="objects" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-swords mr-lg-50"></i>
+              <span class="d-none d-lg-block">Objects</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "people" %}active{% endif %}" id="people-tab"
+               data-category="people" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-people-carry mr-lg-50"></i>
+              <span class="d-none d-lg-block">People</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "publishers" %}active{% endif %}" id="publishers-tab"
+               data-category="publishers" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-building mr-lg-50"></i>
+              <span class="d-none d-lg-block">Publishers</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "story_arcs" %}active{% endif %}" id="story_arcs-tab"
+               data-category="story_arcs" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-books mr-lg-50"></i>
+              <span class="d-none d-lg-block">Story Arcs</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "teams" %}active{% endif %}" id="teams-tab"
+               data-category="teams" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-users mr-lg-50"></i>
+              <span class="d-none d-lg-block">Teams</span>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link category-select {% if category == "volumes" %}active{% endif %}" id="volumes-tab"
+               data-category="volumes" href="#" role="tab" aria-selected="false">
+              <i class="fad fa-book-spells mr-lg-50"></i>
+              <span class="d-none d-lg-block">Volumes</span>
+            </a>
+          </li>
+        </ul>
+        <!--/ search menu tab -->
+      </div>
+    </div>
+    <!-- Search Bar end -->
+    <div>
+      <div class="search-speed mb-1">
+        <small class="text-muted">{{ total_results }} result{{ total_results|pluralize }}</small>
+      </div>
+    </div>
+    <div class="web-result">
+      <ul class="list-unstyled">
+        {% for result in search_results %}
+          <li>
+            <div class="card div-link">
+              <a href="{{ result.url }}" class="div-default-link"></a>
+              <div class="row">
+                <div class="col-md-auto mr-md-1">
+                  <div class="card-img h-100 ml-auto mr-auto mt-1 m-md-0">
+                    <img class="h-100" src="{{ result.meta.img_url }}">
+                  </div>
+                </div>
+                <div class="col-md pl-md-0">
+                  <div class="card-body">
+                    <div class="card-header pt-md-0 pl-md-0">
+                      <h4 class="card-title cursor-pointer">
+                        <a href="{{ result.url }}">
+                          {{ result.meta.search_display }}
+                        </a>
+                      </h4>
+                    </div>
+                    <div class="card-content">
+                      <p class="card-text">
+                        {{ result.description|default:"No description" }}
+                      </p>
+                    </div>
+                  </div>
+                  <div class="card-footer border-top d-flex justify-content-between">
+                    <small class="text-truncate">
+                  <span class="success darken-4">
+                    {{ result.meta.section }}
+                  </span>
+                    </small>
+                    <i class="fad {{ result.meta.icon }} font-medium-2"></i>
+                  </div>
+                </div>
+              </div>
+          </li>
+        {% endfor %}
+
+      </ul>
+    </div>
+
+  </section>
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-borderless justify-content-center mt-2">
+      {% for page in pages %}
+         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+  <script src="{% static "search/js/search.js" %}"></script>
+{% endblock %}

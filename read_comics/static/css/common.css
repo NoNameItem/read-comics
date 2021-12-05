@@ -105,10 +105,39 @@
   right: 15px;
 }
 
-#full-size-image-modal .modal-body{
+#full-size-image-modal .modal-body {
   padding: 0;
 }
 
 #full-size-image-modal .img-fluid {
-  width:100%
+  width: 100%
+}
+
+.navbar-container .search-input select {
+  width: 0;
+  border: none;
+  background: none;
+  line-height: 16px;
+  margin: auto 0 auto 5rem;
+  display:none
+}
+
+.navbar-container .search-input.open select {
+  width: 150px;
+  color: #475F7B!important;
+  border: 1px solid #DFE3E7;
+  border-radius: .267rem;
+  background-color: #FFF;
+  background-clip: padding-box;
+  background-image: url(/static/app-assets/images/pages/arrow-down.png);
+  background-position: calc(100% - 12px) 13px, calc(100% - 20px) 13px, 100% 0;
+  background-size: 12px 12px, 10px 10px;
+  background-repeat: no-repeat;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  display:block;
+}
+
+.navbar-container .search-input input {
+  padding: 1.7rem 0;
 }

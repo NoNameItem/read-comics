@@ -325,7 +325,7 @@ class StoryArcMarkFinishedView(View, LoginRequiredMixin):
             story_arc = get_object_or_404(StoryArc, slug=slug)
             user = request.user
             user.finished_issues.add(*story_arc.issues.all())
-            # r = models.ReadIssue(profile=profile, issue=issue)
+            # r = MODELS.ReadIssue(profile=profile, issue=issue)
             # r.save()
             return JsonResponse({'status': "success", 'story_arc_name': story_arc.name,
                                  'date': formats.localize(datetime.date.today(), use_l10n=True)

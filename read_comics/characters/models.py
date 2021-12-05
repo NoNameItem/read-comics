@@ -42,41 +42,34 @@ class Character(ImageMixin, ComicvineSyncModel):
         'origin': 'origin.name',
         'character_enemies': {
             'path': 'character_enemies',
-            'inner_path': 'id',
             'method': 'get_character'
         },
         'character_friends': {
             'path': 'character_friends',
-            'inner_path': 'id',
             'method': 'get_character'
         },
         'teams': {
             'path': 'teams',
-            'inner_path': 'id',
             'method': 'get_team'
         },
         'team_enemies': {
             'path': 'team_enemies',
-            'inner_path': 'id',
             'method': 'get_team'
         },
         'team_friends': {
             'path': 'team_friends',
-            'inner_path': 'id',
             'method': 'get_team'
         },
         'publisher': {
-            'path': 'publisher.id',
+            'path': 'publisher',
             'method': 'get_publisher'
         },
         'creators': {
             'path': 'creators',
-            'inner_path': 'id',
             'method': 'get_person'
         },
         'powers': {
             'path': 'powers',
-            'inner_path': 'id',
             'method': 'get_power'
         },
     }
@@ -137,6 +130,8 @@ class Character(ImageMixin, ComicvineSyncModel):
         ordering = ("name",)
 
     def __str__(self):
+        if self.get_publisher_name():
+            return f"{self.name} ({self.publisher.name})"
         return self.name
 
     def get_publisher_name(self):

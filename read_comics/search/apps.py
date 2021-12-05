@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class PagesConfig(AppConfig):
+class SearchConfig(AppConfig):
     default_auto_field = 'django.db.MODELS.BigAutoField'
-    name = 'read_comics.pages'
+    name = 'read_comics.search'
