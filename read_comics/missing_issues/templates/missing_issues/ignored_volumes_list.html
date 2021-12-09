@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ignored volumes{% endblock %}
+
+{% block page_header %}Ignored volumes{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  <table class="table">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Publisher Name</th>
+      <th>Volume Name</th>
+      <th>Comicvine ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for volume in ignored_volumes %}
+      <tr>
+        <td class="width-100"><a href="{% url "missing_issues:delete_ignored_volume" pk=volume.pk %}" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fad fa-trash"></i></a></td>
+        <td>{{ volume.publisher_name }}</td>
+        <td><a href="{{ volume.comicvine_url }}" target="_blank">{{ volume.name }} ({{ volume.start_year }})</a></td>
+        <td>{{ volume.comicvine_id }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+{% endblock %}

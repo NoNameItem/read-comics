@@ -93,6 +93,8 @@ class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('team_friends', sublist_querysets.get_team_friends_queryset(character)))
         context.update(get_first_page('team_enemies', sublist_querysets.get_team_enemies_queryset(character)))
 
+        context['missing_issues_count'] = character.missing_issues.count()
+
         return context
 
 

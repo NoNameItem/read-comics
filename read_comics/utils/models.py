@@ -158,18 +158,18 @@ class ComicvineSyncModel(models.Model):
 
         document = self.comicvine_document
         if document:
-            self.logger.info("Document found")
+            self.logger.debug("Document found")
             self.logger.debug("Document: %s" % str(document))
             self.process_document(document, follow_m2m)
             self.comicvine_status = self.ComicvineStatus.MATCHED
             self.comicvine_last_match = timezone.now()
         else:
-            self.logger.info(
+            self.logger.debug(
                 "Document with id `%s` not found in collection `%s`" % (self.comicvine_id, self.MONGO_COLLECTION)
             )
             document = self.get_document_from_api()
             if document:
-                self.logger.info("Document found in API")
+                self.logger.debug("Document found in API")
                 self.logger.debug("Document: %s" % str(document))
                 self.process_document(document, follow_m2m)
                 self.comicvine_status = self.ComicvineStatus.MATCHED

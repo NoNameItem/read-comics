@@ -12,6 +12,6 @@ $(document).ready(function (){
       } else {
         toastr.error( response.message, "Oops! Can't mark issue as finished");
       }
-    })
+    });
   });
 });

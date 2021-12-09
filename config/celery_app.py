@@ -84,6 +84,10 @@ app.conf.beat_schedule = {
         "task": "read_comics.volumes.tasks.VolumesRefreshTask",
         "schedule": crontab(minute=0, hour="3"),
     },
+    "refresh-publishers-missing-issues": {
+        "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
+        "schedule": crontab(minute=0, hour="6"),
+    }
 }
 app.conf.timezone = "UTC"
 

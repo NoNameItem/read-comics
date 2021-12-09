@@ -7,7 +7,6 @@ logger = logging.getLogger(__name__)
 
 
 class ComicvineSyncQuerySet(models.QuerySet):
-    @logging.logged(logger)
     def get_or_create_from_comicvine(
         self,
         comicvine_id,
@@ -39,10 +38,10 @@ class ComicvineSyncQuerySet(models.QuerySet):
         except IntegrityError:
             instance = self.get(comicvine_id=comicvine_id)
             created = False
-        logger.info("Found: %s" % (not created))
+        logger.debug("Found: %s" % (not created))
         if (created or (force_refresh and not instance.comicvine_actual)) \
            and (not instance.comicvine_status == instance.ComicvineStatus.QUEUED):
-            logger.info("Refreshing from comicvine")
+            logger.debug("Refreshing from comicvine")
             instance.fill_from_comicvine(follow_m2m, delay)
             instance.save()
         return instance, created, (instance.comicvine_status == instance.ComicvineStatus.MATCHED)

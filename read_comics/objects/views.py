@@ -72,6 +72,8 @@ class ObjectDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(obj)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(obj)))
 
+        context['missing_issues_count'] = obj.missing_issues.count()
+
         return context
 
 

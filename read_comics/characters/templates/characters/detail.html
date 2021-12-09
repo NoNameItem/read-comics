@@ -42,8 +42,8 @@
                 <p>{{ character.short_description|default_if_none:"" }}</p>
               </div>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 <li class="nav-item pb-1">
                   <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
                      href="#info"
@@ -57,8 +57,8 @@
                        href="#issues"
                        aria-controls="issues" role="tab" aria-selected="false">
                       <i class="fad fa-book-open" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Issues </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Issues </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
 
                   </li>
                 {% endif %}
@@ -69,8 +69,8 @@
                        href="#volumes"
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Volumes </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
 
                   </li>
                 {% endif %}
@@ -81,8 +81,8 @@
                        href="#died"
                        aria-controls="died" role="tab" aria-selected="false">
                       <i class="fad fa-skull" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Died in issues</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ died_in_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Died in issues</span><span
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ died_in_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -92,7 +92,7 @@
                        href="#authors"
                        aria-controls="authors" role="tab" aria-selected="false">
                       <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Authors</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -102,8 +102,8 @@
                        href="#friends"
                        aria-controls="friends" role="tab" aria-selected="false">
                       <i class="fad fa-bat" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Friends</span><span
-                        class="ml-1 badge badge-pill badge-round badge-success">{{ friends_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Friends</span><span
+                      class="ml-1 badge badge-pill badge-round badge-success">{{ friends_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -113,7 +113,7 @@
                        href="#enemies"
                        aria-controls="enemies" role="tab" aria-selected="false">
                       <i class="fad fa-user-secret" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Enemies</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ enemies_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ enemies_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -123,8 +123,8 @@
                        href="#teams"
                        aria-controls="teams" role="tab" aria-selected="false">
                       <i class="fad fa-users" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Teams</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Teams</span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -134,8 +134,8 @@
                        href="#team-friends"
                        aria-controls="team-friends" role="tab" aria-selected="false">
                       <i class="fad fa-users" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Team friends</span><span
-                        class="ml-1 badge badge-pill badge-round badge-success">{{ team_friends_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Team friends</span><span
+                      class="ml-1 badge badge-pill badge-round badge-success">{{ team_friends_count }}</span></a>
                   </li>
                 {% endif %}
 
@@ -145,27 +145,38 @@
                        href="#team-enemies"
                        aria-controls="team-enemies" role="tab" aria-selected="false">
                       <i class="fad fa-users" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Team enemies</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ team_friends_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ team_friends_count }}</span></a>
                   </li>
                 {% endif %}
 
                 {% if request.user.is_staff > 0 %}
+
+                  {% if missing_issues_count %}
+                    <li class="nav-item pb-1">
+                      <a class="nav-link d-flex px-1" id="missing-issues-tab"
+                         href="{% url "missing_issues:category" category='character' slug=object.slug %}">
+                        <i class="fad fa-eye"></i> <span
+                        class="d-none d-md-block pl-50"> Missing issues <span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ missing_issues_count }}</span></span></a>
+                    </li>
+                  {% endif %}
+
                   <li class="nav-item pb-1">
                     <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
                        href="#tech"
                        aria-controls="tech" role="tab" aria-selected="false">
                       <i class="fad fa-cogs"></i> <span
-                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                      class="d-none d-md-block pl-50"> Technical info</span></a>
                   </li>
                 {% endif %}
               </ul>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 <li class="nav-item pb-1">
                   <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ character.download_link }}">
                     <i class="fad fa-download"></i> <span
-                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
+                    class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
                   </a>
                 </li>
               </ul>
@@ -261,7 +272,8 @@
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
                     {% if character.first_issue %}
-                      <a href="{% url "characters:issue_detail" character.slug character.first_issue.slug %}">{{ character.first_issue.volume.name }}
+                      <a
+                        href="{% url "characters:issue_detail" character.slug character.first_issue.slug %}">{{ character.first_issue.volume.name }}
                         #{{ character.first_issue.number }} {{ character.first_issue.name|default_if_none:'' }}</a>
                     {% else %}
                       {{ character.first_issue_name }}
@@ -277,7 +289,8 @@
 
               </div>
             </div>
-            <img src="{{ character.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+            <img src="{{ character.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size"
+                 width="100%">
           </div>
           <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
             {{ character.description|default:"<p>No description</p>"|safe }}

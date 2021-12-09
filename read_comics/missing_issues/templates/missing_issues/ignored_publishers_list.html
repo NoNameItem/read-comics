@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ignored publishers{% endblock %}
+
+{% block page_header %}Ignored publishers{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  <table class="table">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Name</th>
+      <th>Comicvine ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for publisher in ignored_publishers %}
+      <tr>
+        <td class="width-100"><a href="{% url "missing_issues:delete_ignored_publisher" pk=publisher.pk %}" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fad fa-trash"></i></a></td>
+        <td><a href="{{ publisher.comicvine_url }}" target="_blank">{{ publisher.name }}</a></td>
+        <td>{{ publisher.comicvine_id }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+{% endblock %}

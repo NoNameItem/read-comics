@@ -76,6 +76,17 @@
                 {% endif %}
 
                 {% if request.user.is_staff > 0 %}
+
+                  {% if missing_issues_count %}
+                    <li class="nav-item pb-1">
+                      <a class="nav-link d-flex px-1" id="missing-issues-tab"
+                         href="{% url "missing_issues:category" category='object' slug=object.slug %}">
+                        <i class="fad fa-eye"></i> <span
+                        class="d-none d-md-block pl-50"> Missing issues <span
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ missing_issues_count }}</span></span></a>
+                    </li>
+                  {% endif %}
+
                   <li class="nav-item pb-1">
                     <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
                        href="#tech"

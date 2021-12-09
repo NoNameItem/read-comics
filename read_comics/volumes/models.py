@@ -6,6 +6,8 @@ from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 from volumes.tasks import volume_comicvine_info_task
 
+from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume
+
 logger = getLogger(__name__ + '.Volume')
 
 
@@ -48,7 +50,10 @@ class Volume(ImageMixin, ComicvineSyncModel):
             'method': 'get_issue'
         },
         'last_issue_comicvine_id': 'last_issue.id',
-        'start_year': 'start_year'
+        'start_year': {
+            'path': 'start_year',
+            'method': 'to_int'
+        }
     }
     COMICVINE_INFO_TASK = volume_comicvine_info_task
     COMICVINE_API_URL = 'https://comicvine.gamespot.com/api/volume/4050-{id}/?' \
@@ -130,6 +135,10 @@ class Volume(ImageMixin, ComicvineSyncModel):
         if self.tracker.has_changed('name') or self.tracker.has_changed('start_year'):
             self.update_issues_do_metadata()
 
+    def post_save(self):
+        IgnoredVolume.objects.filter(comicvine_id=self.comicvine_id).delete()
+        IgnoredIssue.objects.filter(volume_comicvine_id=self.comicvine_id).delete()
+
     def update_issues_do_metadata(self):
         for issue in self.issues.all():
             issue.update_do_metadata(self.name, self.start_year)
@@ -142,3 +151,10 @@ class Volume(ImageMixin, ComicvineSyncModel):
     def download_link(self):
         from django.urls import reverse
         return reverse('volumes:download', args=[self.slug])
+
+    @staticmethod
+    def to_int(val):
+        try:
+            return int(val)
+        except ValueError:
+            return None

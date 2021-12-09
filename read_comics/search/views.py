@@ -1,3 +1,4 @@
+from utils import logging
 from utils.view_mixins import BreadcrumbMixin, ElidedPagesPaginatorMixin
 from watson.views import SearchApiView
 from watson.views import SearchView as BaseSearchView
@@ -12,6 +13,8 @@ from read_comics.publishers.models import Publisher
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
+
+logger = logging.getLogger(__name__)
 
 
 class RestrictModelMixin:
@@ -41,6 +44,7 @@ class RestrictModelMixin:
         return model
 
 
+@logging.methods_logged(logger, ['get', ])
 class SearchView(ElidedPagesPaginatorMixin, RestrictModelMixin, BreadcrumbMixin, BaseSearchView):
     template_name = "search/search.html"
     paginate_by = 50
@@ -56,6 +60,7 @@ class SearchView(ElidedPagesPaginatorMixin, RestrictModelMixin, BreadcrumbMixin,
 search_view = SearchView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class AjaxSearchView(RestrictModelMixin, SearchApiView):
     def get_queryset(self):
         q = super(AjaxSearchView, self).get_queryset()[:10]

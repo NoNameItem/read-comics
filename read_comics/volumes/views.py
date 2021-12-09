@@ -124,6 +124,8 @@ class VolumeDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('disbanded', sublist_querysets.get_disbanded_queryset(volume)))
         context.update(get_first_page('first_appearances', sublist_querysets.get_first_appearance_queryset(volume)))
 
+        context['missing_issues_count'] = volume.missing_issues.count()
+
         return context
 
 

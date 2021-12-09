@@ -72,6 +72,8 @@ class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(location)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(location)))
 
+        context['missing_issues_count'] = location.missing_issues.count()
+
         return context
 
 

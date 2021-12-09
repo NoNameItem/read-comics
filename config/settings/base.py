@@ -108,6 +108,7 @@ LOCAL_APPS = [
     "read_comics.volumes.apps.VolumesConfig",
     "read_comics.pages.apps.PagesConfig",
     "read_comics.search.apps.SearchConfig",
+    "read_comics.missing_issues.apps.MissingIssuesConfig"
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
 INSTALLED_APPS = (

@@ -345,7 +345,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 issue_detail_view = IssueDetailView.as_view()
 
 
-class IssueMarkFinishedView(View, LoginRequiredMixin):
+class IssueMarkFinishedView(LoginRequiredMixin, View):
     def post(self, request, slug):
         try:
             issue = Issue.objects.get(slug=slug)

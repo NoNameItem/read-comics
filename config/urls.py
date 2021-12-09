@@ -6,25 +6,26 @@ from django.views import defaults as default_views
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    path("", include("read_comics.pages.urls", namespace="pages")),
-    # Django Admin, use {% url 'admin:index' %}
-    # path(settings.ADMIN_URL, admin.site.urls),
-    # User management
-    path("users/", include("read_comics.users.urls", namespace="users")),
-    path("accounts/", include("allauth.urls")),
-    # Your stuff: custom urls includes go here
-    path("publishers/", include("read_comics.publishers.urls", namespace="publishers")),
-    path("characters/", include("read_comics.characters.urls", namespace="characters")),
-    path("concepts/", include("read_comics.concepts.urls", namespace="concepts")),
-    path("issues/", include("read_comics.issues.urls", namespace="issues")),
-    path("locations/", include("read_comics.locations.urls", namespace="locations")),
-    path("objects/", include("read_comics.objects.urls", namespace="objects")),
-    path("people/", include("read_comics.people.urls", namespace="people")),
-    path("story_arcs/", include("read_comics.story_arcs.urls", namespace="story_arcs")),
-    path("teams/", include("read_comics.teams.urls", namespace="teams")),
-    path("volumes/", include("read_comics.volumes.urls", namespace="volumes")),
-    path("search/", include("read_comics.search.urls", namespace="search"))
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+                  path("", include("read_comics.pages.urls", namespace="pages")),
+                  # Django Admin, use {% url 'admin:index' %}
+                  # path(settings.ADMIN_URL, admin.site.urls),
+                  # User management
+                  path("users/", include("read_comics.users.urls", namespace="users")),
+                  path("accounts/", include("allauth.urls")),
+                  # Your stuff: custom urls includes go here
+                  path("publishers/", include("read_comics.publishers.urls", namespace="publishers")),
+                  path("characters/", include("read_comics.characters.urls", namespace="characters")),
+                  path("concepts/", include("read_comics.concepts.urls", namespace="concepts")),
+                  path("issues/", include("read_comics.issues.urls", namespace="issues")),
+                  path("locations/", include("read_comics.locations.urls", namespace="locations")),
+                  path("objects/", include("read_comics.objects.urls", namespace="objects")),
+                  path("people/", include("read_comics.people.urls", namespace="people")),
+                  path("story_arcs/", include("read_comics.story_arcs.urls", namespace="story_arcs")),
+                  path("teams/", include("read_comics.teams.urls", namespace="teams")),
+                  path("volumes/", include("read_comics.volumes.urls", namespace="volumes")),
+                  path("search/", include("read_comics.search.urls", namespace="search")),
+                  path("missing_issues/", include("read_comics.missing_issues.urls", namespace="missing_issues")),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 # API URLS
 urlpatterns += [

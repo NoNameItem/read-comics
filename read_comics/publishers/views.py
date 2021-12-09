@@ -82,6 +82,8 @@ class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('story_arcs', sublist_querysets.get_story_arcs_queryset(publisher)))
         context.update(get_first_page('teams', sublist_querysets.get_teams_queryset(publisher)))
 
+        context['missing_issues_count'] = publisher.missing_issues.count()
+
         return context
 
 

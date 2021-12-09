@@ -17,6 +17,7 @@ class VolumeProcessEntryTask(BaseProcessEntryTask):
     PARENT_ENTRY_APP_LABEL = 'publishers'
     PARENT_ENTRY_FIELD = 'publisher'
     NEXT_LEVEL_TASK = issues_space_task
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.VolumeMissingIssuesTask'
 
 
 volume_entry_task = celery_app.register_task(VolumeProcessEntryTask())
@@ -33,6 +34,7 @@ volumes_space_task = celery_app.register_task(VolumesSpaceTask())
 class VolumeComicvineInfoTask(BaseComicvineInfoTask):
     MODEL_NAME = 'Volume'
     APP_LABEL = 'volumes'
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.VolumeMissingIssuesTask'
 
 
 volume_comicvine_info_task = celery_app.register_task(VolumeComicvineInfoTask())

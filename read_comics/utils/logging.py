@@ -123,7 +123,7 @@ def logged(logger, function_name=None, trace=False, unhandled_error_level=loggin
 
         @wraps(func)
         def wrapped(*args, **kwargs):
-            logger.info(">>> Starting {0}".format(name))
+            logger.debug(">>> Starting {0}".format(name))
             for i in range(len(args)):
                 arg = args[i]
                 arg_str, arg_type = log_value(arg)
@@ -134,7 +134,7 @@ def logged(logger, function_name=None, trace=False, unhandled_error_level=loggin
             try:
                 result = func(*args, **kwargs)
                 result_str, result_type = log_value(result)
-                logger.success("Successfully ended {0}".format(name))
+                logger.debug("Successfully ended {0}".format(name))
                 logger.debug("{0} return value ({2}): \n{1}\n".format(name, result_str, result_type))
                 return result
             except Exception as e:
@@ -147,7 +147,7 @@ def logged(logger, function_name=None, trace=False, unhandled_error_level=loggin
                            exc_info=trace)
                 raise
             finally:
-                logger.info("<<< Exiting {0}".format(name))
+                logger.debug("<<< Exiting {0}".format(name))
 
         return wrapped
 

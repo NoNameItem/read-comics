@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+  {% if obj %}
+    {{ obj }} missing issues
+  {% else %}
+    Missing issues
+  {% endif %}
+{% endblock %}
+
+{% block page_header %}
+  {% if obj %}
+    <a href="{{ obj.get_absolute_url }}">{{ obj }}</a> missing issues
+  {% else %}
+    Missing issues
+  {% endif %}
+{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+{% endblock %}

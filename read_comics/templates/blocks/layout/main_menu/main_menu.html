@@ -7,73 +7,99 @@
         <h2 class="brand-text mb-0">Read-Comics.Net</h2>
       </a></li>
       <li class="nav-item nav-toggle"><a class="nav-link modern-nav-toggle pr-0" data-toggle="collapse"><i
-          class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i><i
-          class="toggle-icon bx bx-disc font-medium-4 d-none d-xl-block primary" data-ticon="bx-disc"></i></a></li>
+        class="bx bx-x d-block d-xl-none font-medium-4 primary toggle-icon"></i><i
+        class="toggle-icon bx bx-disc font-medium-4 d-none d-xl-block primary" data-ticon="bx-disc"></i></a></li>
     </ul>
   </div>
   <div class="shadow-bottom"></div>
   <div class="main-menu-content">
     <ul class="navigation navigation-main" id="main-menu-navigation" data-menu="menu-navigation"
         data-icon-style="lines">
-      <li class=" nav-item {% if characters_menu_active %}active{% endif %}">
-        <a href="{% url "characters:list" %}">
-          <i class="fad fa-bat"></i>
-          <span class="menu-title text-truncate">Characters</span>
-        </a>
+      <li class=" nav-item"><a href="#"><i class="fad fa-database"></i><span class="menu-title text-truncate"
+                                                                         data-i18n="Form Elements">Database</span></a>
+        <ul class="menu-content">
+          <li class=" nav-item {% if characters_menu_active %}active{% endif %}">
+            <a href="{% url "characters:list" %}">
+              <i class="fad fa-bat"></i>
+              <span class="menu-title text-truncate">Characters</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if concepts_menu_active %}active{% endif %}">
+            <a href="{% url "concepts:list" %}">
+              <i class="fad fa-brain"></i>
+              <span class="menu-title text-truncate">Concepts</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if issues_menu_active %}active{% endif %}">
+            <a href="{% url "issues:list" %}">
+              <i class="fad fa-book-open"></i>
+              <span class="menu-title text-truncate">Issues</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if locations_menu_active %}active{% endif %}">
+            <a href="{% url "locations:list" %}">
+              <i class="fad fa-map-marker-alt"></i>
+              <span class="menu-title text-truncate">Locations</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if objects_menu_active %}active{% endif %}">
+            <a href="{% url "objects:list" %}">
+              <i class="fad fa-swords"></i>
+              <span class="menu-title text-truncate">Objects</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if people_menu_active %}active{% endif %}">
+            <a href="{% url "people:list" %}">
+              <i class="fad fa-people-carry"></i>
+              <span class="menu-title text-truncate">People</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if publishers_menu_active %}active{% endif %}">
+            <a href="{% url "publishers:list" %}">
+              <i class="fad fa-building"></i>
+              <span class="menu-title text-truncate">Publishers</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if story_arcs_menu_active %}active{% endif %}">
+            <a href="{% url "story_arcs:list" %}">
+              <i class="fad fa-books"></i>
+              <span class="menu-title text-truncate">Story Arcs</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if teams_menu_active %}active{% endif %}">
+            <a href="{% url "teams:list" %}">
+              <i class="fad fa-users"></i>
+              <span class="menu-title text-truncate">Teams</span>
+            </a>
+          </li>
+          <li class=" nav-item {% if volumes_menu_active %}active{% endif %}">
+            <a href="{% url "volumes:list" %}">
+              <i class="fad fa-book-spells"></i>
+              <span class="menu-title text-truncate">Volumes</span>
+            </a>
+          </li>
+        </ul>
       </li>
-      <li class=" nav-item {% if concepts_menu_active %}active{% endif %}">
-        <a href="{% url "concepts:list" %}">
-          <i class="fad fa-brain"></i>
-          <span class="menu-title text-truncate">Concepts</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if issues_menu_active %}active{% endif %}">
-        <a href="{% url "issues:list" %}">
-          <i class="fad fa-book-open"></i>
-          <span class="menu-title text-truncate">Issues</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if locations_menu_active %}active{% endif %}">
-        <a href="{% url "locations:list" %}">
-          <i class="fad fa-map-marker-alt"></i>
-          <span class="menu-title text-truncate">Locations</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if objects_menu_active %}active{% endif %}">
-        <a href="{% url "objects:list" %}">
-          <i class="fad fa-swords"></i>
-          <span class="menu-title text-truncate">Objects</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if people_menu_active %}active{% endif %}">
-        <a href="{% url "people:list" %}">
-          <i class="fad fa-people-carry"></i>
-          <span class="menu-title text-truncate">People</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if publishers_menu_active %}active{% endif %}">
-        <a href="{% url "publishers:list" %}">
-          <i class="fad fa-building"></i>
-          <span class="menu-title text-truncate">Publishers</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if story_arcs_menu_active %}active{% endif %}">
-        <a href="{% url "story_arcs:list" %}">
-          <i class="fad fa-books"></i>
-          <span class="menu-title text-truncate">Story Arcs</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if teams_menu_active %}active{% endif %}">
-        <a href="{% url "teams:list" %}">
-          <i class="fad fa-users"></i>
-          <span class="menu-title text-truncate">Teams</span>
-        </a>
-      </li>
-      <li class=" nav-item {% if volumes_menu_active %}active{% endif %}">
-        <a href="{% url "volumes:list" %}">
-          <i class="fad fa-book-spells"></i>
-          <span class="menu-title text-truncate">Volumes</span>
-        </a>
+      <li class=" nav-item"><a href="#"><i class="fad fa-cogs"></i><span class="menu-title text-truncate"
+                                                                         data-i18n="Form Elements">Administration</span></a>
+        <ul class="menu-content">
+          <li class=" nav-item {% if missing_issues_menu_active %}active{% endif %}">
+            <a class="d-flex align-items-center" href="{% url "missing_issues:all" %}"><i class="fad fa-eye"></i><span
+            class="menu-item text-truncate" data-i18n="Input">Missing issues</span></a>
+          </li>
+        <li class=" nav-item {% if ignored_issues_menu_active %}active{% endif %}">
+            <a class="d-flex align-items-center" href="{% url "missing_issues:ignored_issues" %}"><i class="fad fa-eye-slash"></i><span
+            class="menu-item text-truncate" data-i18n="Input">Ignored issues</span></a>
+          </li>
+        <li class=" nav-item {% if ignored_volumes_menu_active %}active{% endif %}">
+            <a class="d-flex align-items-center" href="{% url "missing_issues:ignored_volumes" %}"><i class="fad fa-eye-slash"></i><span
+            class="menu-item text-truncate" data-i18n="Input">Ignored volumes</span></a>
+          </li>
+        <li class=" nav-item {% if ignored_publishers_menu_active %}active{% endif %}">
+            <a class="d-flex align-items-center" href="{% url "missing_issues:ignored_publisher" %}"><i class="fad fa-eye-slash"></i><span
+            class="menu-item text-truncate" data-i18n="Input">Ignored publishers</span></a>
+          </li>
+        </ul>
       </li>
     </ul>
   </div>

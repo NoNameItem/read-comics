@@ -16,6 +16,7 @@ from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
 from read_comics.issues.tasks import issue_comicvine_info_task
 from read_comics.locations.models import Location
+from read_comics.missing_issues.models import IgnoredIssue, MissingIssue
 from read_comics.objects.models import Object
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
@@ -205,6 +206,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     def post_save(self):
         self.create_links()
+        MissingIssue.objects.filter(comicvine_id=self.comicvine_id).delete()
+        IgnoredIssue.objects.filter(comicvine_id=self.comicvine_id).delete()
 
     def get_publisher_name(self):
         if self.volume and self.volume.publisher:

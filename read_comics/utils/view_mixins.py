@@ -1,4 +1,12 @@
+from typing import Optional
+
+from django.contrib.auth.mixins import UserPassesTestMixin
 from utils.utils import get_elided_pages_list
+
+
+class IsAdminMixin(UserPassesTestMixin):
+    def test_func(self) -> Optional[bool]:
+        return self.request.user.is_staff or self.request.user.is_superuser
 
 
 class BreadcrumbMixin:

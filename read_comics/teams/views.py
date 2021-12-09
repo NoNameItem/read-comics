@@ -80,6 +80,8 @@ class TeamDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('enemies', sublist_querysets.get_character_enemies_queryset(team)))
         context.update(get_first_page('disbanded_in', sublist_querysets.get_disbanded_in_queryset(team)))
 
+        context['missing_issues_count'] = team.missing_issues.count()
+
         return context
 
 

@@ -1,0 +1,82 @@
+<table class="table">
+  <tbody>
+  {% for missing_issue in missing_issues %}
+    {% ifchanged missing_issue.publisher_comicvine_id %}
+      <tr class="publisher-row bg-primary bg-light">
+      <td class="pl-1"><a href="{{ missing_issue.publisher_comicvine_url }}" target="_blank">{{ missing_issue.publisher_name }}</a></td>
+      {% if all_cols %}
+        <td class="pl-1"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.publisher_space_path }}</span></td>
+        <td>
+          <div class="btn-group" role="group">
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_skip_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:skip_publisher" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_ignore_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:ignore_publisher" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+          </div>
+        </td>
+      {% endif %}
+    </tr>
+    {% endifchanged %}
+    {% ifchanged missing_issue.volume_comicvine_id %}
+      <tr class="volume-row bg-secondary bg-light">
+      <td class="pl-3"><a href="{{ missing_issue.volume_comicvine_url }}" target="_blank">{{ missing_issue.volume_name }} ({{ missing_issue.volume_start_year }})</a></td>
+      {% if all_cols %}
+        <td class="pl-3"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.volume_space_path }}</span></td>
+        <td>
+          <div class="btn-group" role="group" aria-label="Basic example">
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_skip_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:skip_volume" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_ignore_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:ignore_volume" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+          </div>
+        </td>
+      {% endif %}
+    </tr>
+    {% endifchanged %}
+    <tr class="issue-row">
+      <td class="pl-5"><a href="{{ missing_issue.comicvine_url }}" target="_blank">{{ missing_issue }}</a></td>
+      {% if all_cols %}
+        <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.issue_space_path }}</span></td>
+        <td>
+          <div class="btn-group" role="group" aria-label="Basic example">
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_skip_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:skip_issue" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                <a href="
+                  {% if obj %}
+                    {% url "missing_issues:category_ignore_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
+                    {% else %}
+                    {% url "missing_issues:ignore_issue" missing_issue.comicvine_id %}
+                  {% endif %}
+                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+          </div>
+        </td>
+      {% endif %}
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>

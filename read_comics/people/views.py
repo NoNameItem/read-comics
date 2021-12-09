@@ -74,6 +74,8 @@ class PersonDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(obj)))
         context.update(get_first_page('created_characters', obj.created_characters.all()))
 
+        context['missing_issues_count'] = obj.missing_issues.count()
+
         return context
 
 

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 
 {% block page_header %}Home{% endblock %}
 
@@ -14,7 +15,7 @@
               <i class="fad fa-book-open"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Issue{{ matched_stats.issues_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.issues_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.issues_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -26,7 +27,7 @@
               <i class="fad fa-building"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Publisher{{ matched_stats.publishers_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.publishers_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.publishers_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -38,7 +39,7 @@
               <i class="fad fa-books"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Story Arc{{ matched_stats.story_arcs_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.story_arcs_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.story_arcs_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -50,7 +51,7 @@
               <i class="fad fa-book-spells"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Volume{{ matched_stats.volumes_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.volumes_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.volumes_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -62,7 +63,7 @@
               <i class="fad fa-bat"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Character{{ matched_stats.characters_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.characters_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.characters_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -74,7 +75,7 @@
               <i class="fad fa-users"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Team{{ matched_stats.teams_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.teams_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.teams_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -86,7 +87,7 @@
               <i class="fad fa-map-marker-alt"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Location{{ matched_stats.locations_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.locations_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.locations_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -98,7 +99,7 @@
               <i class="fad fa-swords"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Object{{ matched_stats.objects_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.objects_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.objects_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -110,7 +111,7 @@
               <i class="fad fa-brain"></i>
             </div>
             <p class="text-muted mb-0 line-ellipsis">Concept{{ matched_stats.concepts_count|pluralize }}</p>
-            <h2 class="mb-0">{{ matched_stats.concepts_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.concepts_count|intcomma  }}</h2>
           </div>
         </div>
       </div>
@@ -128,7 +129,26 @@
                 Person
               {% endif %}
             </p>
-            <h2 class="mb-0">{{ matched_stats.people_count }}</h2>
+            <h2 class="mb-0">{{ matched_stats.people_count|intcomma  }}</h2>
+          </div>
+        </div>
+      </div>
+
+    <div class="col-xl-3 col-sm-6">
+        <div class="card text-center div-link">
+          <a class="div-default-link" href="{% url "missing_issues:all" %}"></a>
+          <div class="card-body">
+            <div class="badge-circle badge-circle-lg badge-circle-light-danger mx-auto my-1">
+              <i class="fad fa-eye"></i>
+            </div>
+            <p class="text-muted mb-0 line-ellipsis">
+              {% if missing_issues_count > 1 %}
+                Missed Issues
+              {% else %}
+                Missed Issue
+              {% endif %}
+            </p>
+            <h2 class="mb-0">{{ missing_issues_count|intcomma }}</h2>
           </div>
         </div>
       </div>

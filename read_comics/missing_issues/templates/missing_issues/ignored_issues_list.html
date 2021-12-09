@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Ignored issues{% endblock %}
+
+{% block page_header %}Ignored issues{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  <table class="table">
+    <thead>
+    <tr>
+      <th></th>
+      <th>Publisher Name</th>
+      <th>Volume Name</th>
+      <th>Issue number</th>
+      <th>Issue name</th>
+      <th>Cover date</th>
+      <th>Comicvine ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for issue in ignored_issues %}
+      <tr>
+        <td class="width-100"><a href="{% url "missing_issues:delete_ignored_issue" pk=issue.pk %}" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fad fa-trash"></i></a></td>
+        <td>{{ issue.publisher_name }}</td>
+        <td><a href="{{ issue.volume_comicvine_url }}" target="_blank">{{ issue.volume_name }} ({{ issue.volume_start_year }})</a></td>
+        <td>#{{ issue.number }}</td>
+        <td>{{ issue.name|default_if_none:'' }}</td>
+        <td>{{ issue.cover_date }}</td>
+        <td>{{ issue.comicvine_id }}</td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+{% endblock %}

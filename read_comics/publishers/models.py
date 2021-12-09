@@ -6,6 +6,12 @@ from utils.logging import getLogger, methods_logged
 from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 
+from read_comics.missing_issues.models import (
+    IgnoredIssue,
+    IgnoredPublisher,
+    IgnoredVolume,
+)
+
 logger = getLogger(__name__ + '.Publisher')
 
 
@@ -70,3 +76,8 @@ class Publisher(ImageMixin, ComicvineSyncModel):
     def get_aliases_list(self):
         if self.aliases:
             return self.aliases.split('\n')
+
+    def post_save(self):
+        IgnoredPublisher.objects.filter(comicvine_id=self.comicvine_id).delete()
+        IgnoredVolume.objects.filter(publisher_comicvine_id=self.comicvine_id).delete()
+        IgnoredIssue.objects.filter(publisher_comicvine_id=self.comicvine_id).delete()

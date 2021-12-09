@@ -2,7 +2,7 @@ import re
 
 import boto3
 import pytz
-from celery import Task
+from celery import Task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
@@ -18,7 +18,7 @@ class BaseSpaceTask(Task):
         return []
 
     def run(self, *args, **kwargs):
-        self._logger.info("Starting processing prefix {0}".format(kwargs['prefix']))
+        self._logger.debug("Starting processing prefix {0}".format(kwargs['prefix']))
         s3objects_collection = self._bucket.objects.filter(Prefix=kwargs['prefix'])
         s3objects = [
             (x.key, x.size)
@@ -29,7 +29,7 @@ class BaseSpaceTask(Task):
             processed_keys = self.get_processed_keys()
             if s3object[0] not in processed_keys:
                 if self.PROCESS_ENTRY_TASK:
-                    self._logger.info("Creating entry level task with key {0}".format(s3object[0]))
+                    self._logger.debug("Creating entry level task with key {0}".format(s3object[0]))
                     self.PROCESS_ENTRY_TASK.apply_async(
                         (),
                         {
@@ -39,7 +39,7 @@ class BaseSpaceTask(Task):
                         },
                         priority=0
                     )
-        self._logger.info("Ended processing prefix {0}".format(kwargs['prefix']))
+        self._logger.debug("Ended processing prefix {0}".format(kwargs['prefix']))
 
     def __init__(self):
         session = boto3.session.Session()
@@ -60,6 +60,7 @@ class BaseProcessEntryTask(Task):
     PARENT_ENTRY_MODEL_NAME = None
     PARENT_ENTRY_APP_LABEL = None
     PARENT_ENTRY_FIELD = None
+    MISSING_ISSUES_TASK = None
 
     def get_defaults(self, **kwargs):
         defaults = dict()
@@ -75,7 +76,7 @@ class BaseProcessEntryTask(Task):
         return comicvine_id
 
     def run(self, *args, **kwargs):
-        self._logger.info("Starting processing key {0}".format(kwargs['key']))
+        self._logger.debug("Starting processing key {0}".format(kwargs['key']))
         comicvine_id = self.get_comicvine_id(kwargs['key'])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         instance, created, matched = model.objects.get_or_create_from_comicvine(
@@ -83,8 +84,12 @@ class BaseProcessEntryTask(Task):
             self.get_defaults(**kwargs),
             force_refresh=True
         )
+        if self.MISSING_ISSUES_TASK:
+            task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': instance.pk})
+            task.delay()
+
         if self.NEXT_LEVEL_TASK is not None:
-            self._logger.info("Creating next level task with prefix {0}".format(kwargs['key']))
+            self._logger.debug("Creating next level task with prefix {0}".format(kwargs['key']))
             # self.NEXT_LEVEL_TASK.delay(prefix=kwargs['key'], parent_entry_id=instance.pk)
             self.NEXT_LEVEL_TASK.apply_async(
                 (),
@@ -94,7 +99,7 @@ class BaseProcessEntryTask(Task):
                 },
                 priority=0
             )
-        self._logger.info("Ended processing key {0}".format(kwargs['key']))
+        self._logger.debug("Ended processing key {0}".format(kwargs['key']))
 
     def __init__(self):
         self._id_regexp = re.compile(r"^.*\[(?P<id>\d+)\](\/|.cb.)$")
@@ -108,6 +113,7 @@ class BaseComicvineInfoTask(Task):
     retry_kwargs = {'max_retries': None}
     retry_backoff = True
     retry_backoff_max = 60
+    MISSING_ISSUES_TASK = None
 
     def run(self, *args, **kwargs):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
@@ -116,6 +122,9 @@ class BaseComicvineInfoTask(Task):
         if not obj.comicvine_actual:
             obj.fill_from_comicvine(kwargs['follow_m2m'])
             obj.save()
+            if self.MISSING_ISSUES_TASK:
+                task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
+                task.delay()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
