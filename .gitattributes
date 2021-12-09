@@ -1,1 +1,6 @@
 * text=auto
+read_comics/static/_frest/* linguist-vendored
+read_comics/static/app-assets/* linguist-vendored
+read_comics/static/fonts/* linguist-vendored
+read_comics/static/images/* linguist-vendored
+read_comics/static/twbsPagination/* linguist-vendored
