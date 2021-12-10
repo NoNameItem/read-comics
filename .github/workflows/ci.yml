@@ -34,24 +34,9 @@ jobs:
       - name: Install and Run Pre-commit
         uses: pre-commit/action@v2.0.3
 
+  # With no caching at all the entire ci process takes 4m 30s to complete!
   pytest:
     runs-on: ubuntu-latest
-    services:
-      redis:
-        image: redis:6
-        ports:
-          - 6379:6379
-      postgres:
-        image: postgres:13
-        ports:
-          - 5432:5432
-        env:
-          POSTGRES_PASSWORD: postgres
-
-    env:
-      CELERY_BROKER_URL: "redis://localhost:6379/0"
-      DATABASE_URL: "postgres://postgres:postgres@localhost:5432/postgres"
-
     steps:
 
       - name: Checkout Code Repository
