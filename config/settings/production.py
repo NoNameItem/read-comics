@@ -147,7 +147,7 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
     )
 ]
 
-TEMPLATES['OPTIONS']['context_processors'] += ["read_comics.users.context_processors.email_verified_context"]  # noqa F405
+TEMPLATES[0]['OPTIONS']['context_processors'] += ["read_comics.users.context_processors.email_verified_context"]  # noqa F405
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
