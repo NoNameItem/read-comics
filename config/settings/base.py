@@ -224,7 +224,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django_magnificent_messages.context_processors.django_magnificent_messages",
                 "read_comics.utils.context_processors.settings_context",
-                "read_comics.users.context_processors.email_verified_context",
+
             ],
         },
     }
