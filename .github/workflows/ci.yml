@@ -49,7 +49,31 @@ jobs:
         run:  docker-compose -f local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
-        run:  docker-compose -f local.yml run django pytest
+        run:  docker-compose -f local.yml run django pytest --junit-xml pytest.xml
+
+      - name: Upload Unit Test Results
+        if: always()
+        uses: actions/upload-artifact@v2
+        with:
+          name: Unit Test Results (Python 3.9)
+          path: pytest.xml
 
       - name: Tear down the Stack
         run:  docker-compose -f local.yml down
+
+  publish-test-results:
+    name: "Publish Unit Tests Results"
+    needs: pytest
+    runs-on: ubuntu-latest
+    if: always()
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v2
+        with:
+          path: artifacts
+
+      - name: Publish Unit Test Results
+        uses: EnricoMi/publish-unit-test-result-action@v1
+        with:
+          files: artifacts/**/*.xml
