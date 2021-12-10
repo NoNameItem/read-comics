@@ -10,7 +10,12 @@ from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
 from utils import logging
-from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, IsAdminMixin
+from utils.view_mixins import (
+    ActiveMenuMixin,
+    BreadcrumbMixin,
+    ElidedPagesPaginatorMixin,
+    IsAdminMixin,
+)
 
 from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
@@ -26,7 +31,6 @@ from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue
 
 logger = logging.getLogger(__name__)
 
-
 CATEGORY_MODELS = {
     'character': Character,
     'concept': Concept,
@@ -41,10 +45,11 @@ CATEGORY_MODELS = {
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
-class MissingIssuesListView(IsAdminMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
+class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
     template_name = "missing_issues/missing_issues_list.html"
     active_menu_item = 'missing_issues'
     context_object_name = 'missing_issues'
+    paginate_by = 100
 
     breadcrumb = [{'url': reverse_lazy("missing_issues:all"), 'text': 'Missing issues'}]
 
@@ -96,8 +101,6 @@ class MissingIssuesListView(IsAdminMixin, BreadcrumbMixin, ActiveMenuMixin, List
         context = super(MissingIssuesListView, self).get_context_data(**kwargs)
         context['obj'] = self.obj
         context['category_key'] = self.category_key
-        context['missing_issues_count'] = context[self.context_object_name].count()
-        context[self.context_object_name] = context[self.context_object_name][:100]
         return context
 
 
@@ -149,17 +152,20 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
                 notifications.error(self.request, "Please check logs", "Error occurred")
 
         if self.obj:
-            return HttpResponseRedirect(
-                reverse_lazy(
-                    'missing_issues:category',
-                    kwargs={
-                        'category': self.category_key,
-                        'slug': self.obj.slug
-                    }
-                )
+            url = reverse_lazy(
+                'missing_issues:category',
+                kwargs={
+                    'category': self.category_key,
+                    'slug': self.obj.slug
+                }
             )
         else:
-            return HttpResponseRedirect(reverse_lazy('missing_issues:all'))
+            url = reverse_lazy('missing_issues:all')
+
+        if request.GET.get('page'):
+            return HttpResponseRedirect(url + f"?page={request.GET.get('page')}")
+        else:
+            return HttpResponseRedirect(url)
 
     def process(self):
         raise NotImplementedError
@@ -225,34 +231,38 @@ class IgnorePublisherView(BaseSkipIgnoreView):
 ignore_publisher_view = IgnorePublisherView.as_view()
 
 
-class IgnoredIssuesListView(IsAdminMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
-    model = IgnoredIssue
+class IgnoredIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
+    queryset = IgnoredIssue.objects.all().order_by('publisher_name', 'volume_name', 'volume_start_year', 'number',
+                                                   'cover_date', 'comicvine_id')
     breadcrumb = [{'url': reverse_lazy("missing_issues:ignored_issues"), 'text': 'Ignored issues'}]
     active_menu_item = 'ignored_issues'
     template_name = 'missing_issues/ignored_issues_list.html'
     context_object_name = 'ignored_issues'
+    paginate_by = 100
 
 
 ignored_issues_list_view = IgnoredIssuesListView.as_view()
 
 
-class IgnoredVolumesListView(IsAdminMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
-    model = IgnoredVolume
+class IgnoredVolumesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
+    queryset = IgnoredVolume.objects.all().order_by('publisher_name', 'name', 'start_year', 'comicvine_id')
     breadcrumb = [{'url': reverse_lazy("missing_issues:ignored_volumes"), 'text': 'Ignored volumes'}]
     active_menu_item = 'ignored_volumes'
     template_name = 'missing_issues/ignored_volumes_list.html'
     context_object_name = 'ignored_volumes'
+    paginate_by = 100
 
 
 ignored_volumes_list_view = IgnoredVolumesListView.as_view()
 
 
-class IgnoredPublishersListView(IsAdminMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
-    model = IgnoredPublisher
+class IgnoredPublishersListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
+    queryset = IgnoredPublisher.objects.all().order_by('name')
     breadcrumb = [{'url': reverse_lazy("missing_issues:ignored_publisher"), 'text': 'Ignored publisher'}]
     active_menu_item = 'ignored_publishers'
     template_name = 'missing_issues/ignored_publishers_list.html'
     context_object_name = 'ignored_publishers'
+    paginate_by = 100
 
 
 ignored_publishers_list_view = IgnoredPublishersListView.as_view()
@@ -264,7 +274,10 @@ class DeleteView(SingleObjectMixin, View):
     def get(self, request, **kwargs):
         obj = self.get_object()
         obj.delete()
-        return HttpResponseRedirect(reverse_lazy(self.redirect_url))
+        if request.GET.get('page'):
+            return HttpResponseRedirect(reverse_lazy(self.redirect_url) + f"?page={request.GET.get('page')}")
+        else:
+            return HttpResponseRedirect(reverse_lazy(self.redirect_url))
 
 
 class IgnoredIssueDeleteView(DeleteView):

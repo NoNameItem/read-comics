@@ -11,7 +11,7 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(story_arc):
-    return story_arc.issues.order_by(
+    return story_arc.issues.filter(comicvine_status='MATCHED').order_by(
         'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
     ).annotate(
         parent_slug=Value(story_arc.slug),
@@ -26,7 +26,7 @@ def get_issues_queryset(story_arc):
 def get_volumes_queryset(story_arc):
     return Volume.objects.filter(
         issues__in=story_arc.issues.all()
-    ).annotate(
+    ).filter(comicvine_status='MATCHED').annotate(
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),

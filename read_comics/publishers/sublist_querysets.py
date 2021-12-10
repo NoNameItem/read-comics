@@ -9,7 +9,7 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(publisher):
-    return Issue.objects.filter(volume__publisher=publisher).order_by(
+    return Issue.objects.filter(comicvine_status='MATCHED').filter(volume__publisher=publisher).order_by(
         'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
     ).annotate(
         parent_slug=Value(publisher.slug),
@@ -25,7 +25,7 @@ def get_issues_queryset(publisher):
 def get_volumes_queryset(publisher):
     return Volume.objects.filter(
         publisher=publisher
-    ).annotate(
+    ).filter(comicvine_status='MATCHED').annotate(
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),

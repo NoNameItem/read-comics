@@ -102,26 +102,41 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context['previous_link'] = self.get_previous_link()
         context['next_link'] = self.get_next_link()
 
-        context['first_appearance_characters_count'] = issue.first_appearance_characters.count()
-        context['first_appearance_concepts_count'] = issue.first_appearance_concepts.count()
-        context['first_appearance_objects_count'] = issue.first_appearance_objects.count()
-        context['first_appearance_locations_count'] = issue.first_appearance_locations.count()
-        context['first_appearance_teams_count'] = issue.first_appearance_teams.count()
+        context['first_appearance_characters_count'] = issue.first_appearance_characters.\
+            filter(comicvine_status='MATCHED').count()
+        context['first_appearance_concepts_count'] = issue.first_appearance_concepts.\
+            filter(comicvine_status='MATCHED').count()
+        context['first_appearance_objects_count'] = issue.first_appearance_objects.\
+            filter(comicvine_status='MATCHED').count()
+        context['first_appearance_locations_count'] = issue.first_appearance_locations.\
+            filter(comicvine_status='MATCHED').count()
+        context['first_appearance_teams_count'] = issue.first_appearance_teams.\
+            filter(comicvine_status='MATCHED').count()
         context['first_appearance_count'] = (context['first_appearance_characters_count'] +
                                              context['first_appearance_concepts_count'] +
                                              context['first_appearance_objects_count'] +
                                              context['first_appearance_locations_count'] +
                                              context['first_appearance_teams_count'])
 
-        context['characters_count'] = issue.characters.count()
-        context['characters_died_count'] = issue.characters_died.count()
-        context['concepts_count'] = issue.concepts.count()
-        context['locations_count'] = issue.locations.count()
-        context['objects_count'] = issue.objects_in.count()
+        context['characters_count'] = issue.characters.filter(comicvine_status='MATCHED').count()
+        context['characters_died_count'] = issue.characters_died.filter(comicvine_status='MATCHED').count()
+        context['concepts_count'] = issue.concepts.filter(comicvine_status='MATCHED').count()
+        context['locations_count'] = issue.locations.filter(comicvine_status='MATCHED').count()
+        context['objects_count'] = issue.objects_in.filter(comicvine_status='MATCHED').count()
         context['authors_count'] = issue.authors.count()
-        context['story_arcs_count'] = issue.story_arcs.count()
-        context['teams_count'] = issue.teams.count()
-        context['disbanded_teams_count'] = issue.disbanded_teams.count()
+        context['story_arcs_count'] = issue.story_arcs.filter(comicvine_status='MATCHED').count()
+        context['teams_count'] = issue.teams.filter(comicvine_status='MATCHED').count()
+        context['disbanded_teams_count'] = issue.disbanded_teams.filter(comicvine_status='MATCHED').count()
+
+        context['characters'] = issue.characters.filter(comicvine_status='MATCHED').all()
+        context['characters_died'] = issue.characters_died.filter(comicvine_status='MATCHED').all()
+        context['concepts'] = issue.concepts.filter(comicvine_status='MATCHED').all()
+        context['locations'] = issue.locations.filter(comicvine_status='MATCHED').all()
+        context['objects'] = issue.objects_in.filter(comicvine_status='MATCHED').all()
+        # context['authors'] = issue.authors.filter(person__comicvine_status='MATCHED').all()
+        context['story_arcs'] = issue.story_arcs.filter(comicvine_status='MATCHED').all()
+        context['teams'] = issue.teams.filter(comicvine_status='MATCHED').all()
+        context['disbanded_teams'] = issue.disbanded_teams.filter(comicvine_status='MATCHED').all()
 
         return context
 

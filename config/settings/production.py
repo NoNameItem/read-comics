@@ -1,4 +1,6 @@
 import logging
+import os
+from tempfile import SpooledTemporaryFile
 
 import sentry_sdk
 from sentry_sdk.integrations.celery import CeleryIntegration
@@ -50,7 +52,7 @@ CSRF_COOKIE_SECURE = True
 # https://docs.djangoproject.com/en/dev/topics/security/#ssl-https
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-seconds
 # TODO: set this to 60 seconds first and then to 518400 once you prove the former works
-SECURE_HSTS_SECONDS = 60
+SECURE_HSTS_SECONDS = 518400
 # https://docs.djangoproject.com/en/dev/ref/settings/#secure-hsts-include-subdomains
 SECURE_HSTS_INCLUDE_SUBDOMAINS = env.bool(
     "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS", default=True
@@ -67,9 +69,9 @@ SECURE_CONTENT_TYPE_NOSNIFF = env.bool(
 # https://django-storages.readthedocs.io/en/latest/#installation
 INSTALLED_APPS += ["storages"]  # noqa F405
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_ACCESS_KEY_ID = env("DJANGO_AWS_ACCESS_KEY_ID")
+AWS_ACCESS_KEY_ID = env("DO_SPACE_DATA_KEY")
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
-AWS_SECRET_ACCESS_KEY = env("DJANGO_AWS_SECRET_ACCESS_KEY")
+AWS_SECRET_ACCESS_KEY = env("DO_SPACE_DATA_SECRET")
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
 AWS_STORAGE_BUCKET_NAME = env("DJANGO_AWS_STORAGE_BUCKET_NAME")
 # https://django-storages.readthedocs.io/en/latest/backends/amazon-S3.html#settings
@@ -86,11 +88,14 @@ AWS_DEFAULT_ACL = None
 AWS_S3_REGION_NAME = env("DJANGO_AWS_S3_REGION_NAME", default=None)
 # STATIC
 # ------------------------
-STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
+
 # MEDIA
 # ------------------------------------------------------------------------------
 # region http://stackoverflow.com/questions/10390244/
 # Full-fledge class: https://stackoverflow.com/a/18046120/104731
+AWS_S3_ENDPOINT_URL = f"https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com"
+
 from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 
 
@@ -101,12 +106,33 @@ class StaticRootS3Boto3Storage(S3Boto3Storage):
 
 class MediaRootS3Boto3Storage(S3Boto3Storage):
     location = "media"
-    file_overwrite = False
+    file_overwrite = True
+    default_acl = "public-read"
+
+    def _save(self, name, content):
+        """
+        We create a clone of the content file as when this is passed to
+        boto3 it wrongly closes the file upon upload where as the storage
+        backend expects it to still be open
+        """
+        # Seek our content back to the start
+        content.seek(0, os.SEEK_SET)
+
+        # Create a temporary file that will write to disk after a specified
+        # size. This file will be automatically deleted when closed by
+        # boto3 or after exiting the `with` statement if the boto3 is fixed
+        with SpooledTemporaryFile() as content_autoclose:
+            # Write our original content into our copy that will be closed by boto3
+            content_autoclose.write(content.read())
+
+            # Upload the object which will auto close the
+            # content_autoclose instance
+            return super(MediaRootS3Boto3Storage, self)._save(name, content_autoclose)
 
 
 # endregion
 DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootS3Boto3Storage"
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com/media/"
+MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/media/"
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

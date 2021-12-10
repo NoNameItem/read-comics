@@ -5,7 +5,8 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(team):
-    return team.issues.order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number') \
+    return team.issues.filter(comicvine_status='MATCHED').order_by('cover_date', 'volume__name', 'volume__start_year',
+                                                                   'numerical_number', 'number') \
         .annotate(
         parent_slug=Value(team.slug),
 
@@ -20,7 +21,7 @@ def get_issues_queryset(team):
 def get_volumes_queryset(team):
     return Volume.objects.filter(
         issues__in=team.issues.all()
-    ).annotate(
+    ).filter(comicvine_status='MATCHED').annotate(
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),
@@ -29,7 +30,7 @@ def get_volumes_queryset(team):
 
 
 def get_disbanded_in_queryset(team):
-    return team.disbanded_in_issues.order_by(
+    return team.disbanded_in_issues.filter(comicvine_status='MATCHED').order_by(
         'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number').annotate(
         parent_slug=Value(team.slug),
         badge_name=Concat(
@@ -41,12 +42,12 @@ def get_disbanded_in_queryset(team):
 
 
 def get_characters_queryset(team):
-    return team.characters.order_by('name')
+    return team.characters.filter(comicvine_status='MATCHED').order_by('name')
 
 
 def get_character_enemies_queryset(team):
-    return team.character_enemies.order_by('name')
+    return team.character_enemies.filter(comicvine_status='MATCHED').order_by('name')
 
 
 def get_character_friends_queryset(team):
-    return team.character_friends.order_by('name')
+    return team.character_friends.filter(comicvine_status='MATCHED').order_by('name')

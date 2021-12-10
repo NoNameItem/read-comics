@@ -5,7 +5,8 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(obj):
-    return obj.issues.order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number') \
+    return obj.issues.filter(comicvine_status='MATCHED').order_by('cover_date', 'volume__name', 'volume__start_year',
+                                                                  'numerical_number', 'number') \
         .annotate(
         parent_slug=Value(obj.slug),
         badge_name=Concat(
@@ -17,7 +18,7 @@ def get_issues_queryset(obj):
 
 
 def get_volumes_queryset(obj):
-    return Volume.objects.filter(
+    return Volume.objects.filter(comicvine_status='MATCHED').filter(
         issues__in=obj.issues.all()
     ).annotate(
         issues_count=Count('issues'),

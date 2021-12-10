@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load url_extras %}
 {% load static %}
 
 {% block title %}Ignored volumes{% endblock %}
@@ -26,7 +27,7 @@
     <tbody>
     {% for volume in ignored_volumes %}
       <tr>
-        <td class="width-100"><a href="{% url "missing_issues:delete_ignored_volume" pk=volume.pk %}" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fad fa-trash"></i></a></td>
+        <td class="width-100"><a href="{% url "missing_issues:delete_ignored_volume" pk=volume.pk %}?page={{ page_obj.number }}" type="button" class="btn btn-danger" data-toggle="tooltip" data-placement="bottom" title="Delete"><i class="fad fa-trash"></i></a></td>
         <td>{{ volume.publisher_name }}</td>
         <td><a href="{{ volume.comicvine_url }}" target="_blank">{{ volume.name }} ({{ volume.start_year }})</a></td>
         <td>{{ volume.comicvine_id }}</td>
@@ -34,6 +35,13 @@
     {% endfor %}
     </tbody>
   </table>
+  <nav aria-label="Page navigation">
+    <ul class="pagination pagination-borderless justify-content-center mt-2">
+      {% for page in pages %}
+         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+      {% endfor %}
+    </ul>
+  </nav>
 {% endblock %}
 
 {% block modals %}

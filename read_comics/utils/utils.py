@@ -1,4 +1,6 @@
-from django.core.paginator import Paginator
+from typing import Union
+
+from django.core.paginator import Page, Paginator
 
 
 def url_add_query_params(base_url, get, **kwargs):
@@ -67,3 +69,12 @@ class WrappedQuerySet:
             return self.wrapper(next(self._iter))
         except StopIteration:
             raise StopIteration
+
+
+class EndlessPaginator(Paginator):
+    # Returns last page if page index greater than page number
+
+    def page(self, number: Union[int, str]) -> Page:
+        if number > self.num_pages:
+            number = self.num_pages
+        return super(EndlessPaginator, self).page(number)

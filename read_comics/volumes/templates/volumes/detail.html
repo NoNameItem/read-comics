@@ -283,7 +283,7 @@
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
                     {% if volume.last_issue %}
-                      <a href="{% url "volumes:issue_detail" volume.slug volume.last_issue %}">{{ volume.name }}
+                      <a href="{% url "volumes:issue_detail" volume.slug volume.last_issue.slug %}">{{ volume.name }}
                         #{{ volume.last_issue.number }} {{ volume.last_issue.name|default_if_none:'' }}</a>
                     {% else %}
                       {{ volume.last_issue_name }}

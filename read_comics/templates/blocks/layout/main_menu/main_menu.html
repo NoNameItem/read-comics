@@ -80,8 +80,10 @@
           </li>
         </ul>
       </li>
-      <li class=" nav-item"><a href="#"><i class="fad fa-cogs"></i><span class="menu-title text-truncate"
-                                                                         data-i18n="Form Elements">Administration</span></a>
+
+      {% if user.is_staff%}
+        <li class=" nav-item"><a href="#"><i class="fad fa-cogs"></i><span class="menu-title text-truncate"
+                                                                                 data-i18n="Form Elements">Administration</span></a>
         <ul class="menu-content">
           <li class=" nav-item {% if missing_issues_menu_active %}active{% endif %}">
             <a class="d-flex align-items-center" href="{% url "missing_issues:all" %}"><i class="fad fa-eye"></i><span
@@ -101,6 +103,8 @@
           </li>
         </ul>
       </li>
+      {% endif %}
+
     </ul>
   </div>
 </div>

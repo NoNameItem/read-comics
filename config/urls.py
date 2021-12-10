@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.conf.urls.static import static
-# from django.contrib import admin
+from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
 from rest_framework.authtoken.views import obtain_auth_token
@@ -8,7 +8,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 urlpatterns = [
                   path("", include("read_comics.pages.urls", namespace="pages")),
                   # Django Admin, use {% url 'admin:index' %}
-                  # path(settings.ADMIN_URL, admin.site.urls),
+                  path(settings.ADMIN_URL, admin.site.urls),
                   # User management
                   path("users/", include("read_comics.users.urls", namespace="users")),
                   path("accounts/", include("allauth.urls")),

@@ -9,19 +9,10 @@
         <td>
           <div class="btn-group" role="group">
                 <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_skip_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:skip_publisher" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
-                <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_ignore_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:ignore_publisher" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+                  {% if obj %}{% url "missing_issues:category_skip_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:skip_publisher" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                <a href="{% if obj %}{% url "missing_issues:category_ignore_publisher" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:ignore_publisher" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
           </div>
         </td>
       {% endif %}
@@ -35,19 +26,11 @@
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
                 <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_skip_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:skip_volume" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                  {% if obj %}{% url "missing_issues:category_skip_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:skip_volume" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
                 <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_ignore_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:ignore_volume" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+                  {% if obj %}{% url "missing_issues:category_ignore_volume" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:ignore_volume" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
           </div>
         </td>
       {% endif %}
@@ -59,20 +42,10 @@
         <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.issue_space_path }}</span></td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
-                <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_skip_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:skip_issue" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
-                <a href="
-                  {% if obj %}
-                    {% url "missing_issues:category_ignore_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}
-                    {% else %}
-                    {% url "missing_issues:ignore_issue" missing_issue.comicvine_id %}
-                  {% endif %}
-                " type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
+                <a href="{% if obj %}{% url "missing_issues:category_skip_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:skip_issue" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></a>
+                <a href="{% if obj %}{% url "missing_issues:category_ignore_issue" category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url "missing_issues:ignore_issue" missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></a>
           </div>
         </td>
       {% endif %}

@@ -1,3 +1,4 @@
+{% load static %}
 <div class="row">
   {% for obj in objects %}
     {% if break_groups %}
@@ -22,7 +23,7 @@
 
         <div class="list-icon mr-1">
           <div class="avatar bg-rgba-primary m-0">
-            <img src="{{ obj.square_avatar }}" alt="img placeholder" height="80"
+            <img src="{% if obj.square_avatar %}{{ obj.square_avatar }}{% else %}{% static "images/blanks/square_small.png" %}{% endif %}" alt="img placeholder" height="80"
                  width="80">
           </div>
         </div>

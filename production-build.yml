@@ -1,0 +1,19 @@
+version: '3'
+
+volumes:
+#  production_postgres_data: {}
+#  production_postgres_data_backups: {}
+  production_traefik: {}
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./compose/production/django/Dockerfile
+    image: registry.digitalocean.com/read-comics/app
+
+  traefik:
+    build:
+      context: .
+      dockerfile: ./compose/production/traefik/Dockerfile
+    image: registry.digitalocean.com/read-comics/traefik

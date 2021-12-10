@@ -1,7 +1,7 @@
 from typing import Optional
 
 from django.contrib.auth.mixins import UserPassesTestMixin
-from utils.utils import get_elided_pages_list
+from utils.utils import EndlessPaginator, get_elided_pages_list
 
 
 class IsAdminMixin(UserPassesTestMixin):
@@ -75,6 +75,8 @@ class ActiveMenuMixin:
 
 
 class ElidedPagesPaginatorMixin:
+    paginator_class = EndlessPaginator
+
     def get_context_data(self, **kwargs):
         context = super(ElidedPagesPaginatorMixin, self).get_context_data(**kwargs)
         page = context['page_obj']

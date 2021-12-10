@@ -26,10 +26,10 @@ app.conf.broker_transport_options = {
 app.conf.task_default_priority = 5
 
 app.conf.beat_schedule = {
-    # Get new comics from Digital Ocean Space every 3 hours
+    # Get new comics from Digital Ocean Space every day at 07:00 AM
     "get-from-space": {
         "task": "read_comics.publishers.tasks.PublishersSpaceTask",
-        "schedule": crontab(minute=0, hour="*/3"),
+        "schedule": crontab(minute=0, hour="7"),
         "args": (),
         "kwargs": {"prefix": "comics/"},
         "options": {"priority": 0},

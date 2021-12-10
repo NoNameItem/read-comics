@@ -11,7 +11,7 @@ from read_comics.teams.models import Team
 
 
 def get_issues_queryset(volume):
-    return volume.issues.order_by('numerical_number', 'number').annotate(
+    return volume.issues.filter(comicvine_status='MATCHED').order_by('numerical_number', 'number').annotate(
         parent_slug=F('volume__slug'),
         badge_name=Concat(
             Value('#'), F('number'), Value(' '), F('name'), output_field=TextField()
@@ -21,62 +21,65 @@ def get_issues_queryset(volume):
 
 
 def get_characters_queryset(volume):
-    return Character.objects.filter(issues__volume=volume).annotate(
+    return Character.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_died_queryset(volume):
-    return Character.objects.filter(died_in_issues__volume=volume).distinct().order_by('name', 'id')
+    return Character.objects.filter(comicvine_status='MATCHED').filter(died_in_issues__volume=volume).distinct().\
+        order_by('name', 'id')
 
 
 def get_concepts_queryset(volume):
-    return Concept.objects.filter(issues__volume=volume).annotate(
+    return Concept.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_locations_queryset(volume):
-    return Location.objects.filter(issues__volume=volume).annotate(
+    return Location.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_objects_queryset(volume):
-    return Object.objects.filter(issues__volume=volume).annotate(
+    return Object.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_authors_queryset(volume):
-    return Person.objects.filter(issues__volume=volume).annotate(
+    return Person.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_story_arcs_queryset(volume):
-    return StoryArc.objects.filter(issues__volume=volume).distinct().order_by('name', 'id')
+    return StoryArc.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).distinct().\
+        order_by('name', 'id')
 
 
 def get_teams_queryset(volume):
-    return Team.objects.filter(issues__volume=volume).annotate(
+    return Team.objects.filter(comicvine_status='MATCHED').filter(issues__volume=volume).annotate(
         issues_count=Count('issues', filter=Q(issues__volume=volume)),
         desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
     ).order_by('-issues_count', 'name', 'id')
 
 
 def get_disbanded_queryset(volume):
-    return Team.objects.filter(disbanded_in_issues__volume=volume).distinct().order_by('name', 'id')
+    return Team.objects.filter(comicvine_status='MATCHED').filter(disbanded_in_issues__volume=volume).distinct().\
+        order_by('name', 'id')
 
 
 def get_first_appearance_queryset(volume):
     def get_subquery(model, url_template_name, heading):
-        return model.objects.filter(first_issue__volume=volume).values(
+        return model.objects.filter(comicvine_status='MATCHED').filter(first_issue__volume=volume).values(
             'name', 'slug',
             url_template_name=Value(url_template_name),
             group_breaker=Value(heading),
