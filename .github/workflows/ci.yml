@@ -84,3 +84,21 @@ jobs:
 
       - name: Push image to DigitalOcean Container Registry
         run: docker-compose -f production-build.yml push
+
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_name == 'main'
+    needs: build
+
+    steps:
+      - name: Deploy to Digital Ocean droplet via SSH action
+        uses: appleboy/ssh-action@v0.1.3
+        with:
+          HOST: ${{ secrets.HOST }}
+          USERNAME: ${{ secrets.USERNAME }}
+          KEY: ${{ secrets.SSHKEY }}
+          script: |
+            cd ~/read_comics
+            docker-compose -f production-run.yml pull
+            docker-compose -f production-run.yml down
+            docker-compose -f production-run.yml up -d --scale celeryworker=5 --force-recreate
