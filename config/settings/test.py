@@ -5,6 +5,8 @@ With these settings, tests run faster.
 from .base import *  # noqa
 from .base import env
 
+DEBUG = True
+
 # GENERAL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#secret-key
@@ -31,6 +33,8 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
         ],
     )
 ]
+
+TEMPLATES[-1]["OPTIONS"]["debug"] = True  # type: ignore[index] # noqa F405
 
 # EMAIL
 # ------------------------------------------------------------------------------
