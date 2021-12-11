@@ -58,7 +58,9 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
-          coverageCommand: docker-compose -f local.yml run --rm django coverage run -m pytest
+          coverageCommand: |
+            docker-compose -f local.yml run --rm django coverage run -m pytest
+            docker-compose -f local.yml run --rm django coverage xml
 
       - name: Tear down the Stack
         run:  docker-compose -f local.yml down
