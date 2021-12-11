@@ -59,7 +59,7 @@ jobs:
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
-          coverageLocations: coverage.xml
+          coverageLocations: coverage.xml:coverage.py
 
       - name: Tear down the Stack
         run:  docker-compose -f local.yml down
