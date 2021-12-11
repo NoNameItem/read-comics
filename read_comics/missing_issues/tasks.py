@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from celery import Task
+from celery import Task, signature
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
 from pymongo import MongoClient
@@ -176,10 +176,16 @@ class BaseMissingIssuesTask(Task):
                 self.add_missing_issue(obj, missing_issue)
 
     def run(self, *args, **kwargs):
-        pk = kwargs['pk']
-        obj = self.MODEL.objects.get(pk=pk)
-        mongo_missing_issues = self.get_issues_from_mongo(obj)
-        self.process_mongo_issues(obj, mongo_missing_issues)
+        try:
+            pk = kwargs['pk']
+            obj = self.MODEL.objects.get(pk=pk)
+            mongo_missing_issues = self.get_issues_from_mongo(obj)
+            self.process_mongo_issues(obj, mongo_missing_issues)
+        except KeyError:
+            objs = self.MODEL.objects.all()
+            for obj in objs:
+                task = signature(self.name, kwargs={'pk': obj.pk})
+                task.delay()
 
 
 class VolumeMissingIssuesTask(BaseMissingIssuesTask):

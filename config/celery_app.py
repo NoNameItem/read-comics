@@ -37,7 +37,7 @@ app.conf.beat_schedule = {
     # Purge comics deleted from Digital Ocean Space every 3 hours
     "purge-deleted": {
         "task": "read_comics.issues.tasks.purge_deleted",
-        "schedule": crontab(minute=0, hour="*/3"),
+        "schedule": crontab(minute=0, hour="7"),
     },
     # Refresh data from Comicvine API every day at 03:00 AM UTC
     "refresh-characters": {
@@ -86,7 +86,7 @@ app.conf.beat_schedule = {
     },
     "refresh-publishers-missing-issues": {
         "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="6"),
+        "schedule": crontab(minute=0, hour="7"),
     }
 }
 app.conf.timezone = "UTC"
