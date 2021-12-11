@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block title %}{{ object.name }}{% endblock %}
@@ -58,7 +59,7 @@
                        aria-controls="issues" role="tab" aria-selected="false">
                       <i class="fad fa-book-open" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Issues </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -70,12 +71,12 @@
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
 
-                {% if request.user.is_staff > 0 %}
+                {% if request.user.is_staff or request.user.is_superuser %}
 
                   {% if missing_issues_count %}
                     <li class="nav-item pb-1">
@@ -83,7 +84,7 @@
                          href="{% url "missing_issues:category" category='object' slug=object.slug %}">
                         <i class="fad fa-eye"></i> <span
                         class="d-none d-md-block pl-50"> Missing issues <span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ missing_issues_count }}</span></span></a>
+                        class="ml-1 badge badge-pill badge-round badge-warning">{{ missing_issues_count|intcomma }}</span></span></a>
                     </li>
                   {% endif %}
 
@@ -182,7 +183,7 @@
       </div>
       <!-- info tab ends -->
 
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff or request.user.is_superuser %}
         <!-- tech info tab starts -->
         <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
           <div class="row">

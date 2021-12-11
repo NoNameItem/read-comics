@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load url_extras %}
 {% load static %}
 
@@ -16,6 +17,11 @@
   {% else %}
     Missing issues
   {% endif %}
+  <div class="chip chip-warning mr-1">
+    <div class="chip-body">
+      <span class="chip-text">{{ paginator.object_list.count|intcomma }}</span>
+    </div>
+  </div>
 {% endblock %}
 
 {% block vendor_css %}
@@ -27,11 +33,14 @@
 {% endblock %}
 
 {% block page_content %}
+
   {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
-   <nav aria-label="Page navigation">
+  <nav aria-label="Page navigation">
     <ul class="pagination pagination-borderless justify-content-center mt-2">
       {% for page in pages %}
-         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+        <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link"
+                                                                       href="{% url_add_query_params page=page.num %}">{{ page.num }}</a>
+        </li>
       {% endfor %}
     </ul>
   </nav>

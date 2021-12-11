@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block title %}{{ issue }}{% endblock %}
@@ -63,7 +64,7 @@
                        aria-controls="characters" role="tab" aria-selected="false">
                       <i class="fad fa-bat" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Characters </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -75,7 +76,7 @@
                        aria-controls="died" role="tab" aria-selected="false">
                       <i class="fad fa-skull" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Characters died</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ characters_died_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ characters_died_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -86,7 +87,7 @@
                        aria-controls="concepts" role="tab" aria-selected="false">
                       <i class="fad fa-brain" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Concepts</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ concepts_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ concepts_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -96,7 +97,7 @@
                        href="#locations"
                        aria-controls="locations" role="tab" aria-selected="false">
                       <i class="fad fa-map-marker-alt" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Locations</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ locations_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ locations_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -107,7 +108,7 @@
                        aria-controls="objects" role="tab" aria-selected="false">
                       <i class="fad fa-swords" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Objects</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ objects_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ objects_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -117,7 +118,7 @@
                        href="#authors"
                        aria-controls="authors" role="tab" aria-selected="false">
                       <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Authors</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -128,7 +129,7 @@
                        aria-controls="story-arcs" role="tab" aria-selected="false">
                       <i class="fad fa-books" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Story Arcs</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ story_arcs_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ story_arcs_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -139,7 +140,7 @@
                        aria-controls="teams" role="tab" aria-selected="false">
                       <i class="fad fa-users" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Teams</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -149,7 +150,7 @@
                        href="#teams-disbanded"
                        aria-controls="teams-disbanded" role="tab" aria-selected="false">
                       <i class="fad fa-users-slash" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Teams disbanded</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_teams_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_teams_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -160,11 +161,11 @@
                        aria-controls="first-appearance" role="tab" aria-selected="false">
                       <i class="fad fa-exclamation"></i> <span
                         class="d-none d-md-block pl-50"> First appearances</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ first_appearance_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-danger">{{ first_appearance_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
-                {% if request.user.is_staff > 0 %}
+                {% if request.user.is_staff or request.user.is_superuser %}
                   <li class="nav-item pb-1">
                     <a class="nav-link d-flex px-1" id="tech-tab" data-toggle="tab"
                        href="#tech"
@@ -305,7 +306,7 @@
       </div>
       <!-- info tab ends -->
 
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff or request.user.is_superuser %}
         <!-- tech info tab starts -->
         <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
           <div class="row">

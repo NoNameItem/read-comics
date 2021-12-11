@@ -1,6 +1,7 @@
 {% extends "base.html" %}
-{% load static %}
 {% load url_extras %}
+{% load humanize %}
+{% load static %}
 
 {% block title %}Characters{% endblock %}
 
@@ -84,8 +85,8 @@
               {% if character.publisher %}
                 <li>{{ character.publisher.name }}</li>
               {% endif %}
-              <li>{{ character.volume_count }} volume{{ character.volume_count|pluralize }}</li>
-              <li>{{ character.issue_count }} issues{{ character.issue_count|pluralize }}</li>
+              <li>{{ character.volume_count|intcomma }} volume{{ character.volume_count|pluralize }}</li>
+              <li>{{ character.issue_count|intcomma }} issues{{ character.issue_count|pluralize }}</li>
             </ul>
           </div>
         </div>

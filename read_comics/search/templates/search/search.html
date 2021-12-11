@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% load url_extras %}
 
@@ -123,7 +124,7 @@
     <!-- Search Bar end -->
     <div>
       <div class="search-speed mb-1">
-        <small class="text-muted">{{ total_results }} result{{ total_results|pluralize }}</small>
+        <small class="text-muted">{{ total_results|intcomma }} result{{ total_results|pluralize }}</small>
       </div>
     </div>
     <div class="web-result">

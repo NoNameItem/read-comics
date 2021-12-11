@@ -1,3 +1,4 @@
+{% load humanize %}
 <!-- BEGIN: Main Menu-->
 <div class="main-menu menu-fixed menu-light menu-accordion menu-shadow" data-scroll-to-active="true">
   <div class="navbar-header">
@@ -81,13 +82,15 @@
         </ul>
       </li>
 
-      {% if user.is_staff%}
+      {% if user.is_staff or user.is_superuser %}
         <li class=" nav-item"><a href="#"><i class="fad fa-cogs"></i><span class="menu-title text-truncate"
                                                                                  data-i18n="Form Elements">Administration</span></a>
         <ul class="menu-content">
           <li class=" nav-item {% if missing_issues_menu_active %}active{% endif %}">
             <a class="d-flex align-items-center" href="{% url "missing_issues:all" %}"><i class="fad fa-eye"></i><span
-            class="menu-item text-truncate" data-i18n="Input">Missing issues</span></a>
+            class="menu-item text-truncate" data-i18n="Input">Missing issues</span>
+              <span class="badge badge-warning badge-pill badge-round float-right ml-auto">{{ missing_issues_count|intcomma }}</span>
+            </a>
           </li>
         <li class=" nav-item {% if ignored_issues_menu_active %}active{% endif %}">
             <a class="d-flex align-items-center" href="{% url "missing_issues:ignored_issues" %}"><i class="fad fa-eye-slash"></i><span
