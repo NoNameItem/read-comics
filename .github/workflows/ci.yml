@@ -53,54 +53,55 @@ jobs:
           docker-compose -f local.yml run --rm django coverage run -m pytest
           docker-compose -f local.yml run --rm django coverage xml
           ls
+          pwd
 
       - name: Publish coverage to Code Climate
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
-          coverageLocations: coverage.xml:coverage.py
+          coverageLocations: ${{github.workspace}}/coverage.xml:coverage.py
 
       - name: Tear down the Stack
         run:  docker-compose -f local.yml down
 
-  build:
-    needs: [linter, test]
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name == 'main'
-
-    steps:
-      - name: Checkout master
-        uses: actions/checkout@v2
-
-      - name: Build container image
-        run: docker-compose -f production-build.yml build
-
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
-        with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
-
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-      - name: Push image to DigitalOcean Container Registry
-        run: docker-compose -f production-build.yml push
-
-  deploy:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name == 'main'
-    needs: build
-
-    steps:
-      - name: Deploy to Digital Ocean droplet via SSH action
-        uses: appleboy/ssh-action@v0.1.3
-        with:
-          HOST: ${{ secrets.HOST }}
-          USERNAME: ${{ secrets.USERNAME }}
-          KEY: ${{ secrets.SSHKEY }}
-          script: |
-            cd ~/read_comics
-            docker-compose -f production-run.yml pull
-            docker-compose -f production-run.yml down
-            docker-compose -f production-run.yml up -d --scale celeryworker=5 --force-recreate
+#  build:
+#    needs: [linter, test]
+#    runs-on: ubuntu-latest
+#    if: github.event_name == 'push' && github.ref_name == 'main'
+#
+#    steps:
+#      - name: Checkout master
+#        uses: actions/checkout@v2
+#
+#      - name: Build container image
+#        run: docker-compose -f production-build.yml build
+#
+#      - name: Install doctl
+#        uses: digitalocean/action-doctl@v2
+#        with:
+#          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+#
+#      - name: Log in to DigitalOcean Container Registry with short-lived credentials
+#        run: doctl registry login --expiry-seconds 600
+#
+#      - name: Push image to DigitalOcean Container Registry
+#        run: docker-compose -f production-build.yml push
+#
+#  deploy:
+#    runs-on: ubuntu-latest
+#    if: github.event_name == 'push' && github.ref_name == 'main'
+#    needs: build
+#
+#    steps:
+#      - name: Deploy to Digital Ocean droplet via SSH action
+#        uses: appleboy/ssh-action@v0.1.3
+#        with:
+#          HOST: ${{ secrets.HOST }}
+#          USERNAME: ${{ secrets.USERNAME }}
+#          KEY: ${{ secrets.SSHKEY }}
+#          script: |
+#            cd ~/read_comics
+#            docker-compose -f production-run.yml pull
+#            docker-compose -f production-run.yml down
+#            docker-compose -f production-run.yml up -d --scale celeryworker=5 --force-recreate
