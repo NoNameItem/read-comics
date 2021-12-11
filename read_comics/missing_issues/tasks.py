@@ -3,6 +3,7 @@ from datetime import datetime
 from celery import Task, signature
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
+from django.db.models import Count
 from pymongo import MongoClient
 
 from config import celery_app
@@ -175,15 +176,24 @@ class BaseMissingIssuesTask(Task):
             if missing_issue:
                 self.add_missing_issue(obj, missing_issue)
 
+    def get_objects(self):
+        return self.MODEL.objects.annotate(
+            issue_count=Count('issues')
+        ).filter(issue_count__gt=0)
+
+    @staticmethod
+    def check_object(obj):
+        return obj.issues.count() > 0
+
     def run(self, *args, **kwargs):
         try:
             pk = kwargs['pk']
             obj = self.MODEL.objects.get(pk=pk)
-            mongo_missing_issues = self.get_issues_from_mongo(obj)
-            self.process_mongo_issues(obj, mongo_missing_issues)
+            if self.check_object(obj):
+                mongo_missing_issues = self.get_issues_from_mongo(obj)
+                self.process_mongo_issues(obj, mongo_missing_issues)
         except KeyError:
-            objs = self.MODEL.objects.all()
-            for obj in objs:
+            for obj in self.get_objects():
                 task = signature(self.name, kwargs={'pk': obj.pk})
                 task.delay()
 
@@ -199,6 +209,15 @@ volume_missing_issues_task = celery_app.register_task(VolumeMissingIssuesTask())
 class PublisherMissingIssuesTask(BaseMissingIssuesTask):
     FILTER_PATH = 'volume.publisher.id'
     MODEL = Publisher
+
+    def get_objects(self):
+        return self.MODEL.objects.annotate(
+            issue_count=Count('volumes__issues', distinct=True)
+        ).filter(issue_count__gt=0)
+
+    @staticmethod
+    def check_object(obj):
+        return Issue.objects.filter(volume__publisher=obj).count() > 0
 
     def get_issues_from_mongo(self, obj):
         client = MongoClient(settings.MONGO_URL)
