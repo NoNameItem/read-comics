@@ -52,13 +52,14 @@ jobs:
         run: |
           docker-compose -f local.yml run --rm django coverage run -m pytest
           docker-compose -f local.yml run --rm django coverage xml
+          ls
 
       - name: Publish coverage to Code Climate
         uses: paambaati/codeclimate-action@v3.0.0
         env:
           CC_TEST_REPORTER_ID: ${{secrets.CC_TEST_REPORTER_ID}}
         with:
-          coverageCommand: docker-compose -f local.yml run --rm django coverage xml
+          coverageLocations: coverage.xml
 
       - name: Tear down the Stack
         run:  docker-compose -f local.yml down
