@@ -63,7 +63,7 @@ jobs:
         run:  docker-compose -f local.yml down
 
   build:
-    needs: test
+    needs: [linter, test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_name == 'main'
 
