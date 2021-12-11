@@ -83,4 +83,4 @@ jobs:
         run: doctl registry login --expiry-seconds 600
 
       - name: Push image to DigitalOcean Container Registry
-        run: docker-compose -f production-build.yml build
+        run: docker-compose -f production-build.yml push
