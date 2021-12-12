@@ -209,18 +209,22 @@ class TeamDownloadView(BaseZipDownloadView):
     def get_files(self):
         self.team = get_object_or_404(Team, slug=self.kwargs.get('slug'))
         q = sublist_querysets.get_issues_queryset(self.team)
-        num_length = math.ceil(math.log10(q.count()))
+        issues_count = q.count()
+        if issues_count:
+            num_length = math.ceil(math.log10(q.count()))
 
-        files = [
-            (
-                self.escape_file_name(
-                    f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
-                    + x.space_key[-4:]
-                ),
-                x.download_link
-            )
-            for num, x in enumerate(q, 1)
-        ]
+            files = [
+                (
+                    self.escape_file_name(
+                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
+                        + x.space_key[-4:]
+                    ),
+                    x.download_link
+                )
+                for num, x in enumerate(q, 1)
+            ]
+        else:
+            files = []
 
         return files
 

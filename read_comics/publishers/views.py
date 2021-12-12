@@ -200,18 +200,23 @@ class PublisherDownloadView(BaseZipDownloadView):
     def get_files(self):
         self.publisher = get_object_or_404(Publisher, slug=self.kwargs.get('slug'))
         q = sublist_querysets.get_issues_queryset(self.publisher)
-        num_length = math.ceil(math.log10(q.count()))
+        issues_count = q.count()
 
-        files = [
-            (
-                self.escape_file_name(
-                    f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
-                    + x.space_key[-4:]
-                ),
-                x.download_link
-            )
-            for num, x in enumerate(q, 1)
-        ]
+        if issues_count:
+            num_length = math.ceil(math.log10(q.count()))
+
+            files = [
+                (
+                    self.escape_file_name(
+                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
+                        + x.space_key[-4:]
+                    ),
+                    x.download_link
+                )
+                for num, x in enumerate(q, 1)
+            ]
+        else:
+            files = []
 
         return files
 
