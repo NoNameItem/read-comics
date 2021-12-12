@@ -65,7 +65,7 @@ jobs:
   build:
     needs: [linter, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name == 'main' && github.ref_type='tag'
+    if: github.event_name == 'push' && github.ref_name == 'main' && github.ref_type == 'tag'
 
     steps:
       - name: Checkout master
