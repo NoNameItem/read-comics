@@ -13,9 +13,8 @@ on:
   push:
     branches: [ "master", "main", "develop" ]
     paths-ignore: [ "docs/**" ]
-  release:
-    types:
-      - created
+    tags:
+      - '*'
 
 
 jobs:
@@ -68,7 +67,7 @@ jobs:
   build:
     needs: [linter, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
 
     steps:
       - name: Checkout master
@@ -88,9 +87,41 @@ jobs:
       - name: Push image to DigitalOcean Container Registry
         run: docker-compose -f production-build.yml push
 
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push' && github.ref_type == 'tag'
+
+    steps:
+      - name: Get version
+        id: get_version
+        run: |
+          echo "VERSION=${GITHUB_REF/refs\/tags\//}" >> $GITHUB_ENV
+          echo ${{ VERSION }}
+
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Generate changes file
+        uses: sarnold/gitchangelog-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN}}
+
+      - name: Create release
+        uses: softprops/action-gh-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.VERSION }}
+          name: Release ${{ env.VERSION }}
+          body_path: CHANGES.md
+          draft: true
+          prerelease: false
+
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'release'
+    if: github.event_name == 'push' && github.ref_type == 'tag'
     needs: build
 
     steps:
