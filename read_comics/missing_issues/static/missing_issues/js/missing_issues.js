@@ -9,7 +9,8 @@ function initButtons() {
     }).done(function (data, textStatus, jqXHR) {
       $('#table-wrapper').html(data);
       initButtons();
-      $('.btn-skip, .btn-ignore').tooltip();
+      initCopy();
+      $('[data-toggle="tooltip"]').tooltip();
     }).fail(function (jqXHR, textStatus, errorThrown) {
       if (jqXHR.status === 404) {
         toastr.error("", "Please reload page");
@@ -19,7 +20,13 @@ function initButtons() {
     });
   });
 }
+function initCopy() {
+  $('.space-path').click(function (){
+    navigator.clipboard.writeText($(this).text());
+  });
+}
 
 $(document).ready(function (){
   initButtons();
+  initCopy();
 });
