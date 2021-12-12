@@ -50,7 +50,8 @@ class Concept(ImageMixin, ComicvineSyncModel):
     image_url = models.URLField(max_length=1000, null=True)
 
     slug = AutoSlugField(populate_from=["name"], slugify_function=slugify_function, overwrite=True,
-                         max_length=1000)
+                         max_length=1000,
+                         unique=True)
 
     tracker = FieldTracker()
 

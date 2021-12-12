@@ -154,7 +154,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
             'name'],
         overwrite=True,
         slugify_function=slugify_function,
-        max_length=1000
+        max_length=1000,
+        unique=True
     )
 
     tracker = FieldTracker()

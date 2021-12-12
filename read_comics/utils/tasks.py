@@ -6,7 +6,7 @@ from celery import Task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
-from django.db import OperationalError
+from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 
 
@@ -61,6 +61,10 @@ class BaseProcessEntryTask(Task):
     PARENT_ENTRY_APP_LABEL = None
     PARENT_ENTRY_FIELD = None
     MISSING_ISSUES_TASK = None
+    autoretry_for = (DatabaseError,)
+    retry_kwargs = {'max_retries': 10}
+    retry_backoff = True
+    retry_backoff_max = 60
 
     def get_defaults(self, **kwargs):
         defaults = dict()

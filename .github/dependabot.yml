@@ -24,14 +24,6 @@ updates:
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
-    # Look for a `Dockerfile` in the `compose/local/docs` directory
-    directory: "compose/local/docs/"
-    # Check for updates to GitHub Actions every weekday
-    schedule:
-      interval: "daily"
-
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
     # Look for a `Dockerfile` in the `compose/production/django` directory
     directory: "compose/production/django/"
     # Check for updates to GitHub Actions every weekday
@@ -43,5 +35,10 @@ updates:
     # Look for a `Dockerfile` in the `compose/production/traefik` directory
     directory: "compose/production/traefik/"
     # Check for updates to GitHub Actions every weekday
+    schedule:
+      interval: "daily"
+
+  - package-ecosystem: "pip"
+    directory: "/"
     schedule:
       interval: "daily"

@@ -93,7 +93,8 @@ class Volume(ImageMixin, ComicvineSyncModel):
         ],
         slugify_function=slugify_function,
         overwrite=True,
-        max_length=1000
+        max_length=1000,
+        unique=True
     )
 
     tracker = FieldTracker()
