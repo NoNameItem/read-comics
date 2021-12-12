@@ -1,14 +1,13 @@
-from typing import Any
+from typing import Any, List
 
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import QuerySet
-from django.http import Http404, HttpResponseRedirect
+from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
-from django_magnificent_messages import notifications
 from utils import logging
 from utils.view_mixins import (
     ActiveMenuMixin,
@@ -47,6 +46,7 @@ CATEGORY_MODELS = {
 @logging.methods_logged(logger, ['setup', 'get', ])
 class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
     template_name = "missing_issues/missing_issues_list.html"
+    template_name_partial = "missing_issues/issues_table.html"
     active_menu_item = 'missing_issues'
     context_object_name = 'missing_issues'
     paginate_by = 100
@@ -97,6 +97,12 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
             return self.breadcrumb + [{'url': '', 'text': str(self.obj)}]
         return self.breadcrumb
 
+    def get_template_names(self) -> List[str]:
+        response_type = self.request.GET.get('response_type')
+        if response_type == 'partial':
+            return [self.template_name_partial]
+        return [self.template_name]
+
     def get_context_data(self, **kwargs):
         context = super(MissingIssuesListView, self).get_context_data(**kwargs)
         context['obj'] = self.obj
@@ -139,17 +145,20 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
 
     def get(self, request, **kwargs):
         if self.object_not_found:
-            notifications.error(self.request, "Object not found", "Error")
-            return HttpResponseRedirect(reverse_lazy('pages:home'))
+            return JsonResponse(status=404, data={'message': "Object not found"})
         elif self.missing_issue_not_found:
-            notifications.error(self.request, f"Missing issue with comicvine_id = {self.missing_issue_comicvine_id} "
-                                              f"not found, may be it's already processed", "Error")
+            return JsonResponse(status=404,
+                                data={
+                                    'message': f"Missing issue with comicvine_id = {self.missing_issue_comicvine_id} "
+                                               f"not found, may be it's already processed"
+                                })
         else:
             try:
                 self.process()
+
             except Exception as err:
                 logger.error(err)
-                notifications.error(self.request, "Please check logs", "Error occurred")
+                return JsonResponse(status=500, data={'message': "Error occured. Please check logs"})
 
         if self.obj:
             url = reverse_lazy(
@@ -163,9 +172,9 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
             url = reverse_lazy('missing_issues:all')
 
         if request.GET.get('page'):
-            return HttpResponseRedirect(url + f"?page={request.GET.get('page')}")
+            return HttpResponseRedirect(url + f"?page={request.GET.get('page')}&response_type=partial", )
         else:
-            return HttpResponseRedirect(url)
+            return HttpResponseRedirect(url + '?response_type=partial')
 
     def process(self):
         raise NotImplementedError
@@ -175,7 +184,6 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
 class SkipIssueView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.delete()
-        notifications.success(self.request, "Issue skipped")
 
 
 skip_issue_view = SkipIssueView.as_view()
@@ -185,7 +193,6 @@ skip_issue_view = SkipIssueView.as_view()
 class SkipVolumeView(BaseSkipIgnoreView):
     def process(self):
         MissingIssue.objects.filter(volume_comicvine_id=self.missing_issue.volume_comicvine_id).delete()
-        notifications.success(self.request, "Volume skipped")
 
 
 skip_volume_view = SkipVolumeView.as_view()
@@ -195,7 +202,6 @@ skip_volume_view = SkipVolumeView.as_view()
 class SkipPublisherView(BaseSkipIgnoreView):
     def process(self):
         MissingIssue.objects.filter(publisher_comicvine_id=self.missing_issue.publisher_comicvine_id).delete()
-        notifications.success(self.request, "Publisher skipped")
 
 
 skip_publisher_view = SkipPublisherView.as_view()
@@ -205,7 +211,6 @@ skip_publisher_view = SkipPublisherView.as_view()
 class IgnoreIssueView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.ignore()
-        notifications.success(self.request, "Issue ignored")
 
 
 ignore_issue_view = IgnoreIssueView.as_view()
@@ -215,7 +220,6 @@ ignore_issue_view = IgnoreIssueView.as_view()
 class IgnoreVolumeView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.ignore_volume()
-        notifications.success(self.request, "Volume ignored")
 
 
 ignore_volume_view = IgnoreVolumeView.as_view()
@@ -225,7 +229,6 @@ ignore_volume_view = IgnoreVolumeView.as_view()
 class IgnorePublisherView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.ignore_publisher()
-        notifications.success(self.request, "Publisher ignored")
 
 
 ignore_publisher_view = IgnorePublisherView.as_view()
