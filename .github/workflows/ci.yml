@@ -13,8 +13,9 @@ on:
   push:
     branches: [ "master", "main", "develop" ]
     paths-ignore: [ "docs/**" ]
-    tags:
-      - v*
+  release:
+    types:
+      - created
 
 
 jobs:
@@ -67,7 +68,7 @@ jobs:
   build:
     needs: [linter, test]
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name == 'main' && github.ref_type == 'tag'
+    if: github.event_name == 'release'
 
     steps:
       - name: Checkout master
@@ -89,7 +90,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref_name == 'main' && github.ref_type == 'tag'
+    if: github.event_name == 'release'
     needs: build
 
     steps:
