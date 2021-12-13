@@ -1,3 +1,5 @@
+import re
+
 from django.db import models
 
 
@@ -39,6 +41,7 @@ class MissingIssue(models.Model):
     comicvine_url = models.URLField(max_length=1000, null=True)
     name = models.TextField(null=True)
     number = models.CharField(max_length=100, null=True)
+    numerical_number = models.FloatField(null=True)
     cover_date = models.DateField(null=True)
 
     volume_comicvine_id = models.IntegerField(null=True)
@@ -60,6 +63,20 @@ class MissingIssue(models.Model):
     volume = models.ForeignKey('volumes.Volume', related_name='missing_issues', on_delete=models.CASCADE, null=True)
     publisher = models.ForeignKey('publishers.Publisher', related_name='missing_issues', on_delete=models.CASCADE,
                                   null=True)
+
+    def set_numerical_number(self):
+        if self.number:
+            if self.number == '½':
+                self.numerical_number = 0.5
+            else:
+                r = re.compile(r'^\d+(\.\d+)?')
+                match = r.match(self.number)
+                if match:
+                    self.numerical_number = float(match.group(0))
+                else:
+                    self.numerical_number = 0
+        else:
+            self.numerical_number = None
 
     def __str__(self):
         if self.name:

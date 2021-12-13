@@ -78,6 +78,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 'volume_name',
                 'volume_start_year',
                 'volume_comicvine_id',
+                'numerical_number',
                 'number',
                 'comicvine_id'
             )
@@ -88,6 +89,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 'volume_name',
                 'volume_start_year',
                 'volume_comicvine_id',
+                'numerical_number',
                 'number',
                 'comicvine_id'
             )
