@@ -160,9 +160,10 @@ class BaseMissingIssuesTask(Task):
             missing_issue.publisher_comicvine_id = mongo_missing_issue.get('publisher_comicvine_id', None)
             missing_issue.publisher_comicvine_url = mongo_missing_issue.get('publisher_comicvine_url', None)
         if Issue.objects.filter(comicvine_id=comicvine_id).exists():
-            MissingIssue.objects.filter(comicvine_id=comicvine_id)
+            MissingIssue.objects.filter(comicvine_id=comicvine_id).delete()
             return None
         else:
+            missing_issue.set_numerical_number()
             missing_issue.save()
             return missing_issue
 
