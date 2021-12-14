@@ -157,4 +157,27 @@
 
     </div>
   </section>
+
+  <section id="last-update" class="card">
+  <div class="card-header">
+    <h4 class="card-title">Last new issues update: {{ last_update_day|date:"DATE_FORMAT" }}</h4>
+  </div>
+  <div class="card-body">
+    <div class="card-text">
+      <p>Added {{ new_issues_count }} new issue{{ new_issues_count|pluralize }}</p>
+      <ul>
+      <ul>
+        {% for new_issue in new_issues %}
+            {% ifchanged new_issue.volume %}
+              </ul>
+              <li><a href="{% url "volumes:detail" new_issue.volume.slug %}">{{ new_issue}}</a></li>
+              <ul>
+            {% endifchanged %}
+          <li><a href="{% url "issues:detail" new_issue.slug %}">{{ new_issue.get_full_name }}</a></li>
+        {% endfor %}
+        </ul>
+      </ul>
+    </div>
+  </div>
+</section>
 {% endblock %}
