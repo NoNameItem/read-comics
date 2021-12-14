@@ -1,3 +1,4 @@
+import datetime
 from typing import Any, List
 
 from django import http
@@ -72,7 +73,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
 
     def get_queryset(self) -> QuerySet:
         if self.obj:
-            return self.obj.missing_issues.all().order_by(
+            return self.obj.missing_issues.filter(skip=False).order_by(
                 'publisher_name',
                 'publisher_comicvine_id',
                 'volume_name',
@@ -83,7 +84,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 'comicvine_id'
             )
         else:
-            return MissingIssue.objects.all().order_by(
+            return MissingIssue.objects.filter(skip=False).order_by(
                 'publisher_name',
                 'publisher_comicvine_id',
                 'volume_name',
@@ -185,7 +186,9 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
 @logging.methods_logged(logger, ['setup', 'get', ])
 class SkipIssueView(BaseSkipIgnoreView):
     def process(self):
-        self.missing_issue.delete()
+        self.missing_issue.skip = True
+        self.missing_issue.skip_date = datetime.date.today()
+        self.missing_issue.save()
 
 
 skip_issue_view = SkipIssueView.as_view()
@@ -194,7 +197,10 @@ skip_issue_view = SkipIssueView.as_view()
 @logging.methods_logged(logger, ['setup', 'get', ])
 class SkipVolumeView(BaseSkipIgnoreView):
     def process(self):
-        MissingIssue.objects.filter(volume_comicvine_id=self.missing_issue.volume_comicvine_id).delete()
+        MissingIssue.objects.filter(volume_comicvine_id=self.missing_issue.volume_comicvine_id).update(
+            skip=True,
+            skip_date=datetime.date.today()
+        )
 
 
 skip_volume_view = SkipVolumeView.as_view()
@@ -203,7 +209,10 @@ skip_volume_view = SkipVolumeView.as_view()
 @logging.methods_logged(logger, ['setup', 'get', ])
 class SkipPublisherView(BaseSkipIgnoreView):
     def process(self):
-        MissingIssue.objects.filter(publisher_comicvine_id=self.missing_issue.publisher_comicvine_id).delete()
+        MissingIssue.objects.filter(publisher_comicvine_id=self.missing_issue.publisher_comicvine_id).update(
+            skip=True,
+            skip_date=datetime.date.today()
+        )
 
 
 skip_publisher_view = SkipPublisherView.as_view()

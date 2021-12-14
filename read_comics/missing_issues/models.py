@@ -64,6 +64,9 @@ class MissingIssue(models.Model):
     publisher = models.ForeignKey('publishers.Publisher', related_name='missing_issues', on_delete=models.CASCADE,
                                   null=True)
 
+    skip = models.BooleanField(default=False)
+    skip_date = models.DateField(null=True)
+
     def set_numerical_number(self):
         if self.number:
             if self.number == '½':

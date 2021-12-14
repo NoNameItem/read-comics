@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import date, datetime, timedelta
 
 from celery import Task, signature
 from django.conf import settings
@@ -163,6 +163,8 @@ class BaseMissingIssuesTask(Task):
             MissingIssue.objects.filter(comicvine_id=comicvine_id).delete()
             return None
         else:
+            if missing_issue.skip and missing_issue.skip_date < date.today() - timedelta(days=30):
+                missing_issue.skip = False
             missing_issue.set_numerical_number()
             missing_issue.save()
             return missing_issue
