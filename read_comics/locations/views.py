@@ -76,7 +76,8 @@ class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['missing_issues_count'] = location.missing_issues.count()
 
-        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
+        if self.request.user.is_authenticated:
+            context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
