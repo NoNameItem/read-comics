@@ -17,6 +17,8 @@ from utils.view_mixins import (
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+
 from . import sublist_querysets
 from .models import Character
 
@@ -93,12 +95,28 @@ class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('team_friends', sublist_querysets.get_team_friends_queryset(character)))
         context.update(get_first_page('team_enemies', sublist_querysets.get_team_enemies_queryset(character)))
 
-        context['missing_issues_count'] = character.missing_issues.count()
+        context['missing_issues_count'] = character.missing_issues.filter(skip=False).count()
+
+        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
 
 character_detail_view = CharacterDetailView.as_view()
+
+
+class StartWatchView(BaseStartWatchView):
+    model = Character
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = Character
+
+
+stop_watch_view = StopWatchView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])

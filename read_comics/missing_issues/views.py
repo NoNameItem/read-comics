@@ -3,12 +3,14 @@ from typing import Any, List
 
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from django.db.models import QuerySet
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
+from django_magnificent_messages import notifications
 from utils import logging
 from utils.view_mixins import (
     ActiveMenuMixin,
@@ -27,7 +29,14 @@ from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
 
-from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue
+from .models import (
+    IgnoredIssue,
+    IgnoredPublisher,
+    IgnoredVolume,
+    MissingIssue,
+    WatchedItem,
+)
+from .queries import get_watched_missing_issues_query
 
 logger = logging.getLogger(__name__)
 
@@ -51,6 +60,19 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
     active_menu_item = 'missing_issues'
     context_object_name = 'missing_issues'
     paginate_by = 100
+    category_skip_publisher_url = "missing_issues:category_skip_publisher"
+    category_ignore_publisher_url = "missing_issues:category_skip_publisher"
+    category_skip_volume_url = "missing_issues:category_skip_volume"
+    category_ignore_volume_url = "missing_issues:category_ignore_volume"
+    category_skip_issue_url = "missing_issues:category_skip_issue"
+    category_ignore_issue_url = "missing_issues:category_ignore_issue"
+
+    skip_publisher_url = "missing_issues:skip_publisher"
+    ignore_publisher_url = "missing_issues:ignore_publisher"
+    skip_volume_url = "missing_issues:skip_volume"
+    ignore_volume_url = "missing_issues:ignore_volume"
+    skip_issue_url = "missing_issues:skip_issue"
+    ignore_issue_url = "missing_issues:ignore_issue"
 
     breadcrumb = [{'url': reverse_lazy("missing_issues:all"), 'text': 'Missing issues'}]
 
@@ -110,13 +132,57 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
         context = super(MissingIssuesListView, self).get_context_data(**kwargs)
         context['obj'] = self.obj
         context['category_key'] = self.category_key
+        context['urls'] = {
+            'category_skip_publisher': self.category_skip_publisher_url,
+            'category_ignore_publisher': self.category_ignore_publisher_url,
+            'category_skip_volume': self.category_skip_volume_url,
+            'category_ignore_volume': self.category_ignore_volume_url,
+            'category_skip_issue': self.category_skip_issue_url,
+            'category_ignore_issue': self.category_ignore_issue_url,
+            'skip_publisher': self.skip_publisher_url,
+            'ignore_publisher': self.ignore_publisher_url,
+            'skip_volume': self.skip_volume_url,
+            'ignore_volume': self.ignore_volume_url,
+            'skip_issue': self.skip_issue_url,
+            'ignore_issue': self.ignore_issue_url
+        }
         return context
 
 
-missing_issues_view = MissingIssuesListView.as_view()
+missing_issues_list_view = MissingIssuesListView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedMissingIssuesListView(MissingIssuesListView):
+    skip_publisher_url = "missing_issues:watched_skip_publisher"
+    ignore_publisher_url = "missing_issues:watched_ignore_publisher"
+    skip_volume_url = "missing_issues:watched_skip_volume"
+    ignore_volume_url = "missing_issues:watched_ignore_volume"
+    skip_issue_url = "missing_issues:watched_skip_issue"
+    ignore_issue_url = "missing_issues:watched_ignore_issue"
+
+    breadcrumb = [{'url': reverse_lazy("missing_issues:watched"), 'text': 'Watched missing issues'}]
+
+    def get_queryset(self) -> QuerySet:
+        return get_watched_missing_issues_query(self.request.user).order_by(
+            'publisher_name',
+            'publisher_comicvine_id',
+            'volume_name',
+            'volume_start_year',
+            'volume_comicvine_id',
+            'numerical_number',
+            'number',
+            'comicvine_id'
+        )
+
+
+watched_missing_issues_list_view = WatchedMissingIssuesListView.as_view()
 
 
 class BaseSkipIgnoreView(IsAdminMixin, View):
+    category_redirect_url = 'missing_issues:category'
+    redirect_url = 'missing_issues:all'
+
     def __init__(self, **kwargs):
         super(BaseSkipIgnoreView, self).__init__(**kwargs)
         self.category_key = None
@@ -165,14 +231,14 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
 
         if self.obj:
             url = reverse_lazy(
-                'missing_issues:category',
+                self.category_redirect_url,
                 kwargs={
                     'category': self.category_key,
                     'slug': self.obj.slug
                 }
             )
         else:
-            url = reverse_lazy('missing_issues:all')
+            url = reverse_lazy(self.redirect_url)
 
         if request.GET.get('page'):
             return HttpResponseRedirect(url + f"?page={request.GET.get('page')}&response_type=partial", )
@@ -195,6 +261,14 @@ skip_issue_view = SkipIssueView.as_view()
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedSkipIssueView(SkipIssueView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_skip_issue_view = WatchedSkipIssueView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
 class SkipVolumeView(BaseSkipIgnoreView):
     def process(self):
         MissingIssue.objects.filter(volume_comicvine_id=self.missing_issue.volume_comicvine_id).update(
@@ -204,6 +278,14 @@ class SkipVolumeView(BaseSkipIgnoreView):
 
 
 skip_volume_view = SkipVolumeView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedSkipVolumeView(SkipVolumeView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_skip_volume_view = WatchedSkipVolumeView.as_view()
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
@@ -219,12 +301,28 @@ skip_publisher_view = SkipPublisherView.as_view()
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedSkipPublisherView(SkipPublisherView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_skip_publisher_view = WatchedSkipPublisherView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
 class IgnoreIssueView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.ignore()
 
 
 ignore_issue_view = IgnoreIssueView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedIgnoreIssueView(IgnoreIssueView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_ignore_issue_view = WatchedIgnoreIssueView.as_view()
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
@@ -237,6 +335,14 @@ ignore_volume_view = IgnoreVolumeView.as_view()
 
 
 @logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedIgnoreVolumeView(IgnoreVolumeView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_ignore_volume_view = WatchedIgnoreVolumeView.as_view()
+
+
+@logging.methods_logged(logger, ['setup', 'get', ])
 class IgnorePublisherView(BaseSkipIgnoreView):
     def process(self):
         self.missing_issue.ignore_publisher()
@@ -245,6 +351,15 @@ class IgnorePublisherView(BaseSkipIgnoreView):
 ignore_publisher_view = IgnorePublisherView.as_view()
 
 
+@logging.methods_logged(logger, ['setup', 'get', ])
+class WatchedIgnorePublisherView(IgnorePublisherView):
+    redirect_url = 'missing_issues:watched'
+
+
+watched_ignore_publisher_view = WatchedIgnorePublisherView.as_view()
+
+
+@logging.methods_logged(logger, ['get', ])
 class IgnoredIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
     queryset = IgnoredIssue.objects.all().order_by('publisher_name', 'volume_name', 'volume_start_year', 'number',
                                                    'cover_date', 'comicvine_id')
@@ -258,6 +373,7 @@ class IgnoredIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
 ignored_issues_list_view = IgnoredIssuesListView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class IgnoredVolumesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
     queryset = IgnoredVolume.objects.all().order_by('publisher_name', 'name', 'start_year', 'comicvine_id')
     breadcrumb = [{'url': reverse_lazy("missing_issues:ignored_volumes"), 'text': 'Ignored volumes'}]
@@ -270,6 +386,7 @@ class IgnoredVolumesListView(IsAdminMixin, ElidedPagesPaginatorMixin, Breadcrumb
 ignored_volumes_list_view = IgnoredVolumesListView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class IgnoredPublishersListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbMixin, ActiveMenuMixin, ListView):
     queryset = IgnoredPublisher.objects.all().order_by('name')
     breadcrumb = [{'url': reverse_lazy("missing_issues:ignored_publisher"), 'text': 'Ignored publisher'}]
@@ -282,6 +399,7 @@ class IgnoredPublishersListView(IsAdminMixin, ElidedPagesPaginatorMixin, Breadcr
 ignored_publishers_list_view = IgnoredPublishersListView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class DeleteView(SingleObjectMixin, View):
     redirect_url = None
 
@@ -294,6 +412,7 @@ class DeleteView(SingleObjectMixin, View):
             return HttpResponseRedirect(reverse_lazy(self.redirect_url))
 
 
+@logging.methods_logged(logger, ['get', ])
 class IgnoredIssueDeleteView(DeleteView):
     redirect_url = "missing_issues:ignored_issues"
     model = IgnoredIssue
@@ -302,6 +421,7 @@ class IgnoredIssueDeleteView(DeleteView):
 ignored_issue_delete_view = IgnoredIssueDeleteView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class IgnoredVolumeDeleteView(DeleteView):
     redirect_url = "missing_issues:ignored_volumes"
     model = IgnoredVolume
@@ -310,9 +430,33 @@ class IgnoredVolumeDeleteView(DeleteView):
 ignored_volume_delete_view = IgnoredVolumeDeleteView.as_view()
 
 
+@logging.methods_logged(logger, ['get', ])
 class IgnoredPublisherDeleteView(DeleteView):
     redirect_url = "missing_issues:ignored_publisher"
     model = IgnoredPublisher
 
 
 ignored_publisher_delete_view = IgnoredPublisherDeleteView.as_view()
+
+
+class BaseStartWatchView(SingleObjectMixin, View):
+    def get(self, request, **kwargs):
+        obj = self.get_object()
+        try:
+            obj.watchers.create(user=self.request.user)
+            notifications.success(self.request, f"You now watching {obj}")
+        except IntegrityError:
+            notifications.error(self.request, f"You already watching {obj}")
+        return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class BaseStopWatchView(SingleObjectMixin, View):
+    def get(self, request, **kwargs):
+        obj = self.get_object()
+        try:
+            w = obj.watchers.get(user=self.request.user)
+            obj.watchers.remove(w)
+            notifications.success(self.request, f"You stopped watching {obj}")
+        except WatchedItem.DoesNotExist:
+            notifications.error(self.request, f"You are not watching {obj}")
+        return HttpResponseRedirect(obj.get_absolute_url())

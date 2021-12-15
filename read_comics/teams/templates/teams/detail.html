@@ -32,6 +32,13 @@
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ team.name }}</h4>
               </div>
+              <div id="watch-mark">
+                {% if watched %}
+                  <a href="{% url "teams:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                  {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "teams:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                {% endif %}
+              </div>
             </div>
             <!-- detail nav tabs start -->
             <div class="card-body px-0">

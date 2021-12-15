@@ -17,6 +17,8 @@ from utils.view_mixins import (
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+
 from . import sublist_querysets
 from .models import Location
 
@@ -74,10 +76,26 @@ class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['missing_issues_count'] = location.missing_issues.count()
 
+        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
+
         return context
 
 
 location_detail_view = LocationDetailView.as_view()
+
+
+class StartWatchView(BaseStartWatchView):
+    model = Location
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = Location
+
+
+stop_watch_view = StopWatchView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])

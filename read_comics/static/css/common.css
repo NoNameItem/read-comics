@@ -141,3 +141,17 @@
 .navbar-container .search-input input {
   padding: 1.7rem 0;
 }
+
+.header-navbar .navbar-container ul.nav li .badge.badge-up {
+    position: relative;
+    top: -10px;
+    left: -15px;
+}
+
+.chip .chip-body {
+  min-width: 0;
+}
+
+#search_query_input {
+  color: #727E8C!important;
+}

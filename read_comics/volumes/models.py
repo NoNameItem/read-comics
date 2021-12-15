@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
@@ -6,7 +7,7 @@ from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 from volumes.tasks import volume_comicvine_info_task
 
-from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume
+from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, WatchedItem
 
 logger = getLogger(__name__ + '.Volume')
 
@@ -96,6 +97,8 @@ class Volume(ImageMixin, ComicvineSyncModel):
         max_length=1000,
         unique=True
     )
+
+    watchers = GenericRelation(WatchedItem)
 
     tracker = FieldTracker()
 

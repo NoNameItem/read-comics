@@ -1,6 +1,8 @@
 from django.urls import path
 
 from .views import (
+    start_watch_view,
+    stop_watch_view,
     story_arc_authors_list_view,
     story_arc_characters_list_view,
     story_arc_concepts_list_view,
@@ -23,6 +25,8 @@ app_name = "story_arcs"
 urlpatterns = [
     path("", view=story_arcs_list_view, name="list"),
     path("<str:slug>/", view=story_arc_detail_view, name="detail"),
+    path("<str:slug>/start_watch/", view=start_watch_view, name="start_watch"),
+    path("<str:slug>/stop_watch/", view=stop_watch_view, name="stop_watch"),
     path("<str:slug>/mark_finished/", view=story_arc_mark_finished_view, name="mark_finished"),
     path("<str:slug>/download/", view=story_arc_download_view, name="download"),
     path("<str:slug>/died/", view=story_arc_died_list_view, name="died"),

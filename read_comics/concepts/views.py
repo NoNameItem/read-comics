@@ -17,6 +17,8 @@ from utils.view_mixins import (
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+
 from . import sublist_querysets
 from .models import Concept
 
@@ -72,12 +74,28 @@ class ConceptDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(concept)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(concept)))
 
-        context['missing_issues_count'] = concept.missing_issues.count()
+        context['missing_issues_count'] = concept.missing_issues.filter(skip=False).count()
+
+        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
 
 concept_detail_view = ConceptDetailView.as_view()
+
+
+class StartWatchView(BaseStartWatchView):
+    model = Concept
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = Concept
+
+
+stop_watch_view = StopWatchView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])

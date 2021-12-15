@@ -23,6 +23,8 @@ from utils.view_mixins import (
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+
 from . import sublist_querysets
 from .models import StoryArc
 
@@ -110,12 +112,28 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('disbanded', sublist_querysets.get_disbanded_queryset(story_arc)))
         context.update(get_first_page('first_appearances', sublist_querysets.get_first_appearance_queryset(story_arc)))
 
-        context['missing_issues_count'] = story_arc.missing_issues.count()
+        context['missing_issues_count'] = story_arc.missing_issues.filter(skip=False).count()
+
+        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
 
 story_arc_detail_view = StoryArcDetailView.as_view()
+
+
+class StartWatchView(BaseStartWatchView):
+    model = StoryArc
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = StoryArc
+
+
+stop_watch_view = StopWatchView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])

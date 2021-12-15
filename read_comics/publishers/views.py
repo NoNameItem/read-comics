@@ -17,6 +17,8 @@ from utils.view_mixins import (
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+
 from . import sublist_querysets
 from .models import Publisher
 
@@ -82,12 +84,28 @@ class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('story_arcs', sublist_querysets.get_story_arcs_queryset(publisher)))
         context.update(get_first_page('teams', sublist_querysets.get_teams_queryset(publisher)))
 
-        context['missing_issues_count'] = publisher.missing_issues.count()
+        context['missing_issues_count'] = publisher.missing_issues.filter(skip=False).count()
+
+        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
 
 publisher_detail_view = PublisherDetailView.as_view()
+
+
+class StartWatchView(BaseStartWatchView):
+    model = Publisher
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = Publisher
+
+
+stop_watch_view = StopWatchView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])

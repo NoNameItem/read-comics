@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
@@ -5,6 +6,8 @@ from teams.tasks import team_comicvine_info_task
 from utils.logging import getLogger, methods_logged
 from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
+
+from read_comics.missing_issues.models import WatchedItem
 
 logger = getLogger(__name__ + '.Team')
 
@@ -67,6 +70,8 @@ class Team(ImageMixin, ComicvineSyncModel):
         max_length=1000,
         unique=True
     )
+
+    watchers = GenericRelation(WatchedItem)
 
     tracker = FieldTracker()
 
