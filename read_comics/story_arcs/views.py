@@ -112,10 +112,10 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context.update(get_first_page('disbanded', sublist_querysets.get_disbanded_queryset(story_arc)))
         context.update(get_first_page('first_appearances', sublist_querysets.get_first_appearance_queryset(story_arc)))
 
-        if self.request.user.is_authenticated:
-            context['missing_issues_count'] = story_arc.missing_issues.filter(skip=False).count()
+        context['missing_issues_count'] = story_arc.missing_issues.filter(skip=False).count()
 
-        context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
+        if self.request.user.is_authenticated:
+            context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
