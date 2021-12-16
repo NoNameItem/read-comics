@@ -163,7 +163,7 @@ class BaseMissingIssuesTask(Task):
             MissingIssue.objects.filter(comicvine_id=comicvine_id).delete()
             return None
         else:
-            if missing_issue.skip and missing_issue.skip_date < date.today() - timedelta(days=30):
+            if missing_issue.skip and missing_issue.skip_date < date.today() - timedelta(days=settings.SKIP_DAYS):
                 missing_issue.skip = False
             missing_issue.set_numerical_number()
             missing_issue.save()
