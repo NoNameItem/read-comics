@@ -171,7 +171,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(cover_date=issue.cover_date) &
                         Q(volume__name=issue.volume.name) &
                         Q(volume__start_year=issue.volume.start_year) &
-                        Q(numerical_numbert=issue.numerical_number) &
+                        Q(numerical_number=issue.numerical_number) &
                         Q(number__lt=issue.number)
                     )
                 ).order_by('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')[:1]
