@@ -345,7 +345,9 @@ class VolumeDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.volume.name} ({self.volume.start_year})")
+        return self.escape_file_name(
+            f"{self.volume.name} ({self.volume.start_year})".replace('\t', '').replace('\n', '')
+        )
 
 
 volume_download_view = VolumeDownloadView.as_view()

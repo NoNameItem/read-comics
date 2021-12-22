@@ -195,7 +195,7 @@ class LocationDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.location.name}")
+        return self.escape_file_name(f"{self.location.name}".replace('\t', '').replace('\n', ''))
 
 
 location_download_view = LocationDownloadView.as_view()

@@ -240,7 +240,7 @@ class PublisherDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(self.publisher.name)
+        return self.escape_file_name(self.publisher.name.replace('\t', '').replace('\n', ''))
 
 
 publisher_download_view = PublisherDownloadView.as_view()

@@ -195,7 +195,7 @@ class ObjectDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.obj.name}")
+        return self.escape_file_name(f"{self.obj.name}".replace('\t', '').replace('\n', ''))
 
 
 object_download_view = ObjectDownloadView.as_view()

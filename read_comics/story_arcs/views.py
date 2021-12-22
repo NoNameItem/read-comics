@@ -339,7 +339,7 @@ class StoryArcDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(self.story_arc.name)
+        return self.escape_file_name(self.story_arc.name.replace('\t', '').replace('\n', ''))
 
 
 story_arc_download_view = StoryArcDownloadView.as_view()

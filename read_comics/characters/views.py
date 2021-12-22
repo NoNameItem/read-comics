@@ -300,7 +300,7 @@ class CharacterDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.character.name}")
+        return self.escape_file_name(f"{self.character.name}".replace('\t', '').replace('\n', ''))
 
 
 character_download_view = CharacterDownloadView.as_view()

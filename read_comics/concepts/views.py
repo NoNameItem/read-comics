@@ -195,7 +195,7 @@ class ConceptDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.concept.name}")
+        return self.escape_file_name(f"{self.concept.name}".replace('\t', '').replace('\n', ''))
 
 
 concept_download_view = ConceptDownloadView.as_view()

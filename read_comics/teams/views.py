@@ -248,7 +248,7 @@ class TeamDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.team.name}")
+        return self.escape_file_name(f"{self.team.name}".replace('\t', '').replace('\n', ''))
 
 
 team_download_view = TeamDownloadView.as_view()

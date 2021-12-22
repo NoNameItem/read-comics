@@ -209,7 +209,7 @@ class PersonDownloadView(BaseZipDownloadView):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(f"{self.person.name}")
+        return self.escape_file_name(f"{self.person.name}".replace('\t', '').replace('\n', ''))
 
 
 person_download_view = PersonDownloadView.as_view()
