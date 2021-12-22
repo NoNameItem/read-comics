@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from tempfile import SpooledTemporaryFile
 
 import sentry_sdk
@@ -246,3 +247,7 @@ sentry_sdk.init(
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+IGNORABLE_404_URLS = [
+    re.compile(r'\.(php|cgi)$'),
+    re.compile(r'^/phpmyadmin/'),
+]
