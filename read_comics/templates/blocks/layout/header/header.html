@@ -55,7 +55,7 @@
             </div>
           </li>
           {% if watched_missing_issues_count > 0 %}
-            <li class="nav-item dropdown-notification">
+            <li class="nav-item dropdown-notification" id="watched-missing-count-badge">
               <a class="nav-link nav-link-label" href="{% url "missing_issues:watched" %}">
                 <i class="ficon fad fa-eye"></i>
                 <span class="badge badge-pill badge-warning badge-up">{{ watched_missing_issues_count|intcomma }}</span>

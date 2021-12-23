@@ -17,11 +17,8 @@
   {% else %}
     Missing issues
   {% endif %}
-  <div class="chip chip-warning mr-1">
-    <div class="chip-body">
-      <span class="chip-text">{{ paginator.object_list.count|intcomma }}</span>
-    </div>
-  </div>
+  <span class="badge badge-warning badge-pill badge-round float-right ml-auto" id="this-missing-count-badge">{{ paginator.object_list.count|intcomma }}</span>
+
 {% endblock %}
 
 {% block vendor_css %}

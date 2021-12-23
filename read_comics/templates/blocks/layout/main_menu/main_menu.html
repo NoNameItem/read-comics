@@ -89,7 +89,7 @@
           <li class=" nav-item {% if missing_issues_menu_active %}active{% endif %}">
             <a class="d-flex align-items-center" href="{% url "missing_issues:all" %}"><i class="fad fa-eye"></i><span
             class="menu-item text-truncate" data-i18n="Input">Missing issues</span>
-              <span class="badge badge-warning badge-pill badge-round float-right ml-auto">{{ total_missing_issues_count|intcomma }}</span>
+              <span class="badge badge-warning badge-pill badge-round float-right ml-auto" id="total-missing-count-badge">{{ total_missing_issues_count|intcomma }}</span>
             </a>
           </li>
         <li class=" nav-item {% if ignored_issues_menu_active %}active{% endif %}">
