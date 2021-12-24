@@ -86,9 +86,9 @@ class MissingIssue(models.Model):
 
     def __str__(self):
         if self.name:
-            return f'{self.volume_name} ({self.volume_start_year}) #{self.number} {self.name}'
+            return f'{self.volume_name} #{self.number} {self.name}'
         else:
-            return f'{self.volume_name} ({self.volume_start_year}) #{self.number}'
+            return f'{self.volume_name} #{self.number}'
 
     @property
     def publisher_space_path(self):
