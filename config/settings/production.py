@@ -250,4 +250,5 @@ sentry_sdk.init(
 IGNORABLE_404_URLS = [
     re.compile(r'\.(php|cgi)$'),
     re.compile(r'^/phpmyadmin/'),
+    re.compile(r'^/apple-touch-icon\.png$'),
 ]
