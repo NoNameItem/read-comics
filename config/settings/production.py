@@ -251,4 +251,5 @@ IGNORABLE_404_URLS = [
     re.compile(r'\.(php|cgi)$'),
     re.compile(r'^/phpmyadmin/'),
     re.compile(r'^/apple-touch-icon\.png$'),
+    re.compile(r'^/favicon\.ico$'),
 ]
