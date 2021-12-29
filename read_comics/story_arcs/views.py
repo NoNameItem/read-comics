@@ -125,6 +125,7 @@ story_arc_detail_view = StoryArcDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = StoryArc
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.StoryArcMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()

@@ -108,6 +108,7 @@ character_detail_view = CharacterDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Character
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.CharacterMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()

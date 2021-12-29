@@ -89,6 +89,7 @@ person_detail_view = PersonDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Person
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.PersonMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()

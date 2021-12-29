@@ -139,6 +139,7 @@ volume_detail_view = VolumeDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Volume
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.VolumeMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()

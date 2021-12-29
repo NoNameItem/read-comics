@@ -95,6 +95,7 @@ team_detail_view = TeamDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Team
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.TeamMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()

@@ -97,6 +97,7 @@ publisher_detail_view = PublisherDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Publisher
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.PublisherMissingIssuesTask'
 
 
 start_watch_view = StartWatchView.as_view()
