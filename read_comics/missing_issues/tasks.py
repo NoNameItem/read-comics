@@ -216,12 +216,13 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
-            issue_count=Count('volumes__issues', distinct=True)
-        ).filter(issue_count__gt=0)
+            issue_count=Count('volumes__issues', distinct=True),
+            watchers_count=Count('watchers', distinct=True)
+        ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
 
     @staticmethod
     def check_object(obj):
-        return Issue.objects.filter(volume__publisher=obj).count() > 0
+        return Issue.objects.filter(volume__publisher=obj).count() > 0 or obj.watchers.count() > 0
 
     def get_issues_from_mongo(self, obj):
         client = MongoClient(settings.MONGO_URL)
