@@ -1,6 +1,7 @@
 import datetime
 from typing import Any, List
 
+from celery import signature
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
@@ -440,10 +441,14 @@ ignored_publisher_delete_view = IgnoredPublisherDeleteView.as_view()
 
 
 class BaseStartWatchView(SingleObjectMixin, View):
+    MISSING_ISSUES_TASK = None
+
     def get(self, request, **kwargs):
         obj = self.get_object()
         try:
             obj.watchers.create(user=self.request.user)
+            task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
+            task.delay()
             notifications.success(self.request, f"You now watching {obj}")
         except IntegrityError:
             notifications.error(self.request, f"You already watching {obj}")
