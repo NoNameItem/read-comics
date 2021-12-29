@@ -127,8 +127,9 @@ class BaseComicvineInfoTask(Task):
             obj.fill_from_comicvine(kwargs['follow_m2m'])
             obj.save()
             if self.MISSING_ISSUES_TASK:
-                task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
-                task.delay()
+                if obj.issues.count() > 0 or obj.watchers.count() > 0:
+                    task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
+                    task.delay()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
