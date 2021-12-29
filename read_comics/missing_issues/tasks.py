@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from celery import Task, signature
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
-from django.db.models import Count
+from django.db.models import Count, Q
 from pymongo import MongoClient
 
 from config import celery_app
@@ -181,12 +181,13 @@ class BaseMissingIssuesTask(Task):
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
-            issue_count=Count('issues')
-        ).filter(issue_count__gt=0)
+            issue_count=Count('issues', distinct=True),
+            watchers_count=Count('watchers', distinct=True)
+        ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
 
     @staticmethod
     def check_object(obj):
-        return obj.issues.count() > 0
+        return obj.issues.count() > 0 or obj.watchers.count() > 0
 
     def run(self, *args, **kwargs):
         try:
