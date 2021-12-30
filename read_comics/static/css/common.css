@@ -155,3 +155,7 @@
 #search_query_input {
   color: #727E8C!important;
 }
+
+ol ol, ul ul, ol ul, ul ol {
+    padding-inline-start: 1.5rem;
+}
