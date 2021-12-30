@@ -1,3 +1,5 @@
+import re
+
 import boto3
 from celery import shared_task
 from django.apps import apps
@@ -25,6 +27,10 @@ class IssueProcessEntryTask(BaseProcessEntryTask):
         defaults['space_key'] = kwargs['key']
         defaults['size'] = kwargs['size']
         return defaults
+
+    def __init__(self):
+        super().__init__()
+        self._key_regexp = re.compile(r"^.* #[^ \[\]]+ \[\d+\]\.cb.$")
 
 
 issue_entry_task = celery_app.register_task(IssueProcessEntryTask())

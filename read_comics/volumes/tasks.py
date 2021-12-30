@@ -1,3 +1,5 @@
+import re
+
 from issues.tasks import issues_space_task
 from utils.tasks import (
     BaseComicvineInfoTask,
@@ -18,6 +20,10 @@ class VolumeProcessEntryTask(BaseProcessEntryTask):
     PARENT_ENTRY_FIELD = 'publisher'
     NEXT_LEVEL_TASK = issues_space_task
     MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.VolumeMissingIssuesTask'
+
+    def __init__(self):
+        super().__init__()
+        self._key_regexp = re.compile(r"^.* \[\d\d\d\d\]\[\d+\]\/$")
 
 
 volume_entry_task = celery_app.register_task(VolumeProcessEntryTask())

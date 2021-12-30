@@ -10,6 +10,10 @@ from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 
 
+class WrongKeyFormatError(Exception):
+    pass
+
+
 class BaseSpaceTask(Task):
     PROCESS_ENTRY_TASK = None
     LOGGER_NAME = None
@@ -66,6 +70,13 @@ class BaseProcessEntryTask(Task):
     retry_backoff = True
     retry_backoff_max = 60
 
+    def check_key_format(self, key):
+        m = self._key_regexp.match(key.lower())
+        if m:
+            return True
+        else:
+            return False
+
     def get_defaults(self, **kwargs):
         defaults = dict()
         if self.PARENT_ENTRY_MODEL_NAME:
@@ -81,6 +92,8 @@ class BaseProcessEntryTask(Task):
 
     def run(self, *args, **kwargs):
         self._logger.debug("Starting processing key {0}".format(kwargs['key']))
+        if not self.check_key_format(kwargs['key']):
+            raise WrongKeyFormatError(kwargs['key'])
         comicvine_id = self.get_comicvine_id(kwargs['key'])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         instance, created, matched = model.objects.get_or_create_from_comicvine(
