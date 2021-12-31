@@ -23,7 +23,7 @@ class VolumeProcessEntryTask(BaseProcessEntryTask):
 
     def __init__(self):
         super().__init__()
-        self._key_regexp = re.compile(r"^.* \[\d\d\d\d\]\[\d+\]\/$")
+        self._key_regexp = re.compile(r"^.* \[\d\d\d\d\] \[\d+\]\/$")
 
 
 volume_entry_task = celery_app.register_task(VolumeProcessEntryTask())
