@@ -211,8 +211,6 @@ publisher_issue_detail_view = PublisherIssueDetailView.as_view()
 
 
 class PublisherDownloadView(BaseZipDownloadView):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
 
     def get_base_object(self):
         return get_object_or_404(Publisher, slug=self.kwargs.get('slug'))
