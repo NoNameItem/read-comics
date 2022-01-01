@@ -343,27 +343,8 @@ volume_issue_detail_view = VolumeIssueDetailView.as_view()
 
 
 class VolumeDownloadView(BaseZipDownloadView):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.volume = None
-
-    def get_files(self):
-        self.volume = get_object_or_404(Volume, slug=self.kwargs.get('slug'))
-        q = self.volume.issues.order_by('numerical_number', 'number')
-        files = [
-            (
-                self.escape_file_name(f"{self.volume.name} #{x.number} {x.name}".rstrip(' ') + x.space_key[-4:]),
-                x.download_link
-            )
-            for x in q
-        ]
-
-        return files
-
-    def get_zip_name(self):
-        return self.escape_file_name(
-            f"{self.volume.name} ({self.volume.start_year})".replace('\t', '').replace('\n', '')
-        )
+    sublist_querysets = sublist_querysets
+    base_model = Volume
 
 
 volume_download_view = VolumeDownloadView.as_view()
