@@ -1,9 +1,10 @@
 import datetime
+import random
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, F, Q, Sum
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.utils import formats
@@ -135,6 +136,20 @@ class VolumeDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
 
 volume_detail_view = VolumeDetailView.as_view()
+
+
+class RandomVolumeView(View):
+    def get(self, request, **kwargs):
+        q = Volume.objects.was_matched().annotate(
+            issue_count=Count('issues', distinct=True)
+        ).filter(issue_count__gt=0)
+        count = q.count()
+        i = random.randint(0, count - 1)
+        volume = q[i]
+        return HttpResponseRedirect(volume.get_absolute_url())
+
+
+random_volume_view = RandomVolumeView.as_view()
 
 
 class StartWatchView(BaseStartWatchView):
