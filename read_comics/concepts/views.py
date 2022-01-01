@@ -1,5 +1,3 @@
-import math
-
 from django.db.models import Count, Sum
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
@@ -168,35 +166,8 @@ concept_issue_detail_view = ConceptIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ['get', ])
 class ConceptDownloadView(BaseZipDownloadView):
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.concept = None
-
-    def get_files(self):
-        self.concept = get_object_or_404(Concept, slug=self.kwargs.get('slug'))
-        q = sublist_querysets.get_issues_queryset(self.concept)
-        issues_count = q.count()
-
-        if issues_count:
-            num_length = math.ceil(math.log10(q.count()))
-
-            files = [
-                (
-                    self.escape_file_name(
-                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
-                        + x.space_key[-4:]
-                    ),
-                    x.download_link
-                )
-                for num, x in enumerate(q, 1)
-            ]
-        else:
-            files = []
-
-        return files
-
-    def get_zip_name(self):
-        return self.escape_file_name(f"{self.concept.name}".replace('\t', '').replace('\n', ''))
+    sublist_querysets = sublist_querysets
+    base_model = Concept
 
 
 concept_download_view = ConceptDownloadView.as_view()

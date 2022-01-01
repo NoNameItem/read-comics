@@ -211,15 +211,8 @@ publisher_issue_detail_view = PublisherIssueDetailView.as_view()
 
 
 class PublisherDownloadView(BaseZipDownloadView):
-
-    def get_base_object(self):
-        return get_object_or_404(Publisher, slug=self.kwargs.get('slug'))
-
-    def get_issues_queryset(self):
-        return sublist_querysets.get_issues_queryset(self.obj)
-
-    def get_zip_name(self):
-        return self.escape_file_name(self.obj.name.replace('\t', '').replace('\n', ''))
+    sublist_querysets = sublist_querysets
+    base_model = Publisher
 
 
 publisher_download_view = PublisherDownloadView.as_view()

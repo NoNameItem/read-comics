@@ -271,14 +271,8 @@ character_issue_detail_view = CharacterIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ['get', ])
 class CharacterDownloadView(BaseZipDownloadView):
-    def get_base_object(self):
-        return get_object_or_404(Character, slug=self.kwargs.get('slug'))
-
-    def get_issues_queryset(self):
-        return sublist_querysets.get_issues_queryset(self.obj)
-
-    def get_zip_name(self):
-        return self.escape_file_name(f"{self.obj.name}".replace('\t', '').replace('\n', ''))
+    sublist_querysets = sublist_querysets
+    base_model = Character
 
 
 character_download_view = CharacterDownloadView.as_view()

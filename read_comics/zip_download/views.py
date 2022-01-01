@@ -2,11 +2,16 @@ from typing import Any
 from zipfile import ZIP_DEFLATED
 
 from django.http import StreamingHttpResponse
+from django.shortcuts import get_object_or_404
 from django.views import View
 from zip_download.zip_downloader import ZipDownloader
 
 
 class BaseZipDownloadView(View):
+    sublist_querysets = None
+    base_model = None
+    base_slug_kwarg = "slug"
+
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
         self.obj = None
@@ -16,10 +21,10 @@ class BaseZipDownloadView(View):
         return filename.replace("/", ' - ').replace(":", ' - ')
 
     def get_issues_queryset(self):
-        raise NotImplementedError('subclasses of BaseZipDownloadView must provide a get_issues_queryset() method')
+        return self.sublist_querysets.get_issues_queryset(self.obj)
 
     def get_base_object(self):
-        raise NotImplementedError('subclasses of BaseZipDownloadView must provide a get_base_object() method')
+        return get_object_or_404(self.base_model, slug=self.kwargs.get(self.base_slug_kwarg))
 
     def get_filename(self, issue):
         filename = ""
@@ -57,7 +62,7 @@ class BaseZipDownloadView(View):
         return files
 
     def get_zip_name(self):
-        raise NotImplementedError('subclasses of BaseZipDownloadView must provide a get_zip_name() method')
+        return self.escape_file_name(str(self.obj).replace('\t', '').replace('\n', ''))
 
     def get(self, request, *args, **kwargs):
         files = self.get_files()
