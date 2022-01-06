@@ -69,7 +69,7 @@ class ConceptDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = concept.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(concept)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(concept, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(concept)))
 
         context['missing_issues_count'] = concept.missing_issues.filter(skip=False).count()
@@ -105,6 +105,7 @@ class ConceptIssuesListView(BaseSublistView):
         'url_template_name': "concepts/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Concept
 
 

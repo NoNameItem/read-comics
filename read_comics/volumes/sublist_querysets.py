@@ -10,14 +10,17 @@ from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
 
 
-def get_issues_queryset(volume):
-    return volume.issues.filter(comicvine_status='MATCHED').order_by('numerical_number', 'number').annotate(
+def get_issues_queryset(volume, user=None):
+    q = volume.issues.filter(comicvine_status='MATCHED').order_by('numerical_number', 'number').annotate(
         parent_slug=F('volume__slug'),
         badge_name=Concat(
             Value('#'), F('number'), Value(' '), F('name'), output_field=TextField()
         ),
         desc=F('cover_date')
     )
+    if user and user.is_authenticated:
+        q = q.annotate(finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=user)))
+    return q
 
 
 def get_characters_queryset(volume):

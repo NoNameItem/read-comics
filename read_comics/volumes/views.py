@@ -115,7 +115,7 @@ class VolumeDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = volume.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(volume)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(volume, self.request.user)))
         context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(volume)))
         context.update(get_first_page('died', sublist_querysets.get_died_queryset(volume)))
         context.update(get_first_page('concepts', sublist_querysets.get_concepts_queryset(volume)))
@@ -174,6 +174,7 @@ class VolumeIssuesListView(BaseSublistView):
         'url_template_name': "volumes/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Volume
 
 

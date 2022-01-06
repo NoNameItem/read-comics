@@ -73,7 +73,7 @@ class TeamDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = team.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(team)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(team, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(team)))
         context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(team)))
         context.update(get_first_page('friends', sublist_querysets.get_character_friends_queryset(team)))
@@ -113,6 +113,7 @@ class TeamIssuesListView(BaseSublistView):
         'url_template_name': "teams/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Team
 
 

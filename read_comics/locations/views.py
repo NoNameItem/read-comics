@@ -69,7 +69,7 @@ class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = location.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(location)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(location, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(location)))
 
         context['missing_issues_count'] = location.missing_issues.count()
@@ -105,6 +105,7 @@ class LocationIssuesListView(BaseSublistView):
         'url_template_name': "concepts/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Location
 
 

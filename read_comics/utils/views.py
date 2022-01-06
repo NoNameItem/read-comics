@@ -8,6 +8,7 @@ class BaseSublistView(ElidedPagesPaginatorMixin, ListView):
     context_object_name = 'objects'
     paginate_by = 30
     get_queryset_func = None
+    get_queryset_user_param = False
     parent_model = None
 
     def __init__(self, **kwargs):
@@ -16,4 +17,7 @@ class BaseSublistView(ElidedPagesPaginatorMixin, ListView):
 
     def get_queryset(self):
         self.obj = get_object_or_404(self.parent_model, slug=self.kwargs.get('slug'))
-        return self.get_queryset_func(self.obj)
+        if self.get_queryset_user_param:
+            return self.get_queryset_func(self.obj, self.request.user)
+        else:
+            return self.get_queryset_func(self.obj)

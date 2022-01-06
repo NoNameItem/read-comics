@@ -100,7 +100,7 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = story_arc.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(story_arc)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(story_arc, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(story_arc)))
         context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(story_arc)))
         context.update(get_first_page('died', sublist_querysets.get_died_queryset(story_arc)))
@@ -145,6 +145,7 @@ class StoryArcIssuesListView(BaseSublistView):
         'url_template_name': "story_arcs/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = StoryArc
 
 

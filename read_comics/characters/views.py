@@ -83,7 +83,7 @@ class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = character.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(character)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(character, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(character)))
         context.update(get_first_page('died_in', sublist_querysets.get_died_in_queryset(character)))
         context.update(get_first_page('authors', sublist_querysets.get_authors_queryset(character)))
@@ -126,6 +126,7 @@ class CharacterIssuesListView(BaseSublistView):
         'url_template_name': "characters/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Character
 
 

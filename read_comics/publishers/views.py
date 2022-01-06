@@ -76,7 +76,7 @@ class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = sublist_querysets.get_issues_queryset(publisher).aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(publisher)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(publisher, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(publisher)))
         context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(publisher)))
         context.update(get_first_page('story_arcs', sublist_querysets.get_story_arcs_queryset(publisher)))
@@ -116,6 +116,7 @@ class PublisherIssuesListView(BaseSublistView):
         'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Publisher
 
 

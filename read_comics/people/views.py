@@ -70,7 +70,7 @@ class PersonDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['size'] = obj.issues.aggregate(v=Sum('size'))['v']
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(obj)))
+        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(obj, self.request.user)))
         context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(obj)))
         context.update(get_first_page('created_characters', obj.created_characters.all()))
 
@@ -107,6 +107,7 @@ class PersonIssuesListView(BaseSublistView):
         'url_template_name': "people/badges_urls/issue.html"
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = Person
 
 

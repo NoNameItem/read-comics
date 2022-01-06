@@ -10,8 +10,8 @@ from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
 
 
-def get_issues_queryset(story_arc):
-    return story_arc.issues.filter(comicvine_status='MATCHED').order_by(
+def get_issues_queryset(story_arc, user=None):
+    q = story_arc.issues.filter(comicvine_status='MATCHED').order_by(
         'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
     ).annotate(
         parent_slug=Value(story_arc.slug),
@@ -21,6 +21,9 @@ def get_issues_queryset(story_arc):
         ),
         desc=F('cover_date')
     )
+    if user and user.is_authenticated:
+        q = q.annotate(finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=user)))
+    return q
 
 
 def get_volumes_queryset(story_arc):

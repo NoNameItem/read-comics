@@ -136,3 +136,11 @@
 .detail-full-description h2, .detail-full-description h3, .detail-full-description h4 {
     clear: both;
 }
+
+.finished {
+  opacity: 0.6;
+}
+
+.finished:hover {
+  opacity: 1;
+}
