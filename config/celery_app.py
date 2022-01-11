@@ -26,18 +26,18 @@ app.conf.broker_transport_options = {
 app.conf.task_default_priority = 5
 
 app.conf.beat_schedule = {
-    # Get new comics from Digital Ocean Space every day at 07:00 AM
+    # Get new comics from Digital Ocean Space every day at 04:00 AM
     "get-from-space": {
         "task": "read_comics.publishers.tasks.PublishersSpaceTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="4"),
         "args": (),
         "kwargs": {"prefix": "comics/"},
         "options": {"priority": 0},
     },
-    # Purge comics deleted from Digital Ocean Space every 3 hours
+    # Purge comics deleted from Digital Ocean Space every day at 04:00 AM
     "purge-deleted": {
         "task": "read_comics.issues.tasks.purge_deleted",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="4"),
     },
     # Refresh data from Comicvine API every day at 03:00 AM UTC
     "refresh-characters": {
