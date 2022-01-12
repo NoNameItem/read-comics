@@ -1,21 +1,40 @@
+from django.db.models import Q
+
 from read_comics.missing_issues.models import MissingIssue
 
 
-def get_watched_missing_issues_query(user):
-    return MissingIssue.objects.filter(characters__watchers__user=user, skip=False).union(
-        MissingIssue.objects.filter(concepts__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(locations__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(objects_in__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(people__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(story_arcs__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(teams__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(volume__watchers__user=user, skip=False)
-    ).union(
-        MissingIssue.objects.filter(publisher__watchers__user=user, skip=False)
-    )
+def get_watched_missing_issues_query(user, search_query=None):
+    def get_subquery(field):
+        f = {
+            f"{field}__watchers__user": user,
+            "skip": False
+        }
+
+        q = MissingIssue.objects.filter(**f)
+
+        if search_query:
+            q = q.filter(
+                Q(publisher_name__icontains=search_query) |
+                Q(volume_name__icontains=search_query) |
+                Q(name__icontains=search_query)
+            )
+
+        return q
+
+    return get_subquery("characters").union(
+            get_subquery("concepts")
+        ).union(
+            get_subquery("locations")
+        ).union(
+            get_subquery("objects_in")
+        ).union(
+            get_subquery("people")
+        ).union(
+            get_subquery("story_arcs")
+        ).union(
+            get_subquery("teams")
+        ).union(
+            get_subquery("volume")
+        ).union(
+            get_subquery("publisher")
+        )

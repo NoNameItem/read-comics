@@ -37,7 +37,7 @@
       <fieldset>
         <div class="input-group">
           <input type="text" class="form-control" placeholder="Search..." aria-describedby="search-button"
-                 value="{{ q }}" name="q">
+                 value="{{ q|default_if_none:"" }}" name="q">
           <div class="input-group-append" id="search-button">
             <button class="btn btn-primary" type="submit">
               <span class="d-none d-sm-block">Search</span>

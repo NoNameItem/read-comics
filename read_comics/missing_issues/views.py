@@ -187,7 +187,9 @@ class WatchedMissingIssuesListView(MissingIssuesListView):
     breadcrumb = [{'url': reverse_lazy("missing_issues:watched"), 'text': 'Watched missing issues'}]
 
     def get_queryset(self) -> QuerySet:
-        return get_watched_missing_issues_query(self.request.user).order_by(
+        search_query = self.request.GET.get("q")
+
+        return get_watched_missing_issues_query(self.request.user, search_query).order_by(
             'publisher_name',
             'publisher_comicvine_id',
             'volume_name',
