@@ -14,6 +14,7 @@ from .views import (
     skip_issue_view,
     skip_publisher_view,
     skip_volume_view,
+    start_reload_from_do_view,
     watched_ignore_issue_view,
     watched_ignore_publisher_view,
     watched_ignore_volume_view,
@@ -43,6 +44,8 @@ urlpatterns = [
     path("ignore_issue/<int:comicvine_id>/", view=ignore_issue_view, name="ignore_issue"),
     path("ignore_volume/<int:comicvine_id>/", view=ignore_volume_view, name="ignore_volume"),
     path("ignore_publisher/<int:comicvine_id>/", view=ignore_publisher_view, name="ignore_publisher"),
+
+    path('reload_from_do/', view=start_reload_from_do_view, name='start_reload_from_do'),
 
     path('watched/', view=watched_missing_issues_list_view, name='watched'),
 

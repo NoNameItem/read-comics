@@ -26,6 +26,7 @@ from read_comics.locations.models import Location
 from read_comics.objects.models import Object
 from read_comics.people.models import Person
 from read_comics.publishers.models import Publisher
+from read_comics.publishers.tasks import publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
@@ -465,3 +466,16 @@ class BaseStopWatchView(SingleObjectMixin, View):
         except WatchedItem.DoesNotExist:
             notifications.error(self.request, f"You are not watching {obj}")
         return HttpResponseRedirect(obj.get_absolute_url())
+
+
+class StartReloadFromDOView(View):
+    def get(self, request, **kwargs):
+        try:
+            publishers_space_task.delay(prefix='comics/')
+            notifications.success(self.request, "Refresh from DO started")
+        except Exception:
+            notifications.error(self.request, "Could not start refresh from DO, please check logs")
+        return HttpResponseRedirect(request.GET.get("next", reverse_lazy("missing_issues:all")))
+
+
+start_reload_from_do_view = StartReloadFromDOView.as_view()

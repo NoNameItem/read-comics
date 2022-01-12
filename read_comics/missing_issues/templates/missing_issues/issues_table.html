@@ -1,65 +1,87 @@
 {% load humanize %}
 {% load url_extras %}
 
+<a class="btn btn-primary mb-1" href="{% url "missing_issues:start_reload_from_do" %}?next={{ request.get_full_path }}">
+  <i class="fad fa-sync" aria-hidden="true"></i> <span class="ml-1"> Start reload from DO</span>
+</a>
+
 <table class="table" id="issues-table">
   <tbody>
   {% for missing_issue in missing_issues %}
     {% ifchanged missing_issue.publisher_comicvine_id %}
       <tr class="publisher-row bg-primary bg-light">
-      <td class="pl-1"><a href="{{ missing_issue.publisher_comicvine_url }}" target="_blank">{{ missing_issue.publisher_name }}</a></td>
-        <td class="pl-1"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.publisher_space_path }}</span></td>
+        <td class="pl-1"><a href="{{ missing_issue.publisher_comicvine_url }}"
+                            target="_blank">{{ missing_issue.publisher_name }}</a></td>
+        <td class="pl-1"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                               title="Copy">{{ missing_issue.publisher_space_path }}</span></td>
         <td>
           <div class="btn-group" role="group">
-                <button data-href="
-                  {% if obj %}{% url urls.category_skip_publisher category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_publisher missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></button>
-                <button data-href="{% if obj %}{% url urls.category_ignore_publisher category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_publisher missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></button>
+            <button data-href="
+
+              {% if obj %}{% url urls.category_skip_publisher category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_publisher missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                    type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom"
+                    title="Skip"><i class="fa fa-check"></i></button>
+            <button data-href="
+              {% if obj %}{% url urls.category_ignore_publisher category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_publisher missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                    type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
+                    title="Ignore"><i class="fa fa-times"></i></button>
           </div>
         </td>
-    </tr>
+      </tr>
     {% endifchanged %}
     {% ifchanged missing_issue.volume_comicvine_id %}
       <tr class="volume-row bg-secondary bg-light">
-      <td class="pl-3"><a href="{{ missing_issue.volume_comicvine_url }}" target="_blank">{{ missing_issue.volume_name }} ({{ missing_issue.volume_start_year }})</a></td>
-        <td class="pl-3"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.volume_space_path }}</span></td>
+        <td class="pl-3"><a href="{{ missing_issue.volume_comicvine_url }}"
+                            target="_blank">{{ missing_issue.volume_name }} ({{ missing_issue.volume_start_year }})</a>
+        </td>
+        <td class="pl-3"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                               title="Copy">{{ missing_issue.volume_space_path }}</span></td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
-                <button data-href="
-                  {% if obj %}{% url urls.category_skip_volume category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_volume missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></button>
-                <button data-href="
-                  {% if obj %}{% url urls.category_ignore_volume category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_volume missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></button>
+            <button data-href="
+
+              {% if obj %}{% url urls.category_skip_volume category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_volume missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                    type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom"
+                    title="Skip"><i class="fa fa-check"></i></button>
+            <button data-href="
+
+              {% if obj %}{% url urls.category_ignore_volume category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_volume missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                    type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
+                    title="Ignore"><i class="fa fa-times"></i></button>
           </div>
         </td>
-    </tr>
+      </tr>
     {% endifchanged %}
     <tr class="issue-row">
       <td class="pl-5"><a href="{{ missing_issue.comicvine_url }}" target="_blank">{{ missing_issue }}</a></td>
-        <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom" title="Copy">{{ missing_issue.issue_space_path }}</span></td>
-        <td>
-          <div class="btn-group" role="group" aria-label="Basic example">
-                <button data-href="{% if obj %}{% url urls.category_skip_issue category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_issue missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom" title="Skip"><i class="fa fa-check"></i></button>
-                <button data-href="{% if obj %}{% url urls.category_ignore_issue category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_issue missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
-                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom" title="Ignore"><i class="fa fa-times"></i></button>
-          </div>
-        </td>
+      <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                             title="Copy">{{ missing_issue.issue_space_path }}</span></td>
+      <td>
+        <div class="btn-group" role="group" aria-label="Basic example">
+          <button data-href="
+            {% if obj %}{% url urls.category_skip_issue category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.skip_issue missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                  type="button" class="btn btn-success btn-skip" data-toggle="tooltip" data-placement="bottom"
+                  title="Skip"><i class="fa fa-check"></i></button>
+          <button data-href="
+            {% if obj %}{% url urls.category_ignore_issue category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_issue missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}"
+                  type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
+                  title="Ignore"><i class="fa fa-times"></i></button>
+        </div>
+      </td>
     </tr>
   {% endfor %}
   </tbody>
 </table>
 <input type="hidden" id="all-missing-count" value="{{ total_missing_issues_count|default:0|intcomma }}">
 <input type="hidden" id="watched-missing-count" value="{{ watched_missing_issues_count|default:0|intcomma }}">
-<input type="hidden" id="this-missing-count" value="{{ paginator.object_list.count|default:0|intcomma}}">
+<input type="hidden" id="this-missing-count" value="{{ paginator.object_list.count|default:0|intcomma }}">
 
 <nav aria-label="Page navigation">
-    <ul class="pagination pagination-borderless justify-content-center mt-2">
-      {% for page in pages %}
-        <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link"
-                                                                       href="{% url_add_query_params page=page.num response_type=full %}">{{ page.num }}</a>
-        </li>
-      {% endfor %}
-    </ul>
-  </nav>
+  <ul class="pagination pagination-borderless justify-content-center mt-2">
+    {% for page in pages %}
+      <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link"
+                                                                     href="{% url_add_query_params page=page.num response_type=full %}">{{ page.num }}</a>
+      </li>
+    {% endfor %}
+  </ul>
+</nav>
