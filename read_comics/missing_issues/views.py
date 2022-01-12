@@ -252,7 +252,7 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
 
             except Exception as err:
                 logger.error(err)
-                return JsonResponse(status=500, data={'message': "Error occured. Please check logs"})
+                return JsonResponse(status=500, data={'message': "Error occurred. Please check logs"})
 
         if self.obj:
             url = reverse_lazy(
@@ -266,9 +266,14 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
             url = reverse_lazy(self.redirect_url)
 
         if request.GET.get('page'):
-            return HttpResponseRedirect(url + f"?page={request.GET.get('page')}&response_type=partial", )
+            url = url + f"?page={request.GET.get('page')}&response_type=partial"
         else:
-            return HttpResponseRedirect(url + '?response_type=partial')
+            url = url + '?response_type=partial'
+
+        if request.GET.get("q"):
+            url += f"&q={request.GET.get('q')}"
+
+        return HttpResponseRedirect(url)
 
     def process(self):
         raise NotImplementedError
