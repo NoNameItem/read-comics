@@ -27,13 +27,13 @@ app.conf.task_default_priority = 5
 
 app.conf.beat_schedule = {
     # Get new comics from Digital Ocean Space every day at 04:00 AM
-    "get-from-space": {
-        "task": "read_comics.publishers.tasks.PublishersSpaceTask",
-        "schedule": crontab(minute=0, hour="4"),
-        "args": (),
-        "kwargs": {"prefix": "comics/"},
-        "options": {"priority": 0},
-    },
+    # "get-from-space": {
+    #     "task": "read_comics.publishers.tasks.PublishersSpaceTask",
+    #     "schedule": crontab(minute=0, hour="4"),
+    #     "args": (),
+    #     "kwargs": {"prefix": "comics/"},
+    #     "options": {"priority": 0},
+    # },
     # Purge comics deleted from Digital Ocean Space every day at 04:00 AM
     "purge-deleted": {
         "task": "read_comics.issues.tasks.purge_deleted",

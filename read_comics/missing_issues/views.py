@@ -5,7 +5,7 @@ from celery import signature
 from django import http
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
-from django.db.models import QuerySet
+from django.db.models import Q, QuerySet
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.views import View
@@ -97,7 +97,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
 
     def get_queryset(self) -> QuerySet:
         if self.obj:
-            return self.obj.missing_issues.filter(skip=False).order_by(
+            q = self.obj.missing_issues.filter(skip=False).order_by(
                 'publisher_name',
                 'publisher_comicvine_id',
                 'volume_name',
@@ -108,7 +108,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 'comicvine_id'
             )
         else:
-            return MissingIssue.objects.filter(skip=False).order_by(
+            q = MissingIssue.objects.filter(skip=False).order_by(
                 'publisher_name',
                 'publisher_comicvine_id',
                 'volume_name',
@@ -118,6 +118,26 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 'number',
                 'comicvine_id'
             )
+
+        search_query = self.request.GET.get("q")
+
+        if search_query:
+            q = q.filter(
+                Q(publisher_name__icontains=search_query) |
+                Q(volume_name__icontains=search_query) |
+                Q(name__icontains=search_query)
+            )
+
+        return q.order_by(
+            'publisher_name',
+            'publisher_comicvine_id',
+            'volume_name',
+            'volume_start_year',
+            'volume_comicvine_id',
+            'numerical_number',
+            'number',
+            'comicvine_id'
+        )
 
     def get_breadcrumb(self):
         if self.obj:
@@ -148,6 +168,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
             'skip_issue': self.skip_issue_url,
             'ignore_issue': self.ignore_issue_url
         }
+        context['q'] = self.request.GET.get("q")
         return context
 
 

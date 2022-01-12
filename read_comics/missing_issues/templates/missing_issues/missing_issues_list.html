@@ -17,7 +17,8 @@
   {% else %}
     Missing issues
   {% endif %}
-  <span class="badge badge-warning badge-pill badge-round float-right ml-auto" id="this-missing-count-badge">{{ paginator.object_list.count|intcomma }}</span>
+  <span class="badge badge-warning badge-pill badge-round float-right ml-auto"
+        id="this-missing-count-badge">{{ paginator.object_list.count|intcomma }}</span>
 
 {% endblock %}
 
@@ -30,8 +31,26 @@
 {% endblock %}
 
 {% block page_content %}
-<div id="table-wrapper">
-  {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
+  <div class="search-bar mb-2">
+    <!-- input search -->
+    <form id="search-form">
+      <fieldset>
+        <div class="input-group">
+          <input type="text" class="form-control" placeholder="Search..." aria-describedby="search-button"
+                 value="{{ q }}" name="q">
+          <div class="input-group-append" id="search-button">
+            <button class="btn btn-primary" type="submit">
+              <span class="d-none d-sm-block">Search</span>
+              <i class="bx bx-search d-block d-sm-none"></i>
+            </button>
+          </div>
+        </div>
+      </fieldset>
+    </form>
+    <!--/ input search -->
+  </div>
+  <div id="table-wrapper">
+    {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
   </div>
 {% endblock %}
 
