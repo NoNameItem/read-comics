@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    do_space_view,
     ignore_issue_view,
     ignore_publisher_view,
     ignore_volume_view,
@@ -28,6 +29,8 @@ app_name = "missing_issues"
 
 urlpatterns = [
     path("", view=missing_issues_list_view, name="all"),
+
+    path("do_space/", view=do_space_view, name="do_space"),
 
     path("ignored_issues/", view=ignored_issues_list_view, name="ignored_issues"),
     path("ignored_volumes/", view=ignored_volumes_list_view, name="ignored_volumes"),

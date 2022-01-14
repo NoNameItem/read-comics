@@ -238,6 +238,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
         return description
 
     def get_full_name(self, volume_name=None, volume_start_year=None):
+        if not self.volume:
+            return 'unknown'
         if self.name:
             return '%s (%s) #%s %s' % (
                 volume_name or self.volume.name,
@@ -274,11 +276,12 @@ class Issue(ImageMixin, ComicvineSyncModel):
         )
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.tracker.has_changed('number') \
-           or self.tracker.has_changed('name') \
-           or self.tracker.has_changed('volume_id'):
-            self.update_do_metadata()
-        self.set_numerical_number()
+        if self.comicvine_status == self.ComicvineStatus.MATCHED:
+            if self.tracker.has_changed('number') \
+               or self.tracker.has_changed('name') \
+               or self.tracker.has_changed('volume_id'):
+                self.update_do_metadata()
+            self.set_numerical_number()
 
     @property
     def download_link(self):

@@ -1,4 +1,5 @@
 import datetime
+import json
 from typing import Any, List
 
 from celery import signature
@@ -12,6 +13,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
+from issues.tasks import issue_entry_task
 from utils import logging
 from utils.view_mixins import (
     ActiveMenuMixin,
@@ -19,6 +21,7 @@ from utils.view_mixins import (
     ElidedPagesPaginatorMixin,
     IsAdminMixin,
 )
+from volumes.tasks import volume_entry_task
 
 from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
@@ -26,11 +29,12 @@ from read_comics.locations.models import Location
 from read_comics.objects.models import Object
 from read_comics.people.models import Person
 from read_comics.publishers.models import Publisher
-from read_comics.publishers.tasks import publishers_space_task
+from read_comics.publishers.tasks import publisher_entry_task, publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
 
+from .do_spaces import get_level
 from .models import (
     IgnoredIssue,
     IgnoredPublisher,
@@ -443,7 +447,7 @@ class DeleteView(SingleObjectMixin, View):
 
 
 @logging.methods_logged(logger, ['get', ])
-class IgnoredIssueDeleteView(DeleteView):
+class IgnoredIssueDeleteView(IsAdminMixin, DeleteView):
     redirect_url = "missing_issues:ignored_issues"
     model = IgnoredIssue
 
@@ -452,7 +456,7 @@ ignored_issue_delete_view = IgnoredIssueDeleteView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class IgnoredVolumeDeleteView(DeleteView):
+class IgnoredVolumeDeleteView(IsAdminMixin, DeleteView):
     redirect_url = "missing_issues:ignored_volumes"
     model = IgnoredVolume
 
@@ -461,7 +465,7 @@ ignored_volume_delete_view = IgnoredVolumeDeleteView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class IgnoredPublisherDeleteView(DeleteView):
+class IgnoredPublisherDeleteView(IsAdminMixin, DeleteView):
     redirect_url = "missing_issues:ignored_publisher"
     model = IgnoredPublisher
 
@@ -469,7 +473,7 @@ class IgnoredPublisherDeleteView(DeleteView):
 ignored_publisher_delete_view = IgnoredPublisherDeleteView.as_view()
 
 
-class BaseStartWatchView(SingleObjectMixin, View):
+class BaseStartWatchView(IsAdminMixin, SingleObjectMixin, View):
     MISSING_ISSUES_TASK = None
 
     def get(self, request, **kwargs):
@@ -484,7 +488,7 @@ class BaseStartWatchView(SingleObjectMixin, View):
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
-class BaseStopWatchView(SingleObjectMixin, View):
+class BaseStopWatchView(IsAdminMixin, SingleObjectMixin, View):
     def get(self, request, **kwargs):
         obj = self.get_object()
         try:
@@ -496,14 +500,64 @@ class BaseStopWatchView(SingleObjectMixin, View):
         return HttpResponseRedirect(obj.get_absolute_url())
 
 
-class StartReloadFromDOView(View):
-    def get(self, request, **kwargs):
+class StartReloadFromDOView(IsAdminMixin, View):
+    LEVEL_TO_TASK_MAPPING = {
+        1: publishers_space_task,
+        2: publisher_entry_task,
+        3: volume_entry_task,
+        4: issue_entry_task
+    }
+
+    LEVEL_KWARGS = {
+        1: 'prefix'
+    }
+
+    def start_task(self, level, key, size):
+        kwarg_name = self.LEVEL_KWARGS.get(level, 'key')
+        task = self.LEVEL_TO_TASK_MAPPING[level]
+        kwargs = {kwarg_name: key, "size": size}
+        task.delay(**kwargs)
+
+    def post(self, request, **kwargs):
         try:
-            publishers_space_task.delay(prefix='comics/')
-            notifications.success(self.request, "Refresh from DO started")
-        except Exception:
-            notifications.error(self.request, "Could not start refresh from DO, please check logs")
-        return HttpResponseRedirect(request.GET.get("next", reverse_lazy("missing_issues:all")))
+            body_unicode = request.body.decode('utf-8')
+            selected_nodes = json.loads(body_unicode)["data"]
+            for node in selected_nodes:
+                self.start_task(node["level"], node["key"], node["size"])
+
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "error": str(e)})
 
 
 start_reload_from_do_view = StartReloadFromDOView.as_view()
+
+
+class DOSpaceView(IsAdminMixin, View):
+    def get(self, request, **kwargs):
+        prefix = self.request.GET.get("prefix", "")
+
+        objects = get_level(prefix)
+
+        data = []
+        for obj in objects:
+            node = {
+                "text": obj["name"],
+                "full_name": obj["full_name"],
+                "size": obj["size"]
+            }
+
+            if obj["name"].lower().endswith('.cbr') or obj["name"].lower().endswith('.cbz'):
+                node["children"] = []
+                node["icon"] = False
+                node["children_link"] = ''
+            else:
+                node["children"] = True
+                node["children_link"] = f"{reverse_lazy('missing_issues:do_space')}?prefix={obj['full_name']}"
+
+            data.append(node)
+
+        return JsonResponse(data, safe=False)
+
+
+do_space_view = DOSpaceView.as_view()

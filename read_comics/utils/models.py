@@ -367,7 +367,7 @@ class ComicvineSyncModel(models.Model):
             defaults={
               'name': name
             },
-            delay=True
+            delay=False
         )
         return volume
 
@@ -385,7 +385,7 @@ class ComicvineSyncModel(models.Model):
             defaults={
               'name': name
             },
-            delay=True
+            delay=False
         )
         return publisher
 

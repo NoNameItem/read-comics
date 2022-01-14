@@ -24,6 +24,7 @@
 
 {% block vendor_css %}
   {{ block.super }}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/themes/default/style.min.css"/>
 {% endblock %}
 
 {% block page_css %}
@@ -49,19 +50,50 @@
     </form>
     <!--/ input search -->
   </div>
+
+  <button type="button" class="btn btn-primary mb-1" data-toggle="modal" data-target="#doReloadModal">
+    <i class="fad fa-sync" aria-hidden="true"></i> <span class="ml-1"> Reload from DO</span>
+  </button>
+
   <div id="table-wrapper">
     {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
   </div>
 {% endblock %}
 
 {% block modals %}
+  <!-- DO Reload Modal -->
+  <div class="modal fade" id="doReloadModal" tabindex="-1" role="dialog" aria-labelledby="doReloadModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-full" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="doReloadModalLabel">DO reload</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div id="jstree_do"></div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-primary" id="start-reload-btn"><i class="fad fa-sync" aria-hidden="true"></i> <span class="ml-1"> Reload from DO</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
 {% endblock %}
 
 {% block vendor_js %}
   {{ block.super }}
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jstree/3.2.1/jstree.min.js"></script>
 {% endblock %}
 
 {% block page_js %}
   {{ block.super }}
+  <script !src="">
+    const do_root_url = "{% url "missing_issues:do_space" %}";
+    const start_reload_url = "{% url "missing_issues:start_reload_from_do" %}";
+  </script>
   <script src="{% static "missing_issues/js/missing_issues.js" %}"></script>
 {% endblock %}

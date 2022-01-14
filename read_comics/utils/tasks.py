@@ -79,7 +79,7 @@ class BaseProcessEntryTask(Task):
 
     def get_defaults(self, **kwargs):
         defaults = dict()
-        if self.PARENT_ENTRY_MODEL_NAME:
+        if self.PARENT_ENTRY_MODEL_NAME and "parent_entry_id" in kwargs:
             parent_model = apps.get_model(self.PARENT_ENTRY_APP_LABEL, self.PARENT_ENTRY_MODEL_NAME)
             parent = parent_model.objects.get(pk=kwargs['parent_entry_id'])
             defaults[self.PARENT_ENTRY_FIELD] = parent
