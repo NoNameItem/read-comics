@@ -1,4 +1,4 @@
-from django.db.models import Count, F, Q, TextField, Value
+from django.db.models import Count, F, Func, Q, TextField, Value
 from django.db.models.functions import Concat
 
 from read_comics.people.models import Person
@@ -16,6 +16,7 @@ def get_issues_queryset(character, user=None):
             F('volume__name'), Value(' ('), F('volume__start_year'), Value(') #'), F('number'), Value(' '), F('name'),
             output_field=TextField()
         ),
+        group_breaker=Func(F('cover_date'), Value('Month YYYY'), function='to_char', output_field=TextField()),
         desc=F('cover_date')
     )
     if user and user.is_authenticated:
@@ -30,8 +31,9 @@ def get_volumes_queryset(character):
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),
+        group_breaker=F("start_year"),
         desc=Concat(F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count')
+    ).order_by('start_year', 'name', 'id')
 
 
 def get_died_in_queryset(character):

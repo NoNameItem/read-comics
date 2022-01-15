@@ -263,7 +263,7 @@
         <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
           <h3>Issues</h3>
           <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="objects/badges_urls/issue.html" %}
+            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="objects/badges_urls/issue.html" break_groups=True %}
           </div>
         </div>
         <!-- issues tab ends -->
@@ -274,7 +274,7 @@
         <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
           <h3>Volumes</h3>
           <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" %}
+            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
           </div>
         </div>
         <!-- volumes tab ends -->

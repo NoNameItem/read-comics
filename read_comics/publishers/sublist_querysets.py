@@ -32,8 +32,9 @@ def get_volumes_queryset(publisher):
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),
+        group_breaker=F("start_year"),
         desc=Concat(F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('name', 'start_year')
+    ).order_by('start_year', 'name', 'id')
 
 
 def get_characters_queryset(publisher):
