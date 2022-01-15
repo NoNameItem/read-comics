@@ -127,6 +127,7 @@ publisher_issues_list_view = PublisherIssuesListView.as_view()
 class PublisherVolumesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getVolumesPage",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
     parent_model = Publisher

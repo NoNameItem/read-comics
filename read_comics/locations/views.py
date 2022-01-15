@@ -102,7 +102,8 @@ stop_watch_view = StopWatchView.as_view()
 class LocationIssuesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getIssuesPage",
-        'url_template_name': "concepts/badges_urls/issue.html"
+        'url_template_name': "concepts/badges_urls/issue.html",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
     get_queryset_user_param = True
@@ -116,6 +117,7 @@ location_issues_list_view = LocationIssuesListView.as_view()
 class LocationVolumesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getVolumesPage",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
     parent_model = Location

@@ -123,7 +123,8 @@ stop_watch_view = StopWatchView.as_view()
 class CharacterIssuesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getIssuesPage",
-        'url_template_name': "characters/badges_urls/issue.html"
+        'url_template_name': "characters/badges_urls/issue.html",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
     get_queryset_user_param = True
@@ -137,6 +138,7 @@ character_issues_list_view = CharacterIssuesListView.as_view()
 class CharacterVolumesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getVolumesPage",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
     parent_model = Character
