@@ -147,18 +147,18 @@ class BaseMissingIssuesTask(Task):
         except IntegrityError:
             missing_issue = MissingIssue.objects.get(comicvine_id=comicvine_id)
             cover_date = mongo_missing_issue.get('cover_date', None)
-            if cover_date:
-                missing_issue.cover_date = datetime.fromisoformat(cover_date)
-            missing_issue.name = mongo_missing_issue.get('name', None)
-            missing_issue.comicvine_url = mongo_missing_issue.get('comicvine_url', None)
-            missing_issue.number = mongo_missing_issue.get('number', None)
-            missing_issue.volume_comicvine_id = mongo_missing_issue.get('volume_comicvine_id', None)
-            missing_issue.volume_comicvine_url = mongo_missing_issue.get('volume_comicvine_url', None)
-            missing_issue.volume_name = mongo_missing_issue.get('volume_name', None)
-            missing_issue.volume_start_year = mongo_missing_issue.get('volume_start_year', None)
-            missing_issue.publisher_name = mongo_missing_issue.get('publisher_name', None)
-            missing_issue.publisher_comicvine_id = mongo_missing_issue.get('publisher_comicvine_id', None)
-            missing_issue.publisher_comicvine_url = mongo_missing_issue.get('publisher_comicvine_url', None)
+        if cover_date:
+            missing_issue.cover_date = datetime.fromisoformat(cover_date)
+        missing_issue.name = mongo_missing_issue.get('name', None)
+        missing_issue.comicvine_url = mongo_missing_issue.get('comicvine_url', None)
+        missing_issue.number = mongo_missing_issue.get('number', None)
+        missing_issue.volume_comicvine_id = mongo_missing_issue.get('volume_comicvine_id', None)
+        missing_issue.volume_comicvine_url = mongo_missing_issue.get('volume_comicvine_url', None)
+        missing_issue.volume_name = mongo_missing_issue.get('volume_name', None)
+        missing_issue.volume_start_year = mongo_missing_issue.get('volume_start_year', None)
+        missing_issue.publisher_name = mongo_missing_issue.get('publisher_name', None)
+        missing_issue.publisher_comicvine_id = mongo_missing_issue.get('publisher_comicvine_id', None)
+        missing_issue.publisher_comicvine_url = mongo_missing_issue.get('publisher_comicvine_url', None)
         if Issue.objects.filter(comicvine_id=comicvine_id).exists():
             MissingIssue.objects.filter(comicvine_id=comicvine_id).delete()
             return None
