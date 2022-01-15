@@ -138,6 +138,9 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context['teams'] = issue.teams.filter(comicvine_status='MATCHED').all()
         context['disbanded_teams'] = issue.disbanded_teams.filter(comicvine_status='MATCHED').all()
 
+        if issue.volume:
+            context['volume_issue_count'] = issue.volume.issues.count() + issue.volume.missing_issues.count()
+
         return context
 
     def get_ordering(self):

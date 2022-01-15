@@ -30,7 +30,10 @@
               <img src="{{ issue.thumb_size_url }}" class="detail-main-image rounded bg-white image-full-size"
                    alt="image" width="120" data-full-size-src="{{ issue.full_size_url }}">
               <div class="detail-header-text pr-md-2 d-none d-md-block">
-                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}</h4>
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}
+                  {% if volume_issue_count %}
+                    <small>(of {{ volume_issue_count }})</small>
+                  {% endif %} </h4>
                 <h6 class="detail-header-text-color">{{ issue.name|default_if_none:'' }}</h6>
               </div>
               <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
@@ -249,7 +252,9 @@
                     <strong>Number: </strong>
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
-                    {{ issue.number|default_if_none:'' }}
+                    {{ issue.number|default_if_none:'' }} {% if volume_issue_count %}
+                    <small>(of {{ volume_issue_count }})</small>
+                  {% endif %}
                   </div>
                 </div>
 
