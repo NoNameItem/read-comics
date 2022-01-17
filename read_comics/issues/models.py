@@ -256,7 +256,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     def update_do_metadata(self, volume_name=None, volume_start_year=None):
         filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}".replace(':', '*_*')\
-            .replace('/', '*@*').replace('\x85', '... ')
+            .replace('/', '*@*').replace('\x85', '... ').replace('\t', ' ')
         filename_ascii = unidecode(filename)
         s3_client = boto3.client(
             's3',

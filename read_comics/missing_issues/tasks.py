@@ -146,7 +146,7 @@ class BaseMissingIssuesTask(Task):
             )
         except IntegrityError:
             missing_issue = MissingIssue.objects.get(comicvine_id=comicvine_id)
-            cover_date = mongo_missing_issue.get('cover_date', None)
+        cover_date = mongo_missing_issue.get('cover_date', None)
         if cover_date:
             missing_issue.cover_date = datetime.fromisoformat(cover_date)
         missing_issue.name = mongo_missing_issue.get('name', None)
