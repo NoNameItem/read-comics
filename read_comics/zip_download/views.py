@@ -18,7 +18,7 @@ class BaseZipDownloadView(View):
 
     @staticmethod
     def escape_file_name(filename):
-        return filename.replace("/", ' - ').replace(":", ' - ')
+        return filename.replace("/", ' - ').replace(":", ' - ').replace('\t', ' ').replace('\n', ' ')
 
     def get_issues_queryset(self):
         return self.sublist_querysets.get_issues_queryset(self.obj)
@@ -41,7 +41,7 @@ class BaseZipDownloadView(View):
         filename += issue.number
 
         if issue.name:
-            filename += f" {issue.name}"
+            filename += f" {self.escape_file_name(issue.name)}"
 
         filename += issue.space_key[-4:]
 
@@ -62,7 +62,7 @@ class BaseZipDownloadView(View):
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(str(self.obj).replace('\t', '').replace('\n', ''))
+        return self.escape_file_name(str(self.obj))
 
     def get(self, request, *args, **kwargs):
         files = self.get_files()
