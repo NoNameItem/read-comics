@@ -30,7 +30,7 @@ class IgnoredIssue(models.Model):
     number = models.CharField(max_length=100, null=True)
     cover_date = models.DateField(null=True)
 
-    volume_comicvine_id = models.IntegerField(unique=True)
+    volume_comicvine_id = models.IntegerField(null=True)
     volume_comicvine_url = models.URLField(max_length=1000, null=True)
     volume_name = models.TextField()
     volume_start_year = models.CharField(max_length=100, null=True)
