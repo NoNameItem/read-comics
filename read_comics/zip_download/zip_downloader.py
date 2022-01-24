@@ -18,8 +18,8 @@ class Downloader:
         return link[0], f
 
     def __iter__(self):
-        pool = gevent.pool.Pool(1)
-        for file in pool.imap_unordered(self.download_file, self.links, maxsize=2):
+        pool = gevent.pool.Pool(5)
+        for file in pool.imap_unordered(self.download_file, self.links, maxsize=5):
             # print("Yielded: " + file[0])
             yield file[0], file[1]
 
