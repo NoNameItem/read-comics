@@ -330,7 +330,7 @@ class StoryArcDownloadView(BaseZipDownloadView):
             files = [
                 (
                     self.escape_file_name(
-                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
+                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name or ''}".rstrip(' ')
                         + x.space_key[-4:]
                     ),
                     x.download_link
