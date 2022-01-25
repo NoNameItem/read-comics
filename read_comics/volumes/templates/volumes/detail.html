@@ -37,9 +37,11 @@
               </div>
               <div id="watch-mark">
                 {% if watched %}
-                  <a href="{% url "volumes:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
-                  {% elif user.is_staff or user.is_superuser %}
-                  <a href="{% url "volumes:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                  <a href="{% url "volumes:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "volumes:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
                 {% endif %}
               </div>
             </div>
@@ -206,12 +208,14 @@
               <ul
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
-                <li class="nav-item pb-1">
-                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ volume.download_link }}">
-                    <i class="fad fa-download"></i> <span
-                    class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                  </a>
-                </li>
+                {% if request.user.is_authenticated %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ volume.download_link }}">
+                      <i class="fad fa-download"></i> <span
+                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
+                    </a>
+                  </li>
+                {% endif %}
                 {% if request.user.is_authenticated and not finished %}
                   <li class="nav-item pb-1" id="mark-finished-btn-nav">
                     <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">

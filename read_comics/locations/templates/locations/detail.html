@@ -34,9 +34,11 @@
               </div>
               <div id="watch-mark">
                 {% if watched %}
-                  <a href="{% url "locations:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
-                  {% elif user.is_staff or user.is_superuser %}
-                  <a href="{% url "locations:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                  <a href="{% url "locations:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "locations:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
                 {% endif %}
               </div>
             </div>
@@ -50,8 +52,8 @@
                 <p>{{ location.short_description|default_if_none:"" }}</p>
               </div>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 <li class="nav-item pb-1">
                   <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
                      href="#info"
@@ -65,8 +67,8 @@
                        href="#issues"
                        aria-controls="issues" role="tab" aria-selected="false">
                       <i class="fad fa-book-open" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Issues </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count|intcomma }}</span></a>
+                      class="d-none d-md-block pl-50"> Issues </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -77,8 +79,8 @@
                        href="#volumes"
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
+                      class="d-none d-md-block pl-50"> Volumes </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -100,19 +102,21 @@
                        href="#tech"
                        aria-controls="tech" role="tab" aria-selected="false">
                       <i class="fad fa-cogs"></i> <span
-                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                      class="d-none d-md-block pl-50"> Technical info</span></a>
                   </li>
                 {% endif %}
               </ul>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
-                <li class="nav-item pb-1">
-                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ location.download_link }}">
-                    <i class="fad fa-download"></i> <span
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
+                {% if request.user.is_authenticated %}
+                  <li class="nav-item pb-1">
+                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ location.download_link }}">
+                      <i class="fad fa-download"></i> <span
                       class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                  </a>
-                </li>
+                    </a>
+                  </li>
+                {% endif %}
               </ul>
             </div>
             <!-- detail nav tabs ends -->
@@ -165,7 +169,8 @@
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
                     {% if location.first_issue %}
-                      <a href="{% url "locations:issue_detail" location.slug location.first_issue.slug %}">{{ location.first_issue.volume.name }}
+                      <a
+                        href="{% url "locations:issue_detail" location.slug location.first_issue.slug %}">{{ location.first_issue.volume.name }}
                         #{{ location.first_issue.number }} {{ location.first_issue.name|default_if_none:'' }}</a>
                     {% else %}
                       {{ location.first_issue_name }}
@@ -181,7 +186,8 @@
 
               </div>
             </div>
-            <img src="{{ location.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+            <img src="{{ location.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size"
+                 width="100%">
           </div>
           <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
             {{ location.description|default:"<p>No description</p>"|safe }}
