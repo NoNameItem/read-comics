@@ -225,6 +225,7 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+            {% include "issues/blocks/finished_progress.html" with total_count=base_total_count finished_count=finished_count finished_percent=finished_percent %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">

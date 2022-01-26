@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -44,13 +45,14 @@ locations_list_view = LocationsListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class LocationDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Location
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "location"
     template_name = "locations/detail.html"
     active_menu_item = 'locations'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         location = self.object
@@ -64,13 +66,8 @@ class LocationDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(LocationDetailView, self).get_context_data(**kwargs)
         location = self.object
 
-        context['issues_count'] = sublist_querysets.get_issues_queryset(location).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(location).count()
-
-        context['size'] = location.issues.aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(location, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(location)))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(location)))
 
         context['missing_issues_count'] = location.missing_issues.count()
 
@@ -132,23 +129,19 @@ class LocationIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'locations'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.location = None
-
     def get_queryset(self):
-        self.location = get_object_or_404(Location, slug=self.kwargs.get('location_slug'))
-        self.base_queryset = self.location.issues.all()
+        self.base_object = get_object_or_404(Location, slug=self.kwargs.get('location_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('locations:issue_detail', args=(self.location.slug, issue.slug))
+        return reverse_lazy('locations:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
-        location = self.location
+        location = self.base_object
         issue = self.object
 
         return [

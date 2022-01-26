@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -51,13 +52,14 @@ character_list_view = CharacterListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class CharacterDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Character
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "character"
     template_name = "characters/detail.html"
     active_menu_item = 'characters'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         character = self.object
@@ -71,7 +73,6 @@ class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(CharacterDetailView, self).get_context_data(**kwargs)
         character = self.object
 
-        context['issues_count'] = sublist_querysets.get_issues_queryset(character).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(character).count()
         context['died_in_count'] = sublist_querysets.get_died_in_queryset(character).count()
         context['authors_count'] = sublist_querysets.get_authors_queryset(character).count()
@@ -81,17 +82,14 @@ class CharacterDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context['team_friends_count'] = sublist_querysets.get_team_friends_queryset(character).count()
         context['team_enemies_count'] = sublist_querysets.get_team_enemies_queryset(character).count()
 
-        context['size'] = character.issues.aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(character, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(character)))
-        context.update(get_first_page('died_in', sublist_querysets.get_died_in_queryset(character)))
-        context.update(get_first_page('authors', sublist_querysets.get_authors_queryset(character)))
-        context.update(get_first_page('enemies', sublist_querysets.get_character_enemies_queryset(character)))
-        context.update(get_first_page('friends', sublist_querysets.get_character_friends_queryset(character)))
-        context.update(get_first_page('teams', sublist_querysets.get_teams_queryset(character)))
-        context.update(get_first_page('team_friends', sublist_querysets.get_team_friends_queryset(character)))
-        context.update(get_first_page('team_enemies', sublist_querysets.get_team_enemies_queryset(character)))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(character)))
+        context.update(get_first_page_old('died_in', sublist_querysets.get_died_in_queryset(character)))
+        context.update(get_first_page_old('authors', sublist_querysets.get_authors_queryset(character)))
+        context.update(get_first_page_old('enemies', sublist_querysets.get_character_enemies_queryset(character)))
+        context.update(get_first_page_old('friends', sublist_querysets.get_character_friends_queryset(character)))
+        context.update(get_first_page_old('teams', sublist_querysets.get_teams_queryset(character)))
+        context.update(get_first_page_old('team_friends', sublist_querysets.get_team_friends_queryset(character)))
+        context.update(get_first_page_old('team_enemies', sublist_querysets.get_team_enemies_queryset(character)))
 
         context['missing_issues_count'] = character.missing_issues.filter(skip=False).count()
 
@@ -237,29 +235,25 @@ class CharacterIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'characters'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.character = None
-
     def get_queryset(self):
-        self.character = get_object_or_404(Character, slug=self.kwargs.get('character_slug'))
-        self.base_queryset = self.character.issues.all()
+        self.base_object = get_object_or_404(Character, slug=self.kwargs.get('character_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('characters:issue_detail', args=(self.character.slug, issue.slug))
+        return reverse_lazy('characters:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
-        character = self.character
+        character = self.base_object
         issue = self.object
 
         return [
             {'url': reverse_lazy("characters:list"), 'text': 'Characters'},
             {
-                'url': self.character.get_absolute_url(),
+                'url': self.base_object.get_absolute_url(),
                 'text': character.name
             },
             {

@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -44,7 +45,7 @@ publisher_list_view = PublisherListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class PublisherDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Publisher
     queryset = Publisher.objects.all()
     slug_field = "slug"
@@ -52,6 +53,7 @@ class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     context_object_name = "publisher"
     template_name = "publishers/detail.html"
     active_menu_item = 'publishers'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         publisher = self.object
@@ -68,19 +70,15 @@ class PublisherDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(PublisherDetailView, self).get_context_data(**kwargs)
         publisher = self.object
 
-        context['issues_count'] = sublist_querysets.get_issues_queryset(publisher).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(publisher).count()
         context['characters_count'] = sublist_querysets.get_characters_queryset(publisher).count()
         context['story_arcs_count'] = sublist_querysets.get_story_arcs_queryset(publisher).count()
         context['teams_count'] = sublist_querysets.get_teams_queryset(publisher).count()
 
-        context['size'] = sublist_querysets.get_issues_queryset(publisher).aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(publisher, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(publisher)))
-        context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(publisher)))
-        context.update(get_first_page('story_arcs', sublist_querysets.get_story_arcs_queryset(publisher)))
-        context.update(get_first_page('teams', sublist_querysets.get_teams_queryset(publisher)))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(publisher)))
+        context.update(get_first_page_old('characters', sublist_querysets.get_characters_queryset(publisher)))
+        context.update(get_first_page_old('story_arcs', sublist_querysets.get_story_arcs_queryset(publisher)))
+        context.update(get_first_page_old('teams', sublist_querysets.get_teams_queryset(publisher)))
 
         context['missing_issues_count'] = publisher.missing_issues.filter(skip=False).count()
 
@@ -178,20 +176,16 @@ class PublisherIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'publishers'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.publisher = None
-
     def get_queryset(self):
-        self.publisher = get_object_or_404(Publisher, slug=self.kwargs.get('publisher_slug'))
-        self.base_queryset = sublist_querysets.get_issues_queryset(self.publisher)
+        self.base_object = get_object_or_404(Publisher, slug=self.kwargs.get('publisher_slug'))
+        self.base_queryset = sublist_querysets.get_issues_queryset(self.base_object)
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('publishers:issue_detail', args=(self.publisher.slug, issue.slug))
+        return reverse_lazy('publishers:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
         issue = self.object
@@ -199,11 +193,11 @@ class PublisherIssueDetailView(IssueDetailView):
         return [
             {'url': reverse_lazy("publishers:list"), 'text': 'Publishers'},
             {
-                'url': self.publisher.get_absolute_url(),
-                'text': self.publisher
+                'url': self.base_object.get_absolute_url(),
+                'text': self.base_object
             },
             {
-                'url': reverse_lazy("volumes:issue_detail", args=(self.publisher, issue.slug)),
+                'url': reverse_lazy("publishers:issue_detail", args=(self.base_object, issue.slug)),
                 'text': f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
             }
         ]

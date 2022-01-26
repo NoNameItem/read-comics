@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -44,13 +45,14 @@ concepts_list_view = ConceptsListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class ConceptDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class ConceptDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Concept
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "concept"
     template_name = "concepts/detail.html"
     active_menu_item = 'concepts'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         concept = self.object
@@ -63,14 +65,9 @@ class ConceptDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     def get_context_data(self, **kwargs):
         context = super(ConceptDetailView, self).get_context_data(**kwargs)
         concept = self.object
-
-        context['issues_count'] = sublist_querysets.get_issues_queryset(concept).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(concept).count()
 
-        context['size'] = concept.issues.aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(concept, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(concept)))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(concept)))
 
         context['missing_issues_count'] = concept.missing_issues.filter(skip=False).count()
 
@@ -132,23 +129,19 @@ class ConceptIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'concepts'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.concept = None
-
     def get_queryset(self):
-        self.concept = get_object_or_404(Concept, slug=self.kwargs.get('concept_slug'))
-        self.base_queryset = self.concept.issues.all()
+        self.base_object = get_object_or_404(Concept, slug=self.kwargs.get('concept_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('concepts:issue_detail', args=(self.concept.slug, issue.slug))
+        return reverse_lazy('concepts:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
-        concept = self.concept
+        concept = self.base_object
         issue = self.object
 
         return [

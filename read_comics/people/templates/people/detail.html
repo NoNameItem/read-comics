@@ -61,17 +61,7 @@
                     <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
                 </li>
 
-                {% if issues_count > 0 %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1" id="issues-tab" data-toggle="tab"
-                       href="#issues"
-                       aria-controls="issues" role="tab" aria-selected="false">
-                      <i class="fad fa-book-open" aria-hidden="true"></i> <span
-                      class="d-none d-md-block pl-50"> Issues </span><span
-                      class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count|intcomma }}</span></a>
-
-                  </li>
-                {% endif %}
+                {% include 'issues/blocks/issues_button.html' %}
 
                 {% if volumes_count > 0 %}
                   <li class="nav-item pb-1">
@@ -121,14 +111,7 @@
               <ul
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ person.download_link }}">
-                      <i class="fad fa-download"></i> <span
-                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                    </a>
-                  </li>
-                {% endif %}
+                {% include "issues/blocks/download_button.html" %}
               </ul>
             </div>
             <!-- detail nav tabs ends -->
@@ -142,6 +125,7 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+          {% include "issues/blocks/finished_progress.html" with total_count=issues_info.count finished_count=issues_info.finished_issues_count finished_percent=issues_info.finished_percent %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">
@@ -290,16 +274,7 @@
         <!-- tech info tab ends -->
       {% endif %}
 
-      {% if issues_count %}
-        <!-- issues tab starts -->
-        <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
-          <h3>Issues</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="people/badges_urls/issue.html" break_groups=True %}
-          </div>
-        </div>
-        <!-- issues tab ends -->
-      {% endif %}
+      {% include "issues/blocks/issues_tab.html" with url_template_name="people/badges_urls/issue.html" %}
 
       {% if volumes_count %}
         <!-- volumes tab starts -->

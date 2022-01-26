@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -44,13 +45,14 @@ teams_list_view = TeamsListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class TeamDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class TeamDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Team
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "team"
     template_name = "teams/detail.html"
     active_menu_item = 'teams'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         team = self.object
@@ -64,21 +66,17 @@ class TeamDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(TeamDetailView, self).get_context_data(**kwargs)
         team = self.object
 
-        context['issues_count'] = sublist_querysets.get_issues_queryset(team).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(team).count()
         context['characters_count'] = sublist_querysets.get_characters_queryset(team).count()
         context['enemies_count'] = sublist_querysets.get_character_enemies_queryset(team).count()
         context['friends_count'] = sublist_querysets.get_character_friends_queryset(team).count()
         context['disbanded_in_count'] = sublist_querysets.get_disbanded_in_queryset(team).count()
 
-        context['size'] = team.issues.aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(team, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(team)))
-        context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(team)))
-        context.update(get_first_page('friends', sublist_querysets.get_character_friends_queryset(team)))
-        context.update(get_first_page('enemies', sublist_querysets.get_character_enemies_queryset(team)))
-        context.update(get_first_page('disbanded_in', sublist_querysets.get_disbanded_in_queryset(team)))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(team)))
+        context.update(get_first_page_old('characters', sublist_querysets.get_characters_queryset(team)))
+        context.update(get_first_page_old('friends', sublist_querysets.get_character_friends_queryset(team)))
+        context.update(get_first_page_old('enemies', sublist_querysets.get_character_enemies_queryset(team)))
+        context.update(get_first_page_old('disbanded_in', sublist_querysets.get_disbanded_in_queryset(team)))
 
         context['missing_issues_count'] = team.missing_issues.filter(skip=False).count()
 
@@ -188,30 +186,26 @@ class TeamIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'characters'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.team = None
-
     def get_queryset(self):
-        self.team = get_object_or_404(Team, slug=self.kwargs.get('team_slug'))
-        self.base_queryset = self.team.issues.all()
+        self.base_object = get_object_or_404(Team, slug=self.kwargs.get('team_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('teams:issue_detail', args=(self.team.slug, issue.slug))
+        return reverse_lazy('teams:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
         return [
             {'url': reverse_lazy("teams:list"), 'text': 'Teams'},
             {
-                'url': self.team.get_absolute_url(),
-                'text': self.team.name
+                'url': self.base_object.get_absolute_url(),
+                'text': self.base_object.name
             },
             {
-                'url': reverse_lazy("teams:issue_detail", args=(self.team.slug, self.object.slug)),
+                'url': reverse_lazy("teams:issue_detail", args=(self.base_object.slug, self.object.slug)),
                 'text': f"{self.object.volume.name} ({self.object.volume.start_year}) #{self.object.number}"
             }
         ]

@@ -7,6 +7,9 @@
   <section id="widgets-Statistics">
 
     <div class="row justify-content-center">
+      <div class="col-12">
+        {% include "issues/blocks/finished_progress.html" with finished_count=finished_issues_count total_count=matched_stats.issues_count finished_percent=finished_percent %}
+      </div>
       <div class="col-xl-3 col-sm-6">
         <div class="card text-center div-link">
           <a class="div-default-link" href="{% url "issues:list" %}"></a>

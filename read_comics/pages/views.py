@@ -1,7 +1,7 @@
 import datetime
 from typing import Any, Dict
 
-from django.db.models import DateTimeField, Max
+from django.db.models import Count, DateTimeField, Max, Q
 from django.db.models.functions import Trunc
 from django.views.generic import TemplateView
 from utils.comicvine_stats import get_matched_stats
@@ -31,6 +31,13 @@ class HomeView(TemplateView):
         context['last_update_day'] = last_update_day
         context['new_issues'] = new_issues
         context['new_issues_count'] = new_issues.count()
+
+        if self.request.user.is_authenticated:
+            context['finished_issues_count'] = Issue.objects.matched().annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context['finished_percent'] = \
+                context['finished_issues_count'] / context['matched_stats']['issues_count'] * 100
 
         return context
 

@@ -1,10 +1,11 @@
-from django.db.models import Count, Sum
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django.urls import reverse_lazy
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -44,13 +45,14 @@ people_list_view = PeopleListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class PersonDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class PersonDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Person
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "person"
     template_name = "people/detail.html"
     active_menu_item = 'people'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         obj = self.object
@@ -64,15 +66,10 @@ class PersonDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(PersonDetailView, self).get_context_data(**kwargs)
         obj = self.object
 
-        context['issues_count'] = sublist_querysets.get_issues_queryset(obj).count()
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(obj).count()
         context['characters_count'] = obj.created_characters.count()
-
-        context['size'] = obj.issues.aggregate(v=Sum('size'))['v']
-
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(obj, self.request.user)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(obj)))
-        context.update(get_first_page('created_characters', obj.created_characters.all()))
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(obj)))
+        context.update(get_first_page_old('created_characters', obj.created_characters.all()))
 
         context['missing_issues_count'] = obj.missing_issues.filter(skip=False).count()
 
@@ -146,23 +143,19 @@ class PersonIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'people'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.person = None
-
     def get_queryset(self):
-        self.person = get_object_or_404(Person, slug=self.kwargs.get('person_slug'))
-        self.base_queryset = self.person.issues.all()
+        self.base_object = get_object_or_404(Person, slug=self.kwargs.get('person_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('people:issue_detail', args=(self.person.slug, issue.slug))
+        return reverse_lazy('people:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
-        person = self.person
+        person = self.base_object
         issue = self.object
 
         return [

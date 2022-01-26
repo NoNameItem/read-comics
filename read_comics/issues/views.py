@@ -140,6 +140,14 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context['teams'] = issue.teams.filter(comicvine_status='MATCHED').all()
         context['disbanded_teams'] = issue.disbanded_teams.filter(comicvine_status='MATCHED').all()
 
+        if self.request.user.is_authenticated:
+            context['base_total_count'] = self.base_queryset.count()
+            context['finished_count'] = self.base_queryset.annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context['finished_percent'] = context['finished_count'] / context['base_total_count'] * 100
+            context['base_object'] = self.base_object
+
         return context
 
     def get_ordering(self):
@@ -365,6 +373,10 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
     def issue_to_url(self, issue):
         return issue.get_absolute_url() + f'?ordering={self.get_ordering()}'
+
+    def __init__(self, **kwargs):
+        super(IssueDetailView, self).__init__(**kwargs)
+        self.base_object = None
 
 
 issue_detail_view = IssueDetailView.as_view()
