@@ -1,5 +1,6 @@
 import re
 
+from django.apps import apps
 from issues.tasks import issues_space_task
 from utils.tasks import (
     BaseComicvineInfoTask,
@@ -32,6 +33,22 @@ volume_entry_task = celery_app.register_task(VolumeProcessEntryTask())
 class VolumesSpaceTask(BaseSpaceTask):
     PROCESS_ENTRY_TASK = volume_entry_task
     LOGGER_NAME = "VolumesSpaceTask"
+
+    def get_processed_keys(self):
+        model = apps.get_model('issues', 'Issue')
+        issues_keys = set(model.objects.matched().values_list('space_key', flat=True))
+
+        processed_keys = []
+        for volume, _ in self.s3objects:
+            new_issues = [
+                x
+                for x in self.s3result
+                if x.key.startswith(volume) and x.key not in issues_keys and x.key != volume
+            ]
+            if not new_issues:
+                processed_keys.append(volume)
+
+        return processed_keys
 
 
 volumes_space_task = celery_app.register_task(VolumesSpaceTask())

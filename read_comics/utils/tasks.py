@@ -24,12 +24,13 @@ class BaseSpaceTask(Task):
     def run(self, *args, **kwargs):
         self._logger.debug("Starting processing prefix {0}".format(kwargs['prefix']))
         s3objects_collection = self._bucket.objects.filter(Prefix=kwargs['prefix'])
-        s3objects = [
+        self.s3result = list(s3objects_collection)
+        self.s3objects = [
             (x.key, x.size)
             for x in s3objects_collection
             if self._regexp.search(x.key.removeprefix(kwargs['prefix']).lower())
         ]
-        for s3object in s3objects:
+        for s3object in self.s3objects:
             processed_keys = self.get_processed_keys()
             if s3object[0] not in processed_keys:
                 if self.PROCESS_ENTRY_TASK:
@@ -54,6 +55,8 @@ class BaseSpaceTask(Task):
         self._bucket = s3.Bucket(settings.DO_SPACE_DATA_BUCKET)
         self._regexp = re.compile(r"^.[^\/]+(\/|.cb.)$")
         self._logger = get_task_logger(self.LOGGER_NAME)
+        self.s3result = None
+        self.s3objects = None
 
 
 class BaseProcessEntryTask(Task):
