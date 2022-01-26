@@ -60,7 +60,7 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
 issues_list_view = IssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+# @logging.methods_logged(logger, ['get', ])
 class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Issue
     queryset = Issue.objects.select_related('volume', 'volume__publisher')
@@ -101,6 +101,8 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         context['previous_link'] = self.get_previous_link()
         context['next_link'] = self.get_next_link()
+        context['number_in_sublist'] = self.get_previous_queryset().count() + 1
+        context['total_in_sublist'] = self.base_queryset.count()
 
         context['first_appearance_characters_count'] = issue.first_appearance_characters.\
             filter(comicvine_status='MATCHED').count()
@@ -143,8 +145,15 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     def get_ordering(self):
         return self.request.GET.get('ordering', 'cover_date')
 
-    # noinspection DuplicatedCode
     def get_next_link(self):
+        issues = self.get_next_queryset()
+        if issues.count():
+            return self.issue_to_url(issues[:1][0])
+        else:
+            return None
+
+    # noinspection DuplicatedCode
+    def get_next_queryset(self):
         issue = self.object
         ordering = self.get_ordering()
         issues = None
@@ -174,7 +183,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__lt=issue.number)
                     )
-                ).order_by('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')[:1]
+                ).order_by('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')
             elif ordering == 'cover_date':
                 # ('-cover_date', '-volume', '-volume__start_year', '-number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -200,7 +209,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__gt=issue.number)
                     )
-                ).order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number')[:1]
+                ).order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number')
             elif ordering == 'name':
                 # ('-volume__name', '-volume__start_year', '-number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -220,7 +229,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__gt=issue.number)
                     )
-                ).order_by('volume__name', 'volume__start_year', 'numerical_number', 'number')[:1]
+                ).order_by('volume__name', 'volume__start_year', 'numerical_number', 'number')
             elif ordering == '-name':
                 # ('volume__name', 'volume__start_year', 'number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -240,16 +249,20 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__lt=issue.number)
                     )
-                ).order_by('-volume__name', '-volume__start_year', '-numerical_number', '-number')[:1]
+                ).order_by('-volume__name', '-volume__start_year', '-numerical_number', '-number')
         except ValueError:
-            pass
-        if issues:
-            return self.issue_to_url(issues[0])
+            issues = self.base_queryset.none()
+        return issues
+
+    def get_previous_link(self):
+        issues = self.get_previous_queryset()
+        if issues.count():
+            return self.issue_to_url(issues[:1][0])
         else:
             return None
 
     # noinspection DuplicatedCode
-    def get_previous_link(self):
+    def get_previous_queryset(self):
         issue = self.object
         ordering = self.get_ordering()
         issues = None
@@ -279,7 +292,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__lt=issue.number)
                     )
-                ).order_by('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')[:1]
+                ).order_by('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')
             elif ordering == '-cover_date':
                 # ('-cover_date', '-volume', '-volume__start_year', '-number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -305,7 +318,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__gt=issue.number)
                     )
-                ).order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number')[:1]
+                ).order_by('cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number')
             elif ordering == '-name':
                 # ('-volume__name', '-volume__start_year', '-number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -325,7 +338,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__gt=issue.number)
                     )
-                ).order_by('volume__name', 'volume__start_year', 'numerical_number', 'number')[:1]
+                ).order_by('volume__name', 'volume__start_year', 'numerical_number', 'number')
             elif ordering == 'name':
                 # ('volume__name', 'volume__start_year', 'number')
                 issues = self.base_queryset.exclude(pk=issue.pk).filter(
@@ -345,13 +358,10 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                         Q(numerical_number=issue.numerical_number) &
                         Q(number__lt=issue.number)
                     )
-                ).order_by('-volume__name', '-volume__start_year', '-numerical_number', '-number')[:1]
+                ).order_by('-volume__name', '-volume__start_year', '-numerical_number', '-number')
         except ValueError:
-            pass
-        if issues:
-            return self.issue_to_url(issues[0])
-        else:
-            return None
+            issues = self.base_queryset.none()
+        return issues
 
     def issue_to_url(self, issue):
         return issue.get_absolute_url() + f'?ordering={self.get_ordering()}'
