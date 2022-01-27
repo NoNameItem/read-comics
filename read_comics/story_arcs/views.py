@@ -362,6 +362,8 @@ class StoryArcMarkFinishedView(View, LoginRequiredMixin):
                     },
                     request=self.request
                 )
+            else:
+                finished_stats = ""
 
             return JsonResponse({'status': "success", 'story_arc_name': story_arc.name,
                                  'date': formats.localize(datetime.date.today(), use_l10n=True),

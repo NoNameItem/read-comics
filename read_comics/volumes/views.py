@@ -6,6 +6,7 @@ from django.db import IntegrityError
 from django.db.models import Count, F, Q
 from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views import View
@@ -346,10 +347,28 @@ class VolumeMarkFinishedView(View, LoginRequiredMixin):
             volume = get_object_or_404(Volume, slug=slug)
             user = request.user
             user.finished_issues.add(*volume.issues.all())
-            # r = MODELS.ReadIssue(profile=profile, issue=issue)
-            # r.save()
+
+            if self.request.user.is_authenticated:
+                total_count = volume.issues.count()
+                finished_count = volume.issues.annotate(
+                    finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+                ).exclude(finished_flg=0).count()
+                finished_percent = finished_count / total_count * 100
+                finished_stats = render_to_string(
+                    "issues/blocks/finished_progress.html",
+                    {
+                        "finished_count": finished_count,
+                        "finished_percent": finished_percent,
+                        "total_count": total_count
+                    },
+                    request=self.request
+                )
+            else:
+                finished_stats = ""
+
             return JsonResponse({'status': "success", 'volume_name': f"{volume.name} ({volume.start_year})",
-                                 'date': formats.localize(datetime.date.today(), use_l10n=True)
+                                 'date': formats.localize(datetime.date.today(), use_l10n=True),
+                                 "finished_stats": finished_stats
                                  })
         except IntegrityError:
             return JsonResponse({'status': 'error', 'message': 'You already marked this issue as finished'})

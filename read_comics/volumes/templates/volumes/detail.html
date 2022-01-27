@@ -200,6 +200,14 @@
                 role="tablist">
 
                 {% include "issues/blocks/download_button.html" %}
+                {% if request.user.is_authenticated and not finished %}
+                  <li class="nav-item pb-1" id="mark-finished-btn-nav">
+                    <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">
+                      <i class="fad fa-check-circle"></i> <span
+                      class="d-none d-md-block pl-50"> Mark as finished</span>
+                    </button>
+                  </li>
+                {% endif %}
               </ul>
             </div>
             <!-- detail nav tabs ends -->
