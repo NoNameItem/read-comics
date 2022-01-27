@@ -16,7 +16,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(HomeView, self).get_context_data(**kwargs)
         context['matched_stats'] = get_matched_stats()
-        context['missing_issues_count'] = MissingIssue.objects.all().count()
+        context['missing_issues_count'] = MissingIssue.objects.filter(skip=False).count()
 
         last_update_day = Issue.objects.aggregate(
             max_day=Max(Trunc('created_dt', 'day', output_field=DateTimeField()))
