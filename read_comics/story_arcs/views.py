@@ -5,6 +5,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views import View
@@ -345,10 +346,26 @@ class StoryArcMarkFinishedView(View, LoginRequiredMixin):
             story_arc = get_object_or_404(StoryArc, slug=slug)
             user = request.user
             user.finished_issues.add(*story_arc.issues.all())
-            # r = MODELS.ReadIssue(profile=profile, issue=issue)
-            # r.save()
+
+            if self.request.user.is_authenticated:
+                total_count = story_arc.issues.count()
+                finished_count = story_arc.issues.annotate(
+                    finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+                ).exclude(finished_flg=0).count()
+                finished_percent = finished_count / total_count * 100
+                finished_stats = render_to_string(
+                    "issues/blocks/finished_progress.html",
+                    {
+                        "finished_count": finished_count,
+                        "finished_percent": finished_percent,
+                        "total_count": total_count
+                    },
+                    request=self.request
+                )
+
             return JsonResponse({'status': "success", 'story_arc_name': story_arc.name,
-                                 'date': formats.localize(datetime.date.today(), use_l10n=True)
+                                 'date': formats.localize(datetime.date.today(), use_l10n=True),
+                                 "finished_stats": finished_stats
                                  })
         except IntegrityError:
             return JsonResponse({'status': 'error', 'message': 'You already marked this issue as finished'})
