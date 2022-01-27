@@ -198,14 +198,7 @@
               <ul
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
-                {% if request.user.is_authenticated %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ volume.download_link }}">
-                      <i class="fad fa-download"></i> <span
-                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                    </a>
-                  </li>
-                {% endif %}
+
                 {% include "issues/blocks/download_button.html" %}
               </ul>
             </div>
