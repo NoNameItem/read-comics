@@ -4,7 +4,8 @@
 
 {% block title %}{{ issue }}{% endblock %}
 
-{% block page_header %}[{{ number_in_sublist|intcomma }} / {{ total_in_sublist|intcomma }}] {{ issue.volume.name }} ({{ issue.volume.start_year }}) #{{ issue.number }}{% endblock %}
+{% block page_header %}[{{ number_in_sublist|intcomma }} / {{ total_in_sublist|intcomma }}] {{ issue.volume.name }} (
+  {{ issue.volume.start_year }}) #{{ issue.number }}{% endblock %}
 
 {% block vendor_css %}
   {{ block.super }}
@@ -179,16 +180,6 @@
               <ul
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
-
-
-                <li class="nav-item pb-1">
-                  <a class="nav-link btn d-flex px-1 {% if not previous_link %}disabled{% endif %}" id="prev--link"
-                     href="{{ previous_link }}">
-                    <i class="fad fa-backward"></i> <span
-                    class="d-none d-md-block pl-50"> Previous</span>
-                  </a>
-                </li>
-
                 {% if request.user.is_authenticated %}
                   <li class="nav-item pb-1">
                     <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ issue.download_link }}">
@@ -205,6 +196,20 @@
                     </button>
                   </li>
                 {% endif %}
+
+              </ul>
+              <ul
+                class="nav detail-nav justify-content-center nav-tabs border-bottom-0 mb-0"
+                role="tablist">
+
+
+                <li class="nav-item pb-1">
+                  <a class="nav-link btn d-flex px-1 {% if not previous_link %}disabled{% endif %}" id="prev--link"
+                     href="{{ previous_link }}">
+                    <i class="fad fa-backward"></i> <span
+                    class="d-none d-md-block pl-50"> Previous</span>
+                  </a>
+                </li>
                 <li class="nav-item pb-1">
                   <a class="nav-link btn d-flex px-1 {% if not next_link %}disabled{% endif %}" id="prev--link"
                      href="{{ next_link }}">
