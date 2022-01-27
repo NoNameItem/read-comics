@@ -1,9 +1,12 @@
 import datetime
+import json
 
+from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, Q
 from django.http import JsonResponse
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views.generic import DetailView, ListView
@@ -34,7 +37,7 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
         '-cover_date': ('-cover_date', '-volume__name', '-volume__start_year', '-numerical_number', '-number')
     }
     default_ordering = ('cover_date', 'volume', 'volume__start_year', 'number')
-    queryset = Issue.objects.was_matched().select_related('volume', 'volume__publisher')
+    queryset = Issue.objects.matched().select_related('volume', 'volume__publisher')
     active_menu_item = 'issues'
 
     def get_context_data(self, **kwargs):
@@ -68,7 +71,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     slug_url_kwarg = "slug"
     context_object_name = "issue"
     template_name = "issues/detail.html"
-    base_queryset = Issue.objects.was_matched()
+    base_queryset = Issue.objects.matched()
     active_menu_item = 'issues'
 
     def get_breadcrumb(self):
@@ -383,15 +386,75 @@ issue_detail_view = IssueDetailView.as_view()
 
 
 class IssueMarkFinishedView(LoginRequiredMixin, View):
+    def get_total_context(self):
+        context = dict()
+        if self.request.user.is_authenticated:
+            context["total_count"] = Issue.objects.matched().count()
+            context["finished_count"] = Issue.objects.matched().annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
+        return context
+
+    def get_object_context(self, app_label, model_name, slug):
+        context = dict()
+
+        if self.request.user.is_authenticated:
+            model = apps.get_model(app_label, model_name)
+            obj = model.objects.get(slug=slug)
+            context["base_object"] = obj
+            context["total_count"] = obj.issues.filter(comicvine_status='MATCHED').count()
+            context["finished_count"] = obj.issues.filter(comicvine_status='MATCHED').annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
+
+        return context
+
+    def get_publisher_context(self, slug):
+        context = dict()
+
+        if self.request.user.is_authenticated:
+            model = apps.get_model("publishers", "Publisher")
+            publisher = model.objects.get(slug=slug)
+            context["base_object"] = publisher
+            context["total_count"] = Issue.objects.filter(comicvine_status='MATCHED').filter(
+                volume__publisher=publisher
+            ).count()
+            context["finished_count"] = Issue.objects.filter(comicvine_status='MATCHED').filter(
+                volume__publisher=publisher
+            ).annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
+
+        return context
+
+    def get_finished_stats(self):
+        payload = json.loads(self.request.body)
+        base_object_app_label = payload.get('base_object_app_label')
+        base_object_model_name = payload.get('base_object_model_name')
+        base_object_slug = payload.get('base_object_slug')
+        if base_object_app_label and base_object_model_name and base_object_slug:
+            if base_object_app_label == "publishers":
+                context = self.get_publisher_context(base_object_slug)
+            else:
+                context = self.get_object_context(base_object_app_label, base_object_model_name, base_object_slug)
+        else:
+            context = self.get_total_context()
+
+        return render_to_string("issues/blocks/finished_progress.html", context, request=self.request)
+
     def post(self, request, slug):
         try:
             issue = Issue.objects.get(slug=slug)
             user = request.user
             issue.finished_users.add(user)
-            # r = MODELS.ReadIssue(profile=profile, issue=issue)
-            # r.save()
+            finished_stats = self.get_finished_stats()
+
             return JsonResponse({'status': "success", 'issue_name': issue.get_full_name(),
-                                 'date': formats.localize(datetime.date.today(), use_l10n=True)
+                                 'date': formats.localize(datetime.date.today(), use_l10n=True),
+                                 "finished_stats": finished_stats
                                  })
         except IntegrityError:
             return JsonResponse({'status': 'error', 'message': 'You already marked this issue as finished'})

@@ -524,8 +524,11 @@
 
 {% block page_js %}
   {{ block.super }}
-  <script !src="">
+  <script>
     let mark_read_url = "{% url "issues:mark_finished" issue.slug %}";
+    let base_object_app_label = "{{ base_object.meta.app_label }}";
+    let base_object_model_name = "{{ base_object.meta.model_name }}";
+    let base_object_slug = "{{ base_object.slug }}";
   </script>
   <script src="{% static "issues/js/detail.js" %}"></script>
 {% endblock %}

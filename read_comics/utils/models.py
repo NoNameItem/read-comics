@@ -526,3 +526,7 @@ class ComicvineSyncModel(models.Model):
 
             d = str(soup)
         return d
+
+    @property
+    def meta(self):
+        return self._meta
