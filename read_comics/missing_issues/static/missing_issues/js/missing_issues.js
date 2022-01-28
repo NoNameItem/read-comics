@@ -115,4 +115,18 @@ $(document).ready(function () {
 
   $('#start-reload-btn').click(startReload);
 
+  $('#purge-deleted-btn').click(function () {
+    $.ajax({
+        type : 'POST',
+        url  : purge_deleted_url
+      }
+    ).done(function (response) {
+      if (response.status === 'success') {
+        toastr.success("Purge of deleted issues started");
+      } else {
+        toastr.error( response.message, "Oops! Can't start purge of deleted issues");
+      }
+    })
+  });
+
 });

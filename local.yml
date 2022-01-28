@@ -75,16 +75,16 @@ services:
     ports: []
     command: /start-celeryworker
 
-  celerybeat:
-    <<: *django
-    image: read_comics_local_celerybeat
-    container_name: celerybeat
-    depends_on:
-      - redis
-      - postgres
-      - mailhog
-    ports: []
-    command: /start-celerybeat
+#  celerybeat:
+#    <<: *django
+#    image: read_comics_local_celerybeat
+#    container_name: celerybeat
+#    depends_on:
+#      - redis
+#      - postgres
+#      - mailhog
+#    ports: []
+#    command: /start-celerybeat
 
   flower:
     <<: *django

@@ -12,6 +12,7 @@ from .views import (
     ignored_volume_delete_view,
     ignored_volumes_list_view,
     missing_issues_list_view,
+    purge_deleted_from_do_view,
     skip_issue_view,
     skip_publisher_view,
     skip_volume_view,
@@ -31,6 +32,7 @@ urlpatterns = [
     path("", view=missing_issues_list_view, name="all"),
 
     path("do_space/", view=do_space_view, name="do_space"),
+    path("purge_deleted/", view=purge_deleted_from_do_view, name="purge_deleted"),
 
     path("ignored_issues/", view=ignored_issues_list_view, name="ignored_issues"),
     path("ignored_volumes/", view=ignored_volumes_list_view, name="ignored_volumes"),

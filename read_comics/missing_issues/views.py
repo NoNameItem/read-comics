@@ -13,7 +13,7 @@ from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
-from issues.tasks import issue_entry_task
+from issues.tasks import issue_entry_task, purge_deleted
 from utils import logging
 from utils.view_mixins import (
     ActiveMenuMixin,
@@ -531,6 +531,19 @@ class StartReloadFromDOView(IsAdminMixin, View):
 
 
 start_reload_from_do_view = StartReloadFromDOView.as_view()
+
+
+class PurgeDeletedFromDOView(IsAdminMixin, View):
+
+    def post(self, request, **kwargs):
+        try:
+            purge_deleted.delay()
+            return JsonResponse({"status": "success"})
+        except Exception as e:
+            return JsonResponse({"status": "error", "error": str(e)})
+
+
+purge_deleted_from_do_view = PurgeDeletedFromDOView.as_view()
 
 
 class DOSpaceView(IsAdminMixin, View):

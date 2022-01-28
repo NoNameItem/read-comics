@@ -55,6 +55,10 @@
     <i class="fad fa-sync" aria-hidden="true"></i> <span class="ml-1"> Reload from DO</span>
   </button>
 
+  <button type="button" class="btn btn-danger mb-1" id="purge-deleted-btn">
+    <i class="fad fa-trash" aria-hidden="true"></i> <span class="ml-1"> Purge deleted from DO</span>
+  </button>
+
   <div id="table-wrapper">
     {% include 'missing_issues/issues_table.html' with missing_issues=missing_issues all_cols=True %}
   </div>
@@ -94,6 +98,7 @@
   <script !src="">
     const do_root_url = "{% url "missing_issues:do_space" %}";
     const start_reload_url = "{% url "missing_issues:start_reload_from_do" %}";
+    const purge_deleted_url = "{% url "missing_issues:purge_deleted" %}";
   </script>
   <script src="{% static "missing_issues/js/missing_issues.js" %}"></script>
 {% endblock %}
