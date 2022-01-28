@@ -32,7 +32,7 @@ volume_entry_task = celery_app.register_task(VolumeProcessEntryTask())
 
 class VolumesSpaceTask(BaseSpaceTask):
     PROCESS_ENTRY_TASK = volume_entry_task
-    LOGGER_NAME = "VolumesSpaceTask"
+    LOGGER_NAME = "read_comics.tasks.VolumesSpaceTask"
 
     def get_processed_keys(self):
         model = apps.get_model('issues', 'Issue')

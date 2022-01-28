@@ -30,8 +30,8 @@ class BaseSpaceTask(Task):
             for x in s3objects_collection
             if self._regexp.search(x.key.removeprefix(kwargs['prefix']).lower())
         ]
+        processed_keys = self.get_processed_keys()
         for s3object in self.s3objects:
-            processed_keys = self.get_processed_keys()
             if s3object[0] not in processed_keys:
                 if self.PROCESS_ENTRY_TASK:
                     self._logger.debug("Creating entry level task with key {0}".format(s3object[0]))
