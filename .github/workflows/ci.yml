@@ -67,7 +67,7 @@ jobs:
   build:
     needs: [linter, test]
     runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' || github.ref_type == 'tag') && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
 
     steps:
       - name: Checkout master
@@ -88,7 +88,7 @@ jobs:
         run: docker-compose -f production-build.yml push
 
   release:
-    needs: build
+    needs: [linter, test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_type == 'tag'
 
@@ -132,7 +132,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main' || github.ref_type == 'tag') && github.event_name == 'push'
+    if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
     needs: build
 
     steps:
