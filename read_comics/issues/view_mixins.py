@@ -15,7 +15,10 @@ class IssuesViewMixin:
             issues_info['finished_issues_count'] = self.sublist_querysets.get_issues_queryset(
                 self.object, self.request.user
             ).exclude(finished_flg=0).count()
-            issues_info['finished_percent'] = issues_info['finished_issues_count'] / issues_info['count'] * 100
+            try:
+                issues_info['finished_percent'] = issues_info['finished_issues_count'] / issues_info['count'] * 100
+            except ZeroDivisionError:
+                issues_info['finished_percent'] = 100
 
         issues_info.update(
             get_first_page(self.sublist_querysets.get_issues_queryset(self.object, self.request.user))
