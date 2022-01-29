@@ -1,9 +1,8 @@
-import datetime
 from typing import Any, Dict
 
-from django.db.models import Count, DateTimeField, Max, Q
+from django.db.models import Count, DateTimeField, Q
 from django.db.models.functions import Trunc
-from django.views.generic import TemplateView
+from django.views.generic import DayArchiveView, TemplateView
 from utils.comicvine_stats import get_matched_stats
 
 from read_comics.issues.models import Issue
@@ -18,19 +17,25 @@ class HomeView(TemplateView):
         context['matched_stats'] = get_matched_stats()
         context['missing_issues_count'] = MissingIssue.objects.filter(skip=False).count()
 
-        last_update_day = Issue.objects.aggregate(
-            max_day=Max(Trunc('created_dt', 'day', output_field=DateTimeField()))
-        )['max_day']
-        new_issues = Issue.objects.matched().filter(
-            created_dt__gte=last_update_day, created_dt__lt=last_update_day + datetime.timedelta(days=1)
-        ).order_by(
-            'volume__publisher', 'volume', 'numerical_number', 'number'
-        ).select_related(
-            'volume', 'volume__publisher'
-        )
-        context['last_update_day'] = last_update_day
-        context['new_issues'] = new_issues
-        context['new_issues_count'] = new_issues.count()
+        # last_update_day = Issue.objects.aggregate(
+        #     max_day=Max(Trunc('created_dt', 'day', output_field=DateTimeField()))
+        # )['max_day']
+        # new_issues = Issue.objects.matched().filter(
+        #     created_dt__gte=last_update_day, created_dt__lt=last_update_day + datetime.timedelta(days=1)
+        # ).order_by(
+        #     'volume__publisher', 'volume', 'numerical_number', 'number'
+        # ).select_related(
+        #     'volume', 'volume__publisher'
+        # )
+        # context['last_update_day'] = last_update_day
+        # context['new_issues'] = new_issues
+        # context['new_issues_count'] = new_issues.count()
+
+        context["update_history"] = Issue.objects.values(
+            created_day=Trunc('created_dt', 'day', output_field=DateTimeField())
+        ).annotate(
+            cnt=Count('id')
+        ).order_by('-created_day')
 
         if self.request.user.is_authenticated:
             context['finished_issues_count'] = Issue.objects.matched().annotate(
@@ -43,3 +48,19 @@ class HomeView(TemplateView):
 
 
 home_view = HomeView.as_view()
+
+
+class NewIssuesView(DayArchiveView):
+    queryset = Issue.objects.matched().order_by(
+        'volume__publisher', 'volume', 'numerical_number', 'number'
+    ).select_related(
+        'volume', 'volume__publisher'
+    )
+    date_field = "created_dt"
+    allow_future = True
+    template_name = "pages/new_issues.html"
+    context_object_name = "new_issues"
+    month_format = '%m'
+
+
+new_issues_view = NewIssuesView.as_view()

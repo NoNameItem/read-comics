@@ -163,36 +163,18 @@
 
   <section id="last-update" class="card">
     <div class="card-header">
-      <h4 class="card-title">Last new issues update: {{ last_update_day|date:"DATE_FORMAT" }}</h4>
+      <h4 class="card-title">Update history</h4>
     </div>
     <div class="card-body">
       <div class="card-text">
-        <p>Added {{ new_issues_count }} new issue{{ new_issues_count|pluralize }}</p>
-          <ul>
-              {% for new_issue in new_issues %}
-                {% ifchanged new_issue.volume.publisher %}
-                  {% if not forloop.first %}
-                    </ul></li></ul></li>
-                  {% endif %}
-                  <li>
-                    <a href="{% url "publishers:detail" new_issue.volume.publisher.slug %}">{{ new_issue.volume.publisher }}</a>
-                    <ul>
-                {% endifchanged %}
-                {% ifchanged new_issue.volume %}
-                    {% ifchanged new_issue.volume.publisher %}
-                    {% else %}
-                      </ul></li>
-                    {% endifchanged %}
-                  <li>
-                    <a href="{% url "volumes:detail" new_issue.volume.slug %}">{{ new_issue.volume.name }}
-                    ({{ new_issue.volume.start_year|default_if_none:"Unknown" }})</a>
-                  <ul>
-
-                {% endifchanged %}
-                <li><a href="{% url "issues:detail" new_issue.slug %}">{{ new_issue.volume.name }} #{{ new_issue.number }} {{ new_issue.name|default_if_none:'' }}</a></li>
-              {% endfor %}
-          </ul>
+        <ul>
+          {% for line in update_history %}
+            <li><a href="{% url "pages:new_issues" line.created_day.year line.created_day.month line.created_day.day %}"><strong>{{ line.created_day|date:"DATE_FORMAT" }}:</strong> {{ line.cnt|intcomma }}
+              issue{{ line.cnt|pluralize }}</a></li>
+          {% endfor %}
+        </ul>
       </div>
     </div>
   </section>
+
 {% endblock %}
