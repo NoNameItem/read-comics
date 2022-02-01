@@ -1,9 +1,9 @@
 {% load humanize %}
 {% if request.user.is_authenticated %}
-  <div class="card progress-report-card">
+  <div class="card {{ progress_report_card_class|default:"progress-report-card" }}">
     <div class="card-body">
       {% if base_object %}
-        <h5><a href="{{ base_object.get_absolute_url }}">{{ base_object.name }}</a> reading progress</h5>
+        <h5><a href="{{ base_object.get_absolute_url }}">{{ base_object.display_name }}</a> reading progress</h5>
       {% else %}
         <h5>Reading progress</h5>
       {% endif %}

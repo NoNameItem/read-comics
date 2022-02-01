@@ -305,6 +305,10 @@ class Issue(ImageMixin, ComicvineSyncModel):
         else:
             self.numerical_number = None
 
+    @property
+    def display_name(self):
+        return self.get_full_name()
+
 
 class IssuePerson(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name='authors')

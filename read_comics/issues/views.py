@@ -152,6 +152,12 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
             context['finished_percent'] = context['finished_count'] / context['base_total_count'] * 100
             context['base_object'] = self.base_object
 
+            context["volume_total_count"] = issue.volume.issues.count()
+            context["volume_finished_count"] = issue.volume.issues.annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context['volume_finished_percent'] = context['volume_finished_count'] / context['volume_total_count'] * 100
+
         return context
 
     def get_ordering(self):
@@ -398,6 +404,19 @@ issue_download_view = IssueDownloadView.as_view()
 
 
 class IssueMarkFinishedView(LoginRequiredMixin, View):
+    def get_volume_context(self, issue):
+        context = dict()
+        if self.request.user.is_authenticated:
+
+            context["total_count"] = issue.volume.issues.count()
+            context["finished_count"] = issue.volume.issues.annotate(
+                finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+            ).exclude(finished_flg=0).count()
+            context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
+            context["base_object"] = issue.volume
+            context["progress_report_card_class"] = "volume-progress-report-card"
+        return context
+
     def get_total_context(self):
         context = dict()
         if self.request.user.is_authenticated:
@@ -457,6 +476,10 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
 
         return render_to_string("issues/blocks/finished_progress.html", context, request=self.request)
 
+    def get_volume_finished_stats(self, issue):
+        context = self.get_volume_context(issue)
+        return render_to_string("issues/blocks/finished_progress.html", context, request=self.request)
+
     def post(self, request, slug):
         try:
             issue = Issue.objects.get(slug=slug)
@@ -466,7 +489,8 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
 
             return JsonResponse({'status': "success", 'issue_name': issue.get_full_name(),
                                  'date': formats.localize(datetime.date.today(), use_l10n=True),
-                                 "finished_stats": finished_stats
+                                 "finished_stats": finished_stats,
+                                 "volume_finished_stats": self.get_volume_finished_stats(issue)
                                  })
         except IntegrityError:
             return JsonResponse({'status': 'error', 'message': 'You already marked this issue as finished'})

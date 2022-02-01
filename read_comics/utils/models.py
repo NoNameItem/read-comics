@@ -530,3 +530,7 @@ class ComicvineSyncModel(models.Model):
     @property
     def meta(self):
         return self._meta
+
+    @property
+    def display_name(self):
+        return str(self)

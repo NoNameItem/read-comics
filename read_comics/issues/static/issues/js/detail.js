@@ -16,6 +16,7 @@ $(document).ready(function () {
         $('#finished-mark').show();
         $('#mark-finished-btn-nav').hide();
         $('.progress-report-card').replaceWith(response.finished_stats);
+        $('.volume-progress-report-card').replaceWith(response.volume_finished_stats);
       } else {
         toastr.error(response.message, "Oops! Can't mark issue as finished");
       }

@@ -4,8 +4,7 @@
 
 {% block title %}{{ issue }}{% endblock %}
 
-{% block page_header %}[{{ number_in_sublist|intcomma }} / {{ total_in_sublist|intcomma }}] {{ issue.volume.name }} (
-  {{ issue.volume.start_year }}) #{{ issue.number }}{% endblock %}
+{% block page_header %}[{{ number_in_sublist|intcomma }} / {{ total_in_sublist|intcomma }}] {{ issue.display_name }}{% endblock %}
 
 {% block vendor_css %}
   {{ block.super }}
@@ -31,7 +30,7 @@
               <img src="{{ issue.thumb_size_url }}" class="detail-main-image rounded bg-white image-full-size"
                    alt="image" width="120" data-full-size-src="{{ issue.full_size_url }}">
               <div class="detail-header-text pr-md-2 d-none d-md-block">
-                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.display_name }}
                   <small>(of {{ issue.volume.last_issue_number|default_if_none:"Unknown" }})</small>
                   <h6 class="detail-header-text-color">{{ issue.name|default_if_none:'' }}</h6>
               </div>
@@ -230,7 +229,12 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
-            {% include "issues/blocks/finished_progress.html" with total_count=base_total_count finished_count=finished_count finished_percent=finished_percent %}
+
+            {% include "issues/blocks/finished_progress.html" with total_count=volume_total_count finished_count=volume_finished_count finished_percent=volume_finished_percent base_object=issue.volume progress_report_card_class="volume-progress-report-card" %}
+
+            {% if base_object != issue.volume %}
+              {% include "issues/blocks/finished_progress.html" with total_count=base_total_count finished_count=finished_count finished_percent=finished_percent %}
+            {% endif %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">

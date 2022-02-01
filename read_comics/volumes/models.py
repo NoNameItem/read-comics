@@ -166,3 +166,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
             return int(val)
         except ValueError:
             return None
+
+    @property
+    def display_name(self):
+        return f"{self.name} ({self.start_year or 'Unknown'})"
