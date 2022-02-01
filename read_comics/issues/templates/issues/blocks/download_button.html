@@ -1,8 +1,8 @@
-{% if request.user.is_authenticated %}
+{#{% if request.user.is_authenticated %}#}
   <li class="nav-item pb-1">
     <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ object.download_link }}">
       <i class="fad fa-download"></i> <span
       class="d-none d-md-block pl-50"> Download (~{{ issues_info.size|filesizeformat }})</span>
     </a>
   </li>
-{% endif %}
+{#{% endif %}#}

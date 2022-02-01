@@ -180,14 +180,14 @@
               <ul
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
-                {% if request.user.is_authenticated %}
+{#                {% if request.user.is_authenticated %}#}
                   <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ issue.download_link }}">
+                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{% url "issues:download" issue.slug %}">
                       <i class="fad fa-download"></i> <span
                       class="d-none d-md-block pl-50"> Download ({{ issue.size|filesizeformat }})</span>
                     </a>
                   </li>
-                {% endif %}
+{#                {% endif %}#}
                 {% if request.user.is_authenticated and not finished %}
                   <li class="nav-item pb-1" id="mark-finished-btn-nav">
                     <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">

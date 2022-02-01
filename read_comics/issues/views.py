@@ -5,12 +5,13 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, Q
-from django.http import JsonResponse
+from django.http import HttpResponseRedirect, JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import View
+from django.views.generic.detail import SingleObjectMixin
 from utils import logging
 from utils.view_mixins import (
     ActiveMenuMixin,
@@ -383,6 +384,17 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
 
 issue_detail_view = IssueDetailView.as_view()
+
+
+class IssueDownloadView(SingleObjectMixin, View):
+    queryset = Issue.objects.matched()
+
+    def get(self, request, *args, **kwargs):
+        issue = self.get_object()
+        return HttpResponseRedirect(issue.download_link)
+
+
+issue_download_view = IssueDownloadView.as_view()
 
 
 class IssueMarkFinishedView(LoginRequiredMixin, View):
