@@ -238,7 +238,9 @@
                     <strong>Publisher: </strong>
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
+                    {% if story_arc.publisher %}
                     <a href="{% url "publishers:detail" story_arc.publisher.slug %}">{{ story_arc.publisher.name }}</a>
+                    {% endif %}
                   </div>
                 </div>
 
