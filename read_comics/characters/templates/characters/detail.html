@@ -204,7 +204,9 @@
                     <strong>Publisher: </strong>
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
+                    {% if character.publisher %}
                     <a href="{% url "publishers:detail" character.publisher.slug %}">{{ character.publisher.name }}</a>
+                    {% endif %}
                   </div>
                 </div>
 
