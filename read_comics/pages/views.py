@@ -17,20 +17,6 @@ class HomeView(TemplateView):
         context['matched_stats'] = get_matched_stats()
         context['missing_issues_count'] = MissingIssue.objects.filter(skip=False).count()
 
-        # last_update_day = Issue.objects.aggregate(
-        #     max_day=Max(Trunc('created_dt', 'day', output_field=DateTimeField()))
-        # )['max_day']
-        # new_issues = Issue.objects.matched().filter(
-        #     created_dt__gte=last_update_day, created_dt__lt=last_update_day + datetime.timedelta(days=1)
-        # ).order_by(
-        #     'volume__publisher', 'volume', 'numerical_number', 'number'
-        # ).select_related(
-        #     'volume', 'volume__publisher'
-        # )
-        # context['last_update_day'] = last_update_day
-        # context['new_issues'] = new_issues
-        # context['new_issues_count'] = new_issues.count()
-
         context["update_history"] = Issue.objects.values(
             created_day=Trunc('created_dt', 'day', output_field=DateTimeField())
         ).annotate(
@@ -55,6 +41,8 @@ class NewIssuesView(DayArchiveView):
         'volume__publisher', 'volume', 'numerical_number', 'number'
     ).select_related(
         'volume', 'volume__publisher'
+    ).order_by(
+        'volume__publisher', 'volume', 'numerical_number', 'number'
     )
     date_field = "created_dt"
     allow_future = True
