@@ -3,7 +3,7 @@
 POSTGRES_HOST=postgres
 POSTGRES_PORT=5432
 POSTGRES_DB=read_comics
-POSTGRES_USER=RrIPyEyVnbVlDwERDFgfcTNWzkwUFjrp
+POSTGRES_USER=read_comics
 POSTGRES_PASSWORD=aDHPyzEps805Gv8lvZlCsy6eZUu9jbiDmT30BoJtcjGDQlBzSAAzTdjC0tZlsigC
 
 DATABASE_URL="postgres://RrIPyEyVnbVlDwERDFgfcTNWzkwUFjrp:aDHPyzEps805Gv8lvZlCsy6eZUu9jbiDmT30BoJtcjGDQlBzSAAzTdjC0tZlsigC@postgres:5432/read_comics"
