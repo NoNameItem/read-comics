@@ -32,7 +32,7 @@
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ story_arc.name }}</h4>
               </div>
-              <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
+              <div id="finished-mark" {% if user.is_suthenticated and issues_info.finished_percent == 100 %} style="display: none" {% endif %}>
                 <i class="far fa-check-circle success fa-3x"></i>
               </div>
               <div id="watch-mark">
@@ -200,7 +200,7 @@
                 class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                 role="tablist">
                 {% include "issues/blocks/download_button.html" %}
-                {% if request.user.is_authenticated and not finished %}
+                {% if request.user.is_authenticated and not issues_info.finished_percent == 100 %}
                   <li class="nav-item pb-1" id="mark-finished-btn-nav">
                     <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">
                       <i class="fad fa-check-circle"></i> <span
