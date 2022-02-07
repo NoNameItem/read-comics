@@ -1,4 +1,7 @@
 class ImageMixin:
+    image_url: str
+    thumb_url: str
+
     @property
     def full_size_url(self):
         if self.image_url:
@@ -16,25 +19,25 @@ class ImageMixin:
     def get_image_size(self, size):
         url = self.thumb_size_url
         if url:
-            url = url.replace('/scale_small/', '/' + size + '/')
+            return url.replace("/scale_small/", "/" + size + "/")
         return url
 
     @property
     def square_avatar(self):
         # 80x80
-        return self.get_image_size('square_avatar')
+        return self.get_image_size("square_avatar")
 
     @property
     def square_tiny(self):
         # 160x160
-        return self.get_image_size('square_tiny')
+        return self.get_image_size("square_tiny")
 
     @property
     def square_small(self):
         # 320x320
-        return self.get_image_size('square_small')
+        return self.get_image_size("square_small")
 
     @property
     def square_medium(self):
         # 480x480
-        return self.get_image_size('square_medium')
+        return self.get_image_size("square_medium")

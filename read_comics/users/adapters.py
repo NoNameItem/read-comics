@@ -25,12 +25,12 @@ class AccountAdapter(DefaultAccountAdapter):
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
 
     def add_message(self, request, level, message_template,
-                    message_context=None, extra_tags=''):
+                    message_context=None, extra_tags=""):
         """
         Using django magnificent messages instead of boring standart messages
         """
-        if 'django_magnificent_messages' in settings.INSTALLED_APPS or \
-                'django_magnificent_messages.apps.DjangoMagnificentMessagesConfig' in settings.INSTALLED_APPS:
+        if "django_magnificent_messages" in settings.INSTALLED_APPS or \
+                "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig" in settings.INSTALLED_APPS:
             try:
                 if message_context is None:
                     message_context = {}
@@ -48,5 +48,4 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def get_connect_redirect_url(self, request, socialaccount):
         assert request.user.is_authenticated
-        url = reverse('users:edit') + '?show_tab=social'
-        return url
+        return reverse("users:edit") + "?show_tab=social"

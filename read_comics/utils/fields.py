@@ -5,14 +5,14 @@ from django.core.files.base import ContentFile
 from django.db.models.fields.files import ImageField, ImageFieldFile
 from PIL import Image
 
-__author__ = 'nonameitem'
+__author__ = "nonameitem"
 
 
 def _add_thumb(s):
-    parts = s.split('.')
-    parts.insert(-1, 'thumb')
-    parts[-1] = 'png'
-    return '.'.join(parts)
+    parts = s.split(".")
+    parts.insert(-1, "thumb")
+    parts[-1] = "png"
+    return ".".join(parts)
 
 
 class ThumbnailImageFieldFile(ImageFieldFile):
@@ -72,7 +72,7 @@ class ThumbnailImageField(ImageField):
                 checks.Error(
                     "ThumbnailImageField must define a 'thumb_width' or 'thumb_height' attribute.",
                     obj=self,
-                    id='comics_db.E001',
+                    id="comics_db.E001",
                 )
             ]
         else:
@@ -83,7 +83,7 @@ class ThumbnailImageField(ImageField):
                     checks.Error(
                         "'thumb_width' must be a positive integer.",
                         obj=self,
-                        id='comics_db.E001',
+                        id="comics_db.E001",
                     )
                 ]
             if self.thumb_height and ((not isinstance(self.thumb_height, int) or isinstance(self.thumb_height, bool) or
@@ -92,7 +92,7 @@ class ThumbnailImageField(ImageField):
                     checks.Error(
                         "'thumb_height' must be a positive integer.",
                         obj=self,
-                        id='comics_db.E001',
+                        id="comics_db.E001",
                     )
                 ]
         return []

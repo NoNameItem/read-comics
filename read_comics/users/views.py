@@ -31,8 +31,8 @@ class UserDetailView(BreadcrumbMixin, DetailView):
     def get_breadcrumb(self):
         user = self.get_object()
         return [
-            {'url': "#", 'text': "Users"},
-            {'url': reverse_lazy("users:detail", args=(user.username,)), 'text': str(user)}
+            {"url": "#", "text": "Users"},
+            {"url": reverse_lazy("users:detail", args=(user.username,)), "text": str(user)}
         ]
 
 
@@ -48,9 +48,9 @@ class UserSendEmailConfirmationView(LoginRequiredMixin, RedirectView):
             get_adapter(self.request).add_message(
                 self.request,
                 messages.INFO,
-                'account/messages/'
-                'email_confirmation_sent.txt',
-                {'email': email})
+                "account/messages/"
+                "email_confirmation_sent.txt",
+                {"email": email})
         return super(UserSendEmailConfirmationView, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
@@ -62,7 +62,7 @@ user_send_email_confirmation_view = UserSendEmailConfirmationView.as_view()
 
 class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
     model = User
-    breadcrumb = [{'url': reverse_lazy("users:edit"), 'text': 'Edit profile'}]
+    breadcrumb = [{"url": reverse_lazy("users:edit"), "text": "Edit profile"}]
     context_object_name = "user"
     info_form_class = UserInfoForm
     password_form_class = ChangePasswordForm
@@ -70,25 +70,26 @@ class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
     @logging.logged(logger)
     def get_form(self, form_class=None):
         kwargs = self.get_form_kwargs()
-        if 'info' in self.request.POST:
+        if "info" in self.request.POST:
             logger.debug("form: info")
             return self.info_form_class(**kwargs)
-        elif 'password' in self.request.POST:
+        elif "password" in self.request.POST:
             logger.debug("form: password")
-            user = kwargs.pop('instance')
-            kwargs['user'] = user
+            user = kwargs.pop("instance")
+            kwargs["user"] = user
             return self.password_form_class(**kwargs)
+        return None
 
     @logging.logged(logger)
     def get_context_data(self, **kwargs):
         context = super(UserEditView, self).get_context_data(**kwargs)
-        if not context.get('info_form'):
-            context['info_form'] = self.info_form_class(instance=self.get_object())
-        if not context.get('password_form'):
-            context['password_form'] = self.password_form_class()
+        if not context.get("info_form"):
+            context["info_form"] = self.info_form_class(instance=self.get_object())
+        if not context.get("password_form"):
+            context["password_form"] = self.password_form_class()
         show_tab = self.request.GET.get("show_tab")
         if show_tab:
-            context['show_tab'] = show_tab
+            context["show_tab"] = show_tab
         return context
 
     def get_success_url(self):
@@ -99,7 +100,7 @@ class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
 
     @logging.logged(logger)
     def form_valid(self, form):
-        if 'info' in self.request.POST:
+        if "info" in self.request.POST:
             logger.debug("form: info success")
             dmm.notifications.success(self.request, "Info successfully updated")
             email = self.request.user.emailaddress_set.get(primary=True)
@@ -108,33 +109,34 @@ class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
                 get_adapter(self.request).add_message(
                     self.request,
                     messages.INFO,
-                    'account/messages/'
-                    'email_confirmation_sent.txt',
-                    {'email': email})
+                    "account/messages/"
+                    "email_confirmation_sent.txt",
+                    {"email": email})
             return super().form_valid(form)
-        elif 'password' in self.request.POST:
+        elif "password" in self.request.POST:
             logger.debug("form: password success")
             form.save()
             logout_on_password_change(self.request, form.user)
             get_adapter(self.request).add_message(
                 self.request,
                 messages.SUCCESS,
-                'account/messages/password_set.txt')
+                "account/messages/password_set.txt")
             allauth.account.signals.password_set.send(sender=self.request.user.__class__,
                                                       request=self.request, user=self.request.user)
             return HttpResponseRedirect(self.get_success_url())
+        return None
 
     @logging.logged(logger)
     def form_invalid(self, form):
         context = {}
-        if 'info' in self.request.POST:
+        if "info" in self.request.POST:
             logger.debug("form: info errors")
             dmm.notifications.error(self.request, "Please check entered data", "Can't save info")
-            context = {'info_form': form, 'show_tab': 'info'}
-        elif 'password' in self.request.POST:
+            context = {"info_form": form, "show_tab": "info"}
+        elif "password" in self.request.POST:
             logger.debug("form: password errors")
             dmm.notifications.error(self.request, "Please check entered data", "Can't change password")
-            context = {'password_form': form, 'show_tab': 'password'}
+            context = {"password_form": form, "show_tab": "password"}
         return self.render_to_response(self.get_context_data(**context))
 
 
@@ -155,7 +157,7 @@ class UserChangePhotoView(LoginRequiredMixin, View):
     @logging.logged(logger)
     def post(self, request):
         user = request.user
-        user._user_image = request.FILES['file']
+        user._user_image = request.FILES["file"]
         user.save()
         return JsonResponse(data={"image_url": user.image_url})
 

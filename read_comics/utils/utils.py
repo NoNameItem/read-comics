@@ -16,15 +16,15 @@ def url_add_query_params(base_url, get, **kwargs):
     get_parameters = {k: v for k, v in get.items()}
     if kwargs:
         get_parameters.update(kwargs)
-    get_string = '&'.join([f'{k}={v}' for k, v in get_parameters.items()])
+    get_string = "&".join([f"{k}={v}" for k, v in get_parameters.items()])
     if get_string:
-        url += '?' + get_string
+        url += "?" + get_string
     return url
 
 
 def get_elided_pages_list(page):
     return [
-        {'num': x, 'disabled': ('disabled' if x == '…' else ''), 'active': ('active' if x == page.number else '')}
+        {"num": x, "disabled": ("disabled" if x == "…" else ""), "active": ("active" if x == page.number else "")}
         for x in page.paginator.get_elided_page_range(page.number, on_each_side=5, on_ends=5)
     ]
 
@@ -35,8 +35,8 @@ def get_first_page_old(context_name, queryset):
         queryset,
         30
     )
-    context[f'{context_name}_first_page'] = pages.page(1)
-    context[f'{context_name}_pages'] = get_elided_pages_list(pages.page(1))
+    context[f"{context_name}_first_page"] = pages.page(1)
+    context[f"{context_name}_pages"] = get_elided_pages_list(pages.page(1))
     return context
 
 
@@ -46,8 +46,8 @@ def get_first_page(queryset):
         queryset,
         30
     )
-    context['first_page'] = pages.page(1)
-    context['pages'] = get_elided_pages_list(pages.page(1))
+    context["first_page"] = pages.page(1)
+    context["pages"] = get_elided_pages_list(pages.page(1))
     return context
 
 

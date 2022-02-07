@@ -9,15 +9,15 @@ logger = logging.getLogger(__name__)
 
 
 def get_user_image_name(instance, filename):
-    return "user_image/{0}_logo.{1}".format(instance.username, filename.split('.')[-1])
+    return f"user_image/{instance.username}_logo.{filename.split('.')[-1]}"
 
 
 class User(AbstractUser):
     class Gender(models.TextChoices):
-        MALE = 'M', _('Male')
-        FEMALE = 'F', _('Female')
-        UNICORN = 'U', _('Unicorn')
-        OTHER = 'O', _('Other')
+        MALE = "M", _("Male")
+        FEMALE = "F", _("Female")
+        UNICORN = "U", _("Unicorn")
+        OTHER = "O", _("Other")
 
     # First Name and Last Name do not cover name patterns
     # around the globe.
@@ -38,14 +38,14 @@ class User(AbstractUser):
         if self._user_image:
             return self._user_image.url
         else:
-            return "/static/images/avatars/{0}.png".format(self.gender)
+            return f"/static/images/avatars/{self.gender}.png"
 
     @property
     def image_thumb_url(self):
         if self._user_image:
             return self._user_image.thumb_url
         else:
-            return "/static/images/avatars/{0}_thumb.png".format(self.gender)
+            return f"/static/images/avatars/{self.gender}_thumb.png"
 
     def __str__(self):
         return self.name or self.username.title()
@@ -54,7 +54,7 @@ class User(AbstractUser):
     def save(self, *args, **kwargs):
         if not self.name:
             if self.first_name and self.last_name:
-                self.name = "%s %s" % (self.first_name, self.last_name)
+                self.name = f"{self.first_name} {self.last_name}"
             elif self.first_name:
                 self.name = self.first_name
             elif self.last_name:

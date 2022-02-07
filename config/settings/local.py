@@ -44,9 +44,9 @@ MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 # https://django-debug-toolbar.readthedocs.io/en/latest/configuration.html#debug-toolbar-config
 DEBUG_TOOLBAR_CONFIG = {
     # "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
-    'ENABLE_STACKTRACES': False,
-    'PRETTIFY_SQL': False,
-    'INTERCEPT_REDIRECTS': False
+    "ENABLE_STACKTRACES": False,
+    "PRETTIFY_SQL": False,
+    "INTERCEPT_REDIRECTS": False
 }
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#internal-ips
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
@@ -69,4 +69,4 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
 STATICFILES_DIRS += ["read_comics/static"]  # noqa F405 # Duplicate for PyCharm Code Insight
-TEMPLATES[0]['OPTIONS']['context_processors'] += ["read_comics.users.context_processors.email_verified_context"]  # noqa F405
+TEMPLATES[0]["OPTIONS"]["context_processors"] += ["read_comics.users.context_processors.email_verified_context"]  # noqa F405

@@ -20,7 +20,7 @@ class ReprEncoder(json.JSONEncoder):
                 try:
                     return str(o.query)
                 except EmptyResultSet:
-                    return 'empty'
+                    return "empty"
             return json.JSONEncoder.default(self, o)
         except TypeError:
             return repr(o)
@@ -33,7 +33,7 @@ class Logger(logging.Logger):
 
 
 def getLogger(name="default"):
-    logging.addLevelName(SUCCESS, 'SUCCESS')
+    logging.addLevelName(SUCCESS, "SUCCESS")
     logging.setLoggerClass(Logger)
     return logging.getLogger("read_comics." + name)
 
@@ -56,7 +56,7 @@ def log_value(arg):
             "query": str(arg.query)
         }
     if isinstance(arg, DRFRequest):
-        _resolver_match = arg._request.resolver_match
+        _resolver_match = arg._request.resolver_match  # noqa
         if _resolver_match:
             resolver_match = {
                 "route": _resolver_match.route,
@@ -68,8 +68,8 @@ def log_value(arg):
         else:
             resolver_match = None
         arg = {
-            "method": arg._request.method,
-            "path": arg._request.path,
+            "method": arg._request.method,  # noqa
+            "path": arg._request.path,  # noqa
             "resolver_match": resolver_match,
             "data": arg.data,
             "has_files": len(arg.FILES) > 0,
@@ -123,31 +123,28 @@ def logged(logger, function_name=None, trace=False, unhandled_error_level=loggin
 
         @wraps(func)
         def wrapped(*args, **kwargs):
-            logger.debug(">>> Starting {0}".format(name))
+            logger.debug(f">>> Starting {name}")
             for i in range(len(args)):
                 arg = args[i]
                 arg_str, arg_type = log_value(arg)
-                logger.debug(">>> {2} args[{0}]({3}):\n{1}\n".format(i, arg_str, name, arg_type))
+                logger.debug(f">>> {name} args[{i}]({arg_type}):\n{arg_str}\n")
             for key, value in kwargs.items():
                 arg_str, arg_type = log_value(value)
-                logger.debug(">>> {2} {0}({3}):\n{1}\n".format(key, arg_str, name, arg_type))
+                logger.debug(f">>> {name} {key}({arg_type}):\n{arg_str}\n")
             try:
                 result = func(*args, **kwargs)
                 result_str, result_type = log_value(result)
-                logger.debug("Successfully ended {0}".format(name))
-                logger.debug("{0} return value ({2}): \n{1}\n".format(name, result_str, result_type))
+                logger.debug(f"Successfully ended {name}")
+                logger.debug(f"{name} return value ({result_type}): \n{result_str}\n")
                 return result
             except Exception as e:
                 logger.log(unhandled_error_level,
-                           "Unhandled exception in {1}: \"{0}\". It may be handled later, "
-                           "but check django logs for all unhandled errors".format(
-                               repr(e),
-                               name
-                           ),
+                           f'Unhandled exception in {name}: "{repr(e)}". It may be handled later, '
+                           f"but check django logs for all unhandled errors",
                            exc_info=trace)
                 raise
             finally:
-                logger.debug("<<< Exiting {0}".format(name))
+                logger.debug(f"<<< Exiting {name}")
 
         return wrapped
 
@@ -159,10 +156,10 @@ def methods_logged(logger, methods=None):
 
     def class_decorator(cls):
         if not isinstance(cls, type):
-            raise TypeError("Decorator `methods_logged` should be used on class. Got {0} instead".format(cls))
+            raise TypeError(f"Decorator `methods_logged` should be used on class. Got {cls} instead")
 
         if not methods:
-            _methods = [(getattr(cls, x), x, {"function_name": "{0}.{1}".format(cls.__name__, x)}) for x in dir(cls)
+            _methods = [(getattr(cls, x), x, {"function_name": f"{cls.__name__}.{x}"}) for x in dir(cls)
                         if (not x.startswith("__"))
                         and callable(getattr(cls, x))
                         and (not isinstance(getattr(cls, x), type))]
@@ -171,31 +168,30 @@ def methods_logged(logger, methods=None):
             for method in methods:
                 if isinstance(method, str):
                     method_name = method
-                    method_conf = {"function_name": "{0}.{1}".format(cls.__name__, method_name)}
+                    method_conf = {"function_name": f"{cls.__name__}.{method_name}"}
                 else:
                     try:
                         method_name = method[0]
-                        if isinstance(method[1], dict):
-                            method_conf = method[1]
-                            method_conf["function_name"] = method_conf.get("function_name",
-                                                                           "{0}.{1}".format(cls.__name__, method_name))
-                        else:
+                        if not isinstance(method[1], dict):
                             raise ValueError()
+                        method_conf = method[1]
+                        method_conf["function_name"] = method_conf.get("function_name",
+                                                                       f"{cls.__name__}.{method_name}")
                     except (TypeError, ValueError):
                         raise ValueError(
                             "Elements of keyword argument `methods` must be either names of methods or tuples "
-                            "(<name of method>, <logging parameters>). Got %s instead" % method
+                            f"(<name of method>, <logging parameters>). Got {method} instead"
                         )
                 if not (method_name and hasattr(cls, method_name)):
                     raise ValueError(
                         "The keyword argument `methods` must contain names of a methods "
-                        "of the decorated class: %s. Got '%s' instead." % (cls, method_name)
+                        f"of the decorated class: {cls}. Got '{method_name}' instead."
                     )
                 _method = getattr(cls, method_name)
                 if not callable(_method):
                     raise TypeError(
-                        "Cannot decorate '%s' as it isn't a callable attribute of "
-                        "%s (%s)." % (method_name, cls, _method)
+                        f"Cannot decorate '{method_name}' as it isn't a callable attribute of "
+                        f"{cls} ({_method})."
                     )
                 _methods.append((_method, method_name, method_conf))
 

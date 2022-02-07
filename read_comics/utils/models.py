@@ -17,7 +17,7 @@ from urllib3 import Retry
 from . import logging
 from .model_managers import ComicvineSyncManager
 
-default_logger = logging.getLogger(__name__ + '.ComicvineSyncModel')
+default_logger = logging.getLogger(__name__ + ".ComicvineSyncModel")
 
 
 def slugify_function(content):
@@ -32,32 +32,32 @@ class ComicvineSyncModel(models.Model):
     MONGO_COLLECTION = ""
     MONGO_PROJECTION = {}
     _DEFAULT_FIELDS_MAPPING = {
-        'name': 'name',
-        'aliases': 'aliases',
-        'short_description': 'deck',
-        'html_description': {
-            'path': 'description',
-            'method': 'strip_links'
+        "name": "name",
+        "aliases": "aliases",
+        "short_description": "deck",
+        "html_description": {
+            "path": "description",
+            "method": "strip_links"
         },
-        'thumb_url': 'image.small_url',
-        'image_url': 'image.original_url',
-        'first_issue_name': {
-            'path': 'first_appeared_in_issue.id',
-            'method': 'get_issue_name'
+        "thumb_url": "image.small_url",
+        "image_url": "image.original_url",
+        "first_issue_name": {
+            "path": "first_appeared_in_issue.id",
+            "method": "get_issue_name"
         },
-        'first_issue': {
-            'path': 'first_appeared_in_issue.id',
-            'method': 'get_issue'
+        "first_issue": {
+            "path": "first_appeared_in_issue.id",
+            "method": "get_issue"
         },
-        'first_issue_comicvine_id': 'first_appeared_in_issue.id'
+        "first_issue_comicvine_id": "first_appeared_in_issue.id"
     }
     COMICVINE_INFO_TASK = None
     COMICVINE_API_URL = None
 
     class ComicvineStatus(models.TextChoices):
-        NOT_MATCHED = 'NOT_MATCHED', 'Not matched'
-        QUEUED = 'QUEUED', 'Waiting in queue'
-        MATCHED = 'MATCHED', 'Matched'
+        NOT_MATCHED = "NOT_MATCHED", "Not matched"
+        QUEUED = "QUEUED", "Waiting in queue"
+        MATCHED = "MATCHED", "Matched"
 
     logger = None
 
@@ -79,7 +79,7 @@ class ComicvineSyncModel(models.Model):
         abstract = True
 
     def __repr__(self):
-        return '<%s: %s (%s)>' % (self.__class__.__name__, self, self.pk)
+        return f"<{self.__class__.__name__}: {self} ({self.pk})>"
 
     @property
     def comicvine_actual(self):
@@ -88,12 +88,12 @@ class ComicvineSyncModel(models.Model):
         document = self.comicvine_document
         if document:
             self.logger.debug("Document found")
-            self.logger.debug("Document: %s" % str(document))
-            crawl_date = document['crawl_date']
+            self.logger.debug(f"Document: {str(document)}")
+            crawl_date = document["crawl_date"]
             return self.comicvine_last_match > pytz.UTC.localize(crawl_date)
         else:
             self.logger.error(
-                "Document with id `%s` not found in collection `%s`" % (self.comicvine_id, self.MONGO_COLLECTION)
+                "Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
             return True
 
@@ -102,8 +102,7 @@ class ComicvineSyncModel(models.Model):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
-        document = collection.find_one({'id': self.comicvine_id}, self.MONGO_PROJECTION)
-        return document
+        return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         pass
@@ -123,7 +122,7 @@ class ComicvineSyncModel(models.Model):
         http.mount("https://", adapter)
         http.mount("http://", adapter)
         url = self.COMICVINE_API_URL.format(id=self.comicvine_id, api_key=settings.COMICVINE_API_KEY)
-        headers = {'user-agent': 'read-comics.net/1.0.0'}
+        headers = {"user-agent": "read-comics.net/1.0.0"}
         try:
             response = http.request("GET", url, headers=headers, timeout=100)
             response.raise_for_status()
@@ -134,8 +133,7 @@ class ComicvineSyncModel(models.Model):
                 db = client.get_default_database()
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
-                document = collection.find_one({'id': self.comicvine_id}, self.MONGO_PROJECTION)
-                return document
+                return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
             else:
                 return None
         except (JSONDecodeError, RequestException, HTTPError):
@@ -148,8 +146,8 @@ class ComicvineSyncModel(models.Model):
                 self.COMICVINE_INFO_TASK.apply_async(
                     (),
                     {
-                        'pk': self.pk,
-                        'follow_m2m': follow_m2m
+                        "pk": self.pk,
+                        "follow_m2m": follow_m2m
                     },
                     priority=9
                 )
@@ -159,43 +157,43 @@ class ComicvineSyncModel(models.Model):
         document = self.comicvine_document
         if document:
             self.logger.debug("Document found")
-            self.logger.debug("Document: %s" % str(document))
+            self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
             self.comicvine_status = self.ComicvineStatus.MATCHED
             self.comicvine_last_match = timezone.now()
         else:
             self.logger.debug(
-                "Document with id `%s` not found in collection `%s`" % (self.comicvine_id, self.MONGO_COLLECTION)
+                f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
             document = self.get_document_from_api()
             if document:
                 self.logger.debug("Document found in API")
-                self.logger.debug("Document: %s" % str(document))
+                self.logger.debug(f"Document: {str(document)}")
                 self.process_document(document, follow_m2m)
                 self.comicvine_status = self.ComicvineStatus.MATCHED
                 self.comicvine_last_match = timezone.now()
             else:
                 self.logger.error(
-                    "Document with id `%s` not found in API" % self.comicvine_id
+                    f"Document with id `{self.comicvine_id}` not found in API"
                 )
                 self.comicvine_status = self.ComicvineStatus.NOT_MATCHED
 
     def process_document(self, document, follow_m2m):
-        self.comicvine_url = document.get('site_detail_url')
+        self.comicvine_url = document.get("site_detail_url")
         field_mapping = self.get_field_mapping()
         for field, source in field_mapping.items():
             self._fill_field_from_document(document, field, source, follow_m2m)
 
     def get_field_mapping(self):
         field_mapping = dict(self._DEFAULT_FIELDS_MAPPING)
-        if hasattr(self, 'FIELD_MAPPING'):
+        if hasattr(self, "FIELD_MAPPING"):
             field_mapping.update(self.FIELD_MAPPING)
         return field_mapping
 
     @staticmethod
     def strip_links(text):
         if text:
-            return re.sub(r'<(a|/a).*?>', '', text)
+            return re.sub(r"<(a|/a).*?>", "", text)
         return None
 
     @staticmethod
@@ -203,21 +201,20 @@ class ComicvineSyncModel(models.Model):
         try:
             client = MongoClient(settings.MONGO_URL)
             db = client.get_default_database()
-            issue_doc = db['comicvine_issues'].find_one({'id': comicvine_id})
+            issue_doc = db["comicvine_issues"].find_one({"id": comicvine_id})
             if issue_doc:
-                volume_doc = db['comicvine_volumes'].find_one({'id': issue_doc['volume']['id']})
+                volume_doc = db["comicvine_volumes"].find_one({"id": issue_doc["volume"]["id"]})
                 if volume_doc:
-                    if issue_doc['name']:
-                        issue_name = issue_doc['name']
+                    if issue_doc["name"]:
+                        issue_name = issue_doc["name"]
                     else:
-                        issue_name = ''
-                    name = '%s (%s) #%s %s' % (volume_doc['name'], volume_doc['start_year'],
-                                               issue_doc['issue_number'], issue_name)
-                    name = name.strip(' ')
-                    return name
-            return ''
+                        issue_name = ""
+                    name = f"{volume_doc['name']} ({volume_doc['start_year']}) " \
+                           f"#{issue_doc['issue_number']} {issue_name}"
+                    return name.strip(" ")
+            return ""
         except KeyError:
-            return ''
+            return ""
 
     @staticmethod
     def get_issue(comicvine_id):
@@ -231,15 +228,15 @@ class ComicvineSyncModel(models.Model):
     def get_character(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.characters.models import Character
         character, created, matched = Character.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -249,15 +246,15 @@ class ComicvineSyncModel(models.Model):
     def get_concept(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.concepts.models import Concept
         concept, created, matched = Concept.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -267,15 +264,15 @@ class ComicvineSyncModel(models.Model):
     def get_location(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.locations.models import Location
         location, created, matched = Location.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -285,15 +282,15 @@ class ComicvineSyncModel(models.Model):
     def get_object(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.objects.models import Object
         obj, created, matched = Object.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -303,15 +300,15 @@ class ComicvineSyncModel(models.Model):
     def get_power(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.powers.models import Power
         power, created, matched = Power.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -321,15 +318,15 @@ class ComicvineSyncModel(models.Model):
     def get_story_arc(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.story_arcs.models import StoryArc
         story_arc, created, matched = StoryArc.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -339,15 +336,15 @@ class ComicvineSyncModel(models.Model):
     def get_team(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.teams.models import Team
         team, created, matched = Team.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -357,15 +354,15 @@ class ComicvineSyncModel(models.Model):
     def get_volume(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.volumes.models import Volume
         volume, created, matched = Volume.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=False
         )
@@ -375,15 +372,15 @@ class ComicvineSyncModel(models.Model):
     def get_publisher(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.publishers.models import Publisher
         publisher, created, matched = Publisher.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=False
         )
@@ -393,15 +390,15 @@ class ComicvineSyncModel(models.Model):
     def get_person(d):
         if not d:
             return None
-        comicvine_id = d.get('id', None)
-        name = d.get('name', str(comicvine_id))
+        comicvine_id = d.get("id", None)
+        name = d.get("name", str(comicvine_id))
         if not comicvine_id:
             return None
         from read_comics.people.models import Person
         person, created, matched = Person.objects.get_or_create_from_comicvine(
             comicvine_id,
             defaults={
-              'name': name
+              "name": name
             },
             delay=True
         )
@@ -411,20 +408,21 @@ class ComicvineSyncModel(models.Model):
         if not hasattr(self, field):
             return
 
+        if not isinstance(source, (str, dict)):
+            raise ComicvineSyncModelConfigurationError("Wrong document source")
+
         if isinstance(source, str):
             path = source
             method = None
-            inner_path = ''
+            inner_path = ""
             override_m2m = True
         elif isinstance(source, dict):
-            path = source.get('path', '')
-            method = getattr(self, source.get('method'), None)
-            inner_path = source.get('inner_path', '')
-            override_m2m = source.get('overrride_m2m', True)
+            path = source.get("path", "")
+            method = getattr(self, source.get("method"), None)
             if not method or not callable(method):
-                raise ComicvineSyncModelConfigurationError("Wrong method `%s`" % source.get('method'))
-        else:
-            raise ComicvineSyncModelConfigurationError("Wrong document source")
+                raise ComicvineSyncModelConfigurationError(f"Wrong method `{source.get('method')}`")
+            inner_path = source.get("inner_path", "")
+            override_m2m = source.get("overrride_m2m", True)
 
         try:
             model_field = self._meta.get_field(field)
@@ -449,8 +447,8 @@ class ComicvineSyncModel(models.Model):
 
     def _get_value_by_path(self, document, path):
         value = document
-        for path_element in path.split('.'):
-            if path_element == '':
+        for path_element in path.split("."):
+            if path_element == "":
                 return value
             if value is None:
                 self.logger.warning(f"Document ended before path ({path}). Comicvine ID: {self.comicvine_id}")
@@ -509,23 +507,22 @@ class ComicvineSyncModel(models.Model):
 
     @property
     def description(self):
-        d = ''
         if self.html_description:
-            d = self.html_description.replace('https:', 'http:')
+            d = self.html_description.replace("https:", "http:")
             from bs4 import BeautifulSoup
-            soup = BeautifulSoup(d, 'html.parser')
-            lazy_images = soup.select('img.js-lazy-load-image')
+            soup = BeautifulSoup(d, "html.parser")
+            lazy_images = soup.select("img.js-lazy-load-image")
             for image in lazy_images:
-                image['src'] = image.get('data-src')
+                image["src"] = image.get("data-src")
 
-            images = soup.select('img')
+            images = soup.select("img")
             for image in images:
-                classes = image.get('class', [])
-                classes.append('image-full-size')
-                image['class'] = classes
+                classes = image.get("class", [])
+                classes.append("image-full-size")
+                image["class"] = classes
 
-            d = str(soup)
-        return d
+            return str(soup)
+        return ""
 
     @property
     def meta(self):

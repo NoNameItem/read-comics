@@ -13,7 +13,7 @@ def get_watched_missing_issues_query(user, search_query=None):
         q = MissingIssue.objects.filter(**f)
 
         if search_query:
-            q = q.filter(
+            return q.filter(
                 Q(publisher_name__icontains=search_query) |
                 Q(volume_name__icontains=search_query) |
                 Q(name__icontains=search_query)

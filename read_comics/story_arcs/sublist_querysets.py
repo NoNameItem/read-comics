@@ -11,93 +11,93 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(story_arc, user=None):
-    q = story_arc.issues.filter(comicvine_status='MATCHED').order_by(
-        'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
+    q = story_arc.issues.filter(comicvine_status="MATCHED").order_by(
+        "cover_date", "volume__name", "volume__start_year", "numerical_number", "number"
     ).annotate(
         parent_slug=Value(story_arc.slug),
         badge_name=Concat(
-            F('volume__name'), Value(' ('), F('volume__start_year'), Value(') #'), F('number'), Value(' '), F('name'),
+            F("volume__name"), Value(" ("), F("volume__start_year"), Value(") #"), F("number"), Value(" "), F("name"),
             output_field=TextField()
         ),
-        group_breaker=Func(F('cover_date'), Value('Month YYYY'), function='to_char', output_field=TextField()),
-        desc=F('cover_date')
+        group_breaker=Func(F("cover_date"), Value("Month YYYY"), function="to_char", output_field=TextField()),
+        desc=F("cover_date")
     )
     if user and user.is_authenticated:
-        q = q.annotate(finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=user)))
+        return q.annotate(finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=user)))
     return q
 
 
 def get_volumes_queryset(story_arc):
     return Volume.objects.filter(
         issues__in=story_arc.issues.all()
-    ).filter(comicvine_status='MATCHED').annotate(
-        issues_count=Count('issues'),
-        badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
+    ).filter(comicvine_status="MATCHED").annotate(
+        issues_count=Count("issues"),
+        badge_name=Concat(F("name"), Value(" ("), F("start_year"), Value(")"),
                           output_field=TextField()),
         group_breaker=F("start_year"),
-        desc=Concat(F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('start_year', 'name', 'id')
+        desc=Concat(F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("start_year", "name", "id")
 
 
 def get_characters_queryset(story_arc):
     return Character.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_died_queryset(story_arc):
-    return Character.objects.filter(died_in_issues__in=story_arc.issues.all()).distinct().order_by('name', 'id')
+    return Character.objects.filter(died_in_issues__in=story_arc.issues.all()).distinct().order_by("name", "id")
 
 
 def get_concepts_queryset(story_arc):
     return Concept.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_locations_queryset(story_arc):
     return Location.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_objects_queryset(story_arc):
     return Object.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_authors_queryset(story_arc):
     return Person.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_teams_queryset(story_arc):
     return Team.objects.filter(issues__in=story_arc.issues.all()).annotate(
-        issues_count=Count('issues', filter=Q(issues__in=story_arc.issues.all())),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__in=story_arc.issues.all())),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_disbanded_queryset(story_arc):
-    return Team.objects.filter(issues__in=story_arc.issues.all()).distinct().order_by('name', 'id')
+    return Team.objects.filter(issues__in=story_arc.issues.all()).distinct().order_by("name", "id")
 
 
 def get_first_appearance_queryset(story_arc):
     def get_subquery(model, url_template_name, heading):
         return model.objects.filter(first_issue__in=story_arc.issues.all()).values(
-            'name', 'slug',
+            "name", "slug",
             url_template_name=Value(url_template_name),
             group_breaker=Value(heading),
-            desc=Concat(Value("In issue #"), F('first_issue__number'), output_field=TextField()),
+            desc=Concat(Value("In issue #"), F("first_issue__number"), output_field=TextField()),
             square_avatar=Replace(
-                Replace('thumb_url', Value('https:'), Value('http:')), Value('/scale_small/'), Value('/square_avatar/')
+                Replace("thumb_url", Value("https:"), Value("http:")), Value("/scale_small/"), Value("/square_avatar/")
             )
         )
 
@@ -107,4 +107,4 @@ def get_first_appearance_queryset(story_arc):
     objects = get_subquery(Object, "objects/detail_url.html", "Objects first appearance")
     teams = get_subquery(Team, "teams/detail_url.html", "Teams first appearance")
 
-    return characters.union(concepts, locations, objects, teams).order_by('group_breaker', 'name')
+    return characters.union(concepts, locations, objects, teams).order_by("group_breaker", "name")

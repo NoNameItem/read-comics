@@ -19,52 +19,50 @@ logger = logging.getLogger(__name__)
 
 class RestrictModelMixin:
     MODELS = {
-        'all': (),
-        'characters': (Character, ),
-        'concepts': (Concept, ),
-        'issues': (Issue, ),
-        'locations': (Location, ),
-        'objects': (Object, ),
-        'people': (Person, ),
-        'publishers': (Publisher, ),
-        'story_arcs': (StoryArc, ),
-        'teams': (Team, ),
-        'volumes': (Volume, )
+        "all": (),
+        "characters": (Character, ),
+        "concepts": (Concept, ),
+        "issues": (Issue, ),
+        "locations": (Location, ),
+        "objects": (Object, ),
+        "people": (Person, ),
+        "publishers": (Publisher, ),
+        "story_arcs": (StoryArc, ),
+        "teams": (Team, ),
+        "volumes": (Volume, )
     }
 
-    MODEL_PARAM = 'category'
+    MODEL_PARAM = "category"
 
     def __init__(self, **kwargs):
         super(RestrictModelMixin, self).__init__(**kwargs)
         self.category = None
 
     def get_models(self):
-        self.category = self.request.GET.get(self.MODEL_PARAM, 'all').strip()
-        model = self.MODELS[self.category]
-        return model
+        self.category = self.request.GET.get(self.MODEL_PARAM, "all").strip()
+        return self.MODELS[self.category]
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class SearchView(ElidedPagesPaginatorMixin, RestrictModelMixin, BreadcrumbMixin, BaseSearchView):
     template_name = "search/search.html"
     paginate_by = 50
-    breadcrumb = [{'url': '#', 'text': 'Search'}]
+    breadcrumb = [{"url": "#", "text": "Search"}]
 
     def get_context_data(self, **kwargs):
         context = super(SearchView, self).get_context_data(**kwargs)
-        context['category'] = self.category
-        context['total_results'] = context['paginator'].count
+        context["category"] = self.category
+        context["total_results"] = context["paginator"].count
         return context
 
 
 search_view = SearchView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class AjaxSearchView(RestrictModelMixin, SearchApiView):
     def get_queryset(self):
-        q = super(AjaxSearchView, self).get_queryset()[:10]
-        return q
+        return super(AjaxSearchView, self).get_queryset()[:10]
 
 
 ajax_search_view = AjaxSearchView.as_view()

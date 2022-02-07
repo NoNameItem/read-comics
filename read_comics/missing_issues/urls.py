@@ -50,9 +50,9 @@ urlpatterns = [
     path("ignore_volume/<int:comicvine_id>/", view=ignore_volume_view, name="ignore_volume"),
     path("ignore_publisher/<int:comicvine_id>/", view=ignore_publisher_view, name="ignore_publisher"),
 
-    path('reload_from_do/', view=start_reload_from_do_view, name='start_reload_from_do'),
+    path("reload_from_do/", view=start_reload_from_do_view, name="start_reload_from_do"),
 
-    path('watched/', view=watched_missing_issues_list_view, name='watched'),
+    path("watched/", view=watched_missing_issues_list_view, name="watched"),
 
     path("watched/skip_issue/<int:comicvine_id>/", view=watched_skip_issue_view, name="watched_skip_issue"),
     path("watched/skip_volume/<int:comicvine_id>/", view=watched_skip_volume_view, name="watched_skip_volume"),

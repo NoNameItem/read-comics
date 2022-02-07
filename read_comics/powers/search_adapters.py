@@ -13,7 +13,7 @@ class PowerSearchAdapter(watson.SearchAdapter):
         if obj.html_description:
             return strip_tags(obj.html_description)
         else:
-            return ''
+            return ""
 
     def get_description(self, obj):
-        return ''
+        return ""

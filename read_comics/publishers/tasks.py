@@ -12,9 +12,9 @@ from config import celery_app
 
 
 class PublisherProcessEntryTask(BaseProcessEntryTask):
-    MODEL_NAME = 'Publisher'
-    APP_LABEL = 'publishers'
-    LOGGER_NAME = 'VolumeProcessEntryTask'
+    MODEL_NAME = "Publisher"
+    APP_LABEL = "publishers"
+    LOGGER_NAME = "VolumeProcessEntryTask"
     NEXT_LEVEL_TASK = volumes_space_task
 
     def __init__(self):
@@ -34,16 +34,16 @@ publishers_space_task = celery_app.register_task(PublishersSpaceTask())
 
 
 class PublisherComicvineInfoTask(BaseComicvineInfoTask):
-    MODEL_NAME = 'Publisher'
-    APP_LABEL = 'publishers'
+    MODEL_NAME = "Publisher"
+    APP_LABEL = "publishers"
 
 
 publisher_comicvine_info_task = celery_app.register_task(PublisherComicvineInfoTask())
 
 
 class PublishersRefreshTask(BaseRefreshTask):
-    MODEL_NAME = 'Publisher'
-    APP_LABEL = 'publishers'
+    MODEL_NAME = "Publisher"
+    APP_LABEL = "publishers"
 
 
 publishers_refresh_task = celery_app.register_task(PublishersRefreshTask())

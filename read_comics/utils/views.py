@@ -5,7 +5,7 @@ from utils.view_mixins import ElidedPagesPaginatorMixin
 
 class BaseSublistView(ElidedPagesPaginatorMixin, ListView):
     template_name = "blocks/detail/badges.html"
-    context_object_name = 'objects'
+    context_object_name = "objects"
     paginate_by = 30
     get_queryset_func = None
     get_queryset_user_param = False
@@ -16,7 +16,7 @@ class BaseSublistView(ElidedPagesPaginatorMixin, ListView):
         self.obj = None
 
     def get_queryset(self):
-        self.obj = get_object_or_404(self.parent_model, slug=self.kwargs.get('slug'))
+        self.obj = get_object_or_404(self.parent_model, slug=self.kwargs.get("slug"))
         if self.get_queryset_user_param:
             return self.get_queryset_func(self.obj, self.request.user)
         else:

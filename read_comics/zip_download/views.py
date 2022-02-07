@@ -18,7 +18,7 @@ class BaseZipDownloadView(View):
 
     @staticmethod
     def escape_file_name(filename):
-        return filename.replace("/", ' - ').replace(":", ' - ').replace('\t', ' ').replace('\n', ' ')
+        return filename.replace("/", " - ").replace(":", " - ").replace("\t", " ").replace("\n", " ")
 
     def get_issues_queryset(self):
         return self.sublist_querysets.get_issues_queryset(self.obj)
@@ -36,7 +36,7 @@ class BaseZipDownloadView(View):
             else:
                 filename = "Unknown publisher/" + filename
         else:
-            filename = 'Unknown volume/Unknown volume #'
+            filename = "Unknown volume/Unknown volume #"
 
         filename += issue.number
 
@@ -51,15 +51,13 @@ class BaseZipDownloadView(View):
         self.obj = self.get_base_object()
         q = self.get_issues_queryset()
 
-        files = [
+        return [
             (
                 self.get_filename(x),
                 x.download_link
             )
             for x in q
         ]
-
-        return files
 
     def get_zip_name(self):
         return self.escape_file_name(str(self.obj))
@@ -72,6 +70,6 @@ class BaseZipDownloadView(View):
         z.write_links(files)
 
         response = StreamingHttpResponse(z, content_type="application/zip")
-        response['Content-Disposition'] = "attachment; filename=\"{0}.zip\"".format(zip_name)
+        response["Content-Disposition"] = f'attachment; filename="{zip_name}.zip"'
 
         return response

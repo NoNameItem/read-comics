@@ -46,26 +46,26 @@ class UserInfoForm(ModelFormRequiredMixin, ModelForm):
 
     class Meta:
         model = User
-        fields = ['name', 'gender', 'birth_date', 'show_email', 'bio', 'email']
+        fields = ["name", "gender", "birth_date", "show_email", "bio", "email"]
         widgets = {
-            'bio': Textarea(),
+            "bio": Textarea(),
         }
-        required = ['email']
+        required = ["email"]
 
     helper = DefaultFormHelper()
     helper.attrs = {"novalidate": "novalidate"}
 
     helper.layout = Layout(
         Row(
-            Column(Field('name')),
-            Column(Field('email')),
+            Column(Field("name")),
+            Column(Field("email")),
         ),
         Row(
-            Column(Field('gender')),
-            Column(Field('birth_date')),
+            Column(Field("gender")),
+            Column(Field("birth_date")),
         ),
-        Field('show_email'),
-        Field('bio'),
+        Field("show_email"),
+        Field("bio"),
         HTML("<hr>"),
         Div(
             Submit(name="info", value="Save", css_class="btn btn-success"),
@@ -134,9 +134,9 @@ class ChangePasswordForm(allauth.account.forms.ChangePasswordForm):
         self.helper.attrs = {"novalidate": "novalidate"}
 
         self.helper.layout = Layout(
-            Field('oldpassword'),
-            Field('password1'),
-            Field('password2'),
+            Field("oldpassword"),
+            Field("password1"),
+            Field("password2"),
             HTML("<hr>"),
             Div(
                 Submit(name="password", value="Save", css_class="btn btn-success"),

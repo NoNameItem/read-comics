@@ -9,47 +9,47 @@ from read_comics.volumes.models import Volume
 
 
 def get_issues_queryset(publisher, user=None):
-    q = Issue.objects.filter(comicvine_status='MATCHED').filter(volume__publisher=publisher).order_by(
-        'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
+    q = Issue.objects.filter(comicvine_status="MATCHED").filter(volume__publisher=publisher).order_by(
+        "cover_date", "volume__name", "volume__start_year", "numerical_number", "number"
     ).annotate(
         parent_slug=Value(publisher.slug),
         badge_name=Concat(
-            F('volume__name'), Value(' ('), F('volume__start_year'), Value(') #'), F('number'), Value(' '), F('name'),
+            F("volume__name"), Value(" ("), F("volume__start_year"), Value(") #"), F("number"), Value(" "), F("name"),
             output_field=TextField()
         ),
-        group_breaker=Func(F('cover_date'), Value('Month YYYY'), function='to_char', output_field=TextField()),
-        desc=F('cover_date')
+        group_breaker=Func(F("cover_date"), Value("Month YYYY"), function="to_char", output_field=TextField()),
+        desc=F("cover_date")
     )
     if user and user.is_authenticated:
-        q = q.annotate(finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=user)))
+        return q.annotate(finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=user)))
     return q
 
 
 def get_volumes_queryset(publisher):
     return Volume.objects.filter(
         publisher=publisher
-    ).filter(comicvine_status='MATCHED').annotate(
-        issues_count=Count('issues'),
-        badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
+    ).filter(comicvine_status="MATCHED").annotate(
+        issues_count=Count("issues"),
+        badge_name=Concat(F("name"), Value(" ("), F("start_year"), Value(")"),
                           output_field=TextField()),
         group_breaker=F("start_year"),
-        desc=Concat(F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('start_year', 'name', 'id')
+        desc=Concat(F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("start_year", "name", "id")
 
 
 def get_characters_queryset(publisher):
     return Character.objects.filter(publisher=publisher).annotate(
-        issues_count=Count('issues', filter=Q(issues__volume__publisher=publisher)),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")
 
 
 def get_story_arcs_queryset(publisher):
-    return StoryArc.objects.filter(publisher=publisher).distinct().order_by('name', 'id')
+    return StoryArc.objects.filter(publisher=publisher).distinct().order_by("name", "id")
 
 
 def get_teams_queryset(publisher):
     return Team.objects.filter(publisher=publisher).annotate(
-        issues_count=Count('issues', filter=Q(issues__volume__publisher=publisher)),
-        desc=Concat(Value('Appeared in '), F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('-issues_count', 'name', 'id')
+        issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
+        desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
+    ).order_by("-issues_count", "name", "id")

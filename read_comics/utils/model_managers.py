@@ -20,7 +20,7 @@ class ComicvineSyncQuerySet(models.QuerySet):
 
         Method placed in custom QuerySet like get_or_create method and to get access to get_or_create
         :param comicvine_id: Object's comicvine id
-        :param defaults: default fields to pass in standart django get_or_create method
+        :param defaults: default fields to pass in standard django get_or_create method
         :param force_refresh: by default only new instances populated with data from comicvine. Set this param to `True`
         to force refresh of already existing instance
         :param follow_m2m: Flag to follow m2m relations while filling info from comicvine
@@ -32,15 +32,15 @@ class ComicvineSyncQuerySet(models.QuerySet):
         """
         if defaults is None:
             defaults = {}
-        defaults['name'] = defaults.get('name', str(comicvine_id))
+        defaults["name"] = defaults.get("name", str(comicvine_id))
         try:
             instance, created = self.get_or_create(comicvine_id=comicvine_id, defaults=defaults)
         except IntegrityError:
             instance = self.get(comicvine_id=comicvine_id)
             created = False
-        logger.debug("Found: %s" % (not created))
+        logger.debug(f"Found: {not created}")
         if (created or (force_refresh and not instance.comicvine_actual)) \
-           and (not instance.comicvine_status == instance.ComicvineStatus.QUEUED):
+           and (instance.comicvine_status != instance.ComicvineStatus.QUEUED):
             logger.debug("Refreshing from comicvine")
             instance.fill_from_comicvine(follow_m2m, delay)
             instance.save()

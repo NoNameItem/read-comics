@@ -11,42 +11,42 @@ from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
 
-logger = getLogger(__name__ + '.Person')
+logger = getLogger(__name__ + ".Person")
 
 
-@methods_logged(logger, methods=['fill_from_comicvine', 'process_document', 'get_field_mapping',
-                                 '_fill_field_from_document', '_set_non_m2m_from_document', '_get_value_by_path',
-                                 '_set_m2m_from_document'])
+@methods_logged(logger, methods=["fill_from_comicvine", "process_document", "get_field_mapping",
+                                 "_fill_field_from_document", "_set_non_m2m_from_document", "_get_value_by_path",
+                                 "_set_m2m_from_document"])
 class Person(ImageMixin, ComicvineSyncModel):
-    MONGO_COLLECTION = 'comicvine_people'
+    MONGO_COLLECTION = "comicvine_people"
     MONGO_PROJECTION = {
-        'count_of_issue_appearances': 0,
-        'date_added': 0,
-        'date_last_updated': 0,
-        'issues': 0,
-        'story_arc_credits': 0,
-        'volume_credits': 0,
-        'created_characters': 0,
-        'email': 0,
-        'gender': 0,
+        "count_of_issue_appearances": 0,
+        "date_added": 0,
+        "date_last_updated": 0,
+        "issues": 0,
+        "story_arc_credits": 0,
+        "volume_credits": 0,
+        "created_characters": 0,
+        "email": 0,
+        "gender": 0,
     }
     FIELD_MAPPING = {
-        'birth_date': {
-            'path': 'birth',
-            'method': 'convert_date'
+        "birth_date": {
+            "path": "birth",
+            "method": "convert_date"
         },
-        'country': 'country',
-        'death_date': {
-            'path': 'death.date',
-            'method': 'convert_date'
+        "country": "country",
+        "death_date": {
+            "path": "death.date",
+            "method": "convert_date"
         },
-        'hometown': 'hometown',
+        "hometown": "hometown",
     }
     COMICVINE_INFO_TASK = person_comicvine_info_task
-    COMICVINE_API_URL = 'https://comicvine.gamespot.com/api/person/4040-{id}/?' \
-                        'api_key={api_key}&' \
-                        'format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,' \
-                        'image,birth,country,death,hometown'
+    COMICVINE_API_URL = "https://comicvine.gamespot.com/api/person/4040-{id}/?" \
+                        "api_key={api_key}&" \
+                        "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description," \
+                        "image,birth,country,death,hometown"
 
     logger = logger
 
@@ -86,13 +86,14 @@ class Person(ImageMixin, ComicvineSyncModel):
 
     def get_absolute_url(self):
         from django.urls import reverse
-        return reverse('people:detail', args=[self.slug])
+        return reverse("people:detail", args=[self.slug])
 
     @property
     def download_link(self):
         from django.urls import reverse
-        return reverse('people:download', args=[self.slug])
+        return reverse("people:download", args=[self.slug])
 
     def get_aliases_list(self):
         if self.aliases:
-            return self.aliases.split('\n')
+            return self.aliases.split("\n")
+        return []

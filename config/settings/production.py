@@ -248,9 +248,9 @@ sentry_sdk.init(
 # Your stuff...
 # ------------------------------------------------------------------------------
 IGNORABLE_404_URLS = [
-    re.compile(r'\.(php|cgi)$'),
-    re.compile(r'^/phpmyadmin/'),
-    re.compile(r'^/apple-touch-icon\.png$'),
-    re.compile(r'^/favicon\.ico$'),
-    re.compile(r'^.*/images/logo\.png$'),
+    re.compile(r"\.(php|cgi)$"),
+    re.compile(r"^/phpmyadmin/"),
+    re.compile(r"^/apple-touch-icon\.png$"),
+    re.compile(r"^/favicon\.ico$"),
+    re.compile(r"^.*/images/logo\.png$"),
 ]

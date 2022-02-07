@@ -40,7 +40,7 @@ class Downloader:
 
 
 class ZipDownloader(zipstream.ZipFile):
-    def __init__(self, fileobj=None, mode='w', compression=ZIP_DEFLATED, allowZip64=False):
+    def __init__(self, fileobj=None, mode="w", compression=ZIP_DEFLATED, allowZip64=False):
         super().__init__(fileobj, mode, compression, allowZip64)
         self.links = []
         self.links_compress_type = None
@@ -55,34 +55,14 @@ class ZipDownloader(zipstream.ZipFile):
         try:
             while self.paths_to_write:
                 kwargs = self.paths_to_write.pop()
-                for data in self.__write(**kwargs):
-                    yield data
+                yield from self.__write(**kwargs)
             if self.links:
                 downloader = Downloader(self.links)
                 for file in downloader:
-                    for data in self._ZipFile__write(arcname=file[0], iterable=file[1],
-                                                     buffer_size=self.links_buffersize,
-                                                     compress_type=self.links_compress_type):
-                        yield data
+                    yield from self._ZipFile__write(arcname=file[0], iterable=file[1],
+                                                    buffer_size=self.links_buffersize,
+                                                    compress_type=self.links_compress_type)
                     file[1].close()
         except Exception as e:
             print(e)
             raise
-
-
-# class FileWrapper:
-#     """
-#     Get S3 key and wraps it to iterator.
-#
-#     Class needed for downloading multiple issues and to postpone download of actual file until zip started
-#     """
-#
-#     def __init__(self, url):
-#         self.url = url
-#         self.file = None
-#
-#     def get_file(self):
-#         r = requests.get(self.url)
-#         self.file = io.BytesIO(r.content)
-#         self.file.seek(0)
-#         yield self.file.read()

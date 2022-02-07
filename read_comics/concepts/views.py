@@ -24,55 +24,55 @@ from .models import Concept
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
                        ListView):
     context_object_name = "concepts"
     template_name = "concepts/list.html"
-    breadcrumb = [{'url': reverse_lazy("concepts:list"), 'text': 'Concepts'}]
+    breadcrumb = [{"url": reverse_lazy("concepts:list"), "text": "Concepts"}]
     paginate_by = 48
-    possible_order = ('issue_count', '-issue_count', 'volume_count', '-volume_count', 'name', '-name')
-    default_ordering = 'name'
+    possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
+    default_ordering = "name"
     queryset = Concept.objects.was_matched().annotate(
-        volume_count=Count('issues__volume', distinct=True)
+        volume_count=Count("issues__volume", distinct=True)
     ).annotate(
-        issue_count=Count('issues', distinct=True)
+        issue_count=Count("issues", distinct=True)
     )
-    active_menu_item = 'concepts'
+    active_menu_item = "concepts"
 
 
 concepts_list_view = ConceptsListView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Concept
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "concept"
     template_name = "concepts/detail.html"
-    active_menu_item = 'concepts'
+    active_menu_item = "concepts"
     sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         concept = self.object
         return [
-            {'url': reverse_lazy("concepts:list"), 'text': 'Concepts'},
-            {'url': '#',
-             'text': concept.name}
+            {"url": reverse_lazy("concepts:list"), "text": "Concepts"},
+            {"url": "#",
+             "text": concept.name}
         ]
 
     def get_context_data(self, **kwargs):
         context = super(ConceptDetailView, self).get_context_data(**kwargs)
         concept = self.object
-        context['volumes_count'] = sublist_querysets.get_volumes_queryset(concept).count()
+        context["volumes_count"] = sublist_querysets.get_volumes_queryset(concept).count()
 
-        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(concept)))
+        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(concept)))
 
-        context['missing_issues_count'] = concept.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = concept.missing_issues.filter(skip=False).count()
 
         if self.request.user.is_authenticated:
-            context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
+            context["watched"] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
@@ -82,7 +82,7 @@ concept_detail_view = ConceptDetailView.as_view()
 
 class StartWatchView(BaseStartWatchView):
     model = Concept
-    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.ConceptMissingIssuesTask'
+    MISSING_ISSUES_TASK = "read_comics.missing_issues.tasks.ConceptMissingIssuesTask"
 
 
 start_watch_view = StartWatchView.as_view()
@@ -95,12 +95,12 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptIssuesListView(BaseSublistView):
     extra_context = {
-        'get_page_function': "getIssuesPage",
-        'url_template_name': "concepts/badges_urls/issue.html",
-        'break_groups': True
+        "get_page_function": "getIssuesPage",
+        "url_template_name": "concepts/badges_urls/issue.html",
+        "break_groups": True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
     get_queryset_user_param = True
@@ -110,11 +110,11 @@ class ConceptIssuesListView(BaseSublistView):
 concept_issues_list_view = ConceptIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptVolumesListView(BaseSublistView):
     extra_context = {
-        'get_page_function': "getVolumesPage",
-        'break_groups': True
+        "get_page_function": "getVolumesPage",
+        "break_groups": True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
     parent_model = Concept
@@ -123,36 +123,36 @@ class ConceptVolumesListView(BaseSublistView):
 concept_volumes_list_view = ConceptVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptIssueDetailView(IssueDetailView):
-    slug_url_kwarg = 'issue_slug'
-    slug_field = 'slug'
-    active_menu_item = 'concepts'
+    slug_url_kwarg = "issue_slug"
+    slug_field = "slug"
+    active_menu_item = "concepts"
 
     def get_queryset(self):
-        self.base_object = get_object_or_404(Concept, slug=self.kwargs.get('concept_slug'))
+        self.base_object = get_object_or_404(Concept, slug=self.kwargs.get("concept_slug"))
         self.base_queryset = self.base_object.issues.all()
-        return self.base_queryset.select_related('volume', 'volume__publisher')
+        return self.base_queryset.select_related("volume", "volume__publisher")
 
     def get_ordering(self):
-        return 'cover_date'
+        return "cover_date"
 
     def issue_to_url(self, issue):
-        return reverse_lazy('concepts:issue_detail', args=(self.base_object.slug, issue.slug))
+        return reverse_lazy("concepts:issue_detail", args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
         concept = self.base_object
         issue = self.object
 
         return [
-            {'url': reverse_lazy("concepts:list"), 'text': 'Concepts'},
+            {"url": reverse_lazy("concepts:list"), "text": "Concepts"},
             {
-                'url': concept.get_absolute_url(),
-                'text': concept.name
+                "url": concept.get_absolute_url(),
+                "text": concept.name
             },
             {
-                'url': reverse_lazy("concepts:issue_detail", args=(concept.slug, issue.slug)),
-                'text': f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
+                "url": reverse_lazy("concepts:issue_detail", args=(concept.slug, issue.slug)),
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
             }
         ]
 
@@ -160,7 +160,7 @@ class ConceptIssueDetailView(IssueDetailView):
 concept_issue_detail_view = ConceptIssueDetailView.as_view()
 
 
-@logging.methods_logged(logger, ['get', ])
+@logging.methods_logged(logger, ["get", ])
 class ConceptDownloadView(BaseZipDownloadView):
     sublist_querysets = sublist_querysets
     base_model = Concept

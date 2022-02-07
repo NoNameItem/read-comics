@@ -9,12 +9,12 @@ class LastActiveMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        response = self.get_response(request)
         user = request.user
-        if user.is_authenticated:
-            if not user.last_active or \
-                    timezone.now() - user.last_active > datetime.timedelta(seconds=settings.LAST_ACTIVE_TIMEOUT):
-                user.last_active = timezone.now()
-                user.save()
+        if user.is_authenticated and (
+            not user.last_active or timezone.now() - user.last_active >
+            datetime.timedelta(seconds=settings.LAST_ACTIVE_TIMEOUT)
+        ):
+            user.last_active = timezone.now()
+            user.save()
 
-        return response
+        return self.get_response(request)
