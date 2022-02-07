@@ -72,12 +72,14 @@
           </div>
           <div class="breadcrumb-wrapper col-12 col-md-auto">
             <ol class="breadcrumb p-0 mb-0">
-              <li class="breadcrumb-item {% if not breadcrumb %}active{% endif %}">
-                {% if breadcrumb %}
-                  <a href="{% url "pages:home" %}"><i class="fad fa-home font-medium-2" aria-hidden="true"></i></a>
-                {% else %}
-                  <i class="fad fa-home font-medium-2" aria-hidden="true"></i>
-                {% endif %}
+              {% block breadcrumb %}
+                <li class="breadcrumb-item {% if not breadcrumb %}active{% endif %}">
+                  {% if breadcrumb %}
+                    <a href="{% url "pages:home" %}"><i class="fad fa-home font-medium-2" aria-hidden="true"></i></a>
+                  {% else %}
+                    <i class="fad fa-home font-medium-2" aria-hidden="true"></i>
+                  {% endif %}
+                </li>
                 {% for item in breadcrumb %}
                   <li class="breadcrumb-item {% if forloop.last %}active{% endif %}">
                     {% if forloop.last %}
@@ -87,6 +89,7 @@
                     {% endif %}
                   </li>
                 {% endfor %}
+              {% endblock %}
             </ol>
           </div>
         </div>
@@ -108,11 +111,11 @@
   <div id="full-size-image-modal" class="modal" tabindex="-1" role="dialog">
     <div class="modal-dialog modal-dialog-centered" role="document">
       <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
+        <span aria-hidden="true">&times;</span>
+      </button>
       <div class="modal-content">
         <div class="modal-body">
-           <img id="full-size-image" src="" class="img-fluid mx-auto d-block" alt="Image">
+          <img id="full-size-image" src="" class="img-fluid mx-auto d-block" alt="Image">
         </div>
       </div>
     </div>

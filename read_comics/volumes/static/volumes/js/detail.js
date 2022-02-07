@@ -9,6 +9,7 @@ $(document).ready(function (){
         toastr.success("You have finished " + response.volume_name + ".\n Time to read some more", "Congratulations!");
         $('#finished-mark').show();
         $('#mark-finished-btn-nav').hide();
+        $('.progress-report-card').replaceWith(response.finished_stats);
       } else {
         toastr.error( response.message, "Oops! Can't mark volume as finished");
       }

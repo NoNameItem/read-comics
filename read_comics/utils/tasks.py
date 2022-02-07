@@ -6,8 +6,12 @@ from celery import Task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
-from django.db import OperationalError
+from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
+
+
+class WrongKeyFormatError(Exception):
+    pass
 
 
 class BaseSpaceTask(Task):
@@ -20,13 +24,14 @@ class BaseSpaceTask(Task):
     def run(self, *args, **kwargs):
         self._logger.debug("Starting processing prefix {0}".format(kwargs['prefix']))
         s3objects_collection = self._bucket.objects.filter(Prefix=kwargs['prefix'])
-        s3objects = [
+        self.s3result = list(s3objects_collection)
+        self.s3objects = [
             (x.key, x.size)
             for x in s3objects_collection
             if self._regexp.search(x.key.removeprefix(kwargs['prefix']).lower())
         ]
-        for s3object in s3objects:
-            processed_keys = self.get_processed_keys()
+        processed_keys = self.get_processed_keys()
+        for s3object in self.s3objects:
             if s3object[0] not in processed_keys:
                 if self.PROCESS_ENTRY_TASK:
                     self._logger.debug("Creating entry level task with key {0}".format(s3object[0]))
@@ -50,6 +55,8 @@ class BaseSpaceTask(Task):
         self._bucket = s3.Bucket(settings.DO_SPACE_DATA_BUCKET)
         self._regexp = re.compile(r"^.[^\/]+(\/|.cb.)$")
         self._logger = get_task_logger(self.LOGGER_NAME)
+        self.s3result = None
+        self.s3objects = None
 
 
 class BaseProcessEntryTask(Task):
@@ -61,10 +68,21 @@ class BaseProcessEntryTask(Task):
     PARENT_ENTRY_APP_LABEL = None
     PARENT_ENTRY_FIELD = None
     MISSING_ISSUES_TASK = None
+    autoretry_for = (DatabaseError,)
+    retry_kwargs = {'max_retries': 10}
+    retry_backoff = True
+    retry_backoff_max = 60
+
+    def check_key_format(self, key):
+        m = self._key_regexp.match(key.lower())
+        if m:
+            return True
+        else:
+            return False
 
     def get_defaults(self, **kwargs):
         defaults = dict()
-        if self.PARENT_ENTRY_MODEL_NAME:
+        if self.PARENT_ENTRY_MODEL_NAME and "parent_entry_id" in kwargs:
             parent_model = apps.get_model(self.PARENT_ENTRY_APP_LABEL, self.PARENT_ENTRY_MODEL_NAME)
             parent = parent_model.objects.get(pk=kwargs['parent_entry_id'])
             defaults[self.PARENT_ENTRY_FIELD] = parent
@@ -77,6 +95,8 @@ class BaseProcessEntryTask(Task):
 
     def run(self, *args, **kwargs):
         self._logger.debug("Starting processing key {0}".format(kwargs['key']))
+        if not self.check_key_format(kwargs['key']):
+            raise WrongKeyFormatError(kwargs['key'])
         comicvine_id = self.get_comicvine_id(kwargs['key'])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         instance, created, matched = model.objects.get_or_create_from_comicvine(
@@ -123,8 +143,9 @@ class BaseComicvineInfoTask(Task):
             obj.fill_from_comicvine(kwargs['follow_m2m'])
             obj.save()
             if self.MISSING_ISSUES_TASK:
-                task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
-                task.delay()
+                if obj.issues.count() > 0 or obj.watchers.count() > 0:
+                    task = signature(self.MISSING_ISSUES_TASK, kwargs={'pk': obj.pk})
+                    task.delay()
 
     def on_failure(self, exc, task_id, args, kwargs, einfo):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)

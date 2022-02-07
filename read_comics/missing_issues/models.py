@@ -1,3 +1,8 @@
+import re
+
+from django.conf import settings
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
@@ -25,7 +30,7 @@ class IgnoredIssue(models.Model):
     number = models.CharField(max_length=100, null=True)
     cover_date = models.DateField(null=True)
 
-    volume_comicvine_id = models.IntegerField(unique=True)
+    volume_comicvine_id = models.IntegerField(null=True)
     volume_comicvine_url = models.URLField(max_length=1000, null=True)
     volume_name = models.TextField()
     volume_start_year = models.CharField(max_length=100, null=True)
@@ -39,6 +44,7 @@ class MissingIssue(models.Model):
     comicvine_url = models.URLField(max_length=1000, null=True)
     name = models.TextField(null=True)
     number = models.CharField(max_length=100, null=True)
+    numerical_number = models.FloatField(null=True)
     cover_date = models.DateField(null=True)
 
     volume_comicvine_id = models.IntegerField(null=True)
@@ -61,11 +67,28 @@ class MissingIssue(models.Model):
     publisher = models.ForeignKey('publishers.Publisher', related_name='missing_issues', on_delete=models.CASCADE,
                                   null=True)
 
+    skip = models.BooleanField(default=False)
+    skip_date = models.DateField(null=True)
+
+    def set_numerical_number(self):
+        if self.number:
+            if self.number == '½':
+                self.numerical_number = 0.5
+            else:
+                r = re.compile(r'^\d+(\.\d+)?')
+                match = r.match(self.number)
+                if match:
+                    self.numerical_number = float(match.group(0))
+                else:
+                    self.numerical_number = 0
+        else:
+            self.numerical_number = None
+
     def __str__(self):
         if self.name:
-            return f'{self.volume_name} ({self.volume_start_year}) #{self.number} {self.name}'
+            return f'{self.volume_name} #{self.number} {self.name}'
         else:
-            return f'{self.volume_name} ({self.volume_start_year}) #{self.number}'
+            return f'{self.volume_name} #{self.number}'
 
     @property
     def publisher_space_path(self):
@@ -120,3 +143,15 @@ class MissingIssue(models.Model):
             }
         )
         self.delete()
+
+
+class WatchedItem(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='watched_items')
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    object_id = models.BigIntegerField()
+    content_object = GenericForeignKey('content_type', 'object_id')
+
+    class Meta:
+        unique_together = [
+            ['user', 'content_type', 'object_id']
+        ]

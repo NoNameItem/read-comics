@@ -2,17 +2,19 @@ import datetime
 import math
 
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.db.models import Count, Q, Sum
+from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views import View
 from django.views.generic import DetailView, ListView
+from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from psycopg2 import IntegrityError
 from utils import logging
-from utils.utils import get_first_page
+from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -22,6 +24,8 @@ from utils.view_mixins import (
 )
 from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
+
+from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
 
 from . import sublist_querysets
 from .models import StoryArc
@@ -57,7 +61,7 @@ story_arcs_list_view = StoryArcsListView.as_view()
 
 
 @logging.methods_logged(logger, ['get', ])
-class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class StoryArcDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = StoryArc
     queryset = StoryArc.objects.select_related('publisher')
     slug_field = "slug"
@@ -65,6 +69,7 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     context_object_name = "story_arc"
     template_name = "story_arcs/detail.html"
     active_menu_item = 'story_arcs'
+    sublist_querysets = sublist_querysets
 
     def get_breadcrumb(self):
         story_arc = self.object
@@ -79,12 +84,6 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context = super(StoryArcDetailView, self).get_context_data(**kwargs)
         story_arc = self.object
 
-        context['issue_count'] = story_arc.issues.count()
-
-        if self.request.user.is_authenticated:
-            context['finished_count'] = story_arc.issues.filter(finished_users=self.request.user).count()
-            context['finished'] = (context['issue_count'] == context['finished_count'])
-
         context['volumes_count'] = sublist_querysets.get_volumes_queryset(story_arc).count()
         context['first_appearance_count'] = sublist_querysets.get_first_appearance_queryset(story_arc).count()
         context['characters_count'] = sublist_querysets.get_characters_queryset(story_arc).count()
@@ -96,21 +95,22 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context['teams_count'] = sublist_querysets.get_teams_queryset(story_arc).count()
         context['disbanded_teams_count'] = sublist_querysets.get_disbanded_queryset(story_arc).count()
 
-        context['size'] = story_arc.issues.aggregate(v=Sum('size'))['v']
+        context.update(get_first_page_old('volumes', sublist_querysets.get_volumes_queryset(story_arc)))
+        context.update(get_first_page_old('characters', sublist_querysets.get_characters_queryset(story_arc)))
+        context.update(get_first_page_old('died', sublist_querysets.get_died_queryset(story_arc)))
+        context.update(get_first_page_old('concepts', sublist_querysets.get_concepts_queryset(story_arc)))
+        context.update(get_first_page_old('locations', sublist_querysets.get_locations_queryset(story_arc)))
+        context.update(get_first_page_old('objects', sublist_querysets.get_objects_queryset(story_arc)))
+        context.update(get_first_page_old('authors', sublist_querysets.get_authors_queryset(story_arc)))
+        context.update(get_first_page_old('teams', sublist_querysets.get_teams_queryset(story_arc)))
+        context.update(get_first_page_old('disbanded', sublist_querysets.get_disbanded_queryset(story_arc)))
+        context.update(get_first_page_old('first_appearances',
+                                          sublist_querysets.get_first_appearance_queryset(story_arc)))
 
-        context.update(get_first_page('issues', sublist_querysets.get_issues_queryset(story_arc)))
-        context.update(get_first_page('volumes', sublist_querysets.get_volumes_queryset(story_arc)))
-        context.update(get_first_page('characters', sublist_querysets.get_characters_queryset(story_arc)))
-        context.update(get_first_page('died', sublist_querysets.get_died_queryset(story_arc)))
-        context.update(get_first_page('concepts', sublist_querysets.get_concepts_queryset(story_arc)))
-        context.update(get_first_page('locations', sublist_querysets.get_locations_queryset(story_arc)))
-        context.update(get_first_page('objects', sublist_querysets.get_objects_queryset(story_arc)))
-        context.update(get_first_page('authors', sublist_querysets.get_authors_queryset(story_arc)))
-        context.update(get_first_page('teams', sublist_querysets.get_teams_queryset(story_arc)))
-        context.update(get_first_page('disbanded', sublist_querysets.get_disbanded_queryset(story_arc)))
-        context.update(get_first_page('first_appearances', sublist_querysets.get_first_appearance_queryset(story_arc)))
+        context['missing_issues_count'] = story_arc.missing_issues.filter(skip=False).count()
 
-        context['missing_issues_count'] = story_arc.missing_issues.count()
+        if self.request.user.is_authenticated:
+            context['watched'] = self.object.watchers.filter(user=self.request.user).exists()
 
         return context
 
@@ -118,13 +118,30 @@ class StoryArcDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 story_arc_detail_view = StoryArcDetailView.as_view()
 
 
+class StartWatchView(BaseStartWatchView):
+    model = StoryArc
+    MISSING_ISSUES_TASK = 'read_comics.missing_issues.tasks.StoryArcMissingIssuesTask'
+
+
+start_watch_view = StartWatchView.as_view()
+
+
+class StopWatchView(BaseStopWatchView):
+    model = StoryArc
+
+
+stop_watch_view = StopWatchView.as_view()
+
+
 @logging.methods_logged(logger, ['get', ])
 class StoryArcIssuesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getIssuesPage",
-        'url_template_name': "story_arcs/badges_urls/issue.html"
+        'url_template_name': "story_arcs/badges_urls/issue.html",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_user_param = True
     parent_model = StoryArc
 
 
@@ -135,6 +152,7 @@ story_arc_issues_list_view = StoryArcIssuesListView.as_view()
 class StoryArcVolumesListView(BaseSublistView):
     extra_context = {
         'get_page_function': "getVolumesPage",
+        'break_groups': True
     }
     get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
     parent_model = StoryArc
@@ -259,30 +277,26 @@ class StoryArcIssueDetailView(IssueDetailView):
     slug_field = 'slug'
     active_menu_item = 'story_arcs'
 
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-        self.story_arc = None
-
     def get_queryset(self):
-        self.story_arc = get_object_or_404(StoryArc, slug=self.kwargs.get('story_arc_slug'))
-        self.base_queryset = self.story_arc.issues.all()
+        self.base_object = get_object_or_404(StoryArc, slug=self.kwargs.get('story_arc_slug'))
+        self.base_queryset = self.base_object.issues.all()
         return self.base_queryset.select_related('volume', 'volume__publisher')
 
     def get_ordering(self):
         return 'cover_date'
 
     def issue_to_url(self, issue):
-        return reverse_lazy('story_arcs:issue_detail', args=(self.story_arc.slug, issue.slug))
+        return reverse_lazy('story_arcs:issue_detail', args=(self.base_object.slug, issue.slug))
 
     def get_breadcrumb(self):
         return [
             {'url': reverse_lazy("story_arcs:list"), 'text': 'Story Arcs'},
             {
-                'url': self.story_arc.get_absolute_url(),
-                'text': self.story_arc.name
+                'url': self.base_object.get_absolute_url(),
+                'text': self.base_object.name
             },
             {
-                'url': reverse_lazy("story_arcs:issue_detail", args=(self.story_arc.slug, self.object.slug)),
+                'url': reverse_lazy("story_arcs:issue_detail", args=(self.base_object.slug, self.object.slug)),
                 'text': f"{self.object.volume.name} ({self.object.volume.start_year}) #{self.object.number}"
             }
         ]
@@ -299,23 +313,28 @@ class StoryArcDownloadView(BaseZipDownloadView):
     def get_files(self):
         self.story_arc = get_object_or_404(StoryArc, slug=self.kwargs.get('slug'))
         q = sublist_querysets.get_issues_queryset(self.story_arc)
-        num_length = math.ceil(math.log10(q.count()))
+        issues_count = q.count()
 
-        files = [
-            (
-                self.escape_file_name(
-                    f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name}".rstrip(' ')
-                    + x.space_key[-4:]
-                ),
-                x.download_link
-            )
-            for num, x in enumerate(q, 1)
-        ]
+        if issues_count:
+            num_length = math.ceil(math.log10(q.count()))
+
+            files = [
+                (
+                    self.escape_file_name(
+                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name or ''}".rstrip(' ')
+                        + x.space_key[-4:]
+                    ),
+                    x.download_link
+                )
+                for num, x in enumerate(q, 1)
+            ]
+        else:
+            files = []
 
         return files
 
     def get_zip_name(self):
-        return self.escape_file_name(self.story_arc.name)
+        return self.escape_file_name(self.story_arc.name.replace('\t', '').replace('\n', ''))
 
 
 story_arc_download_view = StoryArcDownloadView.as_view()
@@ -327,10 +346,28 @@ class StoryArcMarkFinishedView(View, LoginRequiredMixin):
             story_arc = get_object_or_404(StoryArc, slug=slug)
             user = request.user
             user.finished_issues.add(*story_arc.issues.all())
-            # r = MODELS.ReadIssue(profile=profile, issue=issue)
-            # r.save()
+
+            if self.request.user.is_authenticated:
+                total_count = story_arc.issues.count()
+                finished_count = story_arc.issues.annotate(
+                    finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=self.request.user))
+                ).exclude(finished_flg=0).count()
+                finished_percent = finished_count / total_count * 100
+                finished_stats = render_to_string(
+                    "issues/blocks/finished_progress.html",
+                    {
+                        "finished_count": finished_count,
+                        "finished_percent": finished_percent,
+                        "total_count": total_count
+                    },
+                    request=self.request
+                )
+            else:
+                finished_stats = ""
+
             return JsonResponse({'status': "success", 'story_arc_name': story_arc.name,
-                                 'date': formats.localize(datetime.date.today(), use_l10n=True)
+                                 'date': formats.localize(datetime.date.today(), use_l10n=True),
+                                 "finished_stats": finished_stats
                                  })
         except IntegrityError:
             return JsonResponse({'status': 'error', 'message': 'You already marked this issue as finished'})

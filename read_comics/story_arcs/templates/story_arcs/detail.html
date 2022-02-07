@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block title %}{{ story_arc.name }}{% endblock %}
@@ -31,8 +32,17 @@
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ story_arc.name }}</h4>
               </div>
-              <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
+              <div id="finished-mark" {% if user.is_suthenticated and issues_info.finished_percent == 100 %} style="display: none" {% endif %}>
                 <i class="far fa-check-circle success fa-3x"></i>
+              </div>
+              <div id="watch-mark">
+                {% if watched %}
+                  <a href="{% url "story_arcs:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "story_arcs:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                {% endif %}
               </div>
             </div>
             <!-- detail nav tabs start -->
@@ -45,8 +55,8 @@
                 <p>{{ story_arc.short_description|default_if_none:"" }}</p>
               </div>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 <li class="nav-item pb-1">
                   <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
                      href="#info"
@@ -54,17 +64,7 @@
                     <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
                 </li>
 
-                {% if issue_count > 0 %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1" id="issues-tab" data-toggle="tab"
-                       href="#issues"
-                       aria-controls="issues" role="tab" aria-selected="false">
-                      <i class="fad fa-book-open" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Issues </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ issue_count }}</span></a>
-
-                  </li>
-                {% endif %}
+                {% include 'issues/blocks/issues_button.html' %}
 
                 {% if volumes_count > 0 %}
                   <li class="nav-item pb-1">
@@ -72,8 +72,8 @@
                        href="#volumes"
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Volumes </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -84,8 +84,8 @@
                        href="#characters"
                        aria-controls="characters" role="tab" aria-selected="false">
                       <i class="fad fa-bat" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Characters </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Characters </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ characters_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -96,8 +96,8 @@
                        href="#died"
                        aria-controls="died" role="tab" aria-selected="false">
                       <i class="fad fa-skull" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Characters died</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ characters_died_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Characters died</span><span
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ characters_died_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -107,8 +107,8 @@
                        href="#concepts"
                        aria-controls="concepts" role="tab" aria-selected="false">
                       <i class="fad fa-brain" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Concepts</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ concepts_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Concepts</span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ concepts_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -118,7 +118,7 @@
                        href="#locations"
                        aria-controls="locations" role="tab" aria-selected="false">
                       <i class="fad fa-map-marker-alt" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Locations</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ locations_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ locations_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -128,8 +128,8 @@
                        href="#objects"
                        aria-controls="objects" role="tab" aria-selected="false">
                       <i class="fad fa-swords" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Objects</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ objects_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Objects</span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ objects_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -139,7 +139,7 @@
                        href="#authors"
                        aria-controls="authors" role="tab" aria-selected="false">
                       <i class="fad fa-people-carry" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Authors</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ authors_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -149,8 +149,8 @@
                        href="#teams"
                        aria-controls="teams" role="tab" aria-selected="false">
                       <i class="fad fa-users" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Teams</span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count }}</span></a>
+                      class="d-none d-md-block pl-50"> Teams</span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ teams_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -160,7 +160,7 @@
                        href="#disbanded"
                        aria-controls="teams-disbanded" role="tab" aria-selected="false">
                       <i class="fad fa-users-slash" aria-hidden="true"></i> <span class="d-none d-md-block pl-50"> Teams disbanded</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_teams_count }}</span></a>
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ disbanded_teams_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
@@ -170,12 +170,12 @@
                        href="#first-appearance"
                        aria-controls="first-appearance" role="tab" aria-selected="false">
                       <i class="fad fa-exclamation"></i> <span
-                        class="d-none d-md-block pl-50"> First appearances</span><span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ first_appearance_count }}</span></a>
+                      class="d-none d-md-block pl-50"> First appearances</span><span
+                      class="ml-1 badge badge-pill badge-round badge-danger">{{ first_appearance_count|intcomma }}</span></a>
                   </li>
                 {% endif %}
 
-                {% if request.user.is_staff > 0 %}
+                {% if request.user.is_staff or request.user.is_superuser %}
 
                   {% if missing_issues_count %}
                     <li class="nav-item pb-1">
@@ -183,7 +183,7 @@
                          href="{% url "missing_issues:category" category='story_arc' slug=object.slug %}">
                         <i class="fad fa-eye"></i> <span
                         class="d-none d-md-block pl-50"> Missing issues <span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ missing_issues_count }}</span></span></a>
+                        class="ml-1 badge badge-pill badge-round badge-warning">{{ missing_issues_count|intcomma }}</span></span></a>
                     </li>
                   {% endif %}
 
@@ -192,24 +192,19 @@
                        href="#tech"
                        aria-controls="tech" role="tab" aria-selected="false">
                       <i class="fad fa-cogs"></i> <span
-                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                      class="d-none d-md-block pl-50"> Technical info</span></a>
                   </li>
                 {% endif %}
               </ul>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
-                <li class="nav-item pb-1">
-                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ story_arc.download_link }}">
-                    <i class="fad fa-download"></i> <span
-                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                  </a>
-                </li>
-                {% if request.user.is_authenticated and not finished %}
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
+                {% include "issues/blocks/download_button.html" %}
+                {% if request.user.is_authenticated and not issues_info.finished_percent == 100 %}
                   <li class="nav-item pb-1" id="mark-finished-btn-nav">
                     <button class="nav-link d-flex px-1 btn btn-success" id="mark-finished-btn">
                       <i class="fad fa-check-circle"></i> <span
-                        class="d-none d-md-block pl-50"> Mark as finished</span>
+                      class="d-none d-md-block pl-50"> Mark as finished</span>
                     </button>
                   </li>
                 {% endif %}
@@ -226,6 +221,7 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+          {% include "issues/blocks/finished_progress.html" with total_count=issues_info.count finished_count=issues_info.finished_issues_count finished_percent=issues_info.finished_percent %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">
@@ -242,7 +238,9 @@
                     <strong>Publisher: </strong>
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
+                    {% if story_arc.publisher %}
                     <a href="{% url "publishers:detail" story_arc.publisher.slug %}">{{ story_arc.publisher.name }}</a>
+                    {% endif %}
                   </div>
                 </div>
 
@@ -261,7 +259,8 @@
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
                     {% if story_arc.first_issue %}
-                      <a href="{% url "story_arcs:issue_detail" story_arc.slug story_arc.first_issue.slug %}">{{ story_arc.first_issue.volume.name }}
+                      <a
+                        href="{% url "story_arcs:issue_detail" story_arc.slug story_arc.first_issue.slug %}">{{ story_arc.first_issue.volume.name }}
                         #{{ story_arc.first_issue.volume.first_issue.number }} {{ story_arc.first_issue.name|default_if_none:'' }}</a>
                     {% else %}
                       {{ story_arc.first_issue_name }}
@@ -277,7 +276,8 @@
 
               </div>
             </div>
-            <img src="{{ story_arc.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+            <img src="{{ story_arc.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size"
+                 width="100%">
           </div>
           <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
             {{ story_arc.description|default:"<p>No description</p>"|safe }}
@@ -286,7 +286,7 @@
       </div>
       <!-- info tab ends -->
 
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff or request.user.is_superuser %}
         <!-- tech info tab starts -->
         <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
           <div class="row">
@@ -354,23 +354,14 @@
         <!-- tech info tab ends -->
       {% endif %}
 
-      {% if issue_count %}
-        <!-- issues tab starts -->
-        <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
-          <h3>Issues in volume</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="story_arcs/badges_urls/issue.html" %}
-          </div>
-        </div>
-        <!-- issues tab ends -->
-      {% endif %}
+      {% include "issues/blocks/issues_tab.html" with url_template_name="story_arcs/badges_urls/issue.html" %}
 
-    {% if volumes_count %}
+      {% if volumes_count %}
         <!-- volumes tab starts -->
         <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
           <h3>Volumes</h3>
           <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" %}
+            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
           </div>
         </div>
         <!-- volumes tab ends -->
@@ -466,7 +457,8 @@
 
       {% if first_appearance_count %}
         <!-- disbanded tab starts -->
-        <div class="tab-pane fade badge-tab" id="first-appearance" aria-labelledby="first-appearance-tab" role="tabpanel">
+        <div class="tab-pane fade badge-tab" id="first-appearance" aria-labelledby="first-appearance-tab"
+             role="tabpanel">
           <div class="tab-content">
             {% include "blocks/detail/badges.html" with objects=first_appearances_first_page.object_list pages=first_appearances_pages get_page_function="getFirstAppearancesPage" break_groups=True %}
           </div>

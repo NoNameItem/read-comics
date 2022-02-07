@@ -154,7 +154,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
             'name'],
         overwrite=True,
         slugify_function=slugify_function,
-        max_length=1000
+        max_length=1000,
+        unique=True
     )
 
     tracker = FieldTracker()
@@ -237,6 +238,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
         return description
 
     def get_full_name(self, volume_name=None, volume_start_year=None):
+        if not self.volume:
+            return 'unknown'
         if self.name:
             return '%s (%s) #%s %s' % (
                 volume_name or self.volume.name,
@@ -253,7 +256,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     def update_do_metadata(self, volume_name=None, volume_start_year=None):
         filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}".replace(':', '*_*')\
-            .replace('/', '*@*').replace('\x85', '... ')
+            .replace('/', '*@*').replace('\x85', '... ').replace('\t', ' ')
         filename_ascii = unidecode(filename)
         s3_client = boto3.client(
             's3',
@@ -273,11 +276,12 @@ class Issue(ImageMixin, ComicvineSyncModel):
         )
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
-        if self.tracker.has_changed('number') \
-           or self.tracker.has_changed('name') \
-           or self.tracker.has_changed('volume_id'):
-            self.update_do_metadata()
-        self.set_numerical_number()
+        if self.comicvine_status == self.ComicvineStatus.MATCHED:
+            if self.tracker.has_changed('number') \
+               or self.tracker.has_changed('name') \
+               or self.tracker.has_changed('volume_id'):
+                self.update_do_metadata()
+            self.set_numerical_number()
 
     @property
     def download_link(self):
@@ -300,6 +304,10 @@ class Issue(ImageMixin, ComicvineSyncModel):
                     self.numerical_number = 0
         else:
             self.numerical_number = None
+
+    @property
+    def display_name(self):
+        return self.get_full_name()
 
 
 class IssuePerson(models.Model):

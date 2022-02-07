@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: *download*
+Disallow: *.cbr
+Disallow: *.cbz
+Disallow: *.CBR
+Disallow: *.CBZ

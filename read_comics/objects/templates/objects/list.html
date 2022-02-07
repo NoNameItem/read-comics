@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% load url_extras %}
 
@@ -69,8 +70,8 @@
           </div>
           <div class="card-footer">
             <ul class="list-inline list-inline-pipe font-weight-lighter font-size-xsmall">
-              <li>{{ obj.volume_count }} volume{{ obj.volume_count|pluralize }}</li>
-              <li>{{ obj.issue_count }} issues{{ obj.issue_count|pluralize }}</li>
+              <li>{{ obj.volume_count|intcomma }} volume{{ obj.volume_count|pluralize }}</li>
+              <li>{{ obj.issue_count|intcomma }} issues{{ obj.issue_count|pluralize }}</li>
             </ul>
           </div>
         </div>

@@ -35,7 +35,6 @@ EMAIL_PORT = 1025
 # http://whitenoise.evans.io/en/latest/django.html#using-whitenoise-in-development
 INSTALLED_APPS = ["whitenoise.runserver_nostatic"] + INSTALLED_APPS  # noqa F405
 
-
 # django-debug-toolbar
 # ------------------------------------------------------------------------------
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#prerequisites
@@ -46,7 +45,8 @@ MIDDLEWARE += ["debug_toolbar.middleware.DebugToolbarMiddleware"]  # noqa F405
 DEBUG_TOOLBAR_CONFIG = {
     # "DISABLE_PANELS": ["debug_toolbar.panels.redirects.RedirectsPanel"],
     'ENABLE_STACKTRACES': False,
-    'PRETTIFY_SQL': False
+    'PRETTIFY_SQL': False,
+    'INTERCEPT_REDIRECTS': False
 }
 # https://django-debug-toolbar.readthedocs.io/en/latest/installation.html#internal-ips
 INTERNAL_IPS = ["127.0.0.1", "10.0.2.2"]
@@ -59,7 +59,7 @@ if env("USE_DOCKER") == "yes":
 # django-extensions
 # ------------------------------------------------------------------------------
 # https://django-extensions.readthedocs.io/en/latest/installation_instructions.html#configuration
-INSTALLED_APPS += ["django_extensions"] # noqa F405
+INSTALLED_APPS += ["django_extensions"]  # noqa F405
 # Celery
 # ------------------------------------------------------------------------------
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#task-always-eager

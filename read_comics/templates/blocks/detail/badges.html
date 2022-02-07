@@ -9,7 +9,7 @@
       {% endifchanged %}
     {% endif %}
     <div class="col-auto">
-      <div class="list-left d-flex badge-tab-item m-1 bg-light bg-info primary div-link">
+      <div class="list-left d-flex badge-tab-item m-1 bg-light bg-info primary div-link {% if obj.finished_flg %}finished{% endif %}">
 
         {% if url_template_name %}
           {% include url_template_name with parent_slug=obj.parent_slug slug=obj.slug %}
@@ -29,10 +29,11 @@
         </div>
         <div class="list-content d-flex align-items-center pr-1">
           <div>
-            <span class="list-title">{{ obj.badge_name|default:obj.name|truncatechars:50 }}</span>
+            <span class="list-title">{% if obj.finished_flg %}<i class="far fa-check-circle success"></i>{% endif %} {{ obj.badge_name|default:obj.name|truncatechars:50 }}</span>
             {% if obj.desc %}
-              <small class="text-muted d-block">{{ obj.desc }}</small>
+              <small class="text-muted d-block">{{ obj.desc }} </small>
             {% endif %}
+
           </div>
         </div>
       </div>

@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% load url_extras %}
 
@@ -98,9 +99,9 @@
               {% if volume.publisher %}
                 <li>{{ volume.publisher.name }}</li>
               {% endif %}
-              <li>{{ volume.issue_count }} issue{{ volume.issue_count|pluralize }}</li>
+              <li>{{ volume.issue_count|intcomma }} issue{{ volume.issue_count|pluralize }}</li>
               {% if request.user.is_authenticated %}
-                <li>{{ volume.finished_count }} finished</li>
+                <li>{{ volume.finished_count|intcomma }} finished</li>
               {% endif %}
             </ul>
           </div>

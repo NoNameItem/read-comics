@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 {% load url_extras %}
 
@@ -89,8 +90,8 @@
               {% if story_arc.publisher %}
                 <li>{{ story_arc.publisher.name }}</li>
               {% endif %}
-              <li>{{ story_arc.volume_count }} volume{{ story_arc.volume_count|pluralize }}</li>
-              <li>{{ story_arc.issue_count }} issues{{ story_arc.issue_count|pluralize }}</li>
+              <li>{{ story_arc.volume_count|intcomma }} volume{{ story_arc.volume_count|pluralize }}</li>
+              <li>{{ story_arc.issue_count|intcomma }} issues{{ story_arc.issue_count|pluralize }}</li>
             </ul>
           </div>
         </div>

@@ -224,6 +224,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django_magnificent_messages.context_processors.django_magnificent_messages",
                 "read_comics.utils.context_processors.settings_context",
+                "read_comics.missing_issues.context_processors.missing_issues_count"
 
             ],
         },
@@ -275,7 +276,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Artem Vasin""", "nonameitem@me.com")]
+ADMINS = [("""Artem Vasin""", "nonameite@ya.ru")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -290,7 +291,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -301,6 +302,8 @@ LOGGING = {
         }
     },
     "root": {"level": "INFO", "handlers": ["console"]},
+    "django": {"level": "INFO", "handlers": ["console"]},
+    "read_comics": {"level": "DEBUG", "handlers": ["console"]},
 }
 
 # Celery
@@ -394,7 +397,6 @@ LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
 MONGO_URL = env("MONGO_URL")
 COMICVINE_API_KEY = env("COMICVINE_API_KEY")
 
-
 # Digital Ocean Spaces
 # ------------------------------------------------------------------------------
 DO_SPACE_DATA_REGION = env("DO_SPACE_DATA_REGION")
@@ -403,3 +405,5 @@ DO_SPACE_DATA_BUCKET = env("DO_SPACE_DATA_BUCKET")
 DO_SPACE_DATA_KEY = env("DO_SPACE_DATA_KEY")
 DO_SPACE_DATA_SECRET = env("DO_SPACE_DATA_SECRET")
 DO_SPACE_DATA_PUBLIC_URL = env("DO_SPACE_DATA_PUBLIC_URL")
+
+SKIP_DAYS = int(env("SKIP_DAYS", default=7))

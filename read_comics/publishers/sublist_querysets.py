@@ -8,8 +8,8 @@ from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
 
 
-def get_issues_queryset(publisher):
-    return Issue.objects.filter(comicvine_status='MATCHED').filter(volume__publisher=publisher).order_by(
+def get_issues_queryset(publisher, user=None):
+    q = Issue.objects.filter(comicvine_status='MATCHED').filter(volume__publisher=publisher).order_by(
         'cover_date', 'volume__name', 'volume__start_year', 'numerical_number', 'number'
     ).annotate(
         parent_slug=Value(publisher.slug),
@@ -20,6 +20,9 @@ def get_issues_queryset(publisher):
         group_breaker=Func(F('cover_date'), Value('Month YYYY'), function='to_char', output_field=TextField()),
         desc=F('cover_date')
     )
+    if user and user.is_authenticated:
+        q = q.annotate(finished_flg=Count('finished_users', distinct=True, filter=Q(finished_users=user)))
+    return q
 
 
 def get_volumes_queryset(publisher):
@@ -29,8 +32,9 @@ def get_volumes_queryset(publisher):
         issues_count=Count('issues'),
         badge_name=Concat(F('name'), Value(' ('), F('start_year'), Value(')'),
                           output_field=TextField()),
+        group_breaker=F("start_year"),
         desc=Concat(F('issues_count'), Value(' issue(s)'), output_field=TextField())
-    ).order_by('name', 'start_year')
+    ).order_by('start_year', 'name', 'id')
 
 
 def get_characters_queryset(publisher):

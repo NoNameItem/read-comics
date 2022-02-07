@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
@@ -6,7 +7,7 @@ from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 from volumes.tasks import volume_comicvine_info_task
 
-from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume
+from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, WatchedItem
 
 logger = getLogger(__name__ + '.Volume')
 
@@ -41,6 +42,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
             'method': 'get_issue'
         },
         'first_issue_comicvine_id': 'first_issue.id',
+        'first_issue_number': 'first_issue.issue_number',
         'last_issue_name': {
             'path': 'last_issue.id',
             'method': 'get_issue_name'
@@ -50,6 +52,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
             'method': 'get_issue'
         },
         'last_issue_comicvine_id': 'last_issue.id',
+        'last_issue_number': 'last_issue.issue_number',
         'start_year': {
             'path': 'start_year',
             'method': 'to_int'
@@ -77,11 +80,13 @@ class Volume(ImageMixin, ComicvineSyncModel):
     first_issue = models.ForeignKey('issues.Issue', null=True, on_delete=models.SET_NULL,
                                     related_name='first_issue_of')
     first_issue_comicvine_id = models.IntegerField(null=True)
+    first_issue_number = models.CharField(max_length=10, null=True)
 
     last_issue_name = models.TextField(null=True)
     last_issue = models.ForeignKey('issues.Issue', null=True, on_delete=models.SET_NULL,
                                    related_name='last_issue_of')
     last_issue_comicvine_id = models.IntegerField(null=True)
+    last_issue_number = models.CharField(max_length=10, null=True)
 
     publisher = models.ForeignKey('publishers.Publisher', related_name='volumes', on_delete=models.CASCADE, null=True)
 
@@ -93,8 +98,11 @@ class Volume(ImageMixin, ComicvineSyncModel):
         ],
         slugify_function=slugify_function,
         overwrite=True,
-        max_length=1000
+        max_length=1000,
+        unique=True
     )
+
+    watchers = GenericRelation(WatchedItem)
 
     tracker = FieldTracker()
 
@@ -158,3 +166,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
             return int(val)
         except ValueError:
             return None
+
+    @property
+    def display_name(self):
+        return f"{self.name} ({self.start_year or 'Unknown'})"

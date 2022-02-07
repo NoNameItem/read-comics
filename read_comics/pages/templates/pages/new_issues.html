@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Issues loaded on {{ day }}{% endblock %}
+
+{% block page_header %}Issues loaded on {{ day }}{% endblock %}
+
+{% block vendor_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_content %}
+  <section id="last-update" class="card">
+    <div class="card-body">
+      <div class="card-text">
+        <p>Added {{ new_issues.count }} new issue{{ new_issues.count|pluralize }}</p>
+        <ul>
+          {% for new_issue in new_issues %}
+            {% ifchanged new_issue.volume.publisher %}
+              {% if not forloop.first %}
+                </ul></li></ul></li>
+              {% endif %}
+              <li>
+              <a
+                href="{% url "publishers:detail" new_issue.volume.publisher.slug %}">{{ new_issue.volume.publisher }}</a>
+              <ul>
+            {% endifchanged %}
+          {% ifchanged new_issue.volume %}
+            {% ifchanged new_issue.volume.publisher %}
+            {% else %}
+              </ul></li>
+            {% endifchanged %}
+            <li>
+            <a href="{% url "volumes:detail" new_issue.volume.slug %}">{{ new_issue.volume.name }}
+              ({{ new_issue.volume.start_year|default_if_none:"Unknown" }})</a>
+            <ul>
+
+          {% endifchanged %}
+            <li><a href="{% url "issues:detail" new_issue.slug %}">{{ new_issue.volume.name }}
+              #{{ new_issue.number }} {{ new_issue.name|default_if_none:'' }}</a></li>
+          {% endfor %}
+          </ul>
+      </div>
+    </div>
+  </section>
+{% endblock %}
+
+{% block modals %}
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+{% endblock %}
+
+{% block page_js %}
+  {{ block.super }}
+{% endblock %}

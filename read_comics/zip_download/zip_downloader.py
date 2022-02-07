@@ -1,9 +1,11 @@
-import io
-from zipfile import ZIP_STORED
+import tempfile
+from zipfile import ZIP_DEFLATED
 
 import gevent.pool
 import requests
 import zipstream
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
 
 
 class Downloader:
@@ -12,20 +14,33 @@ class Downloader:
 
     def download_file(self, link):
         # print("Start download " + link[1])
-        r = requests.get(link[1])
-        f = io.BytesIO(r.content)
+        retry_strategy = Retry(
+            total=3,
+            status_forcelist=[429, 500, 502, 503, 504],
+            method_whitelist=["HEAD", "GET", "OPTIONS"]
+        )
+        adapter = HTTPAdapter(max_retries=retry_strategy)
+        http = requests.Session()
+        http.mount("https://", adapter)
+        http.mount("http://", adapter)
+
+        r = http.get(link[1])
+        fp = tempfile.TemporaryFile()
+        fp.write(r.content)
+        fp.seek(0)
+        # f = io.BytesIO(r.content)
         # print("Downloaded " + link[1])
-        return link[0], f
+        return link[0], fp
 
     def __iter__(self):
-        pool = gevent.pool.Pool(1)
-        for file in pool.imap_unordered(self.download_file, self.links, maxsize=2):
+        pool = gevent.pool.Pool(5)
+        for file in pool.imap_unordered(self.download_file, self.links, maxsize=20):
             # print("Yielded: " + file[0])
             yield file[0], file[1]
 
 
 class ZipDownloader(zipstream.ZipFile):
-    def __init__(self, fileobj=None, mode='w', compression=ZIP_STORED, allowZip64=False):
+    def __init__(self, fileobj=None, mode='w', compression=ZIP_DEFLATED, allowZip64=False):
         super().__init__(fileobj, mode, compression, allowZip64)
         self.links = []
         self.links_compress_type = None
@@ -49,6 +64,7 @@ class ZipDownloader(zipstream.ZipFile):
                                                      buffer_size=self.links_buffersize,
                                                      compress_type=self.links_compress_type):
                         yield data
+                    file[1].close()
         except Exception as e:
             print(e)
             raise

@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from tempfile import SpooledTemporaryFile
 
 import sentry_sdk
@@ -147,7 +148,8 @@ TEMPLATES[-1]["OPTIONS"]["loaders"] = [  # type: ignore[index] # noqa F405
     )
 ]
 
-TEMPLATES[0]['OPTIONS']['context_processors'] += ["read_comics.users.context_processors.email_verified_context"]  # noqa F405
+TEMPLATES[0]['OPTIONS']['context_processors'] += [  # noqa F405
+    "read_comics.users.context_processors.email_verified_context"]  # noqa F405
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#default-from-email
@@ -181,7 +183,6 @@ ANYMAIL = {
     "MAILGUN_API_URL": env("MAILGUN_API_URL", default="https://api.mailgun.net/v3"),
 }
 
-
 # LOGGING
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#logging
@@ -194,7 +195,7 @@ LOGGING = {
     "formatters": {
         "verbose": {
             "format": "%(levelname)s %(asctime)s %(module)s "
-            "%(process)d %(thread)d %(message)s"
+                      "%(process)d %(thread)d %(message)s"
         }
     },
     "handlers": {
@@ -241,7 +242,15 @@ sentry_sdk.init(
     integrations=integrations,
     environment=env("SENTRY_ENVIRONMENT", default="production"),
     traces_sample_rate=env.float("SENTRY_TRACES_SAMPLE_RATE", default=0.0),
+    send_default_pii=True,
 )
 
 # Your stuff...
 # ------------------------------------------------------------------------------
+IGNORABLE_404_URLS = [
+    re.compile(r'\.(php|cgi)$'),
+    re.compile(r'^/phpmyadmin/'),
+    re.compile(r'^/apple-touch-icon\.png$'),
+    re.compile(r'^/favicon\.ico$'),
+    re.compile(r'^.*/images/logo\.png$'),
+]

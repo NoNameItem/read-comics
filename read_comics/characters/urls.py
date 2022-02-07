@@ -14,12 +14,16 @@ from .views import (
     character_team_friends_list_view,
     character_teams_list_view,
     character_volumes_list_view,
+    start_watch_view,
+    stop_watch_view,
 )
 
 app_name = "characters"
 urlpatterns = [
     path("", view=character_list_view, name="list"),
     path("<str:slug>/", view=character_detail_view, name="detail"),
+    path("<str:slug>/start_watch/", view=start_watch_view, name="start_watch"),
+    path("<str:slug>/stop_watch/", view=stop_watch_view, name="stop_watch"),
     path("<str:slug>/issues/", view=character_issues_list_view, name="issues"),
     path("<str:slug>/volumes/", view=character_volumes_list_view, name="volumes"),
     path("<str:slug>/died_in_issues/", view=character_died_in_issues_list_view, name="died_in_issues"),

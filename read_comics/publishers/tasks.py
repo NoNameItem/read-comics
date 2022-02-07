@@ -1,3 +1,5 @@
+import re
+
 from utils.tasks import (
     BaseComicvineInfoTask,
     BaseProcessEntryTask,
@@ -14,6 +16,10 @@ class PublisherProcessEntryTask(BaseProcessEntryTask):
     APP_LABEL = 'publishers'
     LOGGER_NAME = 'VolumeProcessEntryTask'
     NEXT_LEVEL_TASK = volumes_space_task
+
+    def __init__(self):
+        super().__init__()
+        self._key_regexp = re.compile(r"^.*\[\d+\]\/$")
 
 
 publisher_entry_task = celery_app.register_task(PublisherProcessEntryTask())

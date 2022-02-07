@@ -1,6 +1,9 @@
 from django.urls import path
 
 from .views import (
+    random_volume_view,
+    start_watch_view,
+    stop_watch_view,
     volume_authors_list_view,
     volume_characters_list_view,
     volume_concepts_list_view,
@@ -22,6 +25,9 @@ from .views import (
 app_name = "volumes"
 urlpatterns = [
     path("", view=volumes_list_view, name="list"),
+    path("random/", view=random_volume_view, name="random"),
+    path("<str:slug>/start_watch/", view=start_watch_view, name="start_watch"),
+    path("<str:slug>/stop_watch/", view=stop_watch_view, name="stop_watch"),
     path("<str:slug>/", view=volume_detail_view, name="detail"),
     path("<str:slug>/download/", view=volume_download_view, name="download"),
     path("<str:slug>/mark_finished/", view=volume_mark_finished_view, name="mark_finished"),

@@ -1,0 +1,10 @@
+{% if issues_info.count %}
+  <!-- issues tab starts -->
+  <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
+    <h3>Issues</h3>
+    <div class="tab-content">
+      {% include "blocks/detail/badges.html" with objects=issues_info.first_page.object_list pages=issues_info.pages get_page_function="getIssuesPage" url_template_name=url_template_name break_groups=True %}
+    </div>
+  </div>
+  <!-- issues tab ends -->
+{% endif %}

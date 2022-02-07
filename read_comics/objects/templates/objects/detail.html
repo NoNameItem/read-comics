@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load humanize %}
 {% load static %}
 
 {% block title %}{{ object.name }}{% endblock %}
@@ -31,6 +32,13 @@
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ object.name }}</h4>
               </div>
+              <div id="watch-mark">
+                {% if watched %}
+                  <a href="{% url "objects:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                  {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "objects:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                {% endif %}
+              </div>
             </div>
             <!-- detail nav tabs start -->
             <div class="card-body px-0">
@@ -51,17 +59,7 @@
                     <i class="fad fa-info mr-50"></i> <span class="d-none d-md-block pl-50"> Info</span></a>
                 </li>
 
-                {% if issues_count > 0 %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1" id="issues-tab" data-toggle="tab"
-                       href="#issues"
-                       aria-controls="issues" role="tab" aria-selected="false">
-                      <i class="fad fa-book-open" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Issues </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ issues_count }}</span></a>
-
-                  </li>
-                {% endif %}
+                {% include 'issues/blocks/issues_button.html' %}
 
                 {% if volumes_count > 0 %}
                   <li class="nav-item pb-1">
@@ -70,12 +68,12 @@
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
                         class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count }}</span></a>
+                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
 
-                {% if request.user.is_staff > 0 %}
+                {% if request.user.is_staff or request.user.is_superuser %}
 
                   {% if missing_issues_count %}
                     <li class="nav-item pb-1">
@@ -83,7 +81,7 @@
                          href="{% url "missing_issues:category" category='object' slug=object.slug %}">
                         <i class="fad fa-eye"></i> <span
                         class="d-none d-md-block pl-50"> Missing issues <span
-                        class="ml-1 badge badge-pill badge-round badge-danger">{{ missing_issues_count }}</span></span></a>
+                        class="ml-1 badge badge-pill badge-round badge-warning">{{ missing_issues_count|intcomma }}</span></span></a>
                     </li>
                   {% endif %}
 
@@ -99,12 +97,7 @@
               <ul
                   class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
                   role="tablist">
-                <li class="nav-item pb-1">
-                  <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{{ object.download_link }}">
-                    <i class="fad fa-download"></i> <span
-                      class="d-none d-md-block pl-50"> Download (~{{ size|filesizeformat }})</span>
-                  </a>
-                </li>
+                {% include "issues/blocks/download_button.html" %}
               </ul>
             </div>
             <!-- detail nav tabs ends -->
@@ -118,6 +111,7 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
+          {% include "issues/blocks/finished_progress.html" with total_count=issues_info.count finished_count=issues_info.finished_issues_count finished_percent=issues_info.finished_percent %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">
@@ -182,7 +176,7 @@
       </div>
       <!-- info tab ends -->
 
-      {% if request.user.is_staff %}
+      {% if request.user.is_staff or request.user.is_superuser %}
         <!-- tech info tab starts -->
         <div class="tab-pane fade" id="tech" aria-labelledby="tech-tab" role="tabpanel">
           <div class="row">
@@ -250,23 +244,14 @@
         <!-- tech info tab ends -->
       {% endif %}
 
-      {% if issues_count %}
-        <!-- issues tab starts -->
-        <div class="tab-pane fade badge-tab" id="issues" aria-labelledby="issues-tab" role="tabpanel">
-          <h3>Issues</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=issues_first_page.object_list pages=issues_pages get_page_function="getIssuesPage" url_template_name="objects/badges_urls/issue.html" %}
-          </div>
-        </div>
-        <!-- issues tab ends -->
-      {% endif %}
+      {% include "issues/blocks/issues_tab.html" with url_template_name="objects/badges_urls/issue.html" %}
 
       {% if volumes_count %}
         <!-- volumes tab starts -->
         <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
           <h3>Volumes</h3>
           <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" %}
+            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
           </div>
         </div>
         <!-- volumes tab ends -->

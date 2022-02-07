@@ -1,3 +1,4 @@
+from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from locations.tasks import location_comicvine_info_task
@@ -5,6 +6,8 @@ from model_utils import FieldTracker
 from utils.logging import getLogger, methods_logged
 from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
+
+from read_comics.missing_issues.models import WatchedItem
 
 logger = getLogger(__name__ + '.Location')
 
@@ -50,7 +53,10 @@ class Location(ImageMixin, ComicvineSyncModel):
     image_url = models.URLField(max_length=1000, null=True)
 
     slug = AutoSlugField(populate_from=["name"], slugify_function=slugify_function, overwrite=True,
-                         max_length=1000)
+                         max_length=1000,
+                         unique=True)
+
+    watchers = GenericRelation(WatchedItem)
 
     tracker = FieldTracker()
 
