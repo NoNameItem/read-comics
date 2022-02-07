@@ -37,13 +37,10 @@ home_view = HomeView.as_view()
 
 
 class NewIssuesView(DayArchiveView):
-    queryset = Issue.objects.matched().order_by(
-        'volume__publisher', 'volume', 'numerical_number', 'number'
-    ).select_related(
+    queryset = Issue.objects.matched().select_related(
         'volume', 'volume__publisher'
-    ).order_by(
-        'volume__publisher', 'volume', 'numerical_number', 'number'
     )
+    ordering = ('volume__publisher', 'volume', 'numerical_number', 'number')
     date_field = "created_dt"
     allow_future = True
     template_name = "pages/new_issues.html"
