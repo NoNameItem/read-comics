@@ -46,7 +46,6 @@ plugins:
         - BUG
         - CUSTOM
         - TODO
-        -
 exclude_patterns:
   - "tests/"
   - "**/test_*"
