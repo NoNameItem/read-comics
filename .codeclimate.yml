@@ -1,0 +1,51 @@
+version: "2"
+checks:
+  argument-count:
+    config:
+      threshold: 8
+  complex-logic:
+    config:
+      threshold: 4
+  file-lines:
+    config:
+      threshold: 1500
+  method-complexity:
+    config:
+      threshold: 5
+  method-count:
+    config:
+      threshold: 50
+  method-lines:
+    config:
+      threshold: 80
+  nested-control-flow:
+    config:
+      threshold: 4
+  return-statements:
+    config:
+      threshold: 10
+plugins:
+  duplication:
+    enabled: true
+  pep8:
+    enabled: true
+  sonar-python:
+    enabled: true
+  bandit:
+    enabled: true
+  csslint:
+    enabled: true
+  fixme:
+    enabled: true
+    config:
+      strings:
+        - FIXME
+        - BUG
+        - CUSTOM
+        - TODO
+        -
+exclude_patterns:
+  - "tests/"
+  - "**/test_*"
+  - "read_comics/static/_frest/*"
+  - "read_comics/static/app-assets/*"

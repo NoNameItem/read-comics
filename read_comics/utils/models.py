@@ -15,6 +15,7 @@ from slugify import slugify
 from urllib3 import Retry
 
 from . import logging
+from .logging import Logger
 from .model_managers import ComicvineSyncManager
 
 default_logger = logging.getLogger(__name__ + ".ComicvineSyncModel")
@@ -59,7 +60,7 @@ class ComicvineSyncModel(models.Model):
         QUEUED = "QUEUED", "Waiting in queue"
         MATCHED = "MATCHED", "Matched"
 
-    logger = None
+    logger: Logger
 
     comicvine_id = models.IntegerField(unique=True)
     comicvine_url = models.URLField(max_length=1000, null=True)
