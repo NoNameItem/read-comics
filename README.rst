@@ -8,6 +8,9 @@ Explore wonderfull world of pictures with words
      :alt: Built with Cookiecutter Django
 .. image:: https://codecov.io/gh/NoNameItem/read-comics/branch/main/graph/badge.svg?token=6YPVZSGAC1
       :target: https://codecov.io/gh/NoNameItem/read-comics
+.. image:: https://api.codeclimate.com/v1/badges/a93bd4d10b8bf01d10a8/maintainability
+   :target: https://codeclimate.com/github/NoNameItem/read-comics/maintainability
+   :alt: Maintainability
 
 
 Settings
