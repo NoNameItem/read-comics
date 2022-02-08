@@ -24,6 +24,9 @@ checks:
   return-statements:
     config:
       threshold: 10
+  similar-code:
+    config:
+      threshold: 30
 plugins:
   duplication:
     enabled: true
@@ -47,5 +50,7 @@ plugins:
 exclude_patterns:
   - "tests/"
   - "**/test_*"
-  - "read_comics/static/_frest/*"
-  - "read_comics/static/app-assets/*"
+  - "read_comics/static/_frest/**"
+  - "read_comics/static/app-assets/**"
+  - "**/migrations/**"
+  - "**/urls.py"
