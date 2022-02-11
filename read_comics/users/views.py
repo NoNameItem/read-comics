@@ -169,7 +169,7 @@ class UserDeletePhotoView(LoginRequiredMixin, View):
     @logging.logged(logger)
     def post(self, request):
         user = request.user
-        user.user_image = None
+        user._user_image = None
         user.save()
         return JsonResponse(data={"image_url": user.image_url})
 

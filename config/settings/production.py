@@ -4,6 +4,7 @@ import re
 from tempfile import SpooledTemporaryFile
 
 import sentry_sdk
+from boto3.s3.transfer import TransferConfig
 from sentry_sdk.integrations.celery import CeleryIntegration
 from sentry_sdk.integrations.django import DjangoIntegration
 from sentry_sdk.integrations.logging import LoggingIntegration
@@ -109,6 +110,10 @@ class MediaRootS3Boto3Storage(S3Boto3Storage):
     location = "media"
     file_overwrite = True
     default_acl = "public-read"
+
+    def __init__(self, **settings):
+        super().__init__(**settings)
+        self._transfer_config = TransferConfig(use_threads=False)
 
     def _save(self, name, content):
         """
