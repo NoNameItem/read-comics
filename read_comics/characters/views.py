@@ -17,6 +17,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Character
@@ -52,14 +53,14 @@ character_list_view = CharacterListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class CharacterDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class CharacterDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Character
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "character"
     template_name = "characters/detail.html"
     active_menu_item = "characters"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.CharacterSublistQuerysets()
 
     def get_breadcrumb(self):
         character = self.object
@@ -73,23 +74,25 @@ class CharacterDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Det
         context = super(CharacterDetailView, self).get_context_data(**kwargs)
         character = self.object
 
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(character).count()
-        context["died_in_count"] = sublist_querysets.get_died_in_queryset(character).count()
-        context["authors_count"] = sublist_querysets.get_authors_queryset(character).count()
-        context["enemies_count"] = sublist_querysets.get_character_enemies_queryset(character).count()
-        context["friends_count"] = sublist_querysets.get_character_friends_queryset(character).count()
-        context["teams_count"] = sublist_querysets.get_teams_queryset(character).count()
-        context["team_friends_count"] = sublist_querysets.get_team_friends_queryset(character).count()
-        context["team_enemies_count"] = sublist_querysets.get_team_enemies_queryset(character).count()
+        # context["volumes_count"] = self.sublist_querysets.get_volumes_queryset(character).count()
+        context["died_in_count"] = self.sublist_querysets.get_died_in_queryset(character).count()
+        context["authors_count"] = self.sublist_querysets.get_authors_queryset(character).count()
+        context["enemies_count"] = self.sublist_querysets.get_character_enemies_queryset(character).count()
+        context["friends_count"] = self.sublist_querysets.get_character_friends_queryset(character).count()
+        context["teams_count"] = self.sublist_querysets.get_teams_queryset(character).count()
+        context["team_friends_count"] = self.sublist_querysets.get_team_friends_queryset(character).count()
+        context["team_enemies_count"] = self.sublist_querysets.get_team_enemies_queryset(character).count()
 
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(character)))
-        context.update(get_first_page_old("died_in", sublist_querysets.get_died_in_queryset(character)))
-        context.update(get_first_page_old("authors", sublist_querysets.get_authors_queryset(character)))
-        context.update(get_first_page_old("enemies", sublist_querysets.get_character_enemies_queryset(character)))
-        context.update(get_first_page_old("friends", sublist_querysets.get_character_friends_queryset(character)))
-        context.update(get_first_page_old("teams", sublist_querysets.get_teams_queryset(character)))
-        context.update(get_first_page_old("team_friends", sublist_querysets.get_team_friends_queryset(character)))
-        context.update(get_first_page_old("team_enemies", sublist_querysets.get_team_enemies_queryset(character)))
+        # context.update(get_first_page_old("volumes", self.sublist_querysets.get_volumes_queryset(character)))
+        context.update(get_first_page_old(
+            "died_in", self.sublist_querysets.get_died_in_queryset(character, self.request.user))
+        )
+        context.update(get_first_page_old("authors", self.sublist_querysets.get_authors_queryset(character)))
+        context.update(get_first_page_old("enemies", self.sublist_querysets.get_character_enemies_queryset(character)))
+        context.update(get_first_page_old("friends", self.sublist_querysets.get_character_friends_queryset(character)))
+        context.update(get_first_page_old("teams", self.sublist_querysets.get_teams_queryset(character)))
+        context.update(get_first_page_old("team_friends", self.sublist_querysets.get_team_friends_queryset(character)))
+        context.update(get_first_page_old("team_enemies", self.sublist_querysets.get_team_enemies_queryset(character)))
 
         context["missing_issues_count"] = character.missing_issues.filter(skip=False).count()
 
@@ -124,7 +127,7 @@ class CharacterIssuesListView(BaseSublistView):
         "url_template_name": "characters/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Character
 
@@ -138,7 +141,8 @@ class CharacterVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_volumes_queryset)
+    get_queryset_user_param = True
     parent_model = Character
 
 
@@ -150,8 +154,9 @@ class CharacterDiedInIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_died_in_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_died_in_queryset)
     parent_model = Character
+    get_queryset_user_param = True
 
 
 character_died_in_issues_list_view = CharacterDiedInIssuesListView.as_view()
@@ -162,7 +167,7 @@ class CharacterEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getEnemiesPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_character_enemies_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_character_enemies_queryset)
     parent_model = Character
 
 
@@ -174,7 +179,7 @@ class CharacterFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getFriendsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_character_friends_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_character_friends_queryset)
     parent_model = Character
 
 
@@ -186,7 +191,7 @@ class CharacterTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_teams_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_teams_queryset)
     parent_model = Character
 
 
@@ -198,7 +203,7 @@ class CharacterTeamFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamFriendsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_team_friends_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_team_friends_queryset)
     parent_model = Character
 
 
@@ -210,7 +215,7 @@ class CharacterTeamEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamEnemiesPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_team_enemies_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_team_enemies_queryset)
     parent_model = Character
 
 
@@ -222,7 +227,7 @@ class CharacterAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_authors_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_authors_queryset)
     parent_model = Character
 
 
@@ -237,7 +242,7 @@ class CharacterIssueDetailView(IssueDetailView):
 
     def get_queryset(self):
         self.base_object = get_object_or_404(Character, slug=self.kwargs.get("character_slug"))
-        self.base_queryset = self.base_object.issues.all()
+        self.base_queryset = self.base_object.issues.matched()
         return self.base_queryset.select_related("volume", "volume__publisher")
 
     def get_ordering(self):

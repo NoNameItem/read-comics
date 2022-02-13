@@ -62,6 +62,7 @@
                 </li>
 
                 {% include 'issues/blocks/issues_button.html' %}
+                {% include 'volumes/blocks/volumes_button.html' %}
 
                 {% if volumes_count > 0 %}
                   <li class="nav-item pb-1">
@@ -249,17 +250,8 @@
       {% endif %}
 
       {% include "issues/blocks/issues_tab.html" with url_template_name="concepts/badges_urls/issue.html" %}
+      {% include "volumes/blocks/volumes_tab.html" %}
 
-      {% if volumes_count %}
-        <!-- volumes tab starts -->
-        <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
-          <h3>Volumes</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
-          </div>
-        </div>
-        <!-- volumes tab ends -->
-      {% endif %}
     </div>
   </section>
 {% endblock %}

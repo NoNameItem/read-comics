@@ -1,0 +1,12 @@
+{% load humanize %}
+{% if volumes_info.count > 0 %}
+  <li class="nav-item pb-1">
+    <a class="nav-link d-flex px-1" id="volumes-tab" data-toggle="tab"
+       href="#volumes"
+       aria-controls="issues" role="tab" aria-selected="false">
+      <i class="fad fa-book-spells" aria-hidden="true"></i> <span
+      class="d-none d-md-block pl-50"> Volumes </span><span
+      class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_info.count|intcomma }}</span></a>
+
+  </li>
+{% endif %}

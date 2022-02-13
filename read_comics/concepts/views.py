@@ -5,7 +5,6 @@ from django.views.generic import DetailView, ListView
 from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -17,6 +16,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Concept
@@ -45,14 +45,14 @@ concepts_list_view = ConceptsListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class ConceptDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class ConceptDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Concept
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "concept"
     template_name = "concepts/detail.html"
     active_menu_item = "concepts"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.ConceptSublistQueryset()
 
     def get_breadcrumb(self):
         concept = self.object
@@ -65,12 +65,7 @@ class ConceptDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Detai
     def get_context_data(self, **kwargs):
         context = super(ConceptDetailView, self).get_context_data(**kwargs)
         concept = self.object
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(concept).count()
-
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(concept)))
-
         context["missing_issues_count"] = concept.missing_issues.filter(skip=False).count()
-
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()
 
@@ -102,7 +97,7 @@ class ConceptIssuesListView(BaseSublistView):
         "url_template_name": "concepts/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.ConceptSublistQueryset().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Concept
 
@@ -116,8 +111,9 @@ class ConceptVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.ConceptSublistQueryset().get_volumes_queryset)
     parent_model = Concept
+    get_queryset_user_param = True
 
 
 concept_volumes_list_view = ConceptVolumesListView.as_view()

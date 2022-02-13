@@ -7,12 +7,7 @@ from utils.logging import getLogger, methods_logged
 from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 
-from read_comics.missing_issues.models import (
-    IgnoredIssue,
-    IgnoredPublisher,
-    IgnoredVolume,
-    WatchedItem,
-)
+from read_comics.missing_issues.models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, WatchedItem
 
 logger = getLogger(__name__ + ".Publisher")
 

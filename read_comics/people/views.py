@@ -17,6 +17,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Person
@@ -45,14 +46,14 @@ people_list_view = PeopleListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class PersonDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class PersonDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Person
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "person"
     template_name = "people/detail.html"
     active_menu_item = "people"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.PersonSublistQuerysets()
 
     def get_breadcrumb(self):
         obj = self.object
@@ -66,9 +67,7 @@ class PersonDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Detail
         context = super(PersonDetailView, self).get_context_data(**kwargs)
         obj = self.object
 
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(obj).count()
         context["characters_count"] = obj.created_characters.count()
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(obj)))
         context.update(get_first_page_old("created_characters", obj.created_characters.all()))
 
         context["missing_issues_count"] = obj.missing_issues.filter(skip=False).count()
@@ -104,7 +103,7 @@ class PersonIssuesListView(BaseSublistView):
         "url_template_name": "people/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Person
 
@@ -118,8 +117,9 @@ class PersonVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_volumes_queryset)
     parent_model = Person
+    get_queryset_user_param = True
 
 
 person_volumes_list_view = PersonVolumesListView.as_view()
@@ -130,7 +130,7 @@ class PersonCharactersListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getCharactersPage"
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_characters_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_characters_queryset)
     parent_model = Person
 
 

@@ -1,11 +1,6 @@
 from django.urls import path
 
-from .views import (
-    issue_detail_view,
-    issue_download_view,
-    issue_mark_finished_view,
-    issues_list_view,
-)
+from .views import issue_detail_view, issue_download_view, issue_mark_finished_view, issues_list_view
 
 app_name = "issues"
 urlpatterns = [

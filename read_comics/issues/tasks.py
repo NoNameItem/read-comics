@@ -4,12 +4,7 @@ import boto3
 from celery import shared_task
 from django.apps import apps
 from django.conf import settings
-from utils.tasks import (
-    BaseComicvineInfoTask,
-    BaseProcessEntryTask,
-    BaseRefreshTask,
-    BaseSpaceTask,
-)
+from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 from config import celery_app
 

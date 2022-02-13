@@ -14,12 +14,7 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
 from utils import logging
-from utils.view_mixins import (
-    ActiveMenuMixin,
-    BreadcrumbMixin,
-    ElidedPagesPaginatorMixin,
-    OrderingMixin,
-)
+from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, OrderingMixin
 
 from read_comics.issues.models import FinishedIssue, Issue
 

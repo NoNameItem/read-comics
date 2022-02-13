@@ -1,0 +1,10 @@
+{% if volumes_info.count %}
+  <!-- issues tab starts -->
+  <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
+    <h3>Volumes</h3>
+    <div class="tab-content">
+      {% include "blocks/detail/badges.html" with objects=volumes_info.first_page.object_list pages=volumes_info.pages get_page_function="getVolumesPage" break_groups=True %}
+    </div>
+  </div>
+  <!-- issues tab ends -->
+{% endif %}
