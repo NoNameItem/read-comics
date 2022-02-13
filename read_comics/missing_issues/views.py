@@ -15,12 +15,7 @@ from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
 from issues.tasks import issue_entry_task, purge_deleted
 from utils import logging
-from utils.view_mixins import (
-    ActiveMenuMixin,
-    BreadcrumbMixin,
-    ElidedPagesPaginatorMixin,
-    IsAdminMixin,
-)
+from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, IsAdminMixin
 from volumes.tasks import volume_entry_task
 
 from read_comics.characters.models import Character
@@ -35,13 +30,7 @@ from read_comics.teams.models import Team
 from read_comics.volumes.models import Volume
 
 from .do_spaces import get_level
-from .models import (
-    IgnoredIssue,
-    IgnoredPublisher,
-    IgnoredVolume,
-    MissingIssue,
-    WatchedItem,
-)
+from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue, WatchedItem
 from .queries import get_watched_missing_issues_query
 
 logger = logging.getLogger(__name__)

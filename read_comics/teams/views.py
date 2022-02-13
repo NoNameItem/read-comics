@@ -17,6 +17,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Team
@@ -45,14 +46,14 @@ teams_list_view = TeamsListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class TeamDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class TeamDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Team
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "team"
     template_name = "teams/detail.html"
     active_menu_item = "teams"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.TeamSublistQuerysets()
 
     def get_breadcrumb(self):
         team = self.object
@@ -66,17 +67,17 @@ class TeamDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailVi
         context = super(TeamDetailView, self).get_context_data(**kwargs)
         team = self.object
 
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(team).count()
-        context["characters_count"] = sublist_querysets.get_characters_queryset(team).count()
-        context["enemies_count"] = sublist_querysets.get_character_enemies_queryset(team).count()
-        context["friends_count"] = sublist_querysets.get_character_friends_queryset(team).count()
-        context["disbanded_in_count"] = sublist_querysets.get_disbanded_in_queryset(team).count()
+        context["characters_count"] = self.sublist_querysets.get_characters_queryset(team).count()
+        context["enemies_count"] = self.sublist_querysets.get_character_enemies_queryset(team).count()
+        context["friends_count"] = self.sublist_querysets.get_character_friends_queryset(team).count()
+        context["disbanded_in_count"] = self.sublist_querysets.get_disbanded_in_queryset(team).count()
 
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(team)))
-        context.update(get_first_page_old("characters", sublist_querysets.get_characters_queryset(team)))
-        context.update(get_first_page_old("friends", sublist_querysets.get_character_friends_queryset(team)))
-        context.update(get_first_page_old("enemies", sublist_querysets.get_character_enemies_queryset(team)))
-        context.update(get_first_page_old("disbanded_in", sublist_querysets.get_disbanded_in_queryset(team)))
+        context.update(get_first_page_old("characters", self.sublist_querysets.get_characters_queryset(team)))
+        context.update(get_first_page_old("friends", self.sublist_querysets.get_character_friends_queryset(team)))
+        context.update(get_first_page_old("enemies", self.sublist_querysets.get_character_enemies_queryset(team)))
+        context.update(get_first_page_old(
+            "disbanded_in", self.sublist_querysets.get_disbanded_in_queryset(team, self.request.user))
+        )
 
         context["missing_issues_count"] = team.missing_issues.filter(skip=False).count()
 
@@ -111,7 +112,7 @@ class TeamIssuesListView(BaseSublistView):
         "url_template_name": "teams/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Team
 
@@ -125,8 +126,9 @@ class TeamVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_volumes_queryset)
     parent_model = Team
+    get_queryset_user_param = True
 
 
 team_volumes_list_view = TeamVolumesListView.as_view()
@@ -137,8 +139,9 @@ class TeamDisbandedInIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_disbanded_in_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_disbanded_in_queryset)
     parent_model = Team
+    get_queryset_user_param = True
 
 
 team_disbanded_in_issues_list_view = TeamDisbandedInIssuesListView.as_view()
@@ -149,7 +152,7 @@ class TeamEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getEnemiesPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_character_enemies_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_character_enemies_queryset)
     parent_model = Team
 
 
@@ -161,7 +164,7 @@ class TeamFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getFriendsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_character_friends_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_character_friends_queryset)
     parent_model = Team
 
 
@@ -173,7 +176,7 @@ class TeamCharactersListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getCharactersPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_characters_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.TeamSublistQuerysets().get_characters_queryset)
     parent_model = Team
 
 

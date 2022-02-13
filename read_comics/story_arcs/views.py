@@ -26,6 +26,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import StoryArc
@@ -62,7 +63,7 @@ story_arcs_list_view = StoryArcsListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class StoryArcDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class StoryArcDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = StoryArc
     queryset = StoryArc.objects.select_related("publisher")
     slug_field = "slug"
@@ -70,7 +71,7 @@ class StoryArcDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Deta
     context_object_name = "story_arc"
     template_name = "story_arcs/detail.html"
     active_menu_item = "story_arcs"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.StoryArcSublistQuerysets()
 
     def get_breadcrumb(self):
         story_arc = self.object
@@ -85,28 +86,27 @@ class StoryArcDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Deta
         context = super(StoryArcDetailView, self).get_context_data(**kwargs)
         story_arc = self.object
 
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(story_arc).count()
-        context["first_appearance_count"] = sublist_querysets.get_first_appearance_queryset(story_arc).count()
-        context["characters_count"] = sublist_querysets.get_characters_queryset(story_arc).count()
-        context["characters_died_count"] = sublist_querysets.get_died_queryset(story_arc).count()
-        context["concepts_count"] = sublist_querysets.get_concepts_queryset(story_arc).count()
-        context["locations_count"] = sublist_querysets.get_locations_queryset(story_arc).count()
-        context["objects_count"] = sublist_querysets.get_objects_queryset(story_arc).count()
-        context["authors_count"] = sublist_querysets.get_authors_queryset(story_arc).count()
-        context["teams_count"] = sublist_querysets.get_teams_queryset(story_arc).count()
-        context["disbanded_teams_count"] = sublist_querysets.get_disbanded_queryset(story_arc).count()
+        context["first_appearance_count"] = self.sublist_querysets.get_first_appearance_queryset(story_arc).count()
+        context["characters_count"] = self.sublist_querysets.get_characters_queryset(story_arc).count()
+        context["characters_died_count"] = self.sublist_querysets.get_died_queryset(story_arc).count()
+        context["concepts_count"] = self.sublist_querysets.get_concepts_queryset(story_arc).count()
+        context["locations_count"] = self.sublist_querysets.get_locations_queryset(story_arc).count()
+        context["objects_count"] = self.sublist_querysets.get_objects_queryset(story_arc).count()
+        context["authors_count"] = self.sublist_querysets.get_authors_queryset(story_arc).count()
+        context["teams_count"] = self.sublist_querysets.get_teams_queryset(story_arc).count()
+        context["disbanded_teams_count"] = self.sublist_querysets.get_disbanded_queryset(story_arc).count()
 
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(story_arc)))
-        context.update(get_first_page_old("characters", sublist_querysets.get_characters_queryset(story_arc)))
-        context.update(get_first_page_old("died", sublist_querysets.get_died_queryset(story_arc)))
-        context.update(get_first_page_old("concepts", sublist_querysets.get_concepts_queryset(story_arc)))
-        context.update(get_first_page_old("locations", sublist_querysets.get_locations_queryset(story_arc)))
-        context.update(get_first_page_old("objects", sublist_querysets.get_objects_queryset(story_arc)))
-        context.update(get_first_page_old("authors", sublist_querysets.get_authors_queryset(story_arc)))
-        context.update(get_first_page_old("teams", sublist_querysets.get_teams_queryset(story_arc)))
-        context.update(get_first_page_old("disbanded", sublist_querysets.get_disbanded_queryset(story_arc)))
-        context.update(get_first_page_old("first_appearances",
-                                          sublist_querysets.get_first_appearance_queryset(story_arc)))
+        context.update(get_first_page_old("characters", self.sublist_querysets.get_characters_queryset(story_arc)))
+        context.update(get_first_page_old("died", self.sublist_querysets.get_died_queryset(story_arc)))
+        context.update(get_first_page_old("concepts", self.sublist_querysets.get_concepts_queryset(story_arc)))
+        context.update(get_first_page_old("locations", self.sublist_querysets.get_locations_queryset(story_arc)))
+        context.update(get_first_page_old("objects", self.sublist_querysets.get_objects_queryset(story_arc)))
+        context.update(get_first_page_old("authors", self.sublist_querysets.get_authors_queryset(story_arc)))
+        context.update(get_first_page_old("teams", self.sublist_querysets.get_teams_queryset(story_arc)))
+        context.update(get_first_page_old("disbanded", self.sublist_querysets.get_disbanded_queryset(story_arc)))
+        context.update(
+            get_first_page_old("first_appearances", self.sublist_querysets.get_first_appearance_queryset(story_arc))
+        )
 
         context["missing_issues_count"] = story_arc.missing_issues.filter(skip=False).count()
 
@@ -141,7 +141,7 @@ class StoryArcIssuesListView(BaseSublistView):
         "url_template_name": "story_arcs/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = StoryArc
 
@@ -155,8 +155,9 @@ class StoryArcVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_volumes_queryset)
     parent_model = StoryArc
+    get_queryset_user_param = True
 
 
 story_arc_volumes_list_view = StoryArcVolumesListView.as_view()
@@ -167,7 +168,7 @@ class StoryArcCharactersListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getCharactersPage"
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_characters_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_characters_queryset)
     parent_model = StoryArc
 
 
@@ -180,7 +181,7 @@ class StoryArcDiedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_died_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_died_queryset)
     parent_model = StoryArc
 
 
@@ -192,7 +193,7 @@ class StoryArcConceptsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getConceptsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_concepts_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_concepts_queryset)
     parent_model = StoryArc
 
 
@@ -204,7 +205,7 @@ class StoryArcLocationsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getLocationsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_locations_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_locations_queryset)
     parent_model = StoryArc
 
 
@@ -216,7 +217,7 @@ class StoryArcObjectsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getObjectsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_objects_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_objects_queryset)
     parent_model = StoryArc
 
 
@@ -228,7 +229,7 @@ class StoryArcAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_authors_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_authors_queryset)
     parent_model = StoryArc
 
 
@@ -240,7 +241,7 @@ class StoryArcTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_teams_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_teams_queryset)
     parent_model = StoryArc
 
 
@@ -252,7 +253,7 @@ class StoryArcDisbandedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDisbandedPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_disbanded_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_disbanded_queryset)
     parent_model = StoryArc
 
 
@@ -265,7 +266,7 @@ class StoryArcFirstAppearancesListView(BaseSublistView):
         "get_page_function": "getFirstAppearancesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_first_appearance_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_first_appearance_queryset)
     parent_model = StoryArc
 
 

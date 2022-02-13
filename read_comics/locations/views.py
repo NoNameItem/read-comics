@@ -5,7 +5,6 @@ from django.views.generic import DetailView, ListView
 from issues.view_mixins import IssuesViewMixin
 from issues.views import IssueDetailView
 from utils import logging
-from utils.utils import get_first_page_old
 from utils.view_mixins import (
     ActiveMenuMixin,
     BreadcrumbMixin,
@@ -17,6 +16,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Location
@@ -45,14 +45,14 @@ locations_list_view = LocationsListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class LocationDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class LocationDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Location
     slug_field = "slug"
     slug_url_kwarg = "slug"
     context_object_name = "location"
     template_name = "locations/detail.html"
     active_menu_item = "locations"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.LocationSublistQueryset()
 
     def get_breadcrumb(self):
         location = self.object
@@ -65,10 +65,6 @@ class LocationDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Deta
     def get_context_data(self, **kwargs):
         context = super(LocationDetailView, self).get_context_data(**kwargs)
         location = self.object
-
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(location).count()
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(location)))
-
         context["missing_issues_count"] = location.missing_issues.count()
 
         if self.request.user.is_authenticated:
@@ -102,7 +98,7 @@ class LocationIssuesListView(BaseSublistView):
         "url_template_name": "concepts/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.LocationSublistQueryset().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Location
 
@@ -116,8 +112,9 @@ class LocationVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.LocationSublistQueryset().get_volumes_queryset)
     parent_model = Location
+    get_queryset_user_param = True
 
 
 location_volumes_list_view = LocationVolumesListView.as_view()

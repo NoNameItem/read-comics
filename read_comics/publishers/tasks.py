@@ -1,11 +1,6 @@
 import re
 
-from utils.tasks import (
-    BaseComicvineInfoTask,
-    BaseProcessEntryTask,
-    BaseRefreshTask,
-    BaseSpaceTask,
-)
+from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 from volumes.tasks import volumes_space_task
 
 from config import celery_app

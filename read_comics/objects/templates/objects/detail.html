@@ -34,9 +34,11 @@
               </div>
               <div id="watch-mark">
                 {% if watched %}
-                  <a href="{% url "objects:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
-                  {% elif user.is_staff or user.is_superuser %}
-                  <a href="{% url "objects:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom" title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
+                  <a href="{% url "objects:stop_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Stop watching"><i class="fad fa-eye success fa-3x"></i></a>
+                {% elif user.is_staff or user.is_superuser %}
+                  <a href="{% url "objects:start_watch" object.slug %}" data-toggle="tooltip" data-placement="bottom"
+                     title="Start watching"><i class="fad fa-eye-slash info fa-3x"></i></a>
                 {% endif %}
               </div>
             </div>
@@ -50,8 +52,8 @@
                 <p>{{ object.short_description|default_if_none:"" }}</p>
               </div>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 <li class="nav-item pb-1">
                   <a class="nav-link d-flex px-1 active" id="info-tab" data-toggle="tab"
                      href="#info"
@@ -60,6 +62,7 @@
                 </li>
 
                 {% include 'issues/blocks/issues_button.html' %}
+                {% include 'volumes/blocks/volumes_button.html' %}
 
                 {% if volumes_count > 0 %}
                   <li class="nav-item pb-1">
@@ -67,8 +70,8 @@
                        href="#volumes"
                        aria-controls="volumes" role="tab" aria-selected="false">
                       <i class="fad fa-book-spells" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
+                      class="d-none d-md-block pl-50"> Volumes </span><span
+                      class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
 
                   </li>
                 {% endif %}
@@ -90,13 +93,13 @@
                        href="#tech"
                        aria-controls="tech" role="tab" aria-selected="false">
                       <i class="fad fa-cogs"></i> <span
-                        class="d-none d-md-block pl-50"> Technical info</span></a>
+                      class="d-none d-md-block pl-50"> Technical info</span></a>
                   </li>
                 {% endif %}
               </ul>
               <ul
-                  class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
-                  role="tablist">
+                class="nav detail-nav justify-content-center justify-content-md-start nav-tabs border-bottom-0 mb-0"
+                role="tablist">
                 {% include "issues/blocks/download_button.html" %}
               </ul>
             </div>
@@ -111,7 +114,7 @@
       <div class="tab-pane active" id="info" aria-labelledby="info-tab" role="tabpanel">
         <div class="row">
           <div class="col-12 col-md-6 col-lg-5 col-xxl-4 col-4k-2 detail-info">
-          {% include "issues/blocks/finished_progress.html" with total_count=issues_info.count finished_count=issues_info.finished_issues_count finished_percent=issues_info.finished_percent %}
+            {% include "issues/blocks/finished_progress.html" with total_count=issues_info.count finished_count=issues_info.finished_issues_count finished_percent=issues_info.finished_percent %}
             <div class="card">
               <div class="card-body">
                 <div class="row  pb-1">
@@ -151,7 +154,8 @@
                   </div>
                   <div class="col-12 col-md-8 col-fhd-9">
                     {% if object.first_issue %}
-                      <a href="{% url "objects:issue_detail" object.slug object.first_issue.slug %}">{{ object.first_issue.volume.name }}
+                      <a
+                        href="{% url "objects:issue_detail" object.slug object.first_issue.slug %}">{{ object.first_issue.volume.name }}
                         #{{ object.first_issue.number }} {{ object.first_issue.name|default_if_none:'' }}</a>
                     {% else %}
                       {{ object.first_issue_name }}
@@ -167,7 +171,8 @@
 
               </div>
             </div>
-            <img src="{{ object.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size" width="100%">
+            <img src="{{ object.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size"
+                 width="100%">
           </div>
           <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
             {{ object.description|default:"<p>No description</p>"|safe }}
@@ -245,17 +250,8 @@
       {% endif %}
 
       {% include "issues/blocks/issues_tab.html" with url_template_name="objects/badges_urls/issue.html" %}
+      {% include "volumes/blocks/volumes_tab.html" %}
 
-      {% if volumes_count %}
-        <!-- volumes tab starts -->
-        <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
-          <h3>Volumes</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
-          </div>
-        </div>
-        <!-- volumes tab ends -->
-      {% endif %}
     </div>
   </section>
 {% endblock %}

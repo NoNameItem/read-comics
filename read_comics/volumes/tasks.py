@@ -2,12 +2,7 @@ import re
 
 from django.apps import apps
 from issues.tasks import issues_space_task
-from utils.tasks import (
-    BaseComicvineInfoTask,
-    BaseProcessEntryTask,
-    BaseRefreshTask,
-    BaseSpaceTask,
-)
+from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 from config import celery_app
 

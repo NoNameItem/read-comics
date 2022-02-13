@@ -17,6 +17,7 @@ from utils.views import BaseSublistView
 from zip_download.views import BaseZipDownloadView
 
 from read_comics.missing_issues.views import BaseStartWatchView, BaseStopWatchView
+from read_comics.volumes.view_mixins import VolumesViewMixin
 
 from . import sublist_querysets
 from .models import Publisher
@@ -45,7 +46,7 @@ publisher_list_view = PublisherListView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])
-class PublisherDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
+class PublisherDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Publisher
     queryset = Publisher.objects.all()
     slug_field = "slug"
@@ -53,7 +54,7 @@ class PublisherDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Det
     context_object_name = "publisher"
     template_name = "publishers/detail.html"
     active_menu_item = "publishers"
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.PublisherSublistQuerysets()
 
     def get_breadcrumb(self):
         publisher = self.object
@@ -70,15 +71,13 @@ class PublisherDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Det
         context = super(PublisherDetailView, self).get_context_data(**kwargs)
         publisher = self.object
 
-        context["volumes_count"] = sublist_querysets.get_volumes_queryset(publisher).count()
-        context["characters_count"] = sublist_querysets.get_characters_queryset(publisher).count()
-        context["story_arcs_count"] = sublist_querysets.get_story_arcs_queryset(publisher).count()
-        context["teams_count"] = sublist_querysets.get_teams_queryset(publisher).count()
+        context["characters_count"] = self.sublist_querysets.get_characters_queryset(publisher).count()
+        context["story_arcs_count"] = self.sublist_querysets.get_story_arcs_queryset(publisher).count()
+        context["teams_count"] = self.sublist_querysets.get_teams_queryset(publisher).count()
 
-        context.update(get_first_page_old("volumes", sublist_querysets.get_volumes_queryset(publisher)))
-        context.update(get_first_page_old("characters", sublist_querysets.get_characters_queryset(publisher)))
-        context.update(get_first_page_old("story_arcs", sublist_querysets.get_story_arcs_queryset(publisher)))
-        context.update(get_first_page_old("teams", sublist_querysets.get_teams_queryset(publisher)))
+        context.update(get_first_page_old("characters", self.sublist_querysets.get_characters_queryset(publisher)))
+        context.update(get_first_page_old("story_arcs", self.sublist_querysets.get_story_arcs_queryset(publisher)))
+        context.update(get_first_page_old("teams", self.sublist_querysets.get_teams_queryset(publisher)))
 
         context["missing_issues_count"] = publisher.missing_issues.filter(skip=False).count()
 
@@ -113,7 +112,7 @@ class PublisherIssuesListView(BaseSublistView):
         "url_template_name": "publishers/badges_urls/issue.html",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Publisher
 
@@ -127,8 +126,9 @@ class PublisherVolumesListView(BaseSublistView):
         "get_page_function": "getVolumesPage",
         "break_groups": True
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_volumes_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_volumes_queryset)
     parent_model = Publisher
+    get_queryset_user_param = True
 
 
 publisher_volumes_list_view = PublisherVolumesListView.as_view()
@@ -139,7 +139,7 @@ class PublisherCharactersListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getCharactersPage"
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_characters_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_characters_queryset)
     parent_model = Publisher
 
 
@@ -151,7 +151,7 @@ class PublisherStoryArcsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getStoryArcsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_story_arcs_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_story_arcs_queryset)
     parent_model = Publisher
 
 
@@ -163,7 +163,7 @@ class PublisherTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.get_teams_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_teams_queryset)
     parent_model = Publisher
 
 
@@ -178,7 +178,7 @@ class PublisherIssueDetailView(IssueDetailView):
 
     def get_queryset(self):
         self.base_object = get_object_or_404(Publisher, slug=self.kwargs.get("publisher_slug"))
-        self.base_queryset = sublist_querysets.get_issues_queryset(self.base_object)
+        self.base_queryset = sublist_querysets.PublisherSublistQuerysets().get_issues_queryset(self.base_object)
         return self.base_queryset.select_related("volume", "volume__publisher")
 
     def get_ordering(self):

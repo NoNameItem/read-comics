@@ -60,18 +60,7 @@
                 </li>
 
                 {% include 'issues/blocks/issues_button.html' %}
-
-                {% if volumes_count > 0 %}
-                  <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1" id="volumes-tab" data-toggle="tab"
-                       href="#volumes"
-                       aria-controls="volumes" role="tab" aria-selected="false">
-                      <i class="fad fa-book-spells" aria-hidden="true"></i> <span
-                        class="d-none d-md-block pl-50"> Volumes </span><span
-                        class="ml-1 badge badge-pill badge-round badge-info">{{ volumes_count|intcomma }}</span></a>
-
-                  </li>
-                {% endif %}
+                {% include 'volumes/blocks/volumes_button.html' %}
 
                 {% if characters_count > 0 %}
                   <li class="nav-item pb-1">
@@ -258,17 +247,7 @@
       {% endif %}
 
       {% include "issues/blocks/issues_tab.html" with url_template_name="publishers/badges_urls/issue.html" %}
-
-      {% if volumes_count %}
-        <!-- volumes tab starts -->
-        <div class="tab-pane fade badge-tab" id="volumes" aria-labelledby="volumes-tab" role="tabpanel">
-          <h3>Volumes</h3>
-          <div class="tab-content">
-            {% include "blocks/detail/badges.html" with objects=volumes_first_page.object_list pages=volumes_pages get_page_function="getVolumesPage" break_groups=True %}
-          </div>
-        </div>
-        <!-- volumes tab ends -->
-      {% endif %}
+      {% include "volumes/blocks/volumes_tab.html" %}
 
       {% if characters_count > 0 %}
         <!-- characters tab starts -->
