@@ -34,7 +34,7 @@ class UserCreationForm(forms.UserCreationForm):
         raise ValidationError(self.error_messages["duplicate_username"])
 
 
-class ModelFormRequiredMixin:
+class ModelFormRequiredMixin:  # noqa: SIM119
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
