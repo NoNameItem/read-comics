@@ -159,7 +159,7 @@ location_issue_detail_view = LocationIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class LocationDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.LocationSublistQueryset()
     base_model = Location
 
 

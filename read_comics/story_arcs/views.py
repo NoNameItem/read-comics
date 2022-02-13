@@ -314,7 +314,7 @@ class StoryArcDownloadView(BaseZipDownloadView):
 
     def get_files(self):
         self.story_arc = get_object_or_404(StoryArc, slug=self.kwargs.get("slug"))
-        q = sublist_querysets.get_issues_queryset(self.story_arc)
+        q = sublist_querysets.StoryArcSublistQuerysets().get_issues_queryset(self.story_arc)
         issues_count = q.count()
 
         if issues_count:

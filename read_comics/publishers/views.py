@@ -207,7 +207,7 @@ publisher_issue_detail_view = PublisherIssueDetailView.as_view()
 
 
 class PublisherDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.PublisherSublistQuerysets()
     base_model = Publisher
 
 

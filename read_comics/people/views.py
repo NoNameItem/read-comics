@@ -176,7 +176,7 @@ person_issue_detail_view = PersonIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class PersonDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.PersonSublistQuerysets()
     base_model = Person
 
 

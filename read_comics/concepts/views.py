@@ -158,7 +158,7 @@ concept_issue_detail_view = ConceptIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class ConceptDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.ConceptSublistQueryset()
     base_model = Concept
 
 

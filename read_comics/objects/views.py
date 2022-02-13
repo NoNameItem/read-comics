@@ -160,7 +160,7 @@ object_issue_detail_view = ObjectIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class ObjectDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.ObjectSublistQueryset()
     base_model = Object
 
 

@@ -167,7 +167,7 @@ class CharacterEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getEnemiesPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_character_enemies_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_character_enemies_queryset)
     parent_model = Character
 
 
@@ -179,7 +179,7 @@ class CharacterFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getFriendsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_character_friends_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_character_friends_queryset)
     parent_model = Character
 
 
@@ -191,7 +191,7 @@ class CharacterTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_teams_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_teams_queryset)
     parent_model = Character
 
 
@@ -203,7 +203,7 @@ class CharacterTeamFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamFriendsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_team_friends_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_team_friends_queryset)
     parent_model = Character
 
 
@@ -215,7 +215,7 @@ class CharacterTeamEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamEnemiesPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_team_enemies_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_team_enemies_queryset)
     parent_model = Character
 
 
@@ -227,7 +227,7 @@ class CharacterAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
     }
-    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets.get_authors_queryset)
+    get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_authors_queryset)
     parent_model = Character
 
 
@@ -273,7 +273,7 @@ character_issue_detail_view = CharacterIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class CharacterDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.CharacterSublistQuerysets()
     base_model = Character
 
 

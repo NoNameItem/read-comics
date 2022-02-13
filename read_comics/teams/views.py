@@ -220,7 +220,7 @@ team_issue_detail_view = TeamIssueDetailView.as_view()
 
 @logging.methods_logged(logger, ["get", ])
 class TeamDownloadView(BaseZipDownloadView):
-    sublist_querysets = sublist_querysets
+    sublist_querysets = sublist_querysets.TeamSublistQuerysets()
     base_model = Team
 
 
