@@ -144,3 +144,13 @@
 .finished:hover {
   opacity: 1;
 }
+
+.card-body .nav-tabs .dropdown-menu {
+    margin-top: 0.5rem;
+    border-top-left-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.dropdown-menu::before {
+  display: none;
+}
