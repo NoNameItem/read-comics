@@ -1,6 +1,7 @@
 import datetime
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db.models import Count, Q
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
@@ -59,6 +60,27 @@ class StoryArcsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
 
 
 story_arcs_list_view = StoryArcsListView.as_view()
+
+
+class StoryArcsContinueReadingView(StoryArcsListView):
+    template_name = "story_arcs/continue_reading.html"
+    breadcrumb = [
+        {"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"},
+        {"url": reverse_lazy("story_arcs:continue_reading"), "text": "Continue reading"}
+    ]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.request.user.started_and_not_finished_story_arcs
+        raise PermissionDenied()
+
+    def get_context_data(self, **kwargs):
+        context = super(StoryArcsListView, self).get_context_data(**kwargs)
+        context["hide_menu"] = True
+        return context
+
+
+story_arcs_continue_reading_view = StoryArcsContinueReadingView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])

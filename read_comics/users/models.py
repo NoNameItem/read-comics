@@ -6,6 +6,7 @@ from django.utils.translation import ugettext_lazy as _
 from utils import logging
 from utils.fields import ThumbnailImageField
 
+from read_comics.story_arcs.models import StoryArc
 from read_comics.volumes.models import Volume
 
 logger = logging.getLogger(__name__)
@@ -83,3 +84,7 @@ class User(AbstractUser):
     @property
     def started_and_not_finished_volumes(self):
         return self.get_started_and_not_finished(Volume)
+
+    @property
+    def started_and_not_finished_story_arcs(self):
+        return self.get_started_and_not_finished(StoryArc)

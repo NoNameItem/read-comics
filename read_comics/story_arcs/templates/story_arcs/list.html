@@ -17,55 +17,63 @@
 {% endblock %}
 
 {% block page_content %}
-  <div class="row mb-1">
-    <div class="col-auto">
-      <div class="btn-group dropright mr-1">
-        <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-          Sort by
-        </button>
-        <div class="dropdown-menu" style="">
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-issue_count' %}">Issues
-            <i class="fad fa-sort-numeric-down-alt"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='issue_count' %}">Issues
-            <i class="fad fa-sort-numeric-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-volume_count' %}">Volumes
-            <i class="fad fa-sort-numeric-down-alt"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='volume_count' %}">Volumes
-            <i class="fad fa-sort-numeric-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i
+  {% if not hide_menu %}
+    <div class="row mb-1">
+      <div class="col-auto">
+        <div class="btn-group dropright mr-1">
+          <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false">
+            Sort by
+          </button>
+          <div class="dropdown-menu" style="">
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-issue_count' %}">Issues
+              <i class="fad fa-sort-numeric-down-alt"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='issue_count' %}">Issues
+              <i class="fad fa-sort-numeric-down"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-volume_count' %}">Volumes
+              <i class="fad fa-sort-numeric-down-alt"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='volume_count' %}">Volumes
+              <i class="fad fa-sort-numeric-down"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i
               class="fad fa-sort-alpha-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i
               class="fad fa-sort-alpha-down-alt"></i></a>
+          </div>
+        </div>
+      </div>
+      <div class="col-auto">
+        <div class="custom-control custom-switch custom-control-inline mt-50">
+          <input type="checkbox" class="custom-control-input" {% if only_with_issues == 'yes' %}checked{% endif %}
+                 id="only_with_issues">
+          <label class="custom-control-label mr-1" for="only_with_issues">
+          </label>
+          <span>Show only story arcs with issues</span>
         </div>
       </div>
     </div>
-    <div class="col-auto">
-      <div class="custom-control custom-switch custom-control-inline mt-50">
-        <input type="checkbox" class="custom-control-input" {% if only_with_issues == 'yes' %}checked{% endif %}
-               id="only_with_issues">
-        <label class="custom-control-label mr-1" for="only_with_issues">
-        </label>
-        <span>Show only story arcs with issues</span>
-      </div>
-    </div>
-  </div>
+  {% endif %}
   <div class="row match-height">
     {% for story_arc in story_arcs %}
       <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-2k-2">
-        <div class="card card-with-cover div-link {% if story_arc.finished_count == story_arc.issue_count %}finished{% endif %} ">
-        <a class="div-default-link" href="{{ story_arc.get_absolute_url }}"></a>
+        <div
+          class="card card-with-cover div-link {% if story_arc.finished_count == story_arc.issue_count %}finished{% endif %} ">
+          <a class="div-default-link" href="{{ story_arc.get_absolute_url }}"></a>
           <div class="position-relative mb-2">
             <img class="card-img-top img-fluid"
                  src="
-                     {% if story_arc.square_small %}{{ story_arc.square_small }}{% else %}{% static "images/blanks/square_small.png" %}{% endif %}"
+
+
+                   {% if story_arc.square_small %}{{ story_arc.square_small }}{% else %}{% static "images/blanks/square_small.png" %}{% endif %}"
                  alt="{{ story_arc.name }}"
             >
             {% if story_arc.publisher %}
               <div class="card-profile-image">
                 <img class="rounded-circle img-border box-shadow-1"
                      src="
-                         {% if story_arc.publisher.square_avatar %}{{ story_arc.publisher.square_avatar }}{% else %}{% static "images/blanks/square_avatar.png" %}{% endif %}"
+
+
+                       {% if story_arc.publisher.square_avatar %}{{ story_arc.publisher.square_avatar }}{% else %}{% static "images/blanks/square_avatar.png" %}{% endif %}"
                      alt="{{ story_arc.publisher.name }}"
                 >
               </div>
@@ -90,8 +98,17 @@
               {% if story_arc.publisher %}
                 <li>{{ story_arc.publisher.name }}</li>
               {% endif %}
-              <li>{{ story_arc.volume_count|intcomma }} volume{{ story_arc.volume_count|pluralize }}</li>
+              {% if story_arc.volume_count %}
+                <li>{{ story_arc.volume_count|intcomma }} volume{{ story_arc.volume_count|pluralize }}</li>
+              {% endif %}
+
               <li>{{ story_arc.issue_count|intcomma }} issues{{ story_arc.issue_count|pluralize }}</li>
+              {% if request.user.is_authenticated %}
+                <li>{{ story_arc.finished_count|intcomma }} finished</li>
+                {% if story_arc.max_finished_date %}
+                  <li>{{ story_arc.max_finished_date|naturaltime }}</li>
+                {% endif %}
+              {% endif %}
             </ul>
           </div>
         </div>
@@ -101,7 +118,9 @@
   <nav aria-label="Page navigation">
     <ul class="pagination pagination-borderless justify-content-center mt-2">
       {% for page in pages %}
-         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+        <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link"
+                                                                       href="{% url_add_query_params page=page.num %}">{{ page.num }}</a>
+        </li>
       {% endfor %}
     </ul>
   </nav>

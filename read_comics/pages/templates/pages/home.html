@@ -32,7 +32,7 @@
                   <h4 class="card-title"><a href="{% url "volumes:continue_reading" %}">Unfinished Volumes</a></h4>
                 </div>
                 <div class="card-body">
-                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_volumes %}
+                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_volumes url_name="volumes:continue_reading" %}
                 </div>
               </div>
             </div>
@@ -40,10 +40,10 @@
             <div class="col-12 col-lg-6">
               <div class="card">
                 <div class="card-header">
-                  <h4 class="card-title">Unfinished Story Arcs</h4>
+                  <h4 class="card-title"><a href="{% url "story_arcs:continue_reading" %}">Unfinished Story Arcs</a></h4>
                 </div>
                 <div class="card-body">
-                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_story_arcs %}
+                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_story_arcs url_name="story_arcs:continue_reading" %}
                 </div>
               </div>
             </div>

@@ -30,6 +30,7 @@ class HomeView(TemplateView):
             context["finished_percent"] = \
                 context["finished_issues_count"] / context["matched_stats"]["issues_count"] * 100
             context["started_and_not_finished_volumes"] = self.request.user.started_and_not_finished_volumes
+            context["started_and_not_finished_story_arcs"] = self.request.user.started_and_not_finished_story_arcs
 
         return context
 

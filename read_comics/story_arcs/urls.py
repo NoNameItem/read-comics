@@ -18,12 +18,14 @@ from .views import (
     story_arc_objects_list_view,
     story_arc_teams_list_view,
     story_arc_volumes_list_view,
+    story_arcs_continue_reading_view,
     story_arcs_list_view,
 )
 
 app_name = "story_arcs"
 urlpatterns = [
     path("", view=story_arcs_list_view, name="list"),
+    path("continue_reading", view=story_arcs_continue_reading_view, name="continue_reading"),
     path("<str:slug>/", view=story_arc_detail_view, name="detail"),
     path("<str:slug>/start_watch/", view=start_watch_view, name="start_watch"),
     path("<str:slug>/stop_watch/", view=stop_watch_view, name="stop_watch"),
