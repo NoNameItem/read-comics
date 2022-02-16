@@ -2,6 +2,7 @@ import datetime
 import random
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.core.exceptions import PermissionDenied
 from django.db import IntegrityError
 from django.db.models import Count, F, Q
 from django.http import HttpResponseRedirect, JsonResponse
@@ -73,6 +74,28 @@ class VolumesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssues
 
 
 volumes_list_view = VolumesListView.as_view()
+
+
+class VolumesContinueReadingView(VolumesListView):
+    template_name = "volumes/continue_reading.html"
+    breadcrumb = [
+        {"url": reverse_lazy("volumes:list"), "text": "Volumes"},
+        {"url": reverse_lazy("volumes:continue_reading"), "text": "Continue reading"}
+    ]
+
+    def get_queryset(self):
+        if self.request.user.is_authenticated:
+            return self.request.user.started_and_not_finished_volumes
+        raise PermissionDenied()
+
+    def get_context_data(self, **kwargs):
+        context = super(VolumesListView, self).get_context_data(**kwargs)
+        context["breaking"] = None
+        context["hide_menu"] = True
+        return context
+
+
+volumes_continue_reading_view = VolumesContinueReadingView.as_view()
 
 
 @logging.methods_logged(logger, ["get", ])

@@ -311,7 +311,7 @@ class IssuePerson(models.Model):
 class FinishedIssue(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="finished")
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="finished")
-    finish_date = models.DateField(auto_now=True)
+    finish_date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = (("user", "issue"),)

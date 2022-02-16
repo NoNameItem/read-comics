@@ -1,0 +1,33 @@
+{% load static %}
+{% load humanize %}
+<div class="started_not_finished">
+  {% for item in items|slice:":30" %}
+    <div class="card ml-2 mr-2">
+        <img class="card-img img-fluid" src="{{ item.square_medium }}" alt="{{ item.display_name }}">
+        <div class="card-img-overlay overlay-dark d-flex justify-content-between flex-column">
+          <div class="overlay-content">
+            <p class="card-text text-ellipsis">
+              {{ item.display_name }}
+            </p>
+          </div>
+          <div class="overlay-status">
+
+            <p class="mb-25"><small>{{ item.max_finished_date|naturaltime }}</small></p>
+            <p class="mb-25">Finished {{ item.finished_count }} of {{ item.issue_count }}</p>
+            <a href="{{ item.get_absolute_url }}" class="btn btn-outline-info">Continue</a>
+          </div>
+        </div>
+      </div>
+  {% empty %}
+    <div class="card ml-2 mr-2">
+        <img class="card-img img-fluid" src="{% static "images/no_unifnished.jpeg" %}" alt="No unfinished">
+        <div class="card-img-overlay overlay-dark d-flex justify-content-between flex-column">
+          <div class="overlay-content">
+            <p class="card-text text-ellipsis">
+              There is nothing here. Good Job
+            </p>
+          </div>
+        </div>
+      </div>
+  {% endfor %}
+</div>

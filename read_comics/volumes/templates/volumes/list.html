@@ -17,64 +17,74 @@
 {% endblock %}
 
 {% block page_content %}
-  <div class="row mb-1">
-    <div class="col-auto">
-      <div class="btn-group dropright mr-1">
-        <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown" aria-haspopup="true"
-                aria-expanded="false">
-          Sort by
-        </button>
-        <div class="dropdown-menu" style="">
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-issue_count' %}">Issues
-            <i class="fad fa-sort-numeric-down-alt"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='issue_count' %}">Issues
-            <i class="fad fa-sort-numeric-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i
-              class="fad fa-sort-alpha-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i
-              class="fad fa-sort-alpha-down-alt"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='start_year' %}">Start year
-            <i class="fad fa-sort-numeric-down"></i></a>
-          <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-start_year' %}">Start year
-            <i class="fad fa-sort-numeric-down-alt"></i></a>
-        </div>
-      </div>
-    </div>
-    {% if request.user.is_authenticated %}
+  {% if not hide_menu %}
+    <div class="row mb-1">
       <div class="col-auto">
-        <div class="custom-control custom-switch custom-control-inline mt-50">
-          <input type="checkbox" class="custom-control-input" {% if hide_finished == 'yes' %}checked{% endif %}
-                 id="hide_finished">
-          <label class="custom-control-label mr-1" for="hide_finished">
-          </label>
-          <span>Hide finished volumes</span>
+        <div class="btn-group dropright mr-1">
+          <button type="button" class="btn btn-primary dropdown-toggle btn-sm" data-toggle="dropdown"
+                  aria-haspopup="true"
+                  aria-expanded="false">
+            Sort by
+          </button>
+          <div class="dropdown-menu" style="">
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-issue_count' %}">Issues
+              <i class="fad fa-sort-numeric-down-alt"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='issue_count' %}">Issues
+              <i class="fad fa-sort-numeric-down"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='name' %}">Name <i
+              class="fad fa-sort-alpha-down"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-name' %}">Name <i
+              class="fad fa-sort-alpha-down-alt"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='start_year' %}">Start
+              year
+              <i class="fad fa-sort-numeric-down"></i></a>
+            <a class="dropdown-item justify-content-between" href="{% url_add_query_params ordering='-start_year' %}">Start
+              year
+              <i class="fad fa-sort-numeric-down-alt"></i></a>
+          </div>
         </div>
       </div>
-    {% endif %}
-  </div>
+      {% if request.user.is_authenticated %}
+        <div class="col-auto">
+          <div class="custom-control custom-switch custom-control-inline mt-50">
+            <input type="checkbox" class="custom-control-input" {% if hide_finished == 'yes' %}checked{% endif %}
+                   id="hide_finished">
+            <label class="custom-control-label mr-1" for="hide_finished">
+            </label>
+            <span>Hide finished volumes</span>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  {% endif %}
   <div class="row match-height">
     {% for volume in volumes %}
       {% if breaking == "start_year" %}
         {% ifchanged volume.start_year %}
           <div class="col-12 mb-25">
             <h2><u>{{ volume.start_year }}</u></h2>
-        </div>
+          </div>
         {% endifchanged %}
       {% endif %}
       <div class="col-12 col-sm-6 col-lg-4 col-xl-3 col-2k-2">
-        <div class="card card-with-cover div-link {% if volume.finished_count == volume.issue_count %}finished{% endif %}">
-        <a class="div-default-link" href="{{ volume.get_absolute_url }}"></a>
+        <div
+          class="card card-with-cover div-link {% if volume.finished_count == volume.issue_count %}finished{% endif %}">
+          <a class="div-default-link" href="{{ volume.get_absolute_url }}"></a>
           <div class="position-relative mb-2">
             <img class="card-img-top img-fluid"
                  src="
-                     {% if volume.thumb_size_url %}{{ volume.thumb_size_url }}{% else %}{% static "images/blanks/original.png" %}{% endif %}"
+
+
+                   {% if volume.thumb_size_url %}{{ volume.thumb_size_url }}{% else %}{% static "images/blanks/original.png" %}{% endif %}"
                  alt="{{ volume.name }}"
             >
             {% if volume.publisher %}
               <div class="card-profile-image">
                 <img class="rounded-circle img-border box-shadow-1"
                      src="
-                         {% if volume.publisher.square_avatar %}{{ volume.publisher.square_avatar }}{% else %}{% static "images/blanks/square_avatar.png" %}{% endif %}"
+
+
+                       {% if volume.publisher.square_avatar %}{{ volume.publisher.square_avatar }}{% else %}{% static "images/blanks/square_avatar.png" %}{% endif %}"
                      alt="{{ volume.publisher.name }}"
                 >
               </div>
@@ -102,6 +112,9 @@
               <li>{{ volume.issue_count|intcomma }} issue{{ volume.issue_count|pluralize }}</li>
               {% if request.user.is_authenticated %}
                 <li>{{ volume.finished_count|intcomma }} finished</li>
+                {% if volume.max_finished_date %}
+                  <li>{{ volume.max_finished_date|naturaltime }}</li>
+                {% endif %}
               {% endif %}
             </ul>
           </div>
@@ -112,7 +125,9 @@
   <nav aria-label="Page navigation">
     <ul class="pagination pagination-borderless justify-content-center mt-2">
       {% for page in pages %}
-         <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link" href="{% url_add_query_params page=page.num %}">{{ page.num }}</a></li>
+        <li class="page-item {{ page.disabled }} {{ page.active }}"><a class="page-link"
+                                                                       href="{% url_add_query_params page=page.num %}">{{ page.num }}</a>
+        </li>
       {% endfor %}
     </ul>
   </nav>

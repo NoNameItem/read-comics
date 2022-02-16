@@ -19,12 +19,14 @@ from .views import (
     volume_objects_list_view,
     volume_story_arcs_list_view,
     volume_teams_list_view,
+    volumes_continue_reading_view,
     volumes_list_view,
 )
 
 app_name = "volumes"
 urlpatterns = [
     path("", view=volumes_list_view, name="list"),
+    path("continue_reading", view=volumes_continue_reading_view, name="continue_reading"),
     path("random/", view=random_volume_view, name="random"),
     path("<str:slug>/start_watch/", view=start_watch_view, name="start_watch"),
     path("<str:slug>/stop_watch/", view=stop_watch_view, name="stop_watch"),

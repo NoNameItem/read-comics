@@ -1,7 +1,19 @@
 {% extends "base.html" %}
+{% load static %}
 {% load humanize %}
 
 {% block page_header %}Home{% endblock %}
+
+{% block page_vendor_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "slick/slick.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "slick/slick-theme.css" %}">
+{% endblock %}
+
+{% block page_css %}
+  {{ block.super }}
+  <link rel="stylesheet" type="text/css" href="{% static "pages/css/home.css" %}">
+{% endblock %}
 
 {% block page_content %}
   <section id="widgets-Statistics">
@@ -10,6 +22,35 @@
       <div class="col-12">
         {% include "issues/blocks/finished_progress.html" with finished_count=finished_issues_count total_count=matched_stats.issues_count finished_percent=finished_percent %}
       </div>
+
+      {% if user.is_authenticated %}
+        <div class="col-12">
+          <div class="row">
+            <div class="col-12 col-lg-6">
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title"><a href="{% url "volumes:continue_reading" %}">Unfinished Volumes</a></h4>
+                </div>
+                <div class="card-body">
+                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_volumes %}
+                </div>
+              </div>
+            </div>
+
+            <div class="col-12 col-lg-6">
+              <div class="card">
+                <div class="card-header">
+                  <h4 class="card-title">Unfinished Story Arcs</h4>
+                </div>
+                <div class="card-body">
+                  {% include "pages/blocks/started_not_finished.html" with items=started_and_not_finished_story_arcs %}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endif %}
+
       <div class="col-xl-3 col-sm-6">
         <div class="card text-center div-link">
           <a class="div-default-link" href="{% url "issues:list" %}"></a>
@@ -169,7 +210,8 @@
       <div class="card-text">
         <ul>
           {% for line in update_history %}
-            <li><a href="{% url "pages:new_issues" line.created_day.year line.created_day.month line.created_day.day %}"><strong>{{ line.created_day|date:"DATE_FORMAT" }}:</strong> {{ line.cnt|intcomma }}
+            <li><a
+              href="{% url "pages:new_issues" line.created_day.year line.created_day.month line.created_day.day %}"><strong>{{ line.created_day|date:"DATE_FORMAT" }}:</strong> {{ line.cnt|intcomma }}
               issue{{ line.cnt|pluralize }}</a></li>
           {% endfor %}
         </ul>
@@ -177,4 +219,10 @@
     </div>
   </section>
 
+{% endblock %}
+
+{% block vendor_js %}
+  {{ block.super }}
+  <script type="text/javascript" src="{% static "slick/slick.min.js" %}"></script>
+  <script type="text/javascript" src="{% static "pages/js/home.js" %}"></script>
 {% endblock %}

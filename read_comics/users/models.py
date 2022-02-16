@@ -1,9 +1,12 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from django.db.models import Count, F, Max, Q
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from utils import logging
 from utils.fields import ThumbnailImageField
+
+from read_comics.volumes.models import Volume
 
 logger = logging.getLogger(__name__)
 
@@ -60,3 +63,23 @@ class User(AbstractUser):
             elif self.last_name:
                 self.name = self.last_name
         super(User, self).save(*args, **kwargs)
+
+    def get_started_and_not_finished(self, model):
+        return model.objects.was_matched().annotate(
+            issue_count=Count("issues", distinct=True)
+        ).select_related(
+            "publisher"
+        ).annotate(
+            finished_count=Count("issues", filter=Q(issues__finished_users=self)),
+            max_finished_date=Max("issues__finished__finish_date", filter=Q(issues__finished__user=self))
+        ).filter(
+            finished_count__gte=1
+        ).exclude(
+            finished_count=F("issue_count")
+        ).order_by(
+            "-max_finished_date"
+        )
+
+    @property
+    def started_and_not_finished_volumes(self):
+        return self.get_started_and_not_finished(Volume)
