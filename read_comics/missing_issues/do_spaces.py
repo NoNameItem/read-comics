@@ -21,11 +21,13 @@ def get_level(prefix=""):
     common_prefixes = response.get("CommonPrefixes")
     contents = response.get("Contents")
     processed = set()
+    data = []
     if common_prefixes:
         data = [(x["Prefix"], 0) for x in common_prefixes]
         processed = {x["Prefix"] for x in common_prefixes}
     else:
-        data = [(x["Key"], x["Size"]) for x in contents[1:]]
+        if contents:
+            data = [(x["Key"], x["Size"]) for x in contents[1:]]
 
     while next_marker:
         response = bucket.meta.client.list_objects(
@@ -40,10 +42,11 @@ def get_level(prefix=""):
                     data.append((i["Prefix"], 0))
                     processed.add(i["Prefix"])
         else:
-            for i in contents:
-                if i["Key"] not in processed:
-                    data.append((i["Key"], i["Size"]))
-                    processed.add(i["Key"])
+            if contents:
+                for i in contents:
+                    if i["Key"] not in processed:
+                        data.append((i["Key"], i["Size"]))
+                        processed.add(i["Key"])
 
     s3objects = [
         {"name": x[0].removeprefix(prefix), "full_name": x[0], "size": x[1]}
