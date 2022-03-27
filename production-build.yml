@@ -10,10 +10,10 @@ services:
     build:
       context: .
       dockerfile: ./compose/production/django/Dockerfile
-    image: registry.digitalocean.com/read-comics/app
+    image: cr.yandex/crpkef6i6mmeq12lo3i7/app
 
   traefik:
     build:
       context: .
       dockerfile: ./compose/production/traefik/Dockerfile
-    image: registry.digitalocean.com/read-comics/traefik
+    image: cr.yandex/crpkef6i6mmeq12lo3i7/traefik

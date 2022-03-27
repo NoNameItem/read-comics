@@ -45,10 +45,10 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Build the Stack
-        run:  docker-compose -f local.yml build
+        run: docker-compose -f local.yml build
 
       - name: Run DB Migrations
-        run:  docker-compose -f local.yml run --rm django python manage.py migrate
+        run: docker-compose -f local.yml run --rm django python manage.py migrate
 
       - name: Run Django Tests
         run: |
@@ -62,10 +62,10 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
 
       - name: Tear down the Stack
-        run:  docker-compose -f local.yml down
+        run: docker-compose -f local.yml down
 
   build:
-    needs: [linter, test]
+    needs: [ linter, test ]
     runs-on: ubuntu-latest
     if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
 
@@ -76,19 +76,16 @@ jobs:
       - name: Build container image
         run: docker-compose -f production-build.yml build
 
-      - name: Install doctl
-        uses: digitalocean/action-doctl@v2
+      - name: Yandex Cloud CR "Login" Action for GitHub Actions
+        uses: yc-actions/yc-cr-login@v0.1-alpha
         with:
-          token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
-      - name: Log in to DigitalOcean Container Registry with short-lived credentials
-        run: doctl registry login --expiry-seconds 600
-
-      - name: Push image to DigitalOcean Container Registry
+      - name: Push image to Yandex Cloud Container Registry
         run: docker-compose -f production-build.yml push
 
   release:
-    needs: [linter, test]
+    needs: [ linter, test ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_type == 'tag'
 

@@ -96,7 +96,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 # ------------------------------------------------------------------------------
 # region http://stackoverflow.com/questions/10390244/
 # Full-fledge class: https://stackoverflow.com/a/18046120/104731
-AWS_S3_ENDPOINT_URL = f"https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com"
+AWS_S3_ENDPOINT_URL = DO_SPACE_DATA_ENDPOINT_URL  # noqa F405
 
 from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 
@@ -138,7 +138,7 @@ class MediaRootS3Boto3Storage(S3Boto3Storage):
 
 # endregion
 DEFAULT_FILE_STORAGE = "config.settings.production.MediaRootS3Boto3Storage"
-MEDIA_URL = f"https://{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/media/"
+MEDIA_URL = env("MEDIA_URL")
 
 # TEMPLATES
 # ------------------------------------------------------------------------------

@@ -7,7 +7,7 @@ from django.db import models
 from django.utils.encoding import escape_uri_path
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
-from unidecode import unidecode
+from slugify import slugify
 from utils.logging import getLogger, methods_logged
 from utils.model_mixins import ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
@@ -247,9 +247,19 @@ class Issue(ImageMixin, ComicvineSyncModel):
             return f"{volume_name or self.volume.name} ({volume_start_year or self.volume.start_year}) #{self.number}"
 
     def update_do_metadata(self, volume_name=None, volume_start_year=None):
-        filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}".replace(":", "*_*")\
-            .replace("/", "*@*").replace("\x85", "... ").replace("\t", " ")
-        filename_ascii = unidecode(filename)
+        filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}"
+        filename_cleaned = slugify(
+            filename,
+            separator=" ",
+            lowercase=False,
+            hexadecimal=False,
+            regex_pattern=re.compile(r"[^-a-zA-Z0-9.#*,;]+"),
+            replacements=(
+                ("/", "*"),
+                (":", "*"),
+                ("½", ".5")
+            )
+        )
         s3_client = boto3.client(
             "s3",
             aws_access_key_id=settings.DO_SPACE_DATA_KEY,
@@ -262,7 +272,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
             Key=self.space_key,
             CopySource={"Bucket": settings.DO_SPACE_DATA_BUCKET,
                         "Key": self.space_key},
-            ContentDisposition='attachment; filename=\"' + filename_ascii + '\"',
+            ContentDisposition='attachment; filename=\"' + filename_cleaned + '\"',
             MetadataDirective="REPLACE",
             ACL="public-read"
         )
