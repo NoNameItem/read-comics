@@ -4,3 +4,16 @@ Disallow: *.cbr
 Disallow: *.cbz
 Disallow: *.CBR
 Disallow: *.CBZ
+Disallow: */login/*
+Disallow: */new_issues/*
+Disallow: /characters/*/issues/*
+Disallow: /concepts/*/issues/*
+Disallow: /locations/*/issues/*
+Disallow: /objects/*/issues/*
+Disallow: /people/*/issues/*
+Disallow: /publishers/*/issues/*
+Disallow: /story_arcs/*/issues/*
+Disallow: /teams/*/issues/*
+Disallow: /volumes/*/issues/*
+Disallow: *?ordering=*
+Disallow: *only-with-issues=no*
