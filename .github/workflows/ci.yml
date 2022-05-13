@@ -141,6 +141,7 @@ jobs:
           KEY: ${{ secrets.SSHKEY }}
           script: |
             cd ~/read_comics
+            export PATH="$PATH:/home/docker/yandex-cloud/bin"
             docker-compose -f production-run.yml pull
             docker-compose -f production-run.yml down
             docker-compose -f production-run.yml up -d --scale celeryworker=5 --force-recreate

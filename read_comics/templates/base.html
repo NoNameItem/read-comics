@@ -11,7 +11,10 @@
   <meta name="keywords" content="comics {% block meta_keywords %}{% endblock %}">
   <meta name="author" content="NoNameItem">
   <title>{% block title %}Read-Comics.Net{% endblock %}</title>
-  <script src="https://kit.fontawesome.com/96ea38b6db.js" crossorigin="anonymous"></script>
+  {#  <script src="https://kit.fontawesome.com/96ea38b6db.js" crossorigin="anonymous"></script>#}
+  <link rel="stylesheet" type="text/css" href="{% static "fontawesome/css/fontawesome.min.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "fontawesome/css/brands.min.css" %}">
+  <link rel="stylesheet" type="text/css" href="{% static "fontawesome/css/duotone.min.css" %}">
   <link rel="icon" href="{% static "images/favicons/favicon.png" %}">
   <link href="https://fonts.googleapis.com/css?family=Rubik:300,400,500,600%7CIBM+Plex+Sans:300,400,500,600,700"
         rel="stylesheet">
