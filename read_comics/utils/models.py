@@ -117,7 +117,7 @@ class ComicvineSyncModel(models.Model):
         self.post_save()
 
     def get_document_from_api(self):
-        retries = Retry(total=10, backoff_factor=1, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
+        retries = Retry(total=30, backoff_factor=10, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
         adapter = HTTPAdapter(max_retries=retries)
         http = requests.Session()
         http.mount("https://", adapter)
@@ -140,7 +140,7 @@ class ComicvineSyncModel(models.Model):
         except (JSONDecodeError, RequestException, HTTPError):
             return None
 
-    def fill_from_comicvine(self, follow_m2m=True, delay=False):
+    def fill_from_comicvine(self, follow_m2m=True, delay=False, force_api_refresh=False):
         if delay:
             if self.COMICVINE_INFO_TASK:
                 # self.COMICVINE_INFO_TASK.delay(pk=self.pk, follow_m2m=follow_m2m)
@@ -156,7 +156,7 @@ class ComicvineSyncModel(models.Model):
             return
 
         document = self.comicvine_document
-        if document:
+        if document and not force_api_refresh:
             self.logger.debug("Document found")
             self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
