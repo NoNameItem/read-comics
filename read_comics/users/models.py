@@ -33,6 +33,7 @@ class User(AbstractUser):
     birth_date = models.DateField(_("Birth date"), null=True, blank=True)
     show_email = models.BooleanField(_("Show email in profile"), default=False)
     last_active = models.DateTimeField(_("Last active"), null=True)
+    unlimited_downloads = models.BooleanField(default=False)
 
     def get_absolute_url(self):
         return reverse("users:detail", kwargs={"username": self.username})

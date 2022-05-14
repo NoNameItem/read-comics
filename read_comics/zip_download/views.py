@@ -94,7 +94,7 @@ class BaseZipDownloadView(View):
             files = self.get_grouped_files()
         zip_name = self.get_zip_name()
 
-        z = ZipDownloader(compression=ZIP_DEFLATED, allowZip64=True)
+        z = ZipDownloader(compression=ZIP_DEFLATED, allowZip64=True, request=request)
         z.write_links(files)
 
         response = StreamingHttpResponse(z, content_type="application/zip")

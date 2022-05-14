@@ -1,8 +1,10 @@
 import datetime
 import json
 from contextlib import suppress
+from time import sleep
 
 from django.apps import apps
+from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, Q
@@ -102,15 +104,15 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context["number_in_sublist"] = self.get_previous_queryset().count() + 1
         context["total_in_sublist"] = self.base_queryset.count()
 
-        context["first_appearance_characters_count"] = issue.first_appearance_characters.\
+        context["first_appearance_characters_count"] = issue.first_appearance_characters. \
             filter(comicvine_status="MATCHED").count()
-        context["first_appearance_concepts_count"] = issue.first_appearance_concepts.\
+        context["first_appearance_concepts_count"] = issue.first_appearance_concepts. \
             filter(comicvine_status="MATCHED").count()
-        context["first_appearance_objects_count"] = issue.first_appearance_objects.\
+        context["first_appearance_objects_count"] = issue.first_appearance_objects. \
             filter(comicvine_status="MATCHED").count()
-        context["first_appearance_locations_count"] = issue.first_appearance_locations.\
+        context["first_appearance_locations_count"] = issue.first_appearance_locations. \
             filter(comicvine_status="MATCHED").count()
-        context["first_appearance_teams_count"] = issue.first_appearance_teams.\
+        context["first_appearance_teams_count"] = issue.first_appearance_teams. \
             filter(comicvine_status="MATCHED").count()
         context["first_appearance_count"] = (context["first_appearance_characters_count"] +
                                              context["first_appearance_concepts_count"] +
@@ -310,6 +312,12 @@ class IssueDownloadView(SingleObjectMixin, View):
     queryset = Issue.objects.matched()
 
     def get(self, request, *args, **kwargs):
+        if ((not request.user.is_authenticated or not request.user.unlimited_downloads)
+            and request.session.get("last_download", 0) >
+                datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+            sleep(settings.DOWNLOAD_TIMEOUT)
+
+        request.session["last_download"] = datetime.datetime.now().timestamp()
         issue = self.get_object()
         return HttpResponseRedirect(issue.download_link)
 
@@ -321,7 +329,6 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
     def get_volume_context(self, issue):
         context = {}
         if self.request.user.is_authenticated:
-
             context["total_count"] = issue.volume.issues.count()
             context["finished_count"] = issue.volume.issues.annotate(
                 finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))

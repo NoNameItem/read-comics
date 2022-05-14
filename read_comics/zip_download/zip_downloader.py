@@ -1,11 +1,17 @@
+import datetime
 import tempfile
+from importlib import import_module
+from time import sleep
 from zipfile import ZIP_DEFLATED
 
 import gevent.pool
 import requests
 import zipstream
+from django.conf import settings
 from requests.adapters import HTTPAdapter
 from requests.packages.urllib3.util.retry import Retry
+
+SessionStore = import_module(settings.SESSION_ENGINE).SessionStore
 
 
 class Downloader:
@@ -40,11 +46,12 @@ class Downloader:
 
 
 class ZipDownloader(zipstream.ZipFile):
-    def __init__(self, fileobj=None, mode="w", compression=ZIP_DEFLATED, allowZip64=False):
+    def __init__(self, fileobj=None, mode="w", compression=ZIP_DEFLATED, allowZip64=False, request=None):
         super().__init__(fileobj, mode, compression, allowZip64)
         self.links = []
         self.links_compress_type = None
         self.links_buffersize = None
+        self.request = request
 
     def write_links(self, links, compress_type=None, buffer_size=None):
         self.links += links
@@ -58,7 +65,17 @@ class ZipDownloader(zipstream.ZipFile):
                 yield from self.__write(**kwargs)
             if self.links:
                 downloader = Downloader(self.links)
+                session_key = self.request.session.session_key
                 for file in downloader:
+                    session = SessionStore(session_key=session_key)
+                    if ((not self.request.user.is_authenticated or not self.request.user.unlimited_downloads)
+                        and session.get("last_download", 0) >
+                            datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+                        sleep(settings.DOWNLOAD_TIMEOUT)
+                        print("ATA-TA")
+
+                    session["last_download"] = datetime.datetime.now().timestamp()
+                    session.save()
                     yield from self._ZipFile__write(arcname=file[0], iterable=file[1],
                                                     buffer_size=self.links_buffersize,
                                                     compress_type=self.links_compress_type)
