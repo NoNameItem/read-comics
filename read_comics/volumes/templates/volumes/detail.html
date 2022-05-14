@@ -32,8 +32,8 @@
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ volume.name }} ({{ volume.start_year }})</h4>
               </div>
-              <div id="finished-mark" {% if user.is_suthenticated and issues_info.finished_percent == 100 %} style="display: none" {% endif %}>
-                <i class="far fa-check-circle success fa-3x"></i>
+              <div id="finished-mark" {% if not user.is_authenticated or issues_info.finished_percent < 100 %} style="display: none" {% endif %}>
+                <i class="fad fa-check-circle success fa-3x"></i>
               </div>
               <div id="watch-mark">
                 {% if watched %}

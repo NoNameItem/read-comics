@@ -29,7 +29,7 @@
         </div>
         <div class="list-content d-flex align-items-center pr-1">
           <div>
-            <span class="list-title">{% if obj.finished_flg %}<i class="far fa-check-circle success"></i>{% endif %} {{ obj.badge_name|default:obj.name|truncatechars:50 }}</span>
+            <span class="list-title">{% if obj.finished_flg %}<i class="fad fa-check-circle success"></i>{% endif %} {{ obj.badge_name|default:obj.name|truncatechars:50 }}</span>
             {% if obj.desc %}
               <small class="text-muted d-block">{{ obj.desc }} </small>
             {% endif %}
