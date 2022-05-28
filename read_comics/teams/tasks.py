@@ -1,5 +1,10 @@
+from celery import shared_task
+from scrapy.settings import Settings
+from scrapyscript import Job, Processor
+from spiders.spiders.teams_spider import TeamsSpider
 from utils.tasks import BaseComicvineInfoTask, BaseRefreshTask
 
+import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
 
 
@@ -18,3 +23,11 @@ class TeamsRefreshTask(BaseRefreshTask):
 
 
 teams_refresh_task = celery_app.register_task(TeamsRefreshTask())
+
+
+@shared_task
+def teams_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(TeamsSpider, incremental="Y")
+    p.run(j)

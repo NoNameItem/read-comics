@@ -87,6 +87,50 @@ app.conf.beat_schedule = {
     "refresh-publishers-missing-issues": {
         "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
         "schedule": crontab(minute=0, hour="7"),
+    },
+    "characters_increment_update": {
+        "task": "read_comics.characters.tasks.characters_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "concepts_increment_update": {
+        "task": "read_comics.concepts.tasks.concepts_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "issues_increment_update": {
+        "task": "read_comics.issues.tasks.issues_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "locations_increment_update": {
+        "task": "read_comics.locations.tasks.locations_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "objects_increment_update": {
+        "task": "read_comics.objects.tasks.objects_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "people_increment_update": {
+        "task": "read_comics.people.tasks.people_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "powers_increment_update": {
+        "task": "read_comics.powers.tasks.powers_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "publishers_increment_update": {
+        "task": "read_comics.publishers.tasks.publishers_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "story_arcs_increment_update": {
+        "task": "read_comics.story_arcs.tasks.story_arcs_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "teams_increment_update": {
+        "task": "read_comics.teams.tasks.teams_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
+    },
+    "volumes_increment_update": {
+        "task": "read_comics.volumes.tasks.volumes_increment_update",
+        "schedule": crontab(minute=0, hour="0"),
     }
 }
 app.conf.timezone = "UTC"

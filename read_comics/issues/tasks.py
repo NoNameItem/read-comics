@@ -4,8 +4,12 @@ import boto3
 from celery import shared_task
 from django.apps import apps
 from django.conf import settings
+from scrapy.settings import Settings
+from scrapyscript import Job, Processor
+from spiders.spiders.issues_spider import IssuesSpider
 from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
+import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
 
 
@@ -70,3 +74,11 @@ def purge_deleted():
     bucket = s3.Bucket(settings.DO_SPACE_DATA_BUCKET)
     objs = [x.key for x in bucket.objects.all()]
     model.objects.exclude(space_key__in=objs).delete()
+
+
+@shared_task
+def issues_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="Y")
+    p.run(j)

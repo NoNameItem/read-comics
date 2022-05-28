@@ -1,9 +1,14 @@
 import re
 
+from celery import shared_task
 from django.apps import apps
 from issues.tasks import issues_space_task
+from scrapy.settings import Settings
+from scrapyscript import Job, Processor
+from spiders.spiders.volumes_spider import VolumesSpider
 from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
+import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
 
 
@@ -64,3 +69,11 @@ class VolumesRefreshTask(BaseRefreshTask):
 
 
 volumes_refresh_task = celery_app.register_task(VolumesRefreshTask())
+
+
+@shared_task
+def volumes_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(VolumesSpider, incremental="Y")
+    p.run(j)

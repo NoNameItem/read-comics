@@ -40,3 +40,7 @@ urllib3~=1.26.2
 gevent==21.1.2
 zipstream-new==1.1.8
 beautifulsoup4==4.9.3
+
+# Scrappy
+Scrapy==2.6.1
+scrapyscript==1.1.5
