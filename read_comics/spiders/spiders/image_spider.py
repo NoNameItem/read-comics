@@ -1,11 +1,17 @@
 import datetime
 import json
-from typing import Callable, List, Optional, Union
+from typing import Callable, List, Optional, Tuple, Union
 
 import scrapy
 
 
 class ResourceRequest(scrapy.Request):
+    attributes: Tuple[str, ...] = (
+        "url", "resource", "callback", "method", "headers", "body",
+        "cookies", "meta", "encoding", "priority",
+        "dont_filter", "errback", "flags", "cb_kwargs",
+    )
+
     def __init__(self, url: str, resource: str, callback: Optional[Callable] = None, method: str = "GET",
                  headers: Optional[dict] = None, body: Optional[Union[bytes, str]] = None,
                  cookies: Optional[Union[dict, List[dict]]] = None, meta: Optional[dict] = None,
@@ -19,7 +25,7 @@ class ResourceRequest(scrapy.Request):
 
 class ImageSpider(scrapy.Spider):
     # LIST_URL_PATTERN should contain 3 placeholders: limit, offset and api_key and should not contain filter parameter
-    LIST_URL_PATTERN = "https://comicvine.gamespot.com/api/{resource}?" \
+    LIST_URL_PATTERN = "https://comicvine.gamespot.com/api/{resource}/?" \
                        "format=json&" \
                        "field_list=id,name,api_detail_url,image&" \
                        "sort=id:asc&" \
@@ -39,6 +45,7 @@ class ImageSpider(scrapy.Spider):
         "teams": "comicvine_teams",
         "volumes": "comicvine_volumes",
     }
+    name = "image_spider"
 
     def __init__(
         self,
