@@ -6,7 +6,7 @@ ROOT_DIR = (
 
 env = environ.Env()
 
-env.read_env(str(ROOT_DIR.path(".env_dev")))
+env.read_env(str(ROOT_DIR.path(".env")))
 
 # -*- coding: utf-8 -*-
 
@@ -39,7 +39,7 @@ ROBOTSTXT_OBEY = False
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 10
+DOWNLOAD_DELAY = 3
 RANDOMIZE_DOWNLOAD_DELAY = False
 # The download delay setting will honor only one of:
 # CONCURRENT_REQUESTS_PER_DOMAIN = 16

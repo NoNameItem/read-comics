@@ -2,12 +2,17 @@ import re
 
 import boto3
 import pytz
-from celery import Task, signature
+from celery import Task, shared_task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
 from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
+from scrapy.settings import Settings
+from scrapyscript import Job, Processor
+from spiders.spiders.full_spider import FullSpider
+
+import read_comics.spiders.settings as spiders_settings_file
 
 
 class WrongKeyFormatError(Exception):
@@ -188,3 +193,11 @@ class BaseRefreshTask(Task):
                 model_object = model.objects.get(pk=obj["id"])
                 model_object.fill_from_comicvine(delay=True)
                 model_object.save()
+
+
+@shared_task
+def full_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="Y")
+    p.run(j)
