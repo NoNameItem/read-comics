@@ -9,7 +9,7 @@ sys.path.append(os.path.join(current_path, "read_comics"))
 print(sys.path)
 
 # set the default Django settings module for the 'celery' program.
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.local")
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings.production")
 
 app = Celery("read_comics")
 
