@@ -20,7 +20,7 @@ class VolumesSublistQueryset:
     @staticmethod
     def _annotate_volumes(q):
         return q.annotate(
-            issues_count=Count("issues"),
+            issues_count=Count("issues", distinct=True),
             badge_name=Concat(F("name"), Value(" ("), F("start_year"), Value(")"),
                               output_field=TextField()),
             desc=Concat(F("issues_count"), Value(" issue(s)"), output_field=TextField())
