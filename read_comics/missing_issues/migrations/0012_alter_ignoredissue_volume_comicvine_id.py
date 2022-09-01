@@ -6,13 +6,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0011_alter_watcheditem_unique_together'),
+        ("missing_issues", "0011_alter_watcheditem_unique_together"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='ignoredissue',
-            name='volume_comicvine_id',
+            model_name="ignoredissue",
+            name="volume_comicvine_id",
             field=models.IntegerField(null=True),
         ),
     ]

@@ -7,14 +7,14 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contenttypes', '0002_remove_content_type_name'),
+        ("contenttypes", "0002_remove_content_type_name"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('missing_issues', '0010_watcheditem'),
+        ("missing_issues", "0010_watcheditem"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='watcheditem',
-            unique_together={('user', 'content_type', 'object_id')},
+            name="watcheditem",
+            unique_together={("user", "content_type", "object_id")},
         ),
     ]

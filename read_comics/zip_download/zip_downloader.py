@@ -21,9 +21,7 @@ class Downloader:
     def download_file(self, link):
         # print("Start download " + link[1])
         retry_strategy = Retry(
-            total=3,
-            status_forcelist=[429, 500, 502, 503, 504],
-            method_whitelist=["HEAD", "GET", "OPTIONS"]
+            total=3, status_forcelist=[429, 500, 502, 503, 504], method_whitelist=["HEAD", "GET", "OPTIONS"]
         )
         adapter = HTTPAdapter(max_retries=retry_strategy)
         http = requests.Session()
@@ -68,17 +66,22 @@ class ZipDownloader(zipstream.ZipFile):
                 session_key = self.request.session.session_key
                 for file in downloader:
                     session = SessionStore(session_key=session_key)
-                    if ((not self.request.user.is_authenticated or not self.request.user.unlimited_downloads)
-                        and session.get("last_download", 0) >
-                            datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+                    if (
+                        not self.request.user.is_authenticated or not self.request.user.unlimited_downloads
+                    ) and session.get(
+                        "last_download", 0
+                    ) > datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT:
                         sleep(settings.DOWNLOAD_TIMEOUT)
                         print("ATA-TA")
 
                     session["last_download"] = datetime.datetime.now().timestamp()
                     session.save()
-                    yield from self._ZipFile__write(arcname=file[0], iterable=file[1],
-                                                    buffer_size=self.links_buffersize,
-                                                    compress_type=self.links_compress_type)
+                    yield from self._ZipFile__write(
+                        arcname=file[0],
+                        iterable=file[1],
+                        buffer_size=self.links_buffersize,
+                        compress_type=self.links_compress_type,
+                    )
                     file[1].close()
         except Exception as e:
             print(e)

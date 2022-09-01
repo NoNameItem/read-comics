@@ -31,8 +31,10 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
     def get_grouped_filename(self, issue):
         filename = ""
         if issue.volume:
-            filename = f"{self.escape_file_name(issue.volume.name)} ({issue.volume.start_year})" \
-                       f"/{self.escape_file_name(issue.volume.name)} #" + filename
+            filename = (
+                f"{self.escape_file_name(issue.volume.name)} ({issue.volume.start_year})"
+                f"/{self.escape_file_name(issue.volume.name)} #" + filename
+            )
             if issue.volume.publisher:
                 filename = f"{self.escape_file_name(str(issue.volume.publisher))}/" + filename
             else:
@@ -53,13 +55,7 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
         self.obj = self.get_base_object()
         q = self.get_issues_queryset()
 
-        return [
-            (
-                self.get_grouped_filename(x),
-                x.download_link
-            )
-            for x in q
-        ]
+        return [(self.get_grouped_filename(x), x.download_link) for x in q]
 
     def get_ordered_files(self):
         self.obj = self.get_base_object()
@@ -77,7 +73,7 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
                         f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name or ''}".rstrip(" ")
                         + x.space_key[-4:]
                     ),
-                    x.download_link
+                    x.download_link,
                 )
                 for num, x in enumerate(q, 1)
             ]

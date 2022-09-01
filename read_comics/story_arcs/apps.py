@@ -10,6 +10,5 @@ class StoryArcsConfig(AppConfig):
     def ready(self):
         model = self.get_model("StoryArc")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.StoryArcSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.StoryArcSearchAdapter
         )

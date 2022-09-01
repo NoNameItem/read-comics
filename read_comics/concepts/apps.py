@@ -10,6 +10,5 @@ class ConceptsConfig(AppConfig):
     def ready(self):
         model = self.get_model("Concept")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.ConceptSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.ConceptSearchAdapter
         )

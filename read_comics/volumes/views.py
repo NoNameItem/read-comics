@@ -34,9 +34,15 @@ from .models import Volume
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class VolumesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                      ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class VolumesListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "volumes"
     template_name = "volumes/list.html"
     breadcrumb = [{"url": reverse_lazy("volumes:list"), "text": "Volumes"}]
@@ -47,12 +53,12 @@ class VolumesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssues
         "name": ("name", "start_year"),
         "-name": ("-name", "-start_year"),
         "start_year": "start_year",
-        "-start_year": "-start_year"
+        "-start_year": "-start_year",
     }
     default_ordering = "start_year"
-    queryset = Volume.objects.was_matched().annotate(
-        issue_count=Count("issues", distinct=True)
-    ).select_related("publisher")
+    queryset = (
+        Volume.objects.was_matched().annotate(issue_count=Count("issues", distinct=True)).select_related("publisher")
+    )
     active_menu_item = "volumes"
 
     def get_context_data(self, **kwargs):
@@ -66,8 +72,7 @@ class VolumesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssues
     def get_queryset(self):
         q = super(VolumesListView, self).get_queryset()
         if self.request.user.is_authenticated:
-            q = q.annotate(
-                finished_count=Count("issues", filter=Q(issues__finished_users=self.request.user)))
+            q = q.annotate(finished_count=Count("issues", filter=Q(issues__finished_users=self.request.user)))
             if self.request.GET.get("hide_finished", "yes") == "yes":
                 return q.exclude(finished_count=F("issue_count"))
         return q
@@ -80,7 +85,7 @@ class VolumesContinueReadingView(VolumesListView):
     template_name = "volumes/continue_reading.html"
     breadcrumb = [
         {"url": reverse_lazy("volumes:list"), "text": "Volumes"},
-        {"url": reverse_lazy("volumes:continue_reading"), "text": "Continue reading"}
+        {"url": reverse_lazy("volumes:continue_reading"), "text": "Continue reading"},
     ]
 
     def get_queryset(self):
@@ -98,7 +103,12 @@ class VolumesContinueReadingView(VolumesListView):
 volumes_continue_reading_view = VolumesContinueReadingView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Volume
     queryset = Volume.objects.select_related("publisher")
@@ -114,8 +124,7 @@ class VolumeDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Detail
 
         return [
             {"url": reverse_lazy("volumes:list"), "text": "Volumes"},
-            {"url": "#",
-             "text": f"{volume.name} ({volume.start_year})"}
+            {"url": "#", "text": f"{volume.name} ({volume.start_year})"},
         ]
 
     def get_context_data(self, **kwargs):
@@ -157,9 +166,7 @@ volume_detail_view = VolumeDetailView.as_view()
 
 class RandomVolumeView(View):
     def get(self, request, **kwargs):
-        q = Volume.objects.was_matched().annotate(
-            issue_count=Count("issues", distinct=True)
-        ).filter(issue_count__gt=0)
+        q = Volume.objects.was_matched().annotate(issue_count=Count("issues", distinct=True)).filter(issue_count__gt=0)
         count = q.count()
         i = random.randint(0, count - 1)
         volume = q[i]
@@ -184,12 +191,14 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeIssuesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getIssuesPage",
-        "url_template_name": "volumes/badges_urls/issue.html"
-    }
+    extra_context = {"get_page_function": "getIssuesPage", "url_template_name": "volumes/badges_urls/issue.html"}
     get_queryset_func = staticmethod(sublist_querysets.get_issues_queryset)
     get_queryset_user_param = True
     parent_model = Volume
@@ -198,11 +207,14 @@ class VolumeIssuesListView(BaseSublistView):
 volume_issues_list_view = VolumeIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeCharactersListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getCharactersPage"
-    }
+    extra_context = {"get_page_function": "getCharactersPage"}
     get_queryset_func = staticmethod(sublist_querysets.get_characters_queryset)
     parent_model = Volume
 
@@ -210,7 +222,12 @@ class VolumeCharactersListView(BaseSublistView):
 volume_characters_list_view = VolumeCharactersListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeDiedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
@@ -222,7 +239,12 @@ class VolumeDiedListView(BaseSublistView):
 volume_died_list_view = VolumeDiedListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeConceptsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getConceptsPage",
@@ -234,7 +256,12 @@ class VolumeConceptsListView(BaseSublistView):
 volume_concepts_list_view = VolumeConceptsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeLocationsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getLocationsPage",
@@ -246,7 +273,12 @@ class VolumeLocationsListView(BaseSublistView):
 volume_locations_list_view = VolumeLocationsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeObjectsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getObjectsPage",
@@ -258,7 +290,12 @@ class VolumeObjectsListView(BaseSublistView):
 volume_objects_list_view = VolumeObjectsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
@@ -270,7 +307,12 @@ class VolumeAuthorsListView(BaseSublistView):
 volume_authors_list_view = VolumeAuthorsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeStoryArcsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getStoryArcsPage",
@@ -282,7 +324,12 @@ class VolumeStoryArcsListView(BaseSublistView):
 volume_story_arcs_list_view = VolumeStoryArcsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
@@ -294,7 +341,12 @@ class VolumeTeamsListView(BaseSublistView):
 volume_teams_list_view = VolumeTeamsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeDisbandedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDisbandedPage",
@@ -306,12 +358,14 @@ class VolumeDisbandedListView(BaseSublistView):
 volume_disbanded_list_view = VolumeDisbandedListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeFirstAppearancesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getFirstAppearancesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getFirstAppearancesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.get_first_appearance_queryset)
     parent_model = Volume
 
@@ -319,7 +373,12 @@ class VolumeFirstAppearancesListView(BaseSublistView):
 volume_first_appearances_list_view = VolumeFirstAppearancesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class VolumeIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -342,14 +401,11 @@ class VolumeIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("volumes:list"), "text": "Volumes"},
-            {
-                "url": self.base_object.get_absolute_url(),
-                "text": f"{volume.name} ({volume.start_year})"
-            },
+            {"url": self.base_object.get_absolute_url(), "text": f"{volume.name} ({volume.start_year})"},
             {
                 "url": reverse_lazy("volumes:issue_detail", args=(volume.slug, issue.slug)),
-                "text": f"{volume.name} ({volume.start_year}) #{issue.number}"
-            }
+                "text": f"{volume.name} ({volume.start_year}) #{issue.number}",
+            },
         ]
 
 
@@ -373,31 +429,43 @@ class VolumeMarkFinishedView(View, LoginRequiredMixin):
 
             if self.request.user.is_authenticated:
                 total_count = volume.issues.count()
-                finished_count = volume.issues.annotate(
-                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-                ).exclude(finished_flg=0).count()
+                finished_count = (
+                    volume.issues.annotate(
+                        finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                    )
+                    .exclude(finished_flg=0)
+                    .count()
+                )
                 finished_percent = finished_count / total_count * 100
                 finished_stats = render_to_string(
                     "issues/blocks/finished_progress.html",
                     {
                         "finished_count": finished_count,
                         "finished_percent": finished_percent,
-                        "total_count": total_count
+                        "total_count": total_count,
                     },
-                    request=self.request
+                    request=self.request,
                 )
             else:
                 finished_stats = ""
 
-            return JsonResponse({"status": "success", "volume_name": f"{volume.name} ({volume.start_year})",
-                                 "date": formats.localize(datetime.date.today(), use_l10n=True),
-                                 "finished_stats": finished_stats
-                                 })
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "volume_name": f"{volume.name} ({volume.start_year})",
+                    "date": formats.localize(datetime.date.today(), use_l10n=True),
+                    "finished_stats": finished_stats,
+                }
+            )
         except IntegrityError:
             return JsonResponse({"status": "error", "message": "You already marked this issue as finished"})
         except Exception as err:
-            return JsonResponse({"status": "error", "message": "Unknown error, please contact administrator. \n"
-                                                               f"Error message: {err.args[0]}"})
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Unknown error, please contact administrator. \n" f"Error message: {err.args[0]}",
+                }
+            )
 
 
 volume_mark_finished_view = VolumeMarkFinishedView.as_view()

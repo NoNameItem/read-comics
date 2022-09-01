@@ -64,8 +64,9 @@ class MissingIssue(models.Model):
     story_arcs = models.ManyToManyField("story_arcs.StoryArc", related_name="missing_issues")
     teams = models.ManyToManyField("teams.Team", related_name="missing_issues")
     volume = models.ForeignKey("volumes.Volume", related_name="missing_issues", on_delete=models.CASCADE, null=True)
-    publisher = models.ForeignKey("publishers.Publisher", related_name="missing_issues", on_delete=models.CASCADE,
-                                  null=True)
+    publisher = models.ForeignKey(
+        "publishers.Publisher", related_name="missing_issues", on_delete=models.CASCADE, null=True
+    )
 
     skip = models.BooleanField(default=False)
     skip_date = models.DateField(null=True)
@@ -96,8 +97,9 @@ class MissingIssue(models.Model):
 
     @property
     def volume_space_path(self):
-        return f"{self.volume_name} [{self.volume_start_year}] " \
-               f"[{self.volume_comicvine_id}]".replace(":", "*_*").replace("/", "*@*")
+        return f"{self.volume_name} [{self.volume_start_year}] " f"[{self.volume_comicvine_id}]".replace(
+            ":", "*_*"
+        ).replace("/", "*@*")
 
     @property
     def issue_space_path(self):
@@ -106,10 +108,7 @@ class MissingIssue(models.Model):
     def ignore_publisher(self):
         p, _ = IgnoredPublisher.objects.get_or_create(
             comicvine_id=self.publisher_comicvine_id,
-            defaults={
-                "comicvine_url": self.publisher_comicvine_url,
-                "name": self.publisher_name
-            }
+            defaults={"comicvine_url": self.publisher_comicvine_url, "name": self.publisher_name},
         )
         MissingIssue.objects.filter(publisher_comicvine_id=p.comicvine_id).delete()
 
@@ -120,9 +119,9 @@ class MissingIssue(models.Model):
                 "publisher_name": self.publisher_name,
                 "comicvine_id": self.volume_comicvine_id,
                 "comicvine_url": self.volume_comicvine_url,
-                "name":  self.volume_name,
-                "start_year":  self.volume_start_year
-            }
+                "name": self.volume_name,
+                "start_year": self.volume_start_year,
+            },
         )
         MissingIssue.objects.filter(volume_comicvine_id=v.comicvine_id).delete()
 
@@ -139,8 +138,8 @@ class MissingIssue(models.Model):
                 "comicvine_url": self.comicvine_url,
                 "name": self.name,
                 "number": self.number,
-                "cover_date": self.cover_date
-            }
+                "cover_date": self.cover_date,
+            },
         )
         self.delete()
 
@@ -152,6 +151,4 @@ class WatchedItem(models.Model):
     content_object = GenericForeignKey("content_type", "object_id")
 
     class Meta:
-        unique_together = [
-            ["user", "content_type", "object_id"]
-        ]
+        unique_together = [["user", "content_type", "object_id"]]

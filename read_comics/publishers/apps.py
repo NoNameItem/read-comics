@@ -10,6 +10,5 @@ class PublishersConfig(AppConfig):
     def ready(self):
         model = self.get_model("Publisher")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.PublisherSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.PublisherSearchAdapter
         )

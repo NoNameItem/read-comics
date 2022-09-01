@@ -22,16 +22,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="issue",
             name="characters",
-            field=models.ManyToManyField(
-                related_name="issues", to="characters.Character"
-            ),
+            field=models.ManyToManyField(related_name="issues", to="characters.Character"),
         ),
         migrations.AddField(
             model_name="issue",
             name="characters_died",
-            field=models.ManyToManyField(
-                related_name="died_in_issues", to="characters.Character"
-            ),
+            field=models.ManyToManyField(related_name="died_in_issues", to="characters.Character"),
         ),
         migrations.AddField(
             model_name="issue",
@@ -41,16 +37,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="issue",
             name="disbanded_teams",
-            field=models.ManyToManyField(
-                related_name="disbanded_in_issues", to="teams.Team"
-            ),
+            field=models.ManyToManyField(related_name="disbanded_in_issues", to="teams.Team"),
         ),
         migrations.AddField(
             model_name="issue",
             name="locations",
-            field=models.ManyToManyField(
-                related_name="issues", to="locations.Location"
-            ),
+            field=models.ManyToManyField(related_name="issues", to="locations.Location"),
         ),
         migrations.AddField(
             model_name="issue",
@@ -60,9 +52,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="issue",
             name="story_arcs",
-            field=models.ManyToManyField(
-                related_name="issues", to="story_arcs.StoryArc"
-            ),
+            field=models.ManyToManyField(related_name="issues", to="story_arcs.StoryArc"),
         ),
         migrations.AddField(
             model_name="issue",
@@ -95,23 +85,17 @@ class Migration(migrations.Migration):
                 ("role", models.CharField(max_length=100, null=True)),
                 (
                     "issue",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="issues.Issue"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="issues.Issue"),
                 ),
                 (
                     "person",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="people.Person"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="people.Person"),
                 ),
             ],
         ),
         migrations.AddField(
             model_name="issue",
             name="authors",
-            field=models.ManyToManyField(
-                through="issues.IssuePerson", to="people.Person"
-            ),
+            field=models.ManyToManyField(through="issues.IssuePerson", to="people.Person"),
         ),
     ]

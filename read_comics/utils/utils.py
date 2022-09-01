@@ -31,10 +31,7 @@ def get_elided_pages_list(page):
 
 def get_first_page_old(context_name, queryset):
     context = {}
-    pages = Paginator(
-        queryset,
-        30
-    )
+    pages = Paginator(queryset, 30)
     context[f"{context_name}_first_page"] = pages.page(1)
     context[f"{context_name}_pages"] = get_elided_pages_list(pages.page(1))
     return context
@@ -42,17 +39,13 @@ def get_first_page_old(context_name, queryset):
 
 def get_first_page(queryset):
     context = {}
-    pages = Paginator(
-        queryset,
-        30
-    )
+    pages = Paginator(queryset, 30)
     context["first_page"] = pages.page(1)
     context["pages"] = get_elided_pages_list(pages.page(1))
     return context
 
 
 class WrappedQuerySet:
-
     @staticmethod
     def wrapper(obj):
         raise NotImplementedError

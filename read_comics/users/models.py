@@ -27,8 +27,7 @@ class User(AbstractUser):
     # around the globe.
     name = models.CharField(_("Full name"), blank=True, max_length=255)
     gender = models.CharField(_("Gender"), max_length=1, choices=Gender.choices, default=Gender.UNICORN)
-    _user_image = ThumbnailImageField(null=True, upload_to=get_user_image_name,
-                                      thumb_width=40)
+    _user_image = ThumbnailImageField(null=True, upload_to=get_user_image_name, thumb_width=40)
     bio = models.CharField(_("Bio"), blank=True, max_length=1000)
     birth_date = models.DateField(_("Birth date"), null=True, blank=True)
     show_email = models.BooleanField(_("Show email in profile"), default=False)
@@ -67,19 +66,17 @@ class User(AbstractUser):
         super(User, self).save(*args, **kwargs)
 
     def get_started_and_not_finished(self, model):
-        return model.objects.was_matched().annotate(
-            issue_count=Count("issues", distinct=True)
-        ).select_related(
-            "publisher"
-        ).annotate(
-            finished_count=Count("issues", filter=Q(issues__finished_users=self)),
-            max_finished_date=Max("issues__finished__finish_date", filter=Q(issues__finished__user=self))
-        ).filter(
-            finished_count__gte=1
-        ).exclude(
-            finished_count=F("issue_count")
-        ).order_by(
-            "-max_finished_date"
+        return (
+            model.objects.was_matched()
+            .annotate(issue_count=Count("issues", distinct=True))
+            .select_related("publisher")
+            .annotate(
+                finished_count=Count("issues", filter=Q(issues__finished_users=self)),
+                max_finished_date=Max("issues__finished__finish_date", filter=Q(issues__finished__user=self)),
+            )
+            .filter(finished_count__gte=1)
+            .exclude(finished_count=F("issue_count"))
+            .order_by("-max_finished_date")
         )
 
     @property

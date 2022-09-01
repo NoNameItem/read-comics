@@ -10,6 +10,5 @@ class CharactersConfig(AppConfig):
     def ready(self):
         model = self.get_model("Character")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.CharacterSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.CharacterSearchAdapter
         )

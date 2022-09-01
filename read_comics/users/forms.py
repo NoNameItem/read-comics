@@ -43,7 +43,6 @@ class ModelFormRequiredMixin:  # noqa: SIM119
 
 
 class UserInfoForm(ModelFormRequiredMixin, ModelForm):
-
     class Meta:
         model = User
         fields = ["name", "gender", "birth_date", "show_email", "bio", "email"]
@@ -69,8 +68,8 @@ class UserInfoForm(ModelFormRequiredMixin, ModelForm):
         HTML("<hr>"),
         Div(
             Submit(name="info", value="Save", css_class="btn btn-success"),
-            css_class="d-flex flex-sm-row flex-column justify-content-end"
-        )
+            css_class="d-flex flex-sm-row flex-column justify-content-end",
+        ),
     )
 
 
@@ -78,9 +77,7 @@ class LoginForm(allauth.account.forms.LoginForm):
     def __init__(self, *args, **kwargs):
         super(LoginForm, self).__init__(*args, **kwargs)
 
-        self.fields["password"].widget.attrs.update({
-            "autocomplete": "current-password"
-        })
+        self.fields["password"].widget.attrs.update({"autocomplete": "current-password"})
         self.fields["remember"].label = _("<small>Remember Me</small>")
 
         self.helper = DefaultFormHelper()
@@ -90,21 +87,21 @@ class LoginForm(allauth.account.forms.LoginForm):
             Field("login", wrapper_class="mb-50"),
             Field("password"),
             Div(
-                Div(
-                    Field("remember", wrapper_class="checkbox-sm"),
-                    css_class="text-left"
-                ),
+                Div(Field("remember", wrapper_class="checkbox-sm"), css_class="text-left"),
                 HTML(
                     """<div class="text-right">
                         <a href="{% url "account_reset_password" %}" class="card-link">
                             <small>Forgot Password?</small>
                         </a>
-                    </div>"""),
-                css_class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center"
+                    </div>"""
+                ),
+                css_class="form-group d-flex flex-md-row flex-column justify-content-between align-items-center",
             ),
-            HTML("""<button type="submit" class="btn btn-success glow w-100 position-relative">
+            HTML(
+                """<button type="submit" class="btn btn-success glow w-100 position-relative">
                     Login<i id="icon-arrow" class="bx bx-right-arrow-alt"></i>
-                    </button>""")
+                    </button>"""
+            ),
         )
 
 
@@ -118,11 +115,13 @@ class ResetPasswordForm(allauth.account.forms.ResetPasswordForm):
 
         self.helper.layout = Layout(
             Field("email", wrapper_class="mb-2"),
-            HTML("""
+            HTML(
+                """
             <button type="submit" class="btn btn-success glow position-relative w-100">
             RESET PASSWORD<i id="icon-arrow" class="bx bx-right-arrow-alt"></i>
             </button>
-            """)
+            """
+            ),
         )
 
 
@@ -140,8 +139,8 @@ class ChangePasswordForm(allauth.account.forms.ChangePasswordForm):
             HTML("<hr>"),
             Div(
                 Submit(name="password", value="Save", css_class="btn btn-success"),
-                css_class="d-flex flex-sm-row flex-column justify-content-end"
-            )
+                css_class="d-flex flex-sm-row flex-column justify-content-end",
+            ),
         )
 
 
@@ -153,21 +152,19 @@ class ResetPasswordKeyForm(allauth.account.forms.ResetPasswordKeyForm):
         self.helper.attrs = {"novalidate": "novalidate"}
         self.helper.form_class = "mb-2"
 
-        self.fields["password1"].widget.attrs.update({
-            "autocomplete": "new-password"
-        })
-        self.fields["password2"].widget.attrs.update({
-            "autocomplete": "new-password"
-        })
+        self.fields["password1"].widget.attrs.update({"autocomplete": "new-password"})
+        self.fields["password2"].widget.attrs.update({"autocomplete": "new-password"})
 
         self.helper.layout = Layout(
             Field("password1"),
             Field("password2", wrapper_class="mb-2"),
-            HTML("""
+            HTML(
+                """
             <button type="submit" class="btn btn-success glow position-relative w-100">
             Reset my password<i id="icon-arrow" class="bx bx-right-arrow-alt"></i>
             </button>
-            """)
+            """
+            ),
         )
 
 
@@ -179,26 +176,22 @@ class SignupForm(allauth.account.forms.SignupForm):
         self.helper.attrs = {"novalidate": "novalidate"}
 
         # self.fields["username"].widget.attrs.pop("autofocus")
-        self.fields["username"].widget.attrs.update({
-            "autocomplete": "username"
-        })
-        self.fields["password1"].widget.attrs.update({
-            "autocomplete": "new-password"
-        })
-        self.fields["password2"].widget.attrs.update({
-            "autocomplete": "new-password"
-        })
+        self.fields["username"].widget.attrs.update({"autocomplete": "username"})
+        self.fields["password1"].widget.attrs.update({"autocomplete": "new-password"})
+        self.fields["password2"].widget.attrs.update({"autocomplete": "new-password"})
 
         self.helper.layout = Layout(
             Field("username", wrapper_class="mb-50"),
             Field("email", wrapper_class="mb-50"),
             Field("password1", wrapper_class="mb-50"),
             Field("password2", wrapper_class="mb-2"),
-            HTML("""
+            HTML(
+                """
             <button type="submit" class="btn btn-success glow position-relative w-100">
             SIGN UP<i id="icon-arrow" class="bx bx-right-arrow-alt"></i>
             </button>
-            """)
+            """
+            ),
         )
 
 
@@ -214,9 +207,11 @@ class SocialSignupForm(allauth.socialaccount.forms.SignupForm):
         self.helper.layout = Layout(
             Field("username", wrapper_class="mb-50"),
             Field("email", wrapper_class="mb-50"),
-            HTML("""
+            HTML(
+                """
                     <button type="submit" class="btn btn-success glow position-relative w-100">
                     SIGN UP<i id="icon-arrow" class="bx bx-right-arrow-alt"></i>
                     </button>
-                    """)
+                    """
+            ),
         )

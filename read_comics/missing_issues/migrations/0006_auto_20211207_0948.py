@@ -6,22 +6,22 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0005_auto_20211207_0939'),
+        ("missing_issues", "0005_auto_20211207_0939"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='IgnoredPublisher',
+            name="IgnoredPublisher",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('comicvine_id', models.IntegerField(unique=True)),
-                ('comicvine_url', models.URLField(max_length=1000, null=True)),
-                ('name', models.TextField()),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("comicvine_id", models.IntegerField(unique=True)),
+                ("comicvine_url", models.URLField(max_length=1000, null=True)),
+                ("name", models.TextField()),
             ],
         ),
         migrations.AddField(
-            model_name='missingissue',
-            name='publisher_comicvine_url',
+            model_name="missingissue",
+            name="publisher_comicvine_url",
             field=models.URLField(max_length=1000, null=True),
         ),
     ]

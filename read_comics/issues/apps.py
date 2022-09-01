@@ -10,6 +10,5 @@ class IssuesConfig(AppConfig):
     def ready(self):
         model = self.get_model("Issue")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.IssueSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.IssueSearchAdapter
         )

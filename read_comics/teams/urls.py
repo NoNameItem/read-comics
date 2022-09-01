@@ -28,5 +28,5 @@ urlpatterns = [
     path("<str:slug>/volumes/", view=team_volumes_list_view, name="volumes_list"),
     path("<str:slug>/friends/", view=team_friends_list_view, name="friends_list"),
     path("<str:slug>/characters/", view=team_characters_list_view, name="characters_list"),
-    path("<str:slug>/disbanded_in/", view=team_disbanded_in_issues_list_view, name="disbanded_in_issues_list")
+    path("<str:slug>/disbanded_in/", view=team_disbanded_in_issues_list_view, name="disbanded_in_issues_list"),
 ]

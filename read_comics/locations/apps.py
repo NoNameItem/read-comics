@@ -10,6 +10,5 @@ class LocationsConfig(AppConfig):
     def ready(self):
         model = self.get_model("Location")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.LocationSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.LocationSearchAdapter
         )

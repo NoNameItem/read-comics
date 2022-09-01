@@ -34,28 +34,33 @@ from .models import StoryArc
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class StoryArcsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                        ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class StoryArcsListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "story_arcs"
     template_name = "story_arcs/list.html"
     breadcrumb = [{"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = StoryArc.objects.was_matched().annotate(
-        volume_count=Count("issues__volume", distinct=True)
-    ).annotate(
-        issue_count=Count("issues", distinct=True)
-    ).select_related("publisher")
+    queryset = (
+        StoryArc.objects.was_matched()
+        .annotate(volume_count=Count("issues__volume", distinct=True))
+        .annotate(issue_count=Count("issues", distinct=True))
+        .select_related("publisher")
+    )
     active_menu_item = "story_arcs"
 
     def get_queryset(self):
         q = super(StoryArcsListView, self).get_queryset()
         if self.request.user.is_authenticated:
-            return q.annotate(
-                finished_count=Count("issues", filter=Q(issues__finished_users=self.request.user))
-            )
+            return q.annotate(finished_count=Count("issues", filter=Q(issues__finished_users=self.request.user)))
         return q
 
 
@@ -66,7 +71,7 @@ class StoryArcsContinueReadingView(StoryArcsListView):
     template_name = "story_arcs/continue_reading.html"
     breadcrumb = [
         {"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"},
-        {"url": reverse_lazy("story_arcs:continue_reading"), "text": "Continue reading"}
+        {"url": reverse_lazy("story_arcs:continue_reading"), "text": "Continue reading"},
     ]
 
     def get_queryset(self):
@@ -83,7 +88,12 @@ class StoryArcsContinueReadingView(StoryArcsListView):
 story_arcs_continue_reading_view = StoryArcsContinueReadingView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = StoryArc
     queryset = StoryArc.objects.select_related("publisher")
@@ -97,11 +107,7 @@ class StoryArcDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bre
     def get_breadcrumb(self):
         story_arc = self.object
 
-        return [
-            {"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"},
-            {"url": "#",
-             "text": story_arc.name}
-        ]
+        return [{"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"}, {"url": "#", "text": story_arc.name}]
 
     def get_context_data(self, **kwargs):
         context = super(StoryArcDetailView, self).get_context_data(**kwargs)
@@ -155,12 +161,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "story_arcs/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
@@ -170,12 +181,14 @@ class StoryArcIssuesListView(BaseSublistView):
 story_arc_issues_list_view = StoryArcIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_volumes_queryset)
     parent_model = StoryArc
     get_queryset_user_param = True
@@ -184,11 +197,14 @@ class StoryArcVolumesListView(BaseSublistView):
 story_arc_volumes_list_view = StoryArcVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcCharactersListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getCharactersPage"
-    }
+    extra_context = {"get_page_function": "getCharactersPage"}
     get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_characters_queryset)
     parent_model = StoryArc
 
@@ -197,7 +213,12 @@ story_arc_characters_list_view = StoryArcCharactersListView.as_view()
 
 
 # noinspection DuplicatedCode
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcDiedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
@@ -209,7 +230,12 @@ class StoryArcDiedListView(BaseSublistView):
 story_arc_died_list_view = StoryArcDiedListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcConceptsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getConceptsPage",
@@ -221,7 +247,12 @@ class StoryArcConceptsListView(BaseSublistView):
 story_arc_concepts_list_view = StoryArcConceptsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcLocationsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getLocationsPage",
@@ -233,7 +264,12 @@ class StoryArcLocationsListView(BaseSublistView):
 story_arc_locations_list_view = StoryArcLocationsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcObjectsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getObjectsPage",
@@ -245,7 +281,12 @@ class StoryArcObjectsListView(BaseSublistView):
 story_arc_objects_list_view = StoryArcObjectsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
@@ -257,7 +298,12 @@ class StoryArcAuthorsListView(BaseSublistView):
 story_arc_authors_list_view = StoryArcAuthorsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
@@ -269,7 +315,12 @@ class StoryArcTeamsListView(BaseSublistView):
 story_arc_teams_list_view = StoryArcTeamsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcDisbandedListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDisbandedPage",
@@ -281,12 +332,14 @@ class StoryArcDisbandedListView(BaseSublistView):
 story_arc_disbanded_list_view = StoryArcDisbandedListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcFirstAppearancesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getFirstAppearancesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getFirstAppearancesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.StoryArcSublistQuerysets().get_first_appearance_queryset)
     parent_model = StoryArc
 
@@ -294,7 +347,12 @@ class StoryArcFirstAppearancesListView(BaseSublistView):
 story_arc_first_appearances_list_view = StoryArcFirstAppearancesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class StoryArcIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -314,14 +372,11 @@ class StoryArcIssueDetailView(IssueDetailView):
     def get_breadcrumb(self):
         return [
             {"url": reverse_lazy("story_arcs:list"), "text": "Story Arcs"},
-            {
-                "url": self.base_object.get_absolute_url(),
-                "text": self.base_object.name
-            },
+            {"url": self.base_object.get_absolute_url(), "text": self.base_object.name},
             {
                 "url": reverse_lazy("story_arcs:issue_detail", args=(self.base_object.slug, self.object.slug)),
-                "text": f"{self.object.volume.name} ({self.object.volume.start_year}) #{self.object.number}"
-            }
+                "text": f"{self.object.volume.name} ({self.object.volume.start_year}) #{self.object.number}",
+            },
         ]
 
 
@@ -345,31 +400,43 @@ class StoryArcMarkFinishedView(View, LoginRequiredMixin):
 
             if self.request.user.is_authenticated:
                 total_count = story_arc.issues.count()
-                finished_count = story_arc.issues.annotate(
-                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-                ).exclude(finished_flg=0).count()
+                finished_count = (
+                    story_arc.issues.annotate(
+                        finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                    )
+                    .exclude(finished_flg=0)
+                    .count()
+                )
                 finished_percent = finished_count / total_count * 100
                 finished_stats = render_to_string(
                     "issues/blocks/finished_progress.html",
                     {
                         "finished_count": finished_count,
                         "finished_percent": finished_percent,
-                        "total_count": total_count
+                        "total_count": total_count,
                     },
-                    request=self.request
+                    request=self.request,
                 )
             else:
                 finished_stats = ""
 
-            return JsonResponse({"status": "success", "story_arc_name": story_arc.name,
-                                 "date": formats.localize(datetime.date.today(), use_l10n=True),
-                                 "finished_stats": finished_stats
-                                 })
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "story_arc_name": story_arc.name,
+                    "date": formats.localize(datetime.date.today(), use_l10n=True),
+                    "finished_stats": finished_stats,
+                }
+            )
         except IntegrityError:
             return JsonResponse({"status": "error", "message": "You already marked this issue as finished"})
         except Exception as err:
-            return JsonResponse({"status": "error", "message": "Unknown error, please contact administrator. \n"
-                                                               f"Error message:{err.args[0]}"})
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Unknown error, please contact administrator. \n" f"Error message:{err.args[0]}",
+                }
+            )
 
 
 story_arc_mark_finished_view = StoryArcMarkFinishedView.as_view()

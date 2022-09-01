@@ -15,9 +15,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="issue",
             name="authors",
-            field=models.ManyToManyField(
-                related_name="issues", through="issues.IssuePerson", to="people.Person"
-            ),
+            field=models.ManyToManyField(related_name="issues", through="issues.IssuePerson", to="people.Person"),
         ),
         migrations.AlterField(
             model_name="issue",

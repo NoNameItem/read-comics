@@ -17,16 +17,18 @@ class PublisherSublistQuerysets(IssuesSublistQueryset, VolumesSublistQueryset):
 
     @staticmethod
     def _get_volumes_sublist(obj):
-        return Volume.objects.filter(
-            publisher=obj
-        ).filter(comicvine_status="MATCHED")
+        return Volume.objects.filter(publisher=obj).filter(comicvine_status="MATCHED")
 
     @staticmethod
     def get_characters_queryset(publisher):
-        return Character.objects.filter(publisher=publisher).annotate(
-            issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
-            desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
-        ).order_by("-issues_count", "name", "id")
+        return (
+            Character.objects.filter(publisher=publisher)
+            .annotate(
+                issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
+                desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField()),
+            )
+            .order_by("-issues_count", "name", "id")
+        )
 
     @staticmethod
     def get_story_arcs_queryset(publisher):
@@ -34,7 +36,11 @@ class PublisherSublistQuerysets(IssuesSublistQueryset, VolumesSublistQueryset):
 
     @staticmethod
     def get_teams_queryset(publisher):
-        return Team.objects.filter(publisher=publisher).annotate(
-            issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
-            desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField())
-        ).order_by("-issues_count", "name", "id")
+        return (
+            Team.objects.filter(publisher=publisher)
+            .annotate(
+                issues_count=Count("issues", filter=Q(issues__volume__publisher=publisher)),
+                desc=Concat(Value("Appeared in "), F("issues_count"), Value(" issue(s)"), output_field=TextField()),
+            )
+            .order_by("-issues_count", "name", "id")
+        )

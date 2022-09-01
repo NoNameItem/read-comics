@@ -67,10 +67,13 @@ issues_refresh_task = celery_app.register_task(IssuesRefreshTask())
 def purge_deleted():
     model = apps.get_model("issues", "Issue")
     session = boto3.session.Session()
-    s3 = session.resource("s3", region_name=settings.DO_SPACE_DATA_REGION,
-                          endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
-                          aws_access_key_id=settings.DO_SPACE_DATA_KEY,
-                          aws_secret_access_key=settings.DO_SPACE_DATA_SECRET)
+    s3 = session.resource(
+        "s3",
+        region_name=settings.DO_SPACE_DATA_REGION,
+        endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
+        aws_access_key_id=settings.DO_SPACE_DATA_KEY,
+        aws_secret_access_key=settings.DO_SPACE_DATA_SECRET,
+    )
     bucket = s3.Bucket(settings.DO_SPACE_DATA_BUCKET)
     objs = [x.key for x in bucket.objects.all()]
     model.objects.exclude(space_key__in=objs).delete()

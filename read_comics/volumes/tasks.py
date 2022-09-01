@@ -41,9 +41,7 @@ class VolumesSpaceTask(BaseSpaceTask):
         processed_keys = []
         for volume, _ in self.s3objects:
             new_issues = [
-                x
-                for x in self.s3result
-                if x.key.startswith(volume) and x.key not in issues_keys and x.key != volume
+                x for x in self.s3result if x.key.startswith(volume) and x.key not in issues_keys and x.key != volume
             ]
             if not new_issues:
                 processed_keys.append(volume)

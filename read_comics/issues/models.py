@@ -25,9 +25,18 @@ from read_comics.volumes.models import Volume
 logger = getLogger(__name__ + ".Issue")
 
 
-@methods_logged(logger, methods=["fill_from_comicvine", "process_document", "get_field_mapping",
-                                 "_fill_field_from_document", "_set_non_m2m_from_document", "_get_value_by_path",
-                                 "_set_m2m_from_document"])
+@methods_logged(
+    logger,
+    methods=[
+        "fill_from_comicvine",
+        "process_document",
+        "get_field_mapping",
+        "_fill_field_from_document",
+        "_set_non_m2m_from_document",
+        "_get_value_by_path",
+        "_set_m2m_from_document",
+    ],
+)
 class Issue(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_issues"
     MONGO_PROJECTION = {
@@ -43,10 +52,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "has_staff_review": 0,
     }
     FIELD_MAPPING = {
-        "html_description": {
-            "path": "description",
-            "method": "get_description"
-        },
+        "html_description": {"path": "description", "method": "get_description"},
         "number": "issue_number",
         "cover_date": {
             "path": "cover_date",
@@ -56,55 +62,27 @@ class Issue(ImageMixin, ComicvineSyncModel):
             "path": "store_date",
             "method": "convert_date",
         },
-        "characters": {
-            "path": "character_credits",
-            "method": "get_character"
-        },
-        "characters_died": {
-            "path": "character_died_in",
-            "method": "get_character"
-        },
-        "concepts": {
-            "path": "concept_credits",
-            "method": "get_concept"
-        },
-        "locations": {
-            "path": "location_credits",
-            "method": "get_location"
-        },
-        "objects_in": {
-            "path": "object_credits",
-            "method": "get_object"
-        },
-        "people": {
-            "path": "person_credits",
-            "method": "get_author"
-        },
-        "story_arcs": {
-            "path": "story_arc_credits",
-            "method": "get_story_arc"
-        },
-        "teams": {
-            "path": "team_credits",
-            "method": "get_team"
-        },
-        "disbanded_teams": {
-            "path": "team_disbanded_in",
-            "method": "get_team"
-        },
-        "volume": {
-            "path": "volume",
-            "method": "get_volume"
-        },
+        "characters": {"path": "character_credits", "method": "get_character"},
+        "characters_died": {"path": "character_died_in", "method": "get_character"},
+        "concepts": {"path": "concept_credits", "method": "get_concept"},
+        "locations": {"path": "location_credits", "method": "get_location"},
+        "objects_in": {"path": "object_credits", "method": "get_object"},
+        "people": {"path": "person_credits", "method": "get_author"},
+        "story_arcs": {"path": "story_arc_credits", "method": "get_story_arc"},
+        "teams": {"path": "team_credits", "method": "get_team"},
+        "disbanded_teams": {"path": "team_disbanded_in", "method": "get_team"},
+        "volume": {"path": "volume", "method": "get_volume"},
     }
     COMICVINE_INFO_TASK = issue_comicvine_info_task
-    COMICVINE_API_URL = "https://comicvine.gamespot.com/api/issue/4000-{id}?" \
-                        "format=json&" \
-                        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image," \
-                        "issue_number,cover_date,store_date,character_credits,character_died_in,concept_credits," \
-                        "location_credits,object_credits,person_credits,story_arc_credits,team_credits," \
-                        "team_disbanded_in,volume&" \
-                        "api_key={api_key}"
+    COMICVINE_API_URL = (
+        "https://comicvine.gamespot.com/api/issue/4000-{id}?"
+        "format=json&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
+        "issue_number,cover_date,store_date,character_credits,character_died_in,concept_credits,"
+        "location_credits,object_credits,person_credits,story_arc_credits,team_credits,"
+        "team_disbanded_in,volume&"
+        "api_key={api_key}"
+    )
 
     logger = logger
 
@@ -140,22 +118,15 @@ class Issue(ImageMixin, ComicvineSyncModel):
     volume = models.ForeignKey("volumes.Volume", related_name="issues", on_delete=models.CASCADE, null=True)
 
     finished_users = models.ManyToManyField(
-        settings.AUTH_USER_MODEL,
-        through="FinishedIssue",
-        related_name="finished_issues"
+        settings.AUTH_USER_MODEL, through="FinishedIssue", related_name="finished_issues"
     )
 
     slug = AutoSlugField(
-        populate_from=[
-            "get_publisher_name",
-            "get_volume_name",
-            "get_volume_start_year",
-            "number",
-            "name"],
+        populate_from=["get_publisher_name", "get_volume_name", "get_volume_start_year", "number", "name"],
         overwrite=True,
         slugify_function=slugify_function,
         max_length=1000,
-        unique=True
+        unique=True,
     )
 
     tracker = FieldTracker()
@@ -185,12 +156,9 @@ class Issue(ImageMixin, ComicvineSyncModel):
         name = comicvine_author.get("name", str(comicvine_id))
         role = comicvine_author.get("role")
         from read_comics.people.models import Person
+
         person, created, matched = Person.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-                "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return person, {"role": role}
 
@@ -233,16 +201,19 @@ class Issue(ImageMixin, ComicvineSyncModel):
         description = text
         if description:
             description = re.sub(r"<(a|/a).*?>", "", description)
-            description = re.sub(r"<h4>List of covers and their creators:<\/h4><table[^>]*>.*?<\/table>", "",
-                                 description)
+            description = re.sub(
+                r"<h4>List of covers and their creators:<\/h4><table[^>]*>.*?<\/table>", "", description
+            )
         return description
 
     def get_full_name(self, volume_name=None, volume_start_year=None):
         if not self.volume:
             return "unknown"
         if self.name:
-            return f"{volume_name or self.volume.name} ({volume_start_year or self.volume.start_year}) " \
-                   f"#{self.number} {self.name}"
+            return (
+                f"{volume_name or self.volume.name} ({volume_start_year or self.volume.start_year}) "
+                f"#{self.number} {self.name}"
+            )
         else:
             return f"{volume_name or self.volume.name} ({volume_start_year or self.volume.start_year}) #{self.number}"
 
@@ -254,11 +225,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
             lowercase=False,
             hexadecimal=False,
             regex_pattern=re.compile(r"[^-a-zA-Z0-9.#*,;]+"),
-            replacements=(
-                ("/", "*"),
-                (":", "*"),
-                ("½", ".5")
-            )
+            replacements=(("/", "*"), (":", "*"), ("½", ".5")),
         )
         s3_client = boto3.client(
             "s3",
@@ -270,18 +237,19 @@ class Issue(ImageMixin, ComicvineSyncModel):
         s3_client.copy_object(
             Bucket=settings.DO_SPACE_DATA_BUCKET,
             Key=self.space_key,
-            CopySource={"Bucket": settings.DO_SPACE_DATA_BUCKET,
-                        "Key": self.space_key},
-            ContentDisposition='attachment; filename=\"' + filename_cleaned + '\"',
+            CopySource={"Bucket": settings.DO_SPACE_DATA_BUCKET, "Key": self.space_key},
+            ContentDisposition='attachment; filename="' + filename_cleaned + '"',
             MetadataDirective="REPLACE",
-            ACL="public-read"
+            ACL="public-read",
         )
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.comicvine_status == self.ComicvineStatus.MATCHED:
-            if self.tracker.has_changed("number") \
-               or self.tracker.has_changed("name") \
-               or self.tracker.has_changed("volume_id"):
+            if (
+                self.tracker.has_changed("number")
+                or self.tracker.has_changed("name")
+                or self.tracker.has_changed("volume_id")
+            ):
                 self.update_do_metadata()
             self.set_numerical_number()
 
@@ -291,6 +259,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     def get_absolute_url(self):
         from django.urls import reverse
+
         return reverse("issues:detail", args=[self.slug])
 
     def set_numerical_number(self):

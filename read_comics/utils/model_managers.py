@@ -8,12 +8,7 @@ logger = logging.getLogger(__name__)
 
 class ComicvineSyncQuerySet(models.QuerySet):
     def get_or_create_from_comicvine(
-        self,
-        comicvine_id,
-        defaults=None,
-        force_refresh=False,
-        follow_m2m=True,
-        delay=False
+        self, comicvine_id, defaults=None, force_refresh=False, follow_m2m=True, delay=False
     ):
         """
         Creates instance with specified comicvine_id and tries to populate fields with information from comicvine dump.
@@ -39,8 +34,9 @@ class ComicvineSyncQuerySet(models.QuerySet):
             instance = self.get(comicvine_id=comicvine_id)
             created = False
         logger.debug(f"Found: {not created}")
-        if (created or (force_refresh and not instance.comicvine_actual)) \
-           and (instance.comicvine_status != instance.ComicvineStatus.QUEUED):
+        if (created or (force_refresh and not instance.comicvine_actual)) and (
+            instance.comicvine_status != instance.ComicvineStatus.QUEUED
+        ):
             logger.debug("Refreshing from comicvine")
             instance.fill_from_comicvine(follow_m2m, delay)
             instance.save()

@@ -29,12 +29,7 @@ class BaseMissingIssuesTask(Task):
 
     MONGO_COLLECTION = "comicvine_issues"
 
-    LOOKUP = {
-        "from": "comicvine_volumes",
-        "localField": "volume.id",
-        "foreignField": "id",
-        "as": "volume"
-    }
+    LOOKUP = {"from": "comicvine_volumes", "localField": "volume.id", "foreignField": "id", "as": "volume"}
 
     PROJECT = {
         "_id": 0,
@@ -43,37 +38,13 @@ class BaseMissingIssuesTask(Task):
         "name": 1,
         "number": "$issue_number",
         "cover_date": 1,
-        "volume_comicvine_id": {
-            "$arrayElemAt": [
-                "$volume.id", 0
-            ]
-        },
-        "volume_comicvine_url": {
-            "$arrayElemAt": [
-                "$volume.site_detail_url", 0
-            ]
-        },
-        "volume_name": {
-            "$arrayElemAt": [
-                "$volume.name", 0
-            ]
-        },
-        "volume_start_year": {
-            "$arrayElemAt": [
-                "$volume.start_year", 0
-            ]
-        },
-        "publisher_name": {
-            "$arrayElemAt": [
-                "$volume.publisher.name", 0
-            ]
-        },
-        "publisher_comicvine_id": {
-            "$arrayElemAt": [
-                "$volume.publisher.id", 0
-            ]
-        },
-        "publisher_comicvine_url": {"$arrayElemAt": ["$publisher.site_detail_url", 0]}
+        "volume_comicvine_id": {"$arrayElemAt": ["$volume.id", 0]},
+        "volume_comicvine_url": {"$arrayElemAt": ["$volume.site_detail_url", 0]},
+        "volume_name": {"$arrayElemAt": ["$volume.name", 0]},
+        "volume_start_year": {"$arrayElemAt": ["$volume.start_year", 0]},
+        "publisher_name": {"$arrayElemAt": ["$volume.publisher.name", 0]},
+        "publisher_comicvine_id": {"$arrayElemAt": ["$volume.publisher.id", 0]},
+        "publisher_comicvine_url": {"$arrayElemAt": ["$publisher.site_detail_url", 0]},
     }
 
     FILTER_PATH = None
@@ -101,8 +72,7 @@ class BaseMissingIssuesTask(Task):
                 {self.FILTER_PATH: obj.comicvine_id},
                 {"id": {"$not": {"$in": self.get_existing_issues(obj)}}},
                 {"id": {"$not": {"$in": self.get_ignored_issues()}}},
-
-                {"volume.id": {"$not": {"$in": self.get_ignored_volumes()}}}
+                {"volume.id": {"$not": {"$in": self.get_ignored_volumes()}}},
             ]
         }
 
@@ -111,37 +81,29 @@ class BaseMissingIssuesTask(Task):
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate([
-            {
-                "$match": self.get_match(obj)
-            }, {
-                "$lookup": self.LOOKUP
-            },
-            {
-                "$match": {
-                    "volume.publisher.id": {"$not": {"$in": self.get_ignored_publishers()}}
-                }
-            },
-            {
-                "$lookup": {
-                    "from": "comicvine_publishers",
-                    "localField": "volume.publisher.id",
-                    "foreignField": "id",
-                    "as": "publisher"
-                }
-            },
-            {
-                "$project": self.PROJECT
-            }
-        ])
+        return collection.aggregate(
+            [
+                {"$match": self.get_match(obj)},
+                {"$lookup": self.LOOKUP},
+                {"$match": {"volume.publisher.id": {"$not": {"$in": self.get_ignored_publishers()}}}},
+                {
+                    "$lookup": {
+                        "from": "comicvine_publishers",
+                        "localField": "volume.publisher.id",
+                        "foreignField": "id",
+                        "as": "publisher",
+                    }
+                },
+                {"$project": self.PROJECT},
+            ]
+        )
 
     @staticmethod
     def get_or_create_missing_issue(mongo_missing_issue):
         comicvine_id = mongo_missing_issue.pop("comicvine_id")
         try:
             missing_issue, _ = MissingIssue.objects.get_or_create(
-                comicvine_id=comicvine_id,
-                defaults=mongo_missing_issue
+                comicvine_id=comicvine_id, defaults=mongo_missing_issue
             )
         except IntegrityError:
             missing_issue = MissingIssue.objects.get(comicvine_id=comicvine_id)
@@ -180,8 +142,7 @@ class BaseMissingIssuesTask(Task):
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
-            issue_count=Count("issues", distinct=True),
-            watchers_count=Count("watchers", distinct=True)
+            issue_count=Count("issues", distinct=True), watchers_count=Count("watchers", distinct=True)
         ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
 
     @staticmethod
@@ -215,8 +176,7 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
-            issue_count=Count("volumes__issues", distinct=True),
-            watchers_count=Count("watchers", distinct=True)
+            issue_count=Count("volumes__issues", distinct=True), watchers_count=Count("watchers", distinct=True)
         ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
 
     @staticmethod
@@ -228,25 +188,21 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate([
-            {
-                "$lookup": self.LOOKUP
-            },
-            {
-                "$match": self.get_match(obj)
-            },
-            {
-                "$lookup": {
-                    "from": "comicvine_publishers",
-                    "localField": "volume.publisher.id",
-                    "foreignField": "id",
-                    "as": "publisher"
-                }
-            },
-            {
-                "$project": self.PROJECT
-            }
-        ])
+        return collection.aggregate(
+            [
+                {"$lookup": self.LOOKUP},
+                {"$match": self.get_match(obj)},
+                {
+                    "$lookup": {
+                        "from": "comicvine_publishers",
+                        "localField": "volume.publisher.id",
+                        "foreignField": "id",
+                        "as": "publisher",
+                    }
+                },
+                {"$project": self.PROJECT},
+            ]
+        )
 
     @staticmethod
     def get_existing_issues(obj):

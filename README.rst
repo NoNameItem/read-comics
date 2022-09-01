@@ -11,7 +11,8 @@ Explore wonderfull world of pictures with words
 .. image:: https://api.codeclimate.com/v1/badges/a93bd4d10b8bf01d10a8/maintainability
    :target: https://codeclimate.com/github/NoNameItem/read-comics/maintainability
    :alt: Maintainability
-
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
 
 Settings
 --------

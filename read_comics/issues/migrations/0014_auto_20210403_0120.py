@@ -28,9 +28,7 @@ class Migration(migrations.Migration):
                 ("finish_date", models.DateField(auto_now=True)),
                 (
                     "issue",
-                    models.ForeignKey(
-                        on_delete=django.db.models.deletion.CASCADE, to="issues.issue"
-                    ),
+                    models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to="issues.issue"),
                 ),
                 (
                     "user",

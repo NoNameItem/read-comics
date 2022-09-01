@@ -17,18 +17,24 @@ class HomeView(TemplateView):
         context["matched_stats"] = get_matched_stats()
         context["missing_issues_count"] = MissingIssue.objects.filter(skip=False).count()
 
-        context["update_history"] = Issue.objects.values(
-            created_day=Trunc("created_dt", "day", output_field=DateTimeField())
-        ).annotate(
-            cnt=Count("id")
-        ).order_by("-created_day")
+        context["update_history"] = (
+            Issue.objects.values(created_day=Trunc("created_dt", "day", output_field=DateTimeField()))
+            .annotate(cnt=Count("id"))
+            .order_by("-created_day")
+        )
 
         if self.request.user.is_authenticated:
-            context["finished_issues_count"] = Issue.objects.matched().annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
-            context["finished_percent"] = \
+            context["finished_issues_count"] = (
+                Issue.objects.matched()
+                .annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
+            context["finished_percent"] = (
                 context["finished_issues_count"] / context["matched_stats"]["issues_count"] * 100
+            )
             context["started_and_not_finished_volumes"] = self.request.user.started_and_not_finished_volumes
             context["started_and_not_finished_story_arcs"] = self.request.user.started_and_not_finished_story_arcs
 
@@ -39,9 +45,7 @@ home_view = HomeView.as_view()
 
 
 class NewIssuesView(DayArchiveView):
-    queryset = Issue.objects.matched().select_related(
-        "volume", "volume__publisher"
-    )
+    queryset = Issue.objects.matched().select_related("volume", "volume__publisher")
     ordering = ("volume__publisher", "volume", "numerical_number", "number")
     date_field = "created_dt"
     allow_future = True

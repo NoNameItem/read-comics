@@ -11,8 +11,8 @@ class LastActiveMiddleware:
     def __call__(self, request):
         user = request.user
         if user.is_authenticated and (
-            not user.last_active or timezone.now() - user.last_active >
-            datetime.timedelta(seconds=settings.LAST_ACTIVE_TIMEOUT)
+            not user.last_active
+            or timezone.now() - user.last_active > datetime.timedelta(seconds=settings.LAST_ACTIVE_TIMEOUT)
         ):
             user.last_active = timezone.now()
             user.save()

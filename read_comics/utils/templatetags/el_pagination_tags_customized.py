@@ -10,7 +10,8 @@ from django.utils.encoding import iri_to_uri
 from el_pagination import models, settings, utils
 from el_pagination.paginators import DefaultPaginator, EmptyPage, LazyPaginator
 
-PAGINATE_EXPRESSION = re.compile(r"""
+PAGINATE_EXPRESSION = re.compile(
+    r"""
     ^   # Beginning of line.
     (((?P<first_page>\w+)\,)?(?P<per_page>\w+)\s+)?  # First page, per page.
     (?P<objects>[\.\w]+)  # Objects / _queryset.
@@ -19,14 +20,19 @@ PAGINATE_EXPRESSION = re.compile(r"""
     (\s+with\s+(?P<override_path>[\"\"\/\w]+))?  # Override path.
     (\s+as\s+(?P<var_name>\w+))?  # Context variable name.
     $   # End of line.
-""", re.VERBOSE)
-SHOW_CURRENT_NUMBER_EXPRESSION = re.compile(r"""
+""",
+    re.VERBOSE,
+)
+SHOW_CURRENT_NUMBER_EXPRESSION = re.compile(
+    r"""
     ^   # Beginning of line.
     (starting\s+from\s+page\s+(?P<number>\w+))?\s*  # Page start.
     (using\s+(?P<key>[\"\"\-\w]+))?\s*  # Querystring key.
     (as\s+(?P<var_name>\w+))?  # Context variable name.
     $   # End of line.
-""", re.VERBOSE)
+""",
+    re.VERBOSE,
+)
 
 
 register = template.Library()
@@ -195,8 +201,16 @@ class PaginateNode(template.Node):
     """
 
     def __init__(
-            self, paginator_class, objects, first_page=None, per_page=None,
-            var_name=None, number=None, key=None, override_path=None):
+        self,
+        paginator_class,
+        objects,
+        first_page=None,
+        per_page=None,
+        var_name=None,
+        number=None,
+        key=None,
+        override_path=None,
+    ):
         self.paginator = paginator_class or DefaultPaginator
         self.objects = template.Variable(objects)
 
@@ -245,9 +259,7 @@ class PaginateNode(template.Node):
         self.override_path_variable = None
         if override_path is None:
             self.override_path = None
-        elif (
-                override_path[0] in (""", """) and
-                override_path[-1] == override_path[0]):
+        elif override_path[0] in (""", """) and override_path[-1] == override_path[0]:
             self.override_path = override_path[1:-1]
         else:
             self.override_path_variable = template.Variable(override_path)
@@ -286,17 +298,14 @@ class PaginateNode(template.Node):
 
         # Retrieve the _queryset and create the paginator object.
         objects = self.objects.resolve(context)
-        paginator = self.paginator(
-            objects, per_page, first_page=first_page, orphans=settings.ORPHANS)
+        paginator = self.paginator(objects, per_page, first_page=first_page, orphans=settings.ORPHANS)
 
         # Normalize the default page number if a negative one is provided.
         if default_number < 0:
-            default_number = utils.normalize_page_number(
-                default_number, paginator.page_range)
+            default_number = utils.normalize_page_number(default_number, paginator.page_range)
 
         # The current request is used to get the requested page number.
-        page_number = utils.get_page_number_from_request(
-            context["request"], querystring_key, default=default_number)
+        page_number = utils.get_page_number_from_request(context["request"], querystring_key, default=default_number)
 
         # Get the page.
         try:
@@ -309,8 +318,7 @@ class PaginateNode(template.Node):
         # CUSTOMIZATION: Add last object on previous page
         if page_number > 1:
             try:
-                paginator_prev = self.paginator(
-                    objects, per_page, first_page=first_page, orphans=settings.ORPHANS)
+                paginator_prev = self.paginator(objects, per_page, first_page=first_page, orphans=settings.ORPHANS)
                 previous_page = paginator_prev.page(page_number - 1)
                 last_object = previous_page.object_list[-1]
             except EmptyPage:
@@ -324,7 +332,7 @@ class PaginateNode(template.Node):
             "override_path": override_path,
             "page": page,
             "querystring_key": querystring_key,
-            "last_object": last_object
+            "last_object": last_object,
         }
         context.update({"endless": data, self.var_name: page.object_list})
         return ""
@@ -363,8 +371,8 @@ def show_more(context, label=None, loading=settings.LOADING, class_name=None):
         # Generate the querystring.
         querystring_key = data["querystring_key"]
         querystring = utils.get_querystring_for_page(
-            request, page_number, querystring_key,
-            default_number=data["default_number"])
+            request, page_number, querystring_key, default_number=data["default_number"]
+        )
         return {
             "label": label,
             "loading": loading,
@@ -574,7 +582,7 @@ class ShowPagesNode(template.Node):
             data["querystring_key"],
             default_number=data["default_number"],
             override_path=data["override_path"],
-            context=context
+            context=context,
         )
         print("get_rendered")
         return pages.get_rendered()
@@ -694,8 +702,7 @@ class ShowCurrentNumberNode(template.Node):
             querystring_key = self.querystring_key_variable.resolve(context)
 
         # The request object is used to retrieve the current page number.
-        page_number = utils.get_page_number_from_request(
-            context["request"], querystring_key, default=default_number)
+        page_number = utils.get_page_number_from_request(context["request"], querystring_key, default=default_number)
 
         if self.var_name is None:
             return utils.text(page_number)

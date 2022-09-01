@@ -38,9 +38,7 @@ class Migration(migrations.Migration):
                 ("html_description", models.TextField(null=True)),
                 (
                     "gender",
-                    models.IntegerField(
-                        choices=[(0, "Other"), (1, "Male"), (2, "Female")], null=True
-                    ),
+                    models.IntegerField(choices=[(0, "Other"), (1, "Male"), (2, "Female")], null=True),
                 ),
                 ("birth", models.DateField(null=True)),
                 ("origin", models.TextField(null=True)),
@@ -49,9 +47,7 @@ class Migration(migrations.Migration):
                 ("first_issue_name", models.TextField(null=True)),
                 (
                     "slug",
-                    django_extensions.db.fields.AutoSlugField(
-                        blank=True, editable=False, populate_from=["name"]
-                    ),
+                    django_extensions.db.fields.AutoSlugField(blank=True, editable=False, populate_from=["name"]),
                 ),
                 (
                     "character_enemies",

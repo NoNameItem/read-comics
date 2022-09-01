@@ -16,15 +16,7 @@ class BaseSpider(scrapy.Spider):
     DETAIL_FIELD_LIST = None
     LIMIT = 100
 
-    def __init__(
-        self,
-        incremental="N",
-        api_key=None,
-        filters=None,
-        skip_existing="N",
-        mongo_url=None,
-        **kwargs
-    ):
+    def __init__(self, incremental="N", api_key=None, filters=None, skip_existing="N", mongo_url=None, **kwargs):
         self.logger.info("incremental: " + incremental)
         self.logger.info("skip_existing: " + skip_existing)
         if filters is None:
@@ -54,13 +46,16 @@ class BaseSpider(scrapy.Spider):
             spider_info = mongo_db.spider_info.find_one({"name": spider.name})
             spider.logger.info("Spider info: " + str(spider_info))
             if spider_info:
-                start_date = str(spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(days=1))
-                                 - datetime.timedelta(days=1))
+                start_date = str(
+                    spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(days=1))
+                    - datetime.timedelta(days=1)
+                )
                 end_date = str(datetime.datetime.max)
                 spider.filters["date_last_updated"] = f"{start_date}|{end_date}"
 
-        mongo_db.spider_info.update({"name": spider.name}, {"last_run_dttm": datetime.datetime.now(),
-                                                            "name": spider.name}, upsert=True)
+        mongo_db.spider_info.update(
+            {"name": spider.name}, {"last_run_dttm": datetime.datetime.now(), "name": spider.name}, upsert=True
+        )
         mongo_connection.close()
 
         return spider
@@ -107,7 +102,7 @@ class BaseSpider(scrapy.Spider):
                     "id": entry["id"],
                     "api_detail_url": entry["api_detail_url"],
                     "name": entry.get("name"),
-                    "skip": True
+                    "skip": True,
                 }
 
         mongo_connection.close()

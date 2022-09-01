@@ -21,19 +21,54 @@ class Endpoint:
 
 class EndpointRequest(scrapy.Request):
     attributes: Tuple[str, ...] = (
-        "url", "endpoint", "callback", "method", "headers", "body",
-        "cookies", "meta", "encoding", "priority",
-        "dont_filter", "errback", "flags", "cb_kwargs",
+        "url",
+        "endpoint",
+        "callback",
+        "method",
+        "headers",
+        "body",
+        "cookies",
+        "meta",
+        "encoding",
+        "priority",
+        "dont_filter",
+        "errback",
+        "flags",
+        "cb_kwargs",
     )
 
-    def __init__(self, url: str, endpoint: Endpoint, callback: Optional[Callable] = None, method: str = "GET",
-                 headers: Optional[dict] = None, body: Optional[Union[bytes, str]] = None,
-                 cookies: Optional[Union[dict, List[dict]]] = None, meta: Optional[dict] = None,
-                 encoding: str = "utf-8", priority: int = 0, dont_filter: bool = False,
-                 errback: Optional[Callable] = None, flags: Optional[List[str]] = None,
-                 cb_kwargs: Optional[dict] = None):
-        super().__init__(url, callback, method, headers, body, cookies, meta, encoding, priority, dont_filter, errback,
-                         flags, cb_kwargs)
+    def __init__(
+        self,
+        url: str,
+        endpoint: Endpoint,
+        callback: Optional[Callable] = None,
+        method: str = "GET",
+        headers: Optional[dict] = None,
+        body: Optional[Union[bytes, str]] = None,
+        cookies: Optional[Union[dict, List[dict]]] = None,
+        meta: Optional[dict] = None,
+        encoding: str = "utf-8",
+        priority: int = 0,
+        dont_filter: bool = False,
+        errback: Optional[Callable] = None,
+        flags: Optional[List[str]] = None,
+        cb_kwargs: Optional[dict] = None,
+    ):
+        super().__init__(
+            url,
+            callback,
+            method,
+            headers,
+            body,
+            cookies,
+            meta,
+            encoding,
+            priority,
+            dont_filter,
+            errback,
+            flags,
+            cb_kwargs,
+        )
         self.endpoint = endpoint
 
 
@@ -44,89 +79,77 @@ class FullSpider(scrapy.Spider):
             "characters",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,real_name,gender,birth,origin,character_friends,character_enemies,"
-            "teams,team_enemies,team_friends,publisher,creators,powers"
+            "teams,team_enemies,team_friends,publisher,creators,powers",
         ),
         Endpoint(
             "comicvine_concepts",
             "concepts",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
-            "first_appeared_in_issue,start_year"
+            "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_issues",
             "issues",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,issue_number,"
             "cover_date,store_date,character_credits,character_died_in,concept_credits,location_credits,"
-            "object_credits,person_credits,story_arc_credits,team_credits,team_disbanded_in,volume"
+            "object_credits,person_credits,story_arc_credits,team_credits,team_disbanded_in,volume",
         ),
         Endpoint(
             "comicvine_locations",
             "locations",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
-            "first_appeared_in_issue,start_year"
+            "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_objects",
             "objects",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
-            "first_appeared_in_issue,start_year"
+            "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_people",
             "people",
-            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,birth,country,death,"
-            "hometown"
+            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,birth,country,death," "hometown",
         ),
-        Endpoint(
-            "comicvine_powers",
-            "powers",
-            "id,api_detail_url,site_detail_url,name,aliases,description"
-        ),
+        Endpoint("comicvine_powers", "powers", "id,api_detail_url,site_detail_url,name,aliases,description"),
         Endpoint(
             "comicvine_publishers",
             "publishers",
-            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image"
+            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image",
         ),
         Endpoint(
             "comicvine_story_arcs",
             "story_arcs",
-            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_appeared_in_issue,publisher"
+            "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_appeared_in_issue,publisher",
         ),
         Endpoint(
             "comicvine_teams",
             "teams",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
-            "first_appeared_in_issue,publisher"
+            "first_appeared_in_issue,publisher",
         ),
         Endpoint(
             "comicvine_volumes",
             "volumes",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_issue,"
-            "publisher,last_issue,start_year"
+            "publisher,last_issue,start_year",
         ),
-
     )
-    LIST_URL_PATTERN = "https://comicvine.gamespot.com/api/{endpoint}/?" \
-                       "format=json&" \
-                       "field_list=api_detail_url,id&" \
-                       "sort=id:asc&" \
-                       "offset={offset}&" \
-                       "limit={limit}&" \
-                       "api_key={api_key}"
+    LIST_URL_PATTERN = (
+        "https://comicvine.gamespot.com/api/{endpoint}/?"
+        "format=json&"
+        "field_list=api_detail_url,id&"
+        "sort=id:asc&"
+        "offset={offset}&"
+        "limit={limit}&"
+        "api_key={api_key}"
+    )
 
     LIMIT = 100
 
     name = "full_spider"
 
-    def __init__(
-        self,
-        incremental="Y",
-        api_key=None,
-        filters=None,
-        skip_existing="N",
-        mongo_url=None,
-        **kwargs
-    ):
+    def __init__(self, incremental="Y", api_key=None, filters=None, skip_existing="N", mongo_url=None, **kwargs):
         self.logger.info("incremental: " + incremental)
         self.logger.info("skip_existing: " + skip_existing)
         if filters is None:
@@ -156,13 +179,16 @@ class FullSpider(scrapy.Spider):
             spider_info = mongo_db.spider_info.find_one({"name": spider.name})
             spider.logger.info("Spider info: " + str(spider_info))
             if spider_info:
-                start_date = str(spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(days=1))
-                                 - datetime.timedelta(days=1))
+                start_date = str(
+                    spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(days=1))
+                    - datetime.timedelta(days=1)
+                )
                 end_date = str(datetime.datetime.max)
                 spider.filters["date_last_updated"] = f"{start_date}|{end_date}"
 
-        mongo_db.spider_info.update({"name": spider.name}, {"last_run_dttm": datetime.datetime.now(),
-                                                            "name": spider.name}, upsert=True)
+        mongo_db.spider_info.update(
+            {"name": spider.name}, {"last_run_dttm": datetime.datetime.now(), "name": spider.name}, upsert=True
+        )
         mongo_connection.close()
 
         return spider
@@ -211,7 +237,7 @@ class FullSpider(scrapy.Spider):
                     "id": entry["id"],
                     "api_detail_url": entry["api_detail_url"],
                     "name": entry.get("name"),
-                    "skip": True
+                    "skip": True,
                 }
 
         mongo_connection.close()
@@ -228,8 +254,5 @@ class FullSpider(scrapy.Spider):
     def parse_detail(self, response):
         entry = json.loads(response.body).get("results", {})
         entry["crawl_date"] = datetime.datetime.now()
-        item = {
-            "_collection": response.request.endpoint.collection,
-            "item": entry
-        }
+        item = {"_collection": response.request.endpoint.collection, "item": entry}
         yield item

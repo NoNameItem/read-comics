@@ -18,24 +18,24 @@ class AccountAdapter(DefaultAccountAdapter):
         DJANGO_DEFAULT_LEVELS["INFO"]: DMM_DEFAULT_LEVELS["INFO"],
         DJANGO_DEFAULT_LEVELS["SUCCESS"]: DMM_DEFAULT_LEVELS["SUCCESS"],
         DJANGO_DEFAULT_LEVELS["WARNING"]: DMM_DEFAULT_LEVELS["WARNING"],
-        DJANGO_DEFAULT_LEVELS["ERROR"]: DMM_DEFAULT_LEVELS["ERROR"]
+        DJANGO_DEFAULT_LEVELS["ERROR"]: DMM_DEFAULT_LEVELS["ERROR"],
     }
 
     def is_open_for_signup(self, request: HttpRequest):
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
 
-    def add_message(self, request, level, message_template,
-                    message_context=None, extra_tags=""):
+    def add_message(self, request, level, message_template, message_context=None, extra_tags=""):
         """
         Using django magnificent messages instead of boring standart messages
         """
-        if "django_magnificent_messages" in settings.INSTALLED_APPS or \
-                "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig" in settings.INSTALLED_APPS:
+        if (
+            "django_magnificent_messages" in settings.INSTALLED_APPS
+            or "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig" in settings.INSTALLED_APPS
+        ):
             try:
                 if message_context is None:
                     message_context = {}
-                message = render_to_string(message_template,
-                                           message_context).strip()
+                message = render_to_string(message_template, message_context).strip()
                 if message:
                     notifications.add(request, self.MESSAGE_LEVEL_MAPPING.get(level, level), message, extra=extra_tags)
             except TemplateDoesNotExist:

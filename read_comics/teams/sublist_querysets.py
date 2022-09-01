@@ -7,13 +7,10 @@ class TeamSublistQuerysets(IssuesSublistQueryset, VolumesSublistQueryset):
         return self._annotate_issues_as_finished(
             self._break_issues(
                 self._annotate_issues(
-                    self._order_issues(
-                        team.disbanded_in_issues.filter(comicvine_status="MATCHED")
-                    ),
-                    team
+                    self._order_issues(team.disbanded_in_issues.filter(comicvine_status="MATCHED")), team
                 )
             ),
-            user
+            user,
         )
 
     @staticmethod

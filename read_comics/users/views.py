@@ -32,7 +32,7 @@ class UserDetailView(BreadcrumbMixin, DetailView):
         user = self.get_object()
         return [
             {"url": "#", "text": "Users"},
-            {"url": reverse_lazy("users:detail", args=(user.username,)), "text": str(user)}
+            {"url": reverse_lazy("users:detail", args=(user.username,)), "text": str(user)},
         ]
 
 
@@ -46,11 +46,8 @@ class UserSendEmailConfirmationView(LoginRequiredMixin, RedirectView):
         if not email.verified:
             email.send_confirmation(request)
             get_adapter(self.request).add_message(
-                self.request,
-                messages.INFO,
-                "account/messages/"
-                "email_confirmation_sent.txt",
-                {"email": email})
+                self.request, messages.INFO, "account/messages/" "email_confirmation_sent.txt", {"email": email}
+            )
         return super(UserSendEmailConfirmationView, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, *args, **kwargs):
@@ -107,22 +104,17 @@ class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
             if form.cleaned_data["email"] != email.email:
                 email.change(self.request, form.cleaned_data["email"])
                 get_adapter(self.request).add_message(
-                    self.request,
-                    messages.INFO,
-                    "account/messages/"
-                    "email_confirmation_sent.txt",
-                    {"email": email})
+                    self.request, messages.INFO, "account/messages/" "email_confirmation_sent.txt", {"email": email}
+                )
             return super().form_valid(form)
         elif "password" in self.request.POST:
             logger.debug("form: password success")
             form.save()
             logout_on_password_change(self.request, form.user)
-            get_adapter(self.request).add_message(
-                self.request,
-                messages.SUCCESS,
-                "account/messages/password_set.txt")
-            allauth.account.signals.password_set.send(sender=self.request.user.__class__,
-                                                      request=self.request, user=self.request.user)
+            get_adapter(self.request).add_message(self.request, messages.SUCCESS, "account/messages/password_set.txt")
+            allauth.account.signals.password_set.send(
+                sender=self.request.user.__class__, request=self.request, user=self.request.user
+            )
             return HttpResponseRedirect(self.get_success_url())
         return None
 

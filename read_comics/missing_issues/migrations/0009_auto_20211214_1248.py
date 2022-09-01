@@ -6,18 +6,18 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0008_missingissue_numerical_number'),
+        ("missing_issues", "0008_missingissue_numerical_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='missingissue',
-            name='skip',
+            model_name="missingissue",
+            name="skip",
             field=models.BooleanField(default=False),
         ),
         migrations.AddField(
-            model_name='missingissue',
-            name='skip_date',
+            model_name="missingissue",
+            name="skip_date",
             field=models.DateField(null=True),
         ),
     ]

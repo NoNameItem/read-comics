@@ -1,8 +1,6 @@
 import environ
 
-ROOT_DIR = (
-    environ.Path(__file__) - 1
-)
+ROOT_DIR = environ.Path(__file__) - 1
 
 env = environ.Env()
 
@@ -66,7 +64,7 @@ RANDOMIZE_DOWNLOAD_DELAY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-   "scrapy.downloadermiddlewares.retry.RetryMiddleware": 543,
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": 543,
 }
 
 # Enable or disable extensions
@@ -78,7 +76,7 @@ DOWNLOADER_MIDDLEWARES = {
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "read_comics.spiders.pipelines.MongoPipeline": 300,
+    "read_comics.spiders.pipelines.MongoPipeline": 300,
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)

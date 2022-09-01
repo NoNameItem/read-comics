@@ -8,10 +8,7 @@ from .models import Volume
 class VolumesSublistQueryset:
     @staticmethod
     def _get_volumes_sublist(obj):
-        return Volume.objects.filter(
-            issues__in=obj.issues.all(),
-            comicvine_status="MATCHED"
-        )
+        return Volume.objects.filter(issues__in=obj.issues.all(), comicvine_status="MATCHED")
 
     @staticmethod
     def _order_volumes(q):
@@ -21,37 +18,25 @@ class VolumesSublistQueryset:
     def _annotate_volumes(q):
         return q.annotate(
             issues_count=Count("issues", distinct=True),
-            badge_name=Concat(F("name"), Value(" ("), F("start_year"), Value(")"),
-                              output_field=TextField()),
-            desc=Concat(F("issues_count"), Value(" issue(s)"), output_field=TextField())
+            badge_name=Concat(F("name"), Value(" ("), F("start_year"), Value(")"), output_field=TextField()),
+            desc=Concat(F("issues_count"), Value(" issue(s)"), output_field=TextField()),
         )
 
     @staticmethod
     def _break_volumes(q):
-        return q.annotate(
-            group_breaker=F("start_year")
-        )
+        return q.annotate(group_breaker=F("start_year"))
 
     @staticmethod
     def _annotate_volumes_as_finished(q, user):
         if user and user.is_authenticated:
-            return q.annotate(
-                finished_count=Count("issues", filter=Q(issues__finished_users=user))
-            ).annotate(
+            return q.annotate(finished_count=Count("issues", filter=Q(issues__finished_users=user))).annotate(
                 finished_flg=Case(When(finished_count=F("issues_count"), then=1), default=0)
             )
         return q
 
     def get_volumes_queryset(self, obj, user=None):
         return self._annotate_volumes_as_finished(
-            self._break_volumes(
-                self._annotate_volumes(
-                    self._order_volumes(
-                        self._get_volumes_sublist(obj)
-                    )
-                )
-            ),
-            user
+            self._break_volumes(self._annotate_volumes(self._order_volumes(self._get_volumes_sublist(obj)))), user
         )
 
 
@@ -65,9 +50,7 @@ class VolumesViewMixin:
             "count": self.sublist_querysets.get_volumes_queryset(self.object).count(),
         }
 
-        volumes_info.update(
-            get_first_page(self.sublist_querysets.get_volumes_queryset(self.object, self.request.user))
-        )
+        volumes_info.update(get_first_page(self.sublist_querysets.get_volumes_queryset(self.object, self.request.user)))
         context["volumes_info"] = volumes_info
 
         return context

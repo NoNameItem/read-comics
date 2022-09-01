@@ -12,9 +12,18 @@ from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, Watch
 logger = getLogger(__name__ + ".Volume")
 
 
-@methods_logged(logger, methods=["fill_from_comicvine", "process_document", "get_field_mapping",
-                                 "_fill_field_from_document", "_set_non_m2m_from_document", "_get_value_by_path",
-                                 "_set_m2m_from_document"])
+@methods_logged(
+    logger,
+    methods=[
+        "fill_from_comicvine",
+        "process_document",
+        "get_field_mapping",
+        "_fill_field_from_document",
+        "_set_non_m2m_from_document",
+        "_get_value_by_path",
+        "_set_m2m_from_document",
+    ],
+)
 class Volume(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_volumes"
     MONGO_PROJECTION = {
@@ -26,44 +35,28 @@ class Volume(ImageMixin, ComicvineSyncModel):
         "issue_credits": 0,
         "locations": 0,
         "objects": 0,
-        "people": 0
+        "people": 0,
     }
     FIELD_MAPPING = {
-        "publisher": {
-            "path": "publisher",
-            "method": "get_publisher"
-        },
-        "first_issue_name": {
-            "path": "first_issue.id",
-            "method": "get_issue_name"
-        },
-        "first_issue": {
-            "path": "first_issue.id",
-            "method": "get_issue"
-        },
+        "publisher": {"path": "publisher", "method": "get_publisher"},
+        "first_issue_name": {"path": "first_issue.id", "method": "get_issue_name"},
+        "first_issue": {"path": "first_issue.id", "method": "get_issue"},
         "first_issue_comicvine_id": "first_issue.id",
         "first_issue_number": "first_issue.issue_number",
-        "last_issue_name": {
-            "path": "last_issue.id",
-            "method": "get_issue_name"
-        },
-        "last_issue": {
-            "path": "last_issue.id",
-            "method": "get_issue"
-        },
+        "last_issue_name": {"path": "last_issue.id", "method": "get_issue_name"},
+        "last_issue": {"path": "last_issue.id", "method": "get_issue"},
         "last_issue_comicvine_id": "last_issue.id",
         "last_issue_number": "last_issue.issue_number",
-        "start_year": {
-            "path": "start_year",
-            "method": "to_int"
-        }
+        "start_year": {"path": "start_year", "method": "to_int"},
     }
     COMICVINE_INFO_TASK = volume_comicvine_info_task
-    COMICVINE_API_URL = "https://comicvine.gamespot.com/api/volume/4050-{id}/?" \
-                        "api_key={api_key}&" \
-                        "format=json&" \
-                        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image," \
-                        "first_issue,publisher,last_issue,start_year"
+    COMICVINE_API_URL = (
+        "https://comicvine.gamespot.com/api/volume/4050-{id}/?"
+        "api_key={api_key}&"
+        "format=json&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
+        "first_issue,publisher,last_issue,start_year"
+    )
 
     logger = logger
 
@@ -77,29 +70,23 @@ class Volume(ImageMixin, ComicvineSyncModel):
     image_url = models.URLField(max_length=1000, null=True)
 
     first_issue_name = models.TextField(null=True)
-    first_issue = models.ForeignKey("issues.Issue", null=True, on_delete=models.SET_NULL,
-                                    related_name="first_issue_of")
+    first_issue = models.ForeignKey("issues.Issue", null=True, on_delete=models.SET_NULL, related_name="first_issue_of")
     first_issue_comicvine_id = models.IntegerField(null=True)
     first_issue_number = models.CharField(max_length=10, null=True)
 
     last_issue_name = models.TextField(null=True)
-    last_issue = models.ForeignKey("issues.Issue", null=True, on_delete=models.SET_NULL,
-                                   related_name="last_issue_of")
+    last_issue = models.ForeignKey("issues.Issue", null=True, on_delete=models.SET_NULL, related_name="last_issue_of")
     last_issue_comicvine_id = models.IntegerField(null=True)
     last_issue_number = models.CharField(max_length=100, null=True)
 
     publisher = models.ForeignKey("publishers.Publisher", related_name="volumes", on_delete=models.CASCADE, null=True)
 
     slug = AutoSlugField(
-        populate_from=[
-            "get_publisher_name",
-            "name",
-            "start_year"
-        ],
+        populate_from=["get_publisher_name", "name", "start_year"],
         slugify_function=slugify_function,
         overwrite=True,
         max_length=1000,
-        unique=True
+        unique=True,
     )
 
     watchers = GenericRelation(WatchedItem)
@@ -107,7 +94,10 @@ class Volume(ImageMixin, ComicvineSyncModel):
     tracker = FieldTracker()
 
     class Meta:
-        ordering = ("name", "start_year",)
+        ordering = (
+            "name",
+            "start_year",
+        )
 
     def __str__(self):
         publisher_name = self.get_publisher_name()
@@ -128,6 +118,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         from read_comics.issues.models import Issue
+
         if self.tracker.has_changed("last_issue_comicvine_id"):
             try:
                 last_issue = Issue.objects.get(comicvine_id=self.first_issue_comicvine_id)
@@ -153,11 +144,13 @@ class Volume(ImageMixin, ComicvineSyncModel):
 
     def get_absolute_url(self):
         from django.urls import reverse
+
         return reverse("volumes:detail", args=[self.slug])
 
     @property
     def download_link(self):
         from django.urls import reverse
+
         return reverse("volumes:download", args=[self.slug])
 
     @staticmethod

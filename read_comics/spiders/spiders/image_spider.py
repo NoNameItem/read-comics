@@ -7,31 +7,68 @@ import scrapy
 
 class ResourceRequest(scrapy.Request):
     attributes: Tuple[str, ...] = (
-        "url", "resource", "callback", "method", "headers", "body",
-        "cookies", "meta", "encoding", "priority",
-        "dont_filter", "errback", "flags", "cb_kwargs",
+        "url",
+        "resource",
+        "callback",
+        "method",
+        "headers",
+        "body",
+        "cookies",
+        "meta",
+        "encoding",
+        "priority",
+        "dont_filter",
+        "errback",
+        "flags",
+        "cb_kwargs",
     )
 
-    def __init__(self, url: str, resource: str, callback: Optional[Callable] = None, method: str = "GET",
-                 headers: Optional[dict] = None, body: Optional[Union[bytes, str]] = None,
-                 cookies: Optional[Union[dict, List[dict]]] = None, meta: Optional[dict] = None,
-                 encoding: str = "utf-8", priority: int = 0, dont_filter: bool = False,
-                 errback: Optional[Callable] = None, flags: Optional[List[str]] = None,
-                 cb_kwargs: Optional[dict] = None):
-        super().__init__(url, callback, method, headers, body, cookies, meta, encoding, priority, dont_filter, errback,
-                         flags, cb_kwargs)
+    def __init__(
+        self,
+        url: str,
+        resource: str,
+        callback: Optional[Callable] = None,
+        method: str = "GET",
+        headers: Optional[dict] = None,
+        body: Optional[Union[bytes, str]] = None,
+        cookies: Optional[Union[dict, List[dict]]] = None,
+        meta: Optional[dict] = None,
+        encoding: str = "utf-8",
+        priority: int = 0,
+        dont_filter: bool = False,
+        errback: Optional[Callable] = None,
+        flags: Optional[List[str]] = None,
+        cb_kwargs: Optional[dict] = None,
+    ):
+        super().__init__(
+            url,
+            callback,
+            method,
+            headers,
+            body,
+            cookies,
+            meta,
+            encoding,
+            priority,
+            dont_filter,
+            errback,
+            flags,
+            cb_kwargs,
+        )
         self.resource = resource
 
 
 class ImageSpider(scrapy.Spider):
     # LIST_URL_PATTERN should contain 3 placeholders: limit, offset and api_key and should not contain filter parameter
-    LIST_URL_PATTERN = "https://comicvine.gamespot.com/api/{resource}/?" \
-                       "format=json&" \
-                       "field_list=id,name,api_detail_url,image&" \
-                       "sort=id:asc&" \
-                       "offset={offset}&" \
-                       "limit={limit}&" \
-                       "api_key={api_key}"
+    LIST_URL_PATTERN = (
+        "https://comicvine.gamespot.com/api/{resource}/?"
+        "format=json&"
+        "field_list=id,name,api_detail_url,image&"
+        "sort=id:asc&"
+        "offset={offset}&"
+        "limit={limit}&"
+        "api_key={api_key}"
+    )
     LIMIT = 100
     RESOURCES = {
         "characters": "comicvine_characters",
@@ -47,12 +84,7 @@ class ImageSpider(scrapy.Spider):
     }
     name = "image_spider"
 
-    def __init__(
-        self,
-        api_key=None,
-        mongo_url=None,
-        **kwargs
-    ):
+    def __init__(self, api_key=None, mongo_url=None, **kwargs):
         super().__init__(**kwargs)
         self.api_key = api_key
         self.mongo_url = mongo_url
@@ -75,7 +107,8 @@ class ImageSpider(scrapy.Spider):
 
     def construct_list_url(self, resource, offset):
         url = self.LIST_URL_PATTERN.format(
-            **{"api_key": self.api_key, "limit": self.LIMIT, "offset": offset, "resource": resource})
+            **{"api_key": self.api_key, "limit": self.LIMIT, "offset": offset, "resource": resource}
+        )
         self.logger.info("List url: " + url)
         return url
 
@@ -92,10 +125,7 @@ class ImageSpider(scrapy.Spider):
         # Follow to detail pages
         for entry in json_res.get("results", []):
             entry["crawl_date"] = datetime.datetime.now()
-            item = {
-                "_collection": collection_name,
-                "item": entry
-            }
+            item = {"_collection": collection_name, "item": entry}
             yield item
 
         # Follow to next list page

@@ -25,19 +25,25 @@ from .models import Person
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class PeopleListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                     ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class PeopleListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "people"
     template_name = "people/list.html"
     breadcrumb = [{"url": reverse_lazy("people:list"), "text": "People"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = Person.objects.was_matched().annotate(
-        volume_count=Count("issues__volume", distinct=True)
-    ).annotate(
-        issue_count=Count("issues", distinct=True)
+    queryset = (
+        Person.objects.was_matched()
+        .annotate(volume_count=Count("issues__volume", distinct=True))
+        .annotate(issue_count=Count("issues", distinct=True))
     )
     active_menu_item = "people"
 
@@ -45,7 +51,12 @@ class PeopleListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesM
 people_list_view = PeopleListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Person
     slug_field = "slug"
@@ -57,11 +68,7 @@ class PersonDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bread
 
     def get_breadcrumb(self):
         obj = self.object
-        return [
-            {"url": reverse_lazy("people:list"), "text": "People"},
-            {"url": "#",
-             "text": obj.name}
-        ]
+        return [{"url": reverse_lazy("people:list"), "text": "People"}, {"url": "#", "text": obj.name}]
 
     def get_context_data(self, **kwargs):
         context = super(PersonDetailView, self).get_context_data(**kwargs)
@@ -96,12 +103,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "people/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
@@ -111,12 +123,14 @@ class PersonIssuesListView(BaseSublistView):
 person_issues_list_view = PersonIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_volumes_queryset)
     parent_model = Person
     get_queryset_user_param = True
@@ -125,11 +139,14 @@ class PersonVolumesListView(BaseSublistView):
 person_volumes_list_view = PersonVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonCharactersListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getCharactersPage"
-    }
+    extra_context = {"get_page_function": "getCharactersPage"}
     get_queryset_func = staticmethod(sublist_querysets.PersonSublistQuerysets().get_characters_queryset)
     parent_model = Person
 
@@ -137,7 +154,12 @@ class PersonCharactersListView(BaseSublistView):
 person_characters_list_view = PersonCharactersListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -160,21 +182,23 @@ class PersonIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("people:list"), "text": "People"},
-            {
-                "url": person.get_absolute_url(),
-                "text": person.name
-            },
+            {"url": person.get_absolute_url(), "text": person.name},
             {
                 "url": reverse_lazy("people:issue_detail", args=(person.slug, issue.slug)),
-                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
-            }
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}",
+            },
         ]
 
 
 person_issue_detail_view = PersonIssueDetailView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PersonDownloadView(BaseZipDownloadView):
     sublist_querysets = sublist_querysets.PersonSublistQuerysets()
     base_model = Person

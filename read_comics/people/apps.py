@@ -10,6 +10,5 @@ class PeopleConfig(AppConfig):
     def ready(self):
         model = self.get_model("Person")
         watson.register(
-            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED),
-            search_adapters.PersonSearchAdapter
+            model.objects.filter(comicvine_status=model.ComicvineStatus.MATCHED), search_adapters.PersonSearchAdapter
         )

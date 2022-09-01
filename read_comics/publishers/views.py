@@ -25,19 +25,25 @@ from .models import Publisher
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class PublisherListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                        ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class PublisherListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "publishers"
     template_name = "publishers/list.html"
     breadcrumb = [{"url": reverse_lazy("publishers:list"), "text": "Publishers"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = Publisher.objects.was_matched().annotate(
-        volume_count=Count("volumes", distinct=True)
-    ).annotate(
-        issue_count=Count("volumes__issues", distinct=True)
+    queryset = (
+        Publisher.objects.was_matched()
+        .annotate(volume_count=Count("volumes", distinct=True))
+        .annotate(issue_count=Count("volumes__issues", distinct=True))
     )
     active_menu_item = "publishers"
 
@@ -45,7 +51,12 @@ class PublisherListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
 publisher_list_view = PublisherListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Publisher
     queryset = Publisher.objects.all()
@@ -59,13 +70,7 @@ class PublisherDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Br
     def get_breadcrumb(self):
         publisher = self.object
 
-        return [
-            {"url": reverse_lazy("publishers:list"), "text": "Publishers"},
-            {
-                "url": "#",
-                "text": publisher.name
-            }
-        ]
+        return [{"url": reverse_lazy("publishers:list"), "text": "Publishers"}, {"url": "#", "text": publisher.name}]
 
     def get_context_data(self, **kwargs):
         context = super(PublisherDetailView, self).get_context_data(**kwargs)
@@ -105,12 +110,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "publishers/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
@@ -120,12 +130,14 @@ class PublisherIssuesListView(BaseSublistView):
 publisher_issues_list_view = PublisherIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_volumes_queryset)
     parent_model = Publisher
     get_queryset_user_param = True
@@ -134,11 +146,14 @@ class PublisherVolumesListView(BaseSublistView):
 publisher_volumes_list_view = PublisherVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherCharactersListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getCharactersPage"
-    }
+    extra_context = {"get_page_function": "getCharactersPage"}
     get_queryset_func = staticmethod(sublist_querysets.PublisherSublistQuerysets().get_characters_queryset)
     parent_model = Publisher
 
@@ -146,7 +161,12 @@ class PublisherCharactersListView(BaseSublistView):
 publisher_characters_list_view = PublisherCharactersListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherStoryArcsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getStoryArcsPage",
@@ -158,7 +178,12 @@ class PublisherStoryArcsListView(BaseSublistView):
 publisher_story_arcs_list_view = PublisherStoryArcsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
@@ -170,7 +195,12 @@ class PublisherTeamsListView(BaseSublistView):
 publisher_teams_list_view = PublisherTeamsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class PublisherIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -192,14 +222,11 @@ class PublisherIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("publishers:list"), "text": "Publishers"},
-            {
-                "url": self.base_object.get_absolute_url(),
-                "text": self.base_object
-            },
+            {"url": self.base_object.get_absolute_url(), "text": self.base_object},
             {
                 "url": reverse_lazy("publishers:issue_detail", args=(self.base_object, issue.slug)),
-                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
-            }
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}",
+            },
         ]
 
 

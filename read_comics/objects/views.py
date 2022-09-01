@@ -24,19 +24,25 @@ from .models import Object
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class ObjectsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                      ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class ObjectsListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "objects"
     template_name = "objects/list.html"
     breadcrumb = [{"url": reverse_lazy("objects:list"), "text": "Objects"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = Object.objects.was_matched().annotate(
-        volume_count=Count("issues__volume", distinct=True)
-    ).annotate(
-        issue_count=Count("issues", distinct=True)
+    queryset = (
+        Object.objects.was_matched()
+        .annotate(volume_count=Count("issues__volume", distinct=True))
+        .annotate(issue_count=Count("issues", distinct=True))
     )
     active_menu_item = "objects"
 
@@ -44,7 +50,12 @@ class ObjectsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssues
 objects_list_view = ObjectsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class ObjectDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Object
     slug_field = "slug"
@@ -56,11 +67,7 @@ class ObjectDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bread
 
     def get_breadcrumb(self):
         obj = self.object
-        return [
-            {"url": reverse_lazy("objects:list"), "text": "Object"},
-            {"url": "#",
-             "text": obj.name}
-        ]
+        return [{"url": reverse_lazy("objects:list"), "text": "Object"}, {"url": "#", "text": obj.name}]
 
     def get_context_data(self, **kwargs):
         context = super(ObjectDetailView, self).get_context_data(**kwargs)
@@ -92,12 +99,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class ObjectIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "concepts/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.ObjectSublistQueryset().get_issues_queryset)
     get_queryset_user_param = True
@@ -107,12 +119,14 @@ class ObjectIssuesListView(BaseSublistView):
 object_issues_list_view = ObjectIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class ObjectVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.ObjectSublistQueryset().get_volumes_queryset)
     parent_model = Object
     get_queryset_user_param = True
@@ -121,7 +135,12 @@ class ObjectVolumesListView(BaseSublistView):
 object_volumes_list_view = ObjectVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class ObjectIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -144,21 +163,23 @@ class ObjectIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("objects:list"), "text": "Objects"},
-            {
-                "url": obj.get_absolute_url(),
-                "text": obj.name
-            },
+            {"url": obj.get_absolute_url(), "text": obj.name},
             {
                 "url": reverse_lazy("objects:issue_detail", args=(obj.slug, issue.slug)),
-                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
-            }
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}",
+            },
         ]
 
 
 object_issue_detail_view = ObjectIssueDetailView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class ObjectDownloadView(BaseZipDownloadView):
     sublist_querysets = sublist_querysets.ObjectSublistQueryset()
     base_model = Object

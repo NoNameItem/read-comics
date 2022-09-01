@@ -24,19 +24,25 @@ from .models import Location
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class LocationsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                        ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class LocationsListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "locations"
     template_name = "locations/list.html"
     breadcrumb = [{"url": reverse_lazy("locations:list"), "text": "Locations"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = Location.objects.was_matched().annotate(
-        volume_count=Count("issues__volume", distinct=True)
-    ).annotate(
-        issue_count=Count("issues", distinct=True)
+    queryset = (
+        Location.objects.was_matched()
+        .annotate(volume_count=Count("issues__volume", distinct=True))
+        .annotate(issue_count=Count("issues", distinct=True))
     )
     active_menu_item = "locations"
 
@@ -44,7 +50,12 @@ class LocationsListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
 locations_list_view = LocationsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class LocationDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Location
     slug_field = "slug"
@@ -56,11 +67,7 @@ class LocationDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bre
 
     def get_breadcrumb(self):
         location = self.object
-        return [
-            {"url": reverse_lazy("locations:list"), "text": "Locations"},
-            {"url": "#",
-             "text": location.name}
-        ]
+        return [{"url": reverse_lazy("locations:list"), "text": "Locations"}, {"url": "#", "text": location.name}]
 
     def get_context_data(self, **kwargs):
         context = super(LocationDetailView, self).get_context_data(**kwargs)
@@ -91,12 +98,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class LocationIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "concepts/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.LocationSublistQueryset().get_issues_queryset)
     get_queryset_user_param = True
@@ -106,12 +118,14 @@ class LocationIssuesListView(BaseSublistView):
 location_issues_list_view = LocationIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class LocationVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.LocationSublistQueryset().get_volumes_queryset)
     parent_model = Location
     get_queryset_user_param = True
@@ -120,7 +134,12 @@ class LocationVolumesListView(BaseSublistView):
 location_volumes_list_view = LocationVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class LocationIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -143,21 +162,23 @@ class LocationIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("locations:list"), "text": "Locations"},
-            {
-                "url": location.get_absolute_url(),
-                "text": location.name
-            },
+            {"url": location.get_absolute_url(), "text": location.name},
             {
                 "url": reverse_lazy("locations:issue_detail", args=(location.slug, issue.slug)),
-                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
-            }
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}",
+            },
         ]
 
 
 location_issue_detail_view = LocationIssueDetailView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class LocationDownloadView(BaseZipDownloadView):
     sublist_querysets = sublist_querysets.LocationSublistQueryset()
     base_model = Location

@@ -8,9 +8,18 @@ from utils.models import ComicvineSyncModel, slugify_function
 logger = getLogger(__name__ + ".Power")
 
 
-@methods_logged(logger, methods=["fill_from_comicvine", "process_document", "get_field_mapping",
-                                 "_fill_field_from_document", "_set_non_m2m_from_document", "_get_value_by_path",
-                                 "_set_m2m_from_document"])
+@methods_logged(
+    logger,
+    methods=[
+        "fill_from_comicvine",
+        "process_document",
+        "get_field_mapping",
+        "_fill_field_from_document",
+        "_set_non_m2m_from_document",
+        "_get_value_by_path",
+        "_set_m2m_from_document",
+    ],
+)
 class Power(ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_powers"
     MONGO_PROJECTION = {
@@ -20,9 +29,11 @@ class Power(ComicvineSyncModel):
         "characters": 0,
     }
     COMICVINE_INFO_TASK = power_comicvine_info_task
-    COMICVINE_API_URL = "https://comicvine.gamespot.com/api/power/4035-{id}/?" \
-                        "api_key={api_key}&" \
-                        "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,description"
+    COMICVINE_API_URL = (
+        "https://comicvine.gamespot.com/api/power/4035-{id}/?"
+        "api_key={api_key}&"
+        "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,description"
+    )
 
     logger = logger
 
@@ -33,9 +44,9 @@ class Power(ComicvineSyncModel):
     thumb_url = models.URLField(max_length=1000, null=True)
     image_url = models.URLField(max_length=1000, null=True)
 
-    slug = AutoSlugField(populate_from=["name"], slugify_function=slugify_function, overwrite=True,
-                         max_length=1000,
-                         unique=True)
+    slug = AutoSlugField(
+        populate_from=["name"], slugify_function=slugify_function, overwrite=True, max_length=1000, unique=True
+    )
 
     tracker = FieldTracker()
 

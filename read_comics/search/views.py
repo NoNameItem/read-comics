@@ -20,16 +20,16 @@ logger = logging.getLogger(__name__)
 class RestrictModelMixin:
     MODELS = {
         "all": (),
-        "characters": (Character, ),
-        "concepts": (Concept, ),
-        "issues": (Issue, ),
-        "locations": (Location, ),
-        "objects": (Object, ),
-        "people": (Person, ),
-        "publishers": (Publisher, ),
-        "story_arcs": (StoryArc, ),
-        "teams": (Team, ),
-        "volumes": (Volume, )
+        "characters": (Character,),
+        "concepts": (Concept,),
+        "issues": (Issue,),
+        "locations": (Location,),
+        "objects": (Object,),
+        "people": (Person,),
+        "publishers": (Publisher,),
+        "story_arcs": (StoryArc,),
+        "teams": (Team,),
+        "volumes": (Volume,),
     }
 
     MODEL_PARAM = "category"
@@ -43,7 +43,12 @@ class RestrictModelMixin:
         return self.MODELS[self.category]
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class SearchView(ElidedPagesPaginatorMixin, RestrictModelMixin, BreadcrumbMixin, BaseSearchView):
     template_name = "search/search.html"
     paginate_by = 50
@@ -59,7 +64,12 @@ class SearchView(ElidedPagesPaginatorMixin, RestrictModelMixin, BreadcrumbMixin,
 search_view = SearchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class AjaxSearchView(RestrictModelMixin, SearchApiView):
     def get_queryset(self):
         return super(AjaxSearchView, self).get_queryset()[:10]

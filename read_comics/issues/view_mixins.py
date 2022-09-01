@@ -17,11 +17,16 @@ class IssuesSublistQueryset:
         return q.annotate(
             parent_slug=Value(obj.slug),
             badge_name=Concat(
-                F("volume__name"), Value(" ("), F("volume__start_year"), Value(") #"), F("number"), Value(" "),
+                F("volume__name"),
+                Value(" ("),
+                F("volume__start_year"),
+                Value(") #"),
+                F("number"),
+                Value(" "),
                 F("name"),
-                output_field=TextField()
+                output_field=TextField(),
             ),
-            desc=F("cover_date")
+            desc=F("cover_date"),
         )
 
     @staticmethod
@@ -38,15 +43,7 @@ class IssuesSublistQueryset:
 
     def get_issues_queryset(self, obj, user=None):
         return self._annotate_issues_as_finished(
-            self._break_issues(
-                self._annotate_issues(
-                    self._order_issues(
-                        self._get_issues_sublist(obj)
-                    ),
-                    obj
-                )
-            ),
-            user
+            self._break_issues(self._annotate_issues(self._order_issues(self._get_issues_sublist(obj)), obj)), user
         )
 
 
@@ -62,17 +59,17 @@ class IssuesViewMixin:
         }
 
         if self.request.user.is_authenticated:
-            issues_info["finished_issues_count"] = self.sublist_querysets.get_issues_queryset(
-                self.object, self.request.user
-            ).exclude(finished_flg=0).count()
+            issues_info["finished_issues_count"] = (
+                self.sublist_querysets.get_issues_queryset(self.object, self.request.user)
+                .exclude(finished_flg=0)
+                .count()
+            )
             try:
                 issues_info["finished_percent"] = issues_info["finished_issues_count"] / issues_info["count"] * 100
             except ZeroDivisionError:
                 issues_info["finished_percent"] = 100
 
-        issues_info.update(
-            get_first_page(self.sublist_querysets.get_issues_queryset(self.object, self.request.user))
-        )
+        issues_info.update(get_first_page(self.sublist_querysets.get_issues_queryset(self.object, self.request.user)))
         context["issues_info"] = issues_info
 
         return context

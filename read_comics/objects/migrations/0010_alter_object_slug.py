@@ -7,13 +7,15 @@ import django_extensions.db.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('objects', '0009_alter_object_id'),
+        ("objects", "0009_alter_object_id"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='object',
-            name='slug',
-            field=django_extensions.db.fields.AutoSlugField(blank=True, editable=False, max_length=1000, overwrite=True, populate_from=['name'], unique=True),
+            model_name="object",
+            name="slug",
+            field=django_extensions.db.fields.AutoSlugField(
+                blank=True, editable=False, max_length=1000, overwrite=True, populate_from=["name"], unique=True
+            ),
         ),
     ]

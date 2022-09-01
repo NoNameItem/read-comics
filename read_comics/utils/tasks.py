@@ -41,21 +41,20 @@ class BaseSpaceTask(Task):
                 self._logger.debug(f"Creating entry level task with key {s3object[0]}")
                 self.PROCESS_ENTRY_TASK.apply_async(
                     (),
-                    {
-                        "key": s3object[0],
-                        "size": s3object[1],
-                        "parent_entry_id": kwargs.get("parent_entry_id")
-                    },
-                    priority=0
+                    {"key": s3object[0], "size": s3object[1], "parent_entry_id": kwargs.get("parent_entry_id")},
+                    priority=0,
                 )
         self._logger.debug(f"Ended processing prefix {kwargs['prefix']}")
 
     def __init__(self):
         session = boto3.session.Session()
-        s3 = session.resource("s3", region_name=settings.DO_SPACE_DATA_REGION,
-                              endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
-                              aws_access_key_id=settings.DO_SPACE_DATA_KEY,
-                              aws_secret_access_key=settings.DO_SPACE_DATA_SECRET)
+        s3 = session.resource(
+            "s3",
+            region_name=settings.DO_SPACE_DATA_REGION,
+            endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
+            aws_access_key_id=settings.DO_SPACE_DATA_KEY,
+            aws_secret_access_key=settings.DO_SPACE_DATA_SECRET,
+        )
         self._bucket = s3.Bucket(settings.DO_SPACE_DATA_BUCKET)
         self._regexp = re.compile(r"^.[^\/]+(\/|.cb.)$")
         self._logger = get_task_logger(self.LOGGER_NAME)
@@ -99,9 +98,7 @@ class BaseProcessEntryTask(Task):
         comicvine_id = self.get_comicvine_id(kwargs["key"])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         instance, created, matched = model.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            self.get_defaults(**kwargs),
-            force_refresh=True
+            comicvine_id, self.get_defaults(**kwargs), force_refresh=True
         )
         if self.MISSING_ISSUES_TASK:
             task = signature(self.MISSING_ISSUES_TASK, kwargs={"pk": instance.pk})
@@ -110,14 +107,7 @@ class BaseProcessEntryTask(Task):
         if self.NEXT_LEVEL_TASK is not None:
             self._logger.debug(f"Creating next level task with prefix {kwargs['key']}")
             # self.NEXT_LEVEL_TASK.delay(prefix=kwargs["key"], parent_entry_id=instance.pk)
-            self.NEXT_LEVEL_TASK.apply_async(
-                (),
-                {
-                    "prefix": kwargs["key"],
-                    "parent_entry_id": instance.pk
-                },
-                priority=0
-            )
+            self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=0)
         self._logger.debug(f"Ended processing key {kwargs['key']}")
 
     def __init__(self):
@@ -162,21 +152,13 @@ class BaseRefreshTask(Task):
         # Get data from DB
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         objects_list = list(
-            model.objects.exclude(
-                comicvine_status=model.ComicvineStatus.QUEUED
-            ).values(
-                "id",
-                "comicvine_id",
-                "comicvine_last_match"
+            model.objects.exclude(comicvine_status=model.ComicvineStatus.QUEUED).values(
+                "id", "comicvine_id", "comicvine_last_match"
             )
         )
         comicvine_ids = [x["comicvine_id"] for x in objects_list]
         objects_map = {
-            x["comicvine_id"]: {
-                "id": x["id"],
-                "comicvine_last_match": x["comicvine_last_match"]
-            }
-            for x in objects_list
+            x["comicvine_id"]: {"id": x["id"], "comicvine_last_match": x["comicvine_last_match"]} for x in objects_list
         }
 
         # Get data from Mongo
@@ -188,8 +170,10 @@ class BaseRefreshTask(Task):
         # Starting get data tasks
         for comicvine_object in comicvine_objects:
             obj = objects_map.get(comicvine_object["id"])
-            if obj and (obj["comicvine_last_match"] is None or
-                        obj["comicvine_last_match"] <= pytz.UTC.localize(comicvine_object["crawl_date"])):
+            if obj and (
+                obj["comicvine_last_match"] is None
+                or obj["comicvine_last_match"] <= pytz.UTC.localize(comicvine_object["crawl_date"])
+            ):
                 model_object = model.objects.get(pk=obj["id"])
                 model_object.fill_from_comicvine(delay=True)
                 model_object.save()

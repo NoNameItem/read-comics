@@ -25,26 +25,27 @@ from .models import Character
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
-class CharacterListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin,
-                        ListView):
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
+class CharacterListView(
+    ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssuesMixin, OrderingMixin, BreadcrumbMixin, ListView
+):
     context_object_name = "characters"
     template_name = "characters/list.html"
     breadcrumb = [{"url": reverse_lazy("characters:list"), "text": "Characters"}]
     paginate_by = 48
     possible_order = ("issue_count", "-issue_count", "volume_count", "-volume_count", "name", "-name")
     default_ordering = "name"
-    queryset = Character.objects.was_matched().annotate(
-        volume_count=Count("issues__volume", distinct=True)
-    ).annotate(
-        issue_count=Count("issues", distinct=True)
-    ).select_related("publisher").only(
-        "slug",
-        "thumb_url",
-        "name",
-        "publisher__thumb_url",
-        "publisher__name",
-        "short_description"
+    queryset = (
+        Character.objects.was_matched()
+        .annotate(volume_count=Count("issues__volume", distinct=True))
+        .annotate(issue_count=Count("issues", distinct=True))
+        .select_related("publisher")
+        .only("slug", "thumb_url", "name", "publisher__thumb_url", "publisher__name", "short_description")
     )
     active_menu_item = "characters"
 
@@ -52,7 +53,12 @@ class CharacterListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OnlyWithIssu
 character_list_view = CharacterListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Character
     slug_field = "slug"
@@ -64,11 +70,7 @@ class CharacterDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Br
 
     def get_breadcrumb(self):
         character = self.object
-        return [
-            {"url": reverse_lazy("characters:list"), "text": "Characters"},
-            {"url": "#",
-             "text": character.name}
-        ]
+        return [{"url": reverse_lazy("characters:list"), "text": "Characters"}, {"url": "#", "text": character.name}]
 
     def get_context_data(self, **kwargs):
         context = super(CharacterDetailView, self).get_context_data(**kwargs)
@@ -84,8 +86,8 @@ class CharacterDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Br
         context["team_enemies_count"] = self.sublist_querysets.get_team_enemies_queryset(character).count()
 
         # context.update(get_first_page_old("volumes", self.sublist_querysets.get_volumes_queryset(character)))
-        context.update(get_first_page_old(
-            "died_in", self.sublist_querysets.get_died_in_queryset(character, self.request.user))
+        context.update(
+            get_first_page_old("died_in", self.sublist_querysets.get_died_in_queryset(character, self.request.user))
         )
         context.update(get_first_page_old("authors", self.sublist_querysets.get_authors_queryset(character)))
         context.update(get_first_page_old("enemies", self.sublist_querysets.get_character_enemies_queryset(character)))
@@ -120,12 +122,17 @@ class StopWatchView(BaseStopWatchView):
 stop_watch_view = StopWatchView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getIssuesPage",
         "url_template_name": "characters/badges_urls/issue.html",
-        "break_groups": True
+        "break_groups": True,
     }
     get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_issues_queryset)
     get_queryset_user_param = True
@@ -135,12 +142,14 @@ class CharacterIssuesListView(BaseSublistView):
 character_issues_list_view = CharacterIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterVolumesListView(BaseSublistView):
-    extra_context = {
-        "get_page_function": "getVolumesPage",
-        "break_groups": True
-    }
+    extra_context = {"get_page_function": "getVolumesPage", "break_groups": True}
     get_queryset_func = staticmethod(sublist_querysets.CharacterSublistQuerysets().get_volumes_queryset)
     get_queryset_user_param = True
     parent_model = Character
@@ -149,7 +158,12 @@ class CharacterVolumesListView(BaseSublistView):
 character_volumes_list_view = CharacterVolumesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterDiedInIssuesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getDiedPage",
@@ -162,7 +176,12 @@ class CharacterDiedInIssuesListView(BaseSublistView):
 character_died_in_issues_list_view = CharacterDiedInIssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getEnemiesPage",
@@ -174,7 +193,12 @@ class CharacterEnemiesListView(BaseSublistView):
 character_enemies_list_view = CharacterEnemiesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getFriendsPage",
@@ -186,7 +210,12 @@ class CharacterFriendsListView(BaseSublistView):
 character_friends_list_view = CharacterFriendsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterTeamsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamsPage",
@@ -198,7 +227,12 @@ class CharacterTeamsListView(BaseSublistView):
 character_teams_list_view = CharacterTeamsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterTeamFriendsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamFriendsPage",
@@ -210,7 +244,12 @@ class CharacterTeamFriendsListView(BaseSublistView):
 character_team_friends_list_view = CharacterTeamFriendsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterTeamEnemiesListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getTeamEnemiesPage",
@@ -222,7 +261,12 @@ class CharacterTeamEnemiesListView(BaseSublistView):
 character_team_enemies_list_view = CharacterTeamEnemiesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterAuthorsListView(BaseSublistView):
     extra_context = {
         "get_page_function": "getAuthorsPage",
@@ -234,7 +278,12 @@ class CharacterAuthorsListView(BaseSublistView):
 character_authors_list_view = CharacterAuthorsListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterIssueDetailView(IssueDetailView):
     slug_url_kwarg = "issue_slug"
     slug_field = "slug"
@@ -257,21 +306,23 @@ class CharacterIssueDetailView(IssueDetailView):
 
         return [
             {"url": reverse_lazy("characters:list"), "text": "Characters"},
-            {
-                "url": self.base_object.get_absolute_url(),
-                "text": character.name
-            },
+            {"url": self.base_object.get_absolute_url(), "text": character.name},
             {
                 "url": reverse_lazy("characters:issue_detail", args=(character.slug, issue.slug)),
-                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}"
-            }
+                "text": f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number}",
+            },
         ]
 
 
 character_issue_detail_view = CharacterIssueDetailView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class CharacterDownloadView(BaseZipDownloadView):
     sublist_querysets = sublist_querysets.CharacterSublistQuerysets()
     base_model = Character

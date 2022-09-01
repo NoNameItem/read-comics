@@ -19,9 +19,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="character",
             name="creators",
-            field=models.ManyToManyField(
-                related_name="created_characters", to="people.Person"
-            ),
+            field=models.ManyToManyField(related_name="created_characters", to="people.Person"),
         ),
         migrations.AddField(
             model_name="character",
@@ -41,16 +39,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name="character",
             name="team_enemies",
-            field=models.ManyToManyField(
-                related_name="character_enemies", to="teams.Team"
-            ),
+            field=models.ManyToManyField(related_name="character_enemies", to="teams.Team"),
         ),
         migrations.AddField(
             model_name="character",
             name="team_friends",
-            field=models.ManyToManyField(
-                related_name="character_friends", to="teams.Team"
-            ),
+            field=models.ManyToManyField(related_name="character_friends", to="teams.Team"),
         ),
         migrations.AddField(
             model_name="character",

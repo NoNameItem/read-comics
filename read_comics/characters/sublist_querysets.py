@@ -9,20 +9,20 @@ class CharacterSublistQuerysets(IssuesSublistQueryset, VolumesSublistQueryset):
         return self._annotate_issues_as_finished(
             self._break_issues(
                 self._annotate_issues(
-                    self._order_issues(
-                        character.died_in_issues.filter(comicvine_status="MATCHED")
-                    ),
-                    character
+                    self._order_issues(character.died_in_issues.filter(comicvine_status="MATCHED")), character
                 )
             ),
-            user
+            user,
         )
 
     @staticmethod
     def get_authors_queryset(character):
-        return Person.objects.filter(created_characters=character).filter(
-            comicvine_status="MATCHED").distinct().order_by(
-            "name")
+        return (
+            Person.objects.filter(created_characters=character)
+            .filter(comicvine_status="MATCHED")
+            .distinct()
+            .order_by("name")
+        )
 
     @staticmethod
     def get_character_enemies_queryset(character):

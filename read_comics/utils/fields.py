@@ -77,8 +77,8 @@ class ThumbnailImageField(ImageField):
             ]
         else:
             if self.thumb_width and (
-                    (not isinstance(self.thumb_width, int) or isinstance(self.thumb_width, bool) or
-                     self.thumb_width <= 0)):
+                (not isinstance(self.thumb_width, int) or isinstance(self.thumb_width, bool) or self.thumb_width <= 0)
+            ):
                 return [
                     checks.Error(
                         "'thumb_width' must be a positive integer.",
@@ -86,8 +86,13 @@ class ThumbnailImageField(ImageField):
                         id="comics_db.E001",
                     )
                 ]
-            if self.thumb_height and ((not isinstance(self.thumb_height, int) or isinstance(self.thumb_height, bool) or
-                                       self.thumb_height <= 0)):
+            if self.thumb_height and (
+                (
+                    not isinstance(self.thumb_height, int)
+                    or isinstance(self.thumb_height, bool)
+                    or self.thumb_height <= 0
+                )
+            ):
                 return [
                     checks.Error(
                         "'thumb_height' must be a positive integer.",

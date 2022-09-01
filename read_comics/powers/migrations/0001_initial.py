@@ -35,9 +35,7 @@ class Migration(migrations.Migration):
                 ("image_url", models.URLField(max_length=1000, null=True)),
                 (
                     "slug",
-                    django_extensions.db.fields.AutoSlugField(
-                        blank=True, editable=False, populate_from=["name"]
-                    ),
+                    django_extensions.db.fields.AutoSlugField(blank=True, editable=False, populate_from=["name"]),
                 ),
             ],
             options={

@@ -23,7 +23,12 @@ from read_comics.issues.models import FinishedIssue, Issue
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, BreadcrumbMixin, ListView):
     context_object_name = "issues"
     template_name = "issues/list.html"
@@ -33,7 +38,7 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
         "name": ("volume__name", "volume__start_year", "numerical_number", "number"),
         "-name": ("-volume__name", "-volume__start_year", "-numerical_number", "-number"),
         "cover_date": ("cover_date", "volume__name", "volume__start_year", "numerical_number", "number"),
-        "-cover_date": ("-cover_date", "-volume__name", "-volume__start_year", "-numerical_number", "-number")
+        "-cover_date": ("-cover_date", "-volume__name", "-volume__start_year", "-numerical_number", "-number"),
     }
     default_ordering = ("cover_date", "volume", "volume__start_year", "number")
     queryset = Issue.objects.matched().select_related("volume", "volume__publisher")
@@ -53,7 +58,8 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
         q = super(IssuesListView, self).get_queryset()
         if self.request.user.is_authenticated:
             q = q.annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user)))
+                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+            )
             if self.request.GET.get("hide_finished", "yes") == "yes":
                 return q.filter(finished_flg=0)
         return q
@@ -62,7 +68,12 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
 issues_list_view = IssuesListView.as_view()
 
 
-@logging.methods_logged(logger, ["get", ])
+@logging.methods_logged(
+    logger,
+    [
+        "get",
+    ],
+)
 class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Issue
     queryset = Issue.objects.select_related("volume", "volume__publisher")
@@ -78,8 +89,7 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         return [
             {"url": reverse_lazy("issues:list") + "?ordering=" + self.get_ordering(), "text": "Issues"},
-            {"url": "#",
-             "text": f"{issue.get_volume_name()} ({issue.get_volume_start_year()}) #{issue.number}"}
+            {"url": "#", "text": f"{issue.get_volume_name()} ({issue.get_volume_start_year()}) #{issue.number}"},
         ]
 
     def get_context_data(self, **kwargs):
@@ -91,9 +101,10 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                 "name": x.person.name,
                 "desc": x.role,
                 "square_avatar": x.person.square_avatar,
-                "get_absolute_url": x.person.get_absolute_url()
+                "get_absolute_url": x.person.get_absolute_url(),
             }
-            for x in issue.authors.select_related("person")]
+            for x in issue.authors.select_related("person")
+        ]
 
         if self.request.user.is_authenticated:
             with suppress(FinishedIssue.DoesNotExist):
@@ -104,21 +115,28 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
         context["number_in_sublist"] = self.get_previous_queryset().count() + 1
         context["total_in_sublist"] = self.base_queryset.count()
 
-        context["first_appearance_characters_count"] = issue.first_appearance_characters. \
-            filter(comicvine_status="MATCHED").count()
-        context["first_appearance_concepts_count"] = issue.first_appearance_concepts. \
-            filter(comicvine_status="MATCHED").count()
-        context["first_appearance_objects_count"] = issue.first_appearance_objects. \
-            filter(comicvine_status="MATCHED").count()
-        context["first_appearance_locations_count"] = issue.first_appearance_locations. \
-            filter(comicvine_status="MATCHED").count()
-        context["first_appearance_teams_count"] = issue.first_appearance_teams. \
-            filter(comicvine_status="MATCHED").count()
-        context["first_appearance_count"] = (context["first_appearance_characters_count"] +
-                                             context["first_appearance_concepts_count"] +
-                                             context["first_appearance_objects_count"] +
-                                             context["first_appearance_locations_count"] +
-                                             context["first_appearance_teams_count"])
+        context["first_appearance_characters_count"] = issue.first_appearance_characters.filter(
+            comicvine_status="MATCHED"
+        ).count()
+        context["first_appearance_concepts_count"] = issue.first_appearance_concepts.filter(
+            comicvine_status="MATCHED"
+        ).count()
+        context["first_appearance_objects_count"] = issue.first_appearance_objects.filter(
+            comicvine_status="MATCHED"
+        ).count()
+        context["first_appearance_locations_count"] = issue.first_appearance_locations.filter(
+            comicvine_status="MATCHED"
+        ).count()
+        context["first_appearance_teams_count"] = issue.first_appearance_teams.filter(
+            comicvine_status="MATCHED"
+        ).count()
+        context["first_appearance_count"] = (
+            context["first_appearance_characters_count"]
+            + context["first_appearance_concepts_count"]
+            + context["first_appearance_objects_count"]
+            + context["first_appearance_locations_count"]
+            + context["first_appearance_teams_count"]
+        )
 
         context["characters_count"] = issue.characters.filter(comicvine_status="MATCHED").count()
         context["characters_died_count"] = issue.characters_died.filter(comicvine_status="MATCHED").count()
@@ -142,16 +160,24 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
 
         if self.request.user.is_authenticated:
             context["base_total_count"] = self.base_queryset.count()
-            context["finished_count"] = self.base_queryset.annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["finished_count"] = (
+                self.base_queryset.annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["finished_percent"] = context["finished_count"] / context["base_total_count"] * 100
             context["base_object"] = self.base_object
 
             context["volume_total_count"] = issue.volume.issues.count()
-            context["volume_finished_count"] = issue.volume.issues.annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["volume_finished_count"] = (
+                issue.volume.issues.annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["volume_finished_percent"] = context["volume_finished_count"] / context["volume_total_count"] * 100
 
         return context
@@ -175,58 +201,61 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                 "-cover_date": self.before_by_cover_date,
                 "cover_date": self.after_by_cover_date,
                 "name": self.after_by_name,
-                "-name": self.before_by_name
+                "-name": self.before_by_name,
             }[ordering](issue)
         except ValueError:
             return self.base_queryset.none()
 
     # noinspection DuplicatedCode
     def before_by_name(self, issue):
-        return self.base_queryset.exclude(pk=issue.pk).filter(
-            Q(volume__name__lt=issue.volume.name) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year__lt=issue.volume.start_year)
-            ) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number__lt=issue.numerical_number)
-            ) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number=issue.numerical_number) &
-                Q(number__lt=issue.number)
+        return (
+            self.base_queryset.exclude(pk=issue.pk)
+            .filter(
+                Q(volume__name__lt=issue.volume.name)
+                | (Q(volume__name=issue.volume.name) & Q(volume__start_year__lt=issue.volume.start_year))
+                | (
+                    Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number__lt=issue.numerical_number)
+                )
+                | (
+                    Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number=issue.numerical_number)
+                    & Q(number__lt=issue.number)
+                )
             )
-        ).order_by("-volume__name", "-volume__start_year", "-numerical_number", "-number")
+            .order_by("-volume__name", "-volume__start_year", "-numerical_number", "-number")
+        )
 
     # noinspection DuplicatedCode
     def before_by_cover_date(self, issue):
-        return self.base_queryset.exclude(pk=issue.pk).filter(
-            Q(cover_date__lt=issue.cover_date) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name__lt=issue.volume.name)) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year__lt=issue.volume.start_year)
-            ) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number__lt=issue.numerical_number)
-            ) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number=issue.numerical_number) &
-                Q(number__lt=issue.number)
+        return (
+            self.base_queryset.exclude(pk=issue.pk)
+            .filter(
+                Q(cover_date__lt=issue.cover_date)
+                | (Q(cover_date=issue.cover_date) & Q(volume__name__lt=issue.volume.name))
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year__lt=issue.volume.start_year)
+                )
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number__lt=issue.numerical_number)
+                )
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number=issue.numerical_number)
+                    & Q(number__lt=issue.number)
+                )
             )
-        ).order_by("-cover_date", "-volume__name", "-volume__start_year", "-numerical_number", "-number")
+            .order_by("-cover_date", "-volume__name", "-volume__start_year", "-numerical_number", "-number")
+        )
 
     def get_previous_link(self):
         issues = self.get_previous_queryset()
@@ -244,58 +273,61 @@ class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
                 "cover_date": self.before_by_cover_date,
                 "-cover_date": self.after_by_cover_date,
                 "-name": self.after_by_name,
-                "name": self.before_by_name
+                "name": self.before_by_name,
             }[ordering](issue)
         except ValueError:
             return self.base_queryset.none()
 
     # noinspection DuplicatedCode
     def after_by_name(self, issue):
-        return self.base_queryset.exclude(pk=issue.pk).filter(
-            Q(volume__name__gt=issue.volume.name) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year__gt=issue.volume.start_year)
-            ) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number__gt=issue.numerical_number)
-            ) |
-            (
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number=issue.numerical_number) &
-                Q(number__gt=issue.number)
+        return (
+            self.base_queryset.exclude(pk=issue.pk)
+            .filter(
+                Q(volume__name__gt=issue.volume.name)
+                | (Q(volume__name=issue.volume.name) & Q(volume__start_year__gt=issue.volume.start_year))
+                | (
+                    Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number__gt=issue.numerical_number)
+                )
+                | (
+                    Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number=issue.numerical_number)
+                    & Q(number__gt=issue.number)
+                )
             )
-        ).order_by("volume__name", "volume__start_year", "numerical_number", "number")
+            .order_by("volume__name", "volume__start_year", "numerical_number", "number")
+        )
 
     # noinspection DuplicatedCode
     def after_by_cover_date(self, issue):
-        return self.base_queryset.exclude(pk=issue.pk).filter(
-            Q(cover_date__gt=issue.cover_date) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name__gt=issue.volume.name)) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year__gt=issue.volume.start_year)
-            ) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number__gt=issue.numerical_number)
-            ) |
-            (
-                Q(cover_date=issue.cover_date) &
-                Q(volume__name=issue.volume.name) &
-                Q(volume__start_year=issue.volume.start_year) &
-                Q(numerical_number=issue.numerical_number) &
-                Q(number__gt=issue.number)
+        return (
+            self.base_queryset.exclude(pk=issue.pk)
+            .filter(
+                Q(cover_date__gt=issue.cover_date)
+                | (Q(cover_date=issue.cover_date) & Q(volume__name__gt=issue.volume.name))
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year__gt=issue.volume.start_year)
+                )
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number__gt=issue.numerical_number)
+                )
+                | (
+                    Q(cover_date=issue.cover_date)
+                    & Q(volume__name=issue.volume.name)
+                    & Q(volume__start_year=issue.volume.start_year)
+                    & Q(numerical_number=issue.numerical_number)
+                    & Q(number__gt=issue.number)
+                )
             )
-        ).order_by("cover_date", "volume__name", "volume__start_year", "numerical_number", "number")
+            .order_by("cover_date", "volume__name", "volume__start_year", "numerical_number", "number")
+        )
 
     def issue_to_url(self, issue):
         return issue.get_absolute_url() + f"?ordering={self.get_ordering()}"
@@ -312,9 +344,9 @@ class IssueDownloadView(SingleObjectMixin, View):
     queryset = Issue.objects.matched()
 
     def get(self, request, *args, **kwargs):
-        if ((not request.user.is_authenticated or not request.user.unlimited_downloads)
-            and request.session.get("last_download", 0) >
-                datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+        if (not request.user.is_authenticated or not request.user.unlimited_downloads) and request.session.get(
+            "last_download", 0
+        ) > datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT:
             sleep(settings.DOWNLOAD_TIMEOUT)
 
         request.session["last_download"] = datetime.datetime.now().timestamp()
@@ -330,9 +362,13 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
         context = {}
         if self.request.user.is_authenticated:
             context["total_count"] = issue.volume.issues.count()
-            context["finished_count"] = issue.volume.issues.annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["finished_count"] = (
+                issue.volume.issues.annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
             context["base_object"] = issue.volume
             context["progress_report_card_class"] = "volume-progress-report-card"
@@ -342,9 +378,14 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
         context = {}
         if self.request.user.is_authenticated:
             context["total_count"] = Issue.objects.matched().count()
-            context["finished_count"] = Issue.objects.matched().annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["finished_count"] = (
+                Issue.objects.matched()
+                .annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
         return context
 
@@ -356,9 +397,14 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
             obj = model.objects.get(slug=slug)
             context["base_object"] = obj
             context["total_count"] = obj.issues.filter(comicvine_status="MATCHED").count()
-            context["finished_count"] = obj.issues.filter(comicvine_status="MATCHED").annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["finished_count"] = (
+                obj.issues.filter(comicvine_status="MATCHED")
+                .annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
 
         return context
@@ -370,14 +416,18 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
             model = apps.get_model("publishers", "Publisher")
             publisher = model.objects.get(slug=slug)
             context["base_object"] = publisher
-            context["total_count"] = Issue.objects.filter(comicvine_status="MATCHED").filter(
-                volume__publisher=publisher
-            ).count()
-            context["finished_count"] = Issue.objects.filter(comicvine_status="MATCHED").filter(
-                volume__publisher=publisher
-            ).annotate(
-                finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
-            ).exclude(finished_flg=0).count()
+            context["total_count"] = (
+                Issue.objects.filter(comicvine_status="MATCHED").filter(volume__publisher=publisher).count()
+            )
+            context["finished_count"] = (
+                Issue.objects.filter(comicvine_status="MATCHED")
+                .filter(volume__publisher=publisher)
+                .annotate(
+                    finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
+                )
+                .exclude(finished_flg=0)
+                .count()
+            )
             context["finished_percent"] = context["finished_count"] / context["total_count"] * 100
 
         return context
@@ -408,16 +458,24 @@ class IssueMarkFinishedView(LoginRequiredMixin, View):
             issue.finished_users.add(user)
             finished_stats = self.get_finished_stats()
 
-            return JsonResponse({"status": "success", "issue_name": issue.get_full_name(),
-                                 "date": formats.localize(datetime.date.today(), use_l10n=True),
-                                 "finished_stats": finished_stats,
-                                 "volume_finished_stats": self.get_volume_finished_stats(issue)
-                                 })
+            return JsonResponse(
+                {
+                    "status": "success",
+                    "issue_name": issue.get_full_name(),
+                    "date": formats.localize(datetime.date.today(), use_l10n=True),
+                    "finished_stats": finished_stats,
+                    "volume_finished_stats": self.get_volume_finished_stats(issue),
+                }
+            )
         except IntegrityError:
             return JsonResponse({"status": "error", "message": "You already marked this issue as finished"})
         except Exception as err:
-            return JsonResponse({"status": "error", "message": "Unknown error, please contact administrator. \n"
-                                                               f"Error message: {err.args[0]}"})
+            return JsonResponse(
+                {
+                    "status": "error",
+                    "message": "Unknown error, please contact administrator. \n" f"Error message: {err.args[0]}",
+                }
+            )
 
 
 issue_mark_finished_view = IssueMarkFinishedView.as_view()

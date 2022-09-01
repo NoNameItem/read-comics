@@ -27,7 +27,7 @@ def get_queued_stats():
         "publishers_count": Publisher.objects.queued().count(),
         "story_arcs_count": StoryArc.objects.queued().count(),
         "teams_count": Team.objects.queued().count(),
-        "volumes_count": Volume.objects.queued().count()
+        "volumes_count": Volume.objects.queued().count(),
     }
     stats["total"] = sum(stats.values())
 
@@ -46,7 +46,7 @@ def get_matched_stats():
         "publishers_count": Publisher.objects.matched().count(),
         "story_arcs_count": StoryArc.objects.matched().count(),
         "teams_count": Team.objects.matched().count(),
-        "volumes_count": Volume.objects.matched().count()
+        "volumes_count": Volume.objects.matched().count(),
     }
     stats["total"] = sum(stats.values())
 
@@ -65,7 +65,7 @@ def get_not_matched_stats():
         "publishers_count": Publisher.objects.not_matched().count(),
         "story_arcs_count": StoryArc.objects.not_matched().count(),
         "teams_count": Team.objects.not_matched().count(),
-        "volumes_count": Volume.objects.not_matched().count()
+        "volumes_count": Volume.objects.not_matched().count(),
     }
     stats["total"] = sum(stats.values())
 
@@ -84,7 +84,7 @@ def get_was_matched_stats():
         "publishers_count": Publisher.objects.was_matched().count(),
         "story_arcs_count": StoryArc.objects.was_matched().count(),
         "teams_count": Team.objects.was_matched().count(),
-        "volumes_count": Volume.objects.was_matched().count()
+        "volumes_count": Volume.objects.was_matched().count(),
     }
     stats["total"] = sum(stats.values())
 
@@ -94,21 +94,13 @@ def get_was_matched_stats():
 # noinspection DuplicatedCode
 def get_not_comicvine_actual_count(model):
     objects_list = list(
-        model.objects.exclude(
-            comicvine_status=model.ComicvineStatus.QUEUED
-        ).values(
-            "id",
-            "comicvine_id",
-            "comicvine_last_match"
+        model.objects.exclude(comicvine_status=model.ComicvineStatus.QUEUED).values(
+            "id", "comicvine_id", "comicvine_last_match"
         )
     )
     comicvine_ids = [x["comicvine_id"] for x in objects_list]
     objects_map = {
-        x["comicvine_id"]: {
-            "id": x["id"],
-            "comicvine_last_match": x["comicvine_last_match"]
-        }
-        for x in objects_list
+        x["comicvine_id"]: {"id": x["id"], "comicvine_last_match": x["comicvine_last_match"]} for x in objects_list
     }
 
     # Get data from Mongo
@@ -121,8 +113,10 @@ def get_not_comicvine_actual_count(model):
     count = 0
     for comicvine_object in comicvine_objects:
         obj = objects_map.get(comicvine_object["id"])
-        if obj and (obj["comicvine_last_match"] is None
-                    or obj["comicvine_last_match"] <= pytz.UTC.localize(comicvine_object["crawl_date"])):
+        if obj and (
+            obj["comicvine_last_match"] is None
+            or obj["comicvine_last_match"] <= pytz.UTC.localize(comicvine_object["crawl_date"])
+        ):
             count += 1
 
     return count
@@ -130,17 +124,17 @@ def get_not_comicvine_actual_count(model):
 
 def get_not_actual_stats():
     stats = {
-       "characters_count": get_not_comicvine_actual_count(Character),
-       "concepts_count": get_not_comicvine_actual_count(Concept),
-       "issues_count": get_not_comicvine_actual_count(Issue),
-       "locations_count": get_not_comicvine_actual_count(Location),
-       "objects_count": get_not_comicvine_actual_count(Object),
-       "people_count": get_not_comicvine_actual_count(Person),
-       "powers_count": get_not_comicvine_actual_count(Power),
-       "publishers_count": get_not_comicvine_actual_count(Publisher),
-       "story_arcs_count": get_not_comicvine_actual_count(StoryArc),
-       "teams_count": get_not_comicvine_actual_count(Team),
-       "volumes_count": get_not_comicvine_actual_count(Volume)
+        "characters_count": get_not_comicvine_actual_count(Character),
+        "concepts_count": get_not_comicvine_actual_count(Concept),
+        "issues_count": get_not_comicvine_actual_count(Issue),
+        "locations_count": get_not_comicvine_actual_count(Location),
+        "objects_count": get_not_comicvine_actual_count(Object),
+        "people_count": get_not_comicvine_actual_count(Person),
+        "powers_count": get_not_comicvine_actual_count(Power),
+        "publishers_count": get_not_comicvine_actual_count(Publisher),
+        "story_arcs_count": get_not_comicvine_actual_count(StoryArc),
+        "teams_count": get_not_comicvine_actual_count(Team),
+        "volumes_count": get_not_comicvine_actual_count(Volume),
     }
     stats["total"] = sum(stats.values())
 

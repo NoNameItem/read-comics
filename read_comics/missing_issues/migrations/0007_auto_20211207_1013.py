@@ -6,33 +6,33 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0006_auto_20211207_0948'),
+        ("missing_issues", "0006_auto_20211207_0948"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='ignoredissue',
-            name='publisher_comicvine_id',
+            model_name="ignoredissue",
+            name="publisher_comicvine_id",
             field=models.IntegerField(null=True),
         ),
         migrations.AddField(
-            model_name='ignoredvolume',
-            name='publisher_comicvine_id',
+            model_name="ignoredvolume",
+            name="publisher_comicvine_id",
             field=models.IntegerField(null=True),
         ),
         migrations.AlterField(
-            model_name='ignoredissue',
-            name='publisher_name',
+            model_name="ignoredissue",
+            name="publisher_name",
             field=models.TextField(null=True),
         ),
         migrations.AlterField(
-            model_name='ignoredpublisher',
-            name='name',
+            model_name="ignoredpublisher",
+            name="name",
             field=models.TextField(null=True),
         ),
         migrations.AlterField(
-            model_name='ignoredvolume',
-            name='publisher_name',
+            model_name="ignoredvolume",
+            name="publisher_name",
             field=models.TextField(null=True),
         ),
     ]

@@ -51,10 +51,7 @@ class LogUserFilter(logging.Filter):
 def log_value(arg):
     arg_type = type(arg)
     if isinstance(arg, QuerySet):
-        arg = {
-            "db": arg.db,
-            "query": str(arg.query)
-        }
+        arg = {"db": arg.db, "query": str(arg.query)}
     if isinstance(arg, DRFRequest):
         _resolver_match = arg._request.resolver_match  # noqa
         if _resolver_match:
@@ -63,7 +60,7 @@ def log_value(arg):
                 "url_name": _resolver_match.url_name,
                 "view_name": _resolver_match.view_name,
                 "args": _resolver_match.args,
-                "kwargs": _resolver_match.kwargs
+                "kwargs": _resolver_match.kwargs,
             }
         else:
             resolver_match = None
@@ -73,8 +70,7 @@ def log_value(arg):
             "resolver_match": resolver_match,
             "data": arg.data,
             "has_files": len(arg.FILES) > 0,
-            "user": str(arg.user)
-
+            "user": str(arg.user),
         }
     elif isinstance(arg, HttpRequest):
         _resolver_match = arg.resolver_match
@@ -84,7 +80,7 @@ def log_value(arg):
                 "url_name": _resolver_match.url_name,
                 "view_name": _resolver_match.view_name,
                 "args": _resolver_match.args,
-                "kwargs": _resolver_match.kwargs
+                "kwargs": _resolver_match.kwargs,
             }
         else:
             resolver_match = None
@@ -95,20 +91,16 @@ def log_value(arg):
             "GET": dict(arg.GET.lists()),
             "POST": dict(arg.POST.lists()),
             "has_files": len(arg.FILES) > 0,
-            "user": str(arg.user)
-
+            "user": str(arg.user),
         }
     elif isinstance(arg, TemplateResponse):
-        arg = {
-            "template_name": arg.template_name,
-            "context_data": arg.context_data
-        }
+        arg = {"template_name": arg.template_name, "context_data": arg.context_data}
     elif isinstance(arg, Response):
         arg = {
             "status_code": arg.status_code,
             "status_text": arg.status_text,
             "content_type": arg.content_type,
-            "data": arg.data
+            "data": arg.data,
         }
     try:
         arg_str = json.dumps(arg, indent=2, ensure_ascii=False, cls=ReprEncoder)
@@ -138,10 +130,12 @@ def logged(logger, function_name=None, trace=False, unhandled_error_level=loggin
                 logger.debug(f"{name} return value ({result_type}): \n{result_str}\n")
                 return result
             except Exception as e:
-                logger.log(unhandled_error_level,
-                           f'Unhandled exception in {name}: "{repr(e)}". It may be handled later, '
-                           f"but check django logs for all unhandled errors",
-                           exc_info=trace)
+                logger.log(
+                    unhandled_error_level,
+                    f'Unhandled exception in {name}: "{repr(e)}". It may be handled later, '
+                    f"but check django logs for all unhandled errors",
+                    exc_info=trace,
+                )
                 raise
             finally:
                 logger.debug(f"<<< Exiting {name}")
@@ -159,10 +153,11 @@ def methods_logged(logger, methods=None):
             raise TypeError(f"Decorator `methods_logged` should be used on class. Got {cls} instead")
 
         if not methods:
-            _methods = [(getattr(cls, x), x, {"function_name": f"{cls.__name__}.{x}"}) for x in dir(cls)
-                        if (not x.startswith("__"))
-                        and callable(getattr(cls, x))
-                        and (not isinstance(getattr(cls, x), type))]
+            _methods = [
+                (getattr(cls, x), x, {"function_name": f"{cls.__name__}.{x}"})
+                for x in dir(cls)
+                if (not x.startswith("__")) and callable(getattr(cls, x)) and (not isinstance(getattr(cls, x), type))
+            ]
         else:
             _methods = []
             for method in methods:
@@ -175,8 +170,7 @@ def methods_logged(logger, methods=None):
                         if not isinstance(method[1], dict):
                             raise ValueError()
                         method_conf = method[1]
-                        method_conf["function_name"] = method_conf.get("function_name",
-                                                                       f"{cls.__name__}.{method_name}")
+                        method_conf["function_name"] = method_conf.get("function_name", f"{cls.__name__}.{method_name}")
                     except (TypeError, ValueError):
                         raise ValueError(
                             "Elements of keyword argument `methods` must be either names of methods or tuples "
@@ -190,8 +184,7 @@ def methods_logged(logger, methods=None):
                 _method = getattr(cls, method_name)
                 if not callable(_method):
                     raise TypeError(
-                        f"Cannot decorate '{method_name}' as it isn't a callable attribute of "
-                        f"{cls} ({_method})."
+                        f"Cannot decorate '{method_name}' as it isn't a callable attribute of " f"{cls} ({_method})."
                     )
                 _methods.append((_method, method_name, method_conf))
 
