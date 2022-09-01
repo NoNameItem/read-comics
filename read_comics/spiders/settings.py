@@ -6,7 +6,7 @@ ROOT_DIR = (
 
 env = environ.Env()
 
-env.read_env(str(ROOT_DIR.path(".env")))
+# env.read_env(str(ROOT_DIR.path(".env")))
 
 # -*- coding: utf-8 -*-
 

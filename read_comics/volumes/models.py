@@ -86,7 +86,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
     last_issue = models.ForeignKey("issues.Issue", null=True, on_delete=models.SET_NULL,
                                    related_name="last_issue_of")
     last_issue_comicvine_id = models.IntegerField(null=True)
-    last_issue_number = models.CharField(max_length=10, null=True)
+    last_issue_number = models.CharField(max_length=100, null=True)
 
     publisher = models.ForeignKey("publishers.Publisher", related_name="volumes", on_delete=models.CASCADE, null=True)
 
