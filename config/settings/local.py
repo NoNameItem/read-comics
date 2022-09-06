@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 from .base import *  # noqa
 from .base import env
 
@@ -72,3 +74,9 @@ STATICFILES_DIRS += ["read_comics/static"]  # noqa F405 # Duplicate for PyCharm 
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [  # noqa F405
     "read_comics.users.context_processors.email_verified_context"
 ]  # noqa F405
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+}

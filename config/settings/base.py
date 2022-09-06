@@ -89,6 +89,9 @@ THIRD_PARTY_APPS = [
     "corsheaders",
     "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig",
     "watson",
+    "dj_rest_auth",
+    "dj_rest_auth.registration",
+    "rest_framework_simplejwt.token_blacklist",
 ]
 
 LOCAL_APPS = [
@@ -373,10 +376,19 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework.authentication.SessionAuthentication",
-        "rest_framework.authentication.TokenAuthentication",
+        # "rest_framework.authentication.SessionAuthentication",
+        "dj_rest_auth.jwt_auth.JWTCookieAuthentication",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+}
+
+REST_USE_JWT = True
+JWT_AUTH_COOKIE = "read-comics-auth"
+JWT_AUTH_REFRESH_COOKIE = "read-comics-refresh-token"
+
+
+REST_AUTH_SERIALIZERS = {
+    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer",
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
@@ -395,7 +407,6 @@ DO_SPACE_DATA_BUCKET = env("DO_SPACE_DATA_BUCKET")
 DO_SPACE_DATA_KEY = env("DO_SPACE_DATA_KEY")
 DO_SPACE_DATA_SECRET = env("DO_SPACE_DATA_SECRET")
 DO_SPACE_DATA_PUBLIC_URL = env("DO_SPACE_DATA_PUBLIC_URL")
-
 
 SKIP_DAYS = int(env("SKIP_DAYS", default=7))
 DOWNLOAD_TIMEOUT = int(env("DOWNLOAD_TIMEOUT", default=30))

@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+from datetime import timedelta
 from tempfile import SpooledTemporaryFile
 
 import sentry_sdk
@@ -247,3 +248,10 @@ IGNORABLE_404_URLS = [
     re.compile(r"^/favicon\.ico$"),
     re.compile(r"^.*/images/logo\.png$"),
 ]
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
