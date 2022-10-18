@@ -75,8 +75,15 @@ TEMPLATES[0]["OPTIONS"]["context_processors"] += [  # noqa F405
     "read_comics.users.context_processors.email_verified_context"
 ]  # noqa F405
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=1),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
-    "ROTATE_REFRESH_TOKENS": False,
-    "BLACKLIST_AFTER_ROTATION": False,
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:5173",
+    "http://0.0.0.0:5173",
+    "http://127.0.0.1:5173",
+    "http://my-dev-env.local:5173",
+]

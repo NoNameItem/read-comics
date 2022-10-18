@@ -392,7 +392,7 @@ REST_AUTH_SERIALIZERS = {
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
-CORS_URLS_REGEX = r"^/(api|auth)/.*$"
+CORS_URLS_REGEX = r"^/api/.*$"
 # Your stuff...
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))

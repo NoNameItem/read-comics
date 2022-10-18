@@ -9,7 +9,7 @@ urlpatterns = [
     path("", include("read_comics.pages.urls", namespace="pages")),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
-    path("auth/", include("dj_rest_auth.urls")),
+    path("api/auth/", include("dj_rest_auth.urls")),
     # User management
     # path("users/", include("read_comics.users.urls", namespace="users")),
     # path("accounts/", include("allauth.urls")),
