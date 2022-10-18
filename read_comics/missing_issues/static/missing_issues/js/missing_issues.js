@@ -29,11 +29,13 @@ function initButtons() {
     let url = $(this).attr('data-href');
     $(this).tooltip('hide');
     $('.btn-skip, .btn-ignore').attr('disabled', 'disabled');
+    const scrollPosition = $('#inner-table-wrapper').scrollTop();
     $.ajax({
       url  : url,
       type : 'GET'
     }).done(function (data, textStatus, jqXHR) {
       $('#table-wrapper').html(data);
+      $('#inner-table-wrapper').scrollTop(scrollPosition);
       updateBadges();
       initButtons();
       initCopy();
