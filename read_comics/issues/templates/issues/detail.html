@@ -181,7 +181,7 @@
                 role="tablist">
 {#                {% if request.user.is_authenticated %}#}
                   <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{% url "issues:download" issue.slug %}">
+                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" rel="nofollow" href="{{ issue.download_link }}">
                       <i class="fad fa-download"></i> <span
                       class="d-none d-md-block pl-50"> Download ({{ issue.size|filesizeformat }})</span>
                     </a>
