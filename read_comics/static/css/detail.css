@@ -22,12 +22,19 @@
   color: #FFF
 }
 
+.page-detail .detail-header-cover-date {
+  position: absolute;
+  bottom: 0;
+  left: 190px;
+  color: #FFF
+}
+
 .page-detail .detail-short-description {
   padding-left: 12rem;
   padding-right: 2rem;
 }
 
-.page-detail .detail-header-text .detail-header-text-color {
+.page-detail .detail-header-text .detail-header-text-color,  .page-detail .detail-header-cover-date .detail-header-text-color{
   color: #FFF
 }
 
