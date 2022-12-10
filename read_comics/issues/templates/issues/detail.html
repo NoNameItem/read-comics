@@ -31,7 +31,7 @@
                    alt="image" width="120" data-full-size-src="{{ issue.full_size_url }}">
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}
-                  <small>(of {{ issue.volume.last_issue_number|default_if_none:"Unknown" }})</small></h4>
+                  <small>(of {{ issue.volume.real_last_issue_number|default_if_none:"Unknown" }})</small></h4>
                   <h6 class="detail-header-text-color">{{ issue.name|default_if_none:'' }}</h6>
               </div>
               <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
