@@ -5,14 +5,14 @@ class ImageMixin:
     @property
     def full_size_url(self):
         if self.image_url:
-            return self.image_url.replace("https:", "http:")
+            return self  # .image_url
         else:
             return None
 
     @property
     def thumb_size_url(self):
         if self.thumb_url:
-            return self.thumb_url.replace("https:", "http:")
+            return self.thumb_url  # .replace("https:", "http:")
         else:
             return None
 

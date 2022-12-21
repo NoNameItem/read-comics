@@ -36,21 +36,12 @@ class ComicvineSyncModel(models.Model):
         "name": "name",
         "aliases": "aliases",
         "short_description": "deck",
-        "html_description": {
-            "path": "description",
-            "method": "strip_links"
-        },
+        "html_description": {"path": "description", "method": "strip_links"},
         "thumb_url": "image.small_url",
         "image_url": "image.original_url",
-        "first_issue_name": {
-            "path": "first_appeared_in_issue.id",
-            "method": "get_issue_name"
-        },
-        "first_issue": {
-            "path": "first_appeared_in_issue.id",
-            "method": "get_issue"
-        },
-        "first_issue_comicvine_id": "first_appeared_in_issue.id"
+        "first_issue_name": {"path": "first_appeared_in_issue.id", "method": "get_issue_name"},
+        "first_issue": {"path": "first_appeared_in_issue.id", "method": "get_issue"},
+        "first_issue_comicvine_id": "first_appeared_in_issue.id",
     }
     COMICVINE_INFO_TASK = None
     COMICVINE_API_URL = None
@@ -65,9 +56,7 @@ class ComicvineSyncModel(models.Model):
     comicvine_id = models.IntegerField(unique=True)
     comicvine_url = models.URLField(max_length=1000, null=True)
     comicvine_status = models.CharField(
-        max_length=15,
-        choices=ComicvineStatus.choices,
-        default=ComicvineStatus.NOT_MATCHED
+        max_length=15, choices=ComicvineStatus.choices, default=ComicvineStatus.NOT_MATCHED
     )
     comicvine_last_match = models.DateTimeField(null=True)
 
@@ -144,14 +133,7 @@ class ComicvineSyncModel(models.Model):
         if delay:
             if self.COMICVINE_INFO_TASK:
                 # self.COMICVINE_INFO_TASK.delay(pk=self.pk, follow_m2m=follow_m2m)
-                self.COMICVINE_INFO_TASK.apply_async(
-                    (),
-                    {
-                        "pk": self.pk,
-                        "follow_m2m": follow_m2m
-                    },
-                    priority=9
-                )
+                self.COMICVINE_INFO_TASK.apply_async((), {"pk": self.pk, "follow_m2m": follow_m2m}, priority=9)
                 self.comicvine_status = self.ComicvineStatus.QUEUED
             return
 
@@ -174,9 +156,7 @@ class ComicvineSyncModel(models.Model):
                 self.comicvine_status = self.ComicvineStatus.MATCHED
                 self.comicvine_last_match = timezone.now()
             else:
-                self.logger.error(
-                    f"Document with id `{self.comicvine_id}` not found in API"
-                )
+                self.logger.error(f"Document with id `{self.comicvine_id}` not found in API")
                 self.comicvine_status = self.ComicvineStatus.NOT_MATCHED
 
     def process_document(self, document, follow_m2m):
@@ -210,8 +190,10 @@ class ComicvineSyncModel(models.Model):
                         issue_name = issue_doc["name"]
                     else:
                         issue_name = ""
-                    name = f"{volume_doc['name']} ({volume_doc['start_year']}) " \
-                           f"#{issue_doc['issue_number']} {issue_name}"
+                    name = (
+                        f"{volume_doc['name']} ({volume_doc['start_year']}) "
+                        f"#{issue_doc['issue_number']} {issue_name}"
+                    )
                     return name.strip(" ")
             return ""
         except KeyError:
@@ -220,6 +202,7 @@ class ComicvineSyncModel(models.Model):
     @staticmethod
     def get_issue(comicvine_id):
         from read_comics.issues.models import Issue
+
         try:
             return Issue.objects.get(comicvine_id=comicvine_id)
         except Issue.DoesNotExist:
@@ -234,12 +217,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.characters.models import Character
+
         character, created, matched = Character.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return character
 
@@ -252,12 +232,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.concepts.models import Concept
+
         concept, created, matched = Concept.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return concept
 
@@ -270,12 +247,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.locations.models import Location
+
         location, created, matched = Location.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return location
 
@@ -288,12 +262,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.objects.models import Object
+
         obj, created, matched = Object.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return obj
 
@@ -306,12 +277,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.powers.models import Power
+
         power, created, matched = Power.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return power
 
@@ -324,12 +292,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.story_arcs.models import StoryArc
+
         story_arc, created, matched = StoryArc.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return story_arc
 
@@ -342,12 +307,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.teams.models import Team
+
         team, created, matched = Team.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return team
 
@@ -360,12 +322,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.volumes.models import Volume
+
         volume, created, matched = Volume.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=False
+            comicvine_id, defaults={"name": name}, delay=False
         )
         return volume
 
@@ -378,12 +337,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.publishers.models import Publisher
+
         publisher, created, matched = Publisher.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=False
+            comicvine_id, defaults={"name": name}, delay=False
         )
         return publisher
 
@@ -396,12 +352,9 @@ class ComicvineSyncModel(models.Model):
         if not comicvine_id:
             return None
         from read_comics.people.models import Person
+
         person, created, matched = Person.objects.get_or_create_from_comicvine(
-            comicvine_id,
-            defaults={
-              "name": name
-            },
-            delay=True
+            comicvine_id, defaults={"name": name}, delay=True
         )
         return person
 
@@ -509,8 +462,9 @@ class ComicvineSyncModel(models.Model):
     @property
     def description(self):
         if self.html_description:
-            d = self.html_description.replace("https:", "http:")
+            d = self.html_description  # .replace("https:", "http:")
             from bs4 import BeautifulSoup
+
             soup = BeautifulSoup(d, "html.parser")
             lazy_images = soup.select("img.js-lazy-load-image")
             for image in lazy_images:
