@@ -108,12 +108,10 @@ LOCAL_APPS = [
     "read_comics.volumes.apps.VolumesConfig",
     "read_comics.pages.apps.PagesConfig",
     "read_comics.search.apps.SearchConfig",
-    "read_comics.missing_issues.apps.MissingIssuesConfig"
+    "read_comics.missing_issues.apps.MissingIssuesConfig",
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#installed-apps
-INSTALLED_APPS = (
-    DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
-)
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 # MIGRATIONS
 # ------------------------------------------------------------------------------
@@ -146,9 +144,7 @@ PASSWORD_HASHERS = [
 ]
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-password-validators
 AUTH_PASSWORD_VALIDATORS = [
-    {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"
-    },
+    {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
     {"NAME": "django.contrib.auth.password_validation.CommonPasswordValidator"},
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
@@ -224,8 +220,7 @@ TEMPLATES = [
                 "django.contrib.messages.context_processors.messages",
                 "django_magnificent_messages.context_processors.django_magnificent_messages",
                 "read_comics.utils.context_processors.settings_context",
-                "read_comics.missing_issues.context_processors.missing_issues_count"
-
+                "read_comics.missing_issues.context_processors.missing_issues_count",
             ],
         },
     }
@@ -276,7 +271,7 @@ EMAIL_TIMEOUT = 5
 # Django Admin URL.
 ADMIN_URL = "admin/"
 # https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = [("""Artem Vasin""", "nonameite@ya.ru")]
+ADMINS = [("""Artem Vasin""", "nonameit@ya.ru")]
 # https://docs.djangoproject.com/en/dev/ref/settings/#managers
 MANAGERS = ADMINS
 
@@ -288,12 +283,7 @@ MANAGERS = ADMINS
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {
-        "verbose": {
-            "format": "%(levelname)s %(asctime)s %(module)s "
-                      "%(process)d %(thread)d %(message)s"
-        }
-    },
+    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
     "handlers": {
         "console": {
             "level": "DEBUG",
