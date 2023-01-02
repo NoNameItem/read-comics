@@ -5,7 +5,7 @@ class ImageMixin:
     @property
     def full_size_url(self):
         if self.image_url:
-            return self  # .image_url
+            return self.image_url
         else:
             return None
 
