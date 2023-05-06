@@ -61,7 +61,7 @@ jobs:
         run: docker-compose -f local.yml down
 
   build:
-    needs: [ linter, test ]
+    needs: [ flake8, test ]
     runs-on: ubuntu-latest
     if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
 
@@ -81,7 +81,7 @@ jobs:
         run: docker-compose -f production-build.yml push
 
   release:
-    needs: [ linter, test ]
+    needs: [ flake8, test ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_type == 'tag'
 
