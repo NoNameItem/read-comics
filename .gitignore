@@ -332,3 +332,4 @@ read_comics/media/
 .envs/*
 !.envs/.local/
 certs/*
+/.idea/sonarlint/
