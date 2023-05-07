@@ -42,7 +42,6 @@ class BaseSpider(scrapy.Spider):
         mongo_db = mongo_connection.get_default_database()
 
         if spider.incremental == "Y":
-
             spider_info = mongo_db.spider_info.find_one({"name": spider.name})
             spider.logger.info("Spider info: " + str(spider_info))
             if spider_info:
@@ -81,7 +80,7 @@ class BaseSpider(scrapy.Spider):
         return url
 
     def parse(self, response):
-        pass
+        pass  # Implementation not needed
 
     def parse_list(self, response):
         # Parsing json

@@ -175,7 +175,6 @@ class FullSpider(scrapy.Spider):
         mongo_db = mongo_connection.get_default_database()
 
         if spider.incremental == "Y":
-
             spider_info = mongo_db.spider_info.find_one({"name": spider.name})
             spider.logger.info("Spider info: " + str(spider_info))
             if spider_info:
