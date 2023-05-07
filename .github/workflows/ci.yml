@@ -23,13 +23,16 @@ jobs:
     steps:
 
       - name: Checkout Code Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Build the Stack
         run: docker-compose -f local.yml build
 
       - name: Run flake8
         run: docker-compose -f local.yml run --rm django flake8 --count
+
+      - name: Tear down the Stack
+        run: docker-compose -f local.yml down
 
 
 
@@ -38,24 +41,32 @@ jobs:
     steps:
 
       - name: Checkout Code Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Build the Stack
         run: docker-compose -f local.yml build
 
-      - name: Run DB Migrations
-        run: docker-compose -f local.yml run --rm django python manage.py migrate
-
       - name: Run Django Tests
         run: |
-          docker-compose -f local.yml run --rm django coverage run -m pytest
-          docker-compose -f local.yml run --rm django coverage xml
+          docker-compose -f local.yml run --rm django pytest --cov --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v2
         with:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_report
+          path: coverage.xml
+
+      - name: 'Upload Artifact'
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_report
+          path: test_report.xml
 
       - name: Tear down the Stack
         run: docker-compose -f local.yml down
@@ -67,6 +78,10 @@ jobs:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
+
+      - name: Download all workflow run artifacts
+        uses: actions/download-artifact@v3
+
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@master
         env:
