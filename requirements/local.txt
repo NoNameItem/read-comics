@@ -10,8 +10,9 @@ watchgod==0.7  # https://github.com/samuelcolvin/watchgod
 mypy==1.2.0  # https://github.com/python/mypy
 django-stubs==4.2.0  # https://github.com/typeddjango/django-stubs
 types-requests==2.30.0  # https://github.com/python/typeshed
-pytest==6.2.5  # https://github.com/pytest-dev/pytest
+pytest==7.1.2  # https://github.com/pytest-dev/pytest
 pytest-sugar==0.9.4  # https://github.com/Frozenball/pytest-sugar
+pytest-cov==4.0.0  # https://github.com/pytest-dev/pytest-cov
 djangorestframework-stubs==3.14.0  # https://github.com/typeddjango/djangorestframework-stubs
 
 # Documentation
