@@ -72,6 +72,7 @@ jobs:
         run: docker-compose -f local.yml down
 
   sonarcloud:
+    needs: [ flake8, test ]
     name: SonarCloud
     runs-on: ubuntu-latest
     steps:
@@ -89,7 +90,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    needs: [ flake8, test ]
+    needs: sonarcloud
     runs-on: ubuntu-latest
     if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
 
@@ -109,7 +110,7 @@ jobs:
         run: docker-compose -f production-build.yml push
 
   release:
-    needs: [ flake8, test ]
+    needs: sonarcloud
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_type == 'tag'
 

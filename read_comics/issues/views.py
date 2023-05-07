@@ -21,12 +21,7 @@ from read_comics.issues.models import FinishedIssue, Issue
 logger = logging.getLogger(__name__)
 
 
-@logging.methods_logged(
-    logger,
-    [
-        "get",
-    ],
-)
+@logging.methods_logged(logger, ["get"])
 class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, BreadcrumbMixin, ListView):
     context_object_name = "issues"
     template_name = "issues/list.html"
@@ -66,12 +61,7 @@ class IssuesListView(ElidedPagesPaginatorMixin, ActiveMenuMixin, OrderingMixin, 
 issues_list_view = IssuesListView.as_view()
 
 
-@logging.methods_logged(
-    logger,
-    [
-        "get",
-    ],
-)
+@logging.methods_logged(logger, ["get"])
 class IssueDetailView(ActiveMenuMixin, BreadcrumbMixin, DetailView):
     model = Issue
     queryset = Issue.objects.select_related("volume", "volume__publisher")
