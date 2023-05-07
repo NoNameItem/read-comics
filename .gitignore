@@ -334,3 +334,4 @@ read_comics/media/
 certs/*
 /.idea/sonarlint/
 /flake8.txt
+/test_report.xml
