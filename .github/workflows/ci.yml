@@ -32,12 +32,14 @@ jobs:
         run: docker-compose -f local.yml run --rm django flake8 --count --output-file=flake8.txt
 
       - name: Upload flake8 report
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: flake8_report
           path: flake8.txt
 
       - name: Tear down the Stack
+        if: success() || failure()
         run: docker-compose -f local.yml down
 
 #  pylint:
@@ -75,25 +77,27 @@ jobs:
       - name: Run Django Tests
         run: |
           docker-compose -f local.yml run --rm django pytest --cov --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml
-        continue-on-error: True
 
       - name: Upload Coverage report
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: coverage_report
           path: coverage.xml
 
       - name: Upload test report
+        if: success() || failure()
         uses: actions/upload-artifact@v3
         with:
           name: test_report
           path: test_report.xml
 
       - name: Tear down the Stack
+        if: success() || failure()
         run: docker-compose -f local.yml down
 
   sonarcloud:
-    if: ${{ always() }}
+    if: success() || failure()
     needs: [ flake8, test ]
     name: SonarCloud
     runs-on: ubuntu-latest
