@@ -75,8 +75,7 @@ jobs:
         run: docker-compose -f local.yml build
 
       - name: Run Django Tests
-        run: |
-          docker-compose -f local.yml run --rm django pytest --cov --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml ./read_comics/
+        run: docker-compose -f local.yml run --rm django pytest --cov read_comics --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml
 
       - name: Publish Test Report
         uses: mikepenz/action-junit-report@v3
