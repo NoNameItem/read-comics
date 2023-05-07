@@ -205,10 +205,7 @@ TEMPLATES = [
         "OPTIONS": {
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-loaders
             # https://docs.djangoproject.com/en/dev/ref/templates/api/#loader-types
-            "loaders": [
-                "django.template.loaders.filesystem.Loader",
-                "django.template.loaders.app_directories.Loader",
-            ],
+            "loaders": ["django.template.loaders.filesystem.Loader", "django.template.loaders.app_directories.Loader"],
             # https://docs.djangoproject.com/en/dev/ref/settings/#template-context-processors
             "context_processors": [
                 "django.template.context_processors.debug",
@@ -231,13 +228,7 @@ TEMPLATES = [
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 # http://django-crispy-forms.readthedocs.io/en/latest/install.html#template-packs
-CRISPY_ALLOWED_TEMPLATE_PACKS = (
-    "bootstrap",
-    "uni_form",
-    "bootstrap3",
-    "bootstrap4",
-    "crispy_frest",
-)
+CRISPY_ALLOWED_TEMPLATE_PACKS = ("bootstrap", "uni_form", "bootstrap3", "bootstrap4", "crispy_frest")
 CRISPY_TEMPLATE_PACK = "bootstrap4"
 CRISPY_CLASS_CONVERTERS = {"textinput": "form-control"}
 
@@ -260,10 +251,7 @@ X_FRAME_OPTIONS = "DENY"
 # EMAIL
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-backend
-EMAIL_BACKEND = env(
-    "DJANGO_EMAIL_BACKEND",
-    default="django.core.mail.backends.smtp.EmailBackend",
-)
+EMAIL_BACKEND = env("DJANGO_EMAIL_BACKEND", default="django.core.mail.backends.smtp.EmailBackend")
 # https://docs.djangoproject.com/en/dev/ref/settings/#email-timeout
 EMAIL_TIMEOUT = 5
 
@@ -285,13 +273,7 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
-    "handlers": {
-        "console": {
-            "level": "DEBUG",
-            "class": "logging.StreamHandler",
-            "formatter": "verbose",
-        }
-    },
+    "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "django": {"level": "INFO", "handlers": ["console"]},
     "read_comics": {"level": "DEBUG", "handlers": ["console"]},
@@ -353,15 +335,7 @@ ACCOUNT_FORMS = {
 SOCIALACCOUNT_FORMS = {"signup": "users.forms.SocialSignupForm"}
 
 SOCIALACCOUNT_PROVIDERS = {
-    "google": {
-        "SCOPE": [
-            "profile",
-            "email",
-        ],
-        "AUTH_PARAMS": {
-            "access_type": "online",
-        },
-    },
+    "google": {"SCOPE": ["profile", "email"], "AUTH_PARAMS": {"access_type": "online"}},
     "reddit": {
         "AUTH_PARAMS": {"duration": "permanent"},
         "SCOPE": ["identity"],
@@ -385,9 +359,7 @@ JWT_AUTH_COOKIE = "read-comics-auth"
 JWT_AUTH_REFRESH_COOKIE = "read-comics-refresh-token"
 
 
-REST_AUTH_SERIALIZERS = {
-    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer",
-}
+REST_AUTH_SERIALIZERS = {"USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer"}
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
