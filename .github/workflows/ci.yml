@@ -21,67 +21,8 @@ on:
 
 
 jobs:
-  flake8:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
-
-      - name: Build the Stack
-        run: docker-compose -f local.yml build
-
-      - name: set pipefall
-        run: set -o pipefail
-
-      - name: Run flake8
-        run: docker-compose -f local.yml run --rm django flake8 --count --output-file=flake8.txt
-
-      - name: reset pipefail
-        if: success() || failure()
-        run: set +o pipefail
-
-      - name: Upload flake8 report
-        if: success() || failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: flake8_report
-          path: flake8.txt
-
-      - name: Tear down the Stack
-        if: success() || failure()
-        run: docker-compose -f local.yml down
-
-  pylint:
-    runs-on: ubuntu-latest
-    steps:
-
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
-
-      - name: Build the Stack
-        run: docker-compose -f local.yml build
-
-      - name: set pipefail
-        run: set -o pipefail
-
-      - name: Run pylint
-        run: docker-compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
-
-      - name: reset pipefail
-        if: success() || failure()
-        run: set +o pipefail
-
-      - name: Upload pylint report
-        if: success() || failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: pylint_report
-          path: pylint.txt
-
-      - name: Tear down the Stack
-        if: success() || failure()
-        run: docker-compose -f local.yml down
+  python_linters:
+    uses: ./.github/workflows/python_linters.yml
 
   test:
     runs-on: ubuntu-latest
