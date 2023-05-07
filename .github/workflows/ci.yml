@@ -29,7 +29,13 @@ jobs:
         run: docker-compose -f local.yml build
 
       - name: Run flake8
-        run: docker-compose -f local.yml run --rm django flake8 --count
+        run: docker-compose -f local.yml run --rm django flake8 --count --output-file=flake8.txt
+
+      - name: Upload flake8 report
+        uses: actions/upload-artifact@v3
+        with:
+          name: flake8_report
+          path: flake8.txt
 
       - name: Tear down the Stack
         run: docker-compose -f local.yml down
@@ -56,13 +62,13 @@ jobs:
           fail_ci_if_error: false
           token: ${{ secrets.CODECOV_TOKEN }}
 
-      - name: 'Upload Artifact'
+      - name: Upload Coverage report
         uses: actions/upload-artifact@v3
         with:
           name: coverage_report
           path: coverage.xml
 
-      - name: 'Upload Artifact'
+      - name: Upload test report
         uses: actions/upload-artifact@v3
         with:
           name: test_report
@@ -72,6 +78,7 @@ jobs:
         run: docker-compose -f local.yml down
 
   sonarcloud:
+    if: ${{ always() }}
     needs: [ flake8, test ]
     name: SonarCloud
     runs-on: ubuntu-latest
@@ -90,7 +97,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   build:
-    needs: sonarcloud
+    needs: [ flake8, test, sonarcloud ]
     runs-on: ubuntu-latest
     if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
 
@@ -110,7 +117,7 @@ jobs:
         run: docker-compose -f production-build.yml push
 
   release:
-    needs: sonarcloud
+    needs: [ flake8, test, sonarcloud ]
     runs-on: ubuntu-latest
     if: github.event_name == 'push' && github.ref_type == 'tag'
 

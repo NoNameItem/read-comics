@@ -333,3 +333,4 @@ read_comics/media/
 !.envs/.local/
 certs/*
 /.idea/sonarlint/
+/flake8.txt
