@@ -56,12 +56,6 @@ jobs:
         run: |
           docker-compose -f local.yml run --rm django pytest --cov --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml
 
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v2
-        with:
-          fail_ci_if_error: false
-          token: ${{ secrets.CODECOV_TOKEN }}
-
       - name: Upload Coverage report
         uses: actions/upload-artifact@v3
         with:
