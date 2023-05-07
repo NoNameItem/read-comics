@@ -1,7 +1,5 @@
-import datetime
 import tempfile
 from importlib import import_module
-from time import sleep
 from zipfile import ZIP_DEFLATED
 
 import gevent.pool
@@ -63,19 +61,17 @@ class ZipDownloader(zipstream.ZipFile):
                 yield from self.__write(**kwargs)
             if self.links:
                 downloader = Downloader(self.links)
-                session_key = self.request.session.session_key
+                # session_key = self.request.session.session_key
                 for file in downloader:
-                    session = SessionStore(session_key=session_key)
-                    if (
-                        not self.request.user.is_authenticated or not self.request.user.unlimited_downloads
-                    ) and session.get(
-                        "last_download", 0
-                    ) > datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT:
-                        sleep(settings.DOWNLOAD_TIMEOUT)
-                        print("ATA-TA")
-
-                    session["last_download"] = datetime.datetime.now().timestamp()
-                    session.save()
+                    # session = SessionStore(session_key=session_key)
+                    # if ((not self.request.user.is_authenticated or not self.request.user.unlimited_downloads)
+                    #     and session.get("last_download", 0) >
+                    #         datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+                    #     sleep(settings.DOWNLOAD_TIMEOUT)
+                    #     print("ATA-TA")
+                    #
+                    # session["last_download"] = datetime.datetime.now().timestamp()
+                    # session.save()
                     yield from self._ZipFile__write(
                         arcname=file[0],
                         iterable=file[1],

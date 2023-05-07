@@ -1,10 +1,8 @@
 import datetime
 import json
 from contextlib import suppress
-from time import sleep
 
 from django.apps import apps
-from django.conf import settings
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, Q
@@ -344,12 +342,12 @@ class IssueDownloadView(SingleObjectMixin, View):
     queryset = Issue.objects.matched()
 
     def get(self, request, *args, **kwargs):
-        if (not request.user.is_authenticated or not request.user.unlimited_downloads) and request.session.get(
-            "last_download", 0
-        ) > datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT:
-            sleep(settings.DOWNLOAD_TIMEOUT)
-
-        request.session["last_download"] = datetime.datetime.now().timestamp()
+        # if ((not request.user.is_authenticated or not request.user.unlimited_downloads)
+        #     and request.session.get("last_download", 0) >
+        #         datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
+        #     sleep(settings.DOWNLOAD_TIMEOUT)
+        #
+        # request.session["last_download"] = datetime.datetime.now().timestamp()
         issue = self.get_object()
         return HttpResponseRedirect(issue.download_link)
 

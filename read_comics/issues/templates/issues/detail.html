@@ -31,18 +31,23 @@
                    alt="image" width="120" data-full-size-src="{{ issue.full_size_url }}">
               <div class="detail-header-text pr-md-2 d-none d-md-block">
                 <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}
-                  <small>(of {{ issue.volume.last_issue_number|default_if_none:"Unknown" }})</small></h4>
+                  <small>(of {{ issue.volume.real_last_issue_number|default_if_none:"Unknown" }})</small></h4>
                   <h6 class="detail-header-text-color">{{ issue.name|default_if_none:'' }}</h6>
               </div>
               <div id="finished-mark" {% if not finished %}style="display: none" {% endif %}>
                 <i class="fad fa-check-circle success fa-3x"></i>
               </div>
+              <div class="detail-header-cover-date d-none d-md-block">
+                <h6 class="detail-header-text-color font-italic">{{ issue.cover_date|default_if_none:'Cover date unknown' }}</h6>
+              </div>
             </div>
             <!-- detail nav tabs start -->
             <div class="card-body px-0">
               <div class="detail-body-text pr-md-2 d-block d-md-none">
-                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}</h4>
-                <h6 class="detail-header-text-color">{{ issue.name }}</h6>
+                <h4 class="mb-0 text-bold-500 detail-header-text-color">{{ issue.volume.name }} #{{ issue.number }}
+                <small>(of {{ issue.volume.last_issue_number|default_if_none:"Unknown" }})</small></h4>
+                <h6 class="detail-header-text-color">{{ issue.name|default_if_none:"" }}</h6>
+                <h6 class="detail-header-text-color font-italic">{{ issue.cover_date|default_if_none:'Cover date unknown' }}</h6>
               </div>
 
               <div class="detail-short-description">
@@ -181,7 +186,7 @@
                 role="tablist">
 {#                {% if request.user.is_authenticated %}#}
                   <li class="nav-item pb-1">
-                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" href="{% url "issues:download" issue.slug %}">
+                    <a class="nav-link d-flex px-1 btn btn-info" id="download-link" rel="nofollow" href="{{ issue.download_link }}">
                       <i class="fad fa-download"></i> <span
                       class="d-none d-md-block pl-50"> Download ({{ issue.size|filesizeformat }})</span>
                     </a>

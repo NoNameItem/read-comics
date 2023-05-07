@@ -163,3 +163,11 @@ class Volume(ImageMixin, ComicvineSyncModel):
     @property
     def display_name(self):
         return f"{self.name} ({self.start_year or 'Unknown'})"
+
+    @property
+    def real_last_issue_number(self) -> str:
+        try:
+            real_last_issue = self.issues.order_by("-numerical_number", "-number")[0]
+            return real_last_issue.number
+        except IndexError:
+            return self.last_issue.number

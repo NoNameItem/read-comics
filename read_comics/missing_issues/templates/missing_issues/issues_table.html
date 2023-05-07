@@ -1,6 +1,7 @@
 {% load humanize %}
 {% load url_extras %}
 
+<div id="inner-table-wrapper">
 <table class="table" id="issues-table">
   <tbody>
   {% for missing_issue in missing_issues %}
@@ -71,6 +72,7 @@
   {% endfor %}
   </tbody>
 </table>
+</div>
 <input type="hidden" id="all-missing-count" value="{{ total_missing_issues_count|default:0|intcomma }}">
 <input type="hidden" id="watched-missing-count" value="{{ watched_missing_issues_count|default:0|intcomma }}">
 <input type="hidden" id="this-missing-count" value="{{ paginator.object_list.count|default:0|intcomma }}">

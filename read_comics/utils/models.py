@@ -462,7 +462,7 @@ class ComicvineSyncModel(models.Model):
     @property
     def description(self):
         if self.html_description:
-            d = self.html_description.replace("https:", "http:")
+            d = self.html_description  # .replace("https:", "http:")
             from bs4 import BeautifulSoup
 
             soup = BeautifulSoup(d, "html.parser")
