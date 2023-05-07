@@ -335,3 +335,4 @@ certs/*
 /.idea/sonarlint/
 /flake8.txt
 /test_report.xml
+/pylint.txt
