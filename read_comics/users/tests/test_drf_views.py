@@ -30,6 +30,4 @@ class TestUserViewSet:
             "username": user.username,
             "name": user.name,
             "url": f"http://testserver/api/users/{user.username}/",
-            "image_thumb_url": user.image_thumb_url,
-            "last_active": user.last_active,
         }
