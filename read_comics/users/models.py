@@ -81,10 +81,6 @@ class User(AbstractUser):
 
     @property
     def started_and_not_finished_volumes(self):
-        # good change
-        # Bad change
-        STRING = "Invalid character backspace "
-        print(STRING)
         return self.get_started_and_not_finished(Volume)
 
     @property
