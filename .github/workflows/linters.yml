@@ -51,7 +51,9 @@ jobs:
         run: set -o pipefail
 
       - name: Run pylint
-        run: docker-compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
+        run: |
+          set -o pipefail
+          docker-compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
 
       - name: reset pipefail
         if: success() || failure()
