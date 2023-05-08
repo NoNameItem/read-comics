@@ -15,7 +15,7 @@ jobs:
       - name: Build the Stack
         run: docker-compose -f local.yml build
 
-      - name: set pipefall
+      - name: set pipefail
         run: set -o pipefail
 
       - name: Run flake8
