@@ -24,25 +24,6 @@ jobs:
       publish_test_report: false
     secrets: inherit
 
-#  sonarcloud:
-#    if: success() || failure()
-#    needs: [ flake8, test, pylint ]
-#    name: SonarCloud
-#    runs-on: ubuntu-latest
-#    steps:
-#      - uses: actions/checkout@v3
-#        with:
-#          fetch-depth: 0  # Shallow clones should be disabled for a better relevancy of analysis
-#
-#      - name: Download all workflow run artifacts
-#        uses: actions/download-artifact@v3
-#
-#      - name: SonarCloud Scan
-#        uses: SonarSource/sonarcloud-github-action@master
-#        env:
-#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
-#          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
 #  build:
 #    needs: [ flake8, test, pylint, sonarcloud ]
 #    runs-on: ubuntu-latest
