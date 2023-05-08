@@ -25,7 +25,7 @@ class User(AbstractUser):
 
     # First Name and Last Name do not cover name patterns
     # around the globe.
-    name = models.CharField(_('Full name'), blank=True, max_length=255)
+    name = models.CharField(_("Full name"), blank=True, max_length=255)
     gender = models.CharField(_("Gender"), max_length=1, choices=Gender.choices, default=Gender.UNICORN)
     _user_image = ThumbnailImageField(null=True, upload_to=get_user_image_name, thumb_width=40)
     bio = models.CharField(_("Bio"), blank=True, max_length=1000)
@@ -81,7 +81,6 @@ class User(AbstractUser):
 
     @property
     def started_and_not_finished_volumes(self):
-        print("%d" % "1")
         return self.get_started_and_not_finished(Volume)
 
     @property
