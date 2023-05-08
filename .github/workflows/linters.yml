@@ -5,6 +5,7 @@ on:
 
 jobs:
   flake8:
+    name: Flake8
     runs-on: ubuntu-latest
     steps:
 
@@ -36,6 +37,7 @@ jobs:
         run: docker-compose -f local.yml down
 
   pylint:
+    name: PyLint
     runs-on: ubuntu-latest
     steps:
 

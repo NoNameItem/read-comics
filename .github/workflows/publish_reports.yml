@@ -36,7 +36,7 @@ jobs:
   pr_test_report:
     name: Report test results
     runs-on: ubuntu-latest
-    if: ${inputs.publish_test_report}
+    if: inputs.publish_test_report
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -49,7 +49,7 @@ jobs:
   codecov:
     name: Report coverage to codecov
     runs-on: ubuntu-latest
-    if: ${inputs.publish_codecov}
+    if: inputs.publish_codecov
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
