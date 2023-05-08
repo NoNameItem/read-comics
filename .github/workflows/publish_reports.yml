@@ -4,7 +4,7 @@ on:
   workflow_call:
     inputs:
       publish_codecov:
-        description: Publish coverage to codecov
+        description: Codecov
         default: true
         type: boolean
         required: false
@@ -13,7 +13,6 @@ on:
         default: true
         type: boolean
         required: false
-
 
 jobs:
   sonarcloud:
@@ -34,7 +33,7 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_test_report:
-    name: Report test results
+    name: PR test results
     runs-on: ubuntu-latest
     if: inputs.publish_test_report
     steps:
