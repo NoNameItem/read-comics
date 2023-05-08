@@ -16,6 +16,8 @@ on:
 jobs:
   qa:
     uses: ./.github/workflows/qa.yml
+    with:
+      silent_linters: true
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()
