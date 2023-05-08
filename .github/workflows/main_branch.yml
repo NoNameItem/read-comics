@@ -1,4 +1,4 @@
-name: CI
+name: Main branch
 
 permissions:
   checks: write
@@ -16,8 +16,10 @@ on:
 jobs:
   qa:
     uses: ./.github/workflows/qa.yml
-
-
+  publish_reports:
+    uses: ./.github/workflows/publish_reports.yml
+    if: success() || failure()
+    needs: qa
 
 #  sonarcloud:
 #    if: success() || failure()

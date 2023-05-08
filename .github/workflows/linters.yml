@@ -18,7 +18,7 @@ jobs:
         run: set -o pipefail
 
       - name: Run flake8
-        run: docker-compose -f local.yml run --rm django flake8 --count | tee pylint.txt
+        run: docker-compose -f local.yml run --rm django flake8 --count | tee flake8.txt
 
       - name: reset pipefail
         if: success() || failure()
