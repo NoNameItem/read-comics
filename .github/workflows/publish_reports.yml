@@ -44,3 +44,4 @@ jobs:
         id: test-results
         with:
           files: "test_report/*.xml"
+          action_fail: true
