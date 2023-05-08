@@ -15,11 +15,11 @@ services:
     command: /start
 
   traefik:
-    image: cr.yandex/crpkef6i6mmeq12lo3i7/traefik:latest
+    image: traefik:v2.5.5
     depends_on:
       - django
     volumes:
-      - production_traefik:/etc/traefik/acme:z
+      - ./compose/production/traefik:/etc/traefik/:z
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
