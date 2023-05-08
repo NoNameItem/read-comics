@@ -2,9 +2,17 @@ name: Code quality assurance
 
 on:
   workflow_call:
+    inputs:
+      silent_linters:
+        description: Linters don't fail jobs, checking only via sonarcloud quality gate
+        default: false
+        type: boolean
+        required: false
 
 jobs:
   linters:
     uses: ./.github/workflows/linters.yml
+    with:
+      silent_linters: ${{ inputs.silent_linters }}
   unit_tests:
     uses: ./.github/workflows/unit_tests.yml
