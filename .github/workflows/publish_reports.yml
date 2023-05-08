@@ -42,7 +42,7 @@ jobs:
         uses: EnricoMi/publish-unit-test-result-action@v2
         id: test-results
         with:
-          files: "test-test_report/*.xml"
+          files: "test_report/*.xml"
 
       - name: Set badge color
         shell: bash
