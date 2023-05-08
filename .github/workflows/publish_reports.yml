@@ -2,6 +2,18 @@ name: Publish reports
 
 on:
   workflow_call:
+    inputs:
+      publish_codecov:
+        description: Publish coverage to codecov
+        default: true
+        type: boolean
+        required: false
+      publish_test_report:
+        description: Publish test report to github
+        default: true
+        type: boolean
+        required: false
+
 
 jobs:
   sonarcloud:
@@ -22,6 +34,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   pr_test_report:
+    name: Report test results
+    runs-on: ubuntu-latest
+    if: ${inputs.publish_test_report}
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
@@ -32,6 +47,9 @@ jobs:
           report_paths: 'test_report.xml'
 
   codecov:
+    name: Report coverage to codecov
+    runs-on: ubuntu-latest
+    if: ${inputs.publish_codecov}
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
