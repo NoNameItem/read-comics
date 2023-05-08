@@ -6,10 +6,8 @@ Explore wonderfull world of pictures with words
 .. image:: https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter
      :target: https://github.com/cookiecutter/cookiecutter-django/
      :alt: Built with Cookiecutter Django
-.. image:: https://codecov.io/gh/NoNameItem/read-comics/branch/main/graph/badge.svg?token=6YPVZSGAC1
-      :target: https://codecov.io/gh/NoNameItem/read-comics
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
-   :target: https://github.com/psf/black
+     :target: https://github.com/psf/black
 .. image:: https://sonarcloud.io/api/project_badges/measure?project=NoNameItem_read-comics&metric=coverage
 .. image:: https://sonarcloud.io/api/project_badges/measure?project=NoNameItem_read-comics&metric=alert_status
 
