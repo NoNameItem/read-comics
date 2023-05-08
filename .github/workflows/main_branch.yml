@@ -2,6 +2,7 @@ name: Main branch
 
 permissions:
   checks: write
+  pull-requests: write
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
