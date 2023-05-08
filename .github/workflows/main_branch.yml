@@ -20,6 +20,8 @@ jobs:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()
     needs: qa
+    with:
+      publish_test_report: false
 
 #  sonarcloud:
 #    if: success() || failure()
