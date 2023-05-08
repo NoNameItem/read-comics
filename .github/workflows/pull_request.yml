@@ -20,6 +20,4 @@ jobs:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()
     needs: qa
-    with:
-      publish_codecov: false
     secrets: inherit
