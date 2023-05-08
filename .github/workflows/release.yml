@@ -1,4 +1,4 @@
-name: Main branch
+name: Release
 
 permissions:
   checks: write
@@ -12,7 +12,6 @@ on:
   push:
     branches: "main"
     paths-ignore: [ "docs/**" ]
-    tags-ignore: [ "v*" ]
 
 jobs:
   qa:
