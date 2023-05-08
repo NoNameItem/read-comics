@@ -46,7 +46,7 @@ jobs:
           report_paths: 'test_report.xml'
 
   codecov:
-    name: Report coverage to codecov
+    name: CodeCov
     runs-on: ubuntu-latest
     if: inputs.publish_codecov
     steps:
