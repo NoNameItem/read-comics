@@ -1,0 +1,14 @@
+{
+  "plugins": ["sentence-case"],
+  "release-type": "python",
+  "draft": false,
+  "packages": {
+    ".": {
+      "release-type": "python",
+      "exclude-paths": ["docs", "compose",".envs" ]
+    }
+  },
+  "extra-files": [
+      "sonar-project.properties"
+  ]
+}
