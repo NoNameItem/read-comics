@@ -1,0 +1,42 @@
+name: Unit tests
+
+on:
+  workflow_call:
+
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Build the Stack
+        run: docker-compose -f local.yml build
+
+      - name: Run Django Tests
+        run: docker-compose -f local.yml run --rm django pytest --cov read_comics --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml
+
+      - name: Publish Test Report
+        uses: mikepenz/action-junit-report@v3
+        if: success() || failure() # always run even if the previous step fails
+        with:
+          report_paths: 'test_report.xml'
+
+      - name: Save Coverage report artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: coverage_report
+          path: coverage.xml
+
+      - name: Save test report artifact
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: test_report
+          path: test_report.xml
+
+      - name: Tear down the Stack
+        if: success() || failure()
+        run: docker-compose -f local.yml down

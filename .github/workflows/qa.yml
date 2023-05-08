@@ -1,0 +1,10 @@
+name: Code quality assurance
+
+on:
+  workflow_call:
+
+jobs:
+  linters:
+    uses: ./.github/workflows/linters.yml
+  unit_tests:
+    uses: ./.github/workflows/unit_tests.yml

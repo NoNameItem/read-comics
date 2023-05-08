@@ -1,4 +1,4 @@
-name: Python linters
+name: Linters
 
 on:
   workflow_call:
@@ -18,7 +18,7 @@ jobs:
         run: set -o pipefail
 
       - name: Run flake8
-        run: docker-compose -f local.yml run --rm django flake8 --count --output-file=flake8.txt
+        run: docker-compose -f local.yml run --rm django flake8 --count | tee pylint.txt
 
       - name: reset pipefail
         if: success() || failure()
