@@ -9,7 +9,8 @@
     }
   },
   "extra-files": [
-      "sonar-project.properties"
+      "sonar-project.properties",
+      "read_comics/__init__.py"
   ],
   "bootstrap-sha": "d082e73be155d908bc170327584d4f29b3fc3d84"
 }
