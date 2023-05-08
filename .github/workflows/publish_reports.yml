@@ -36,6 +36,7 @@ jobs:
     name: PR test results
     runs-on: ubuntu-latest
     if: inputs.publish_test_report
+    token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
     steps:
       - name: Download all workflow run artifacts
         uses: actions/download-artifact@v3
