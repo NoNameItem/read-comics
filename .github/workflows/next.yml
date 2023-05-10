@@ -1,4 +1,4 @@
-name: Main branch
+name: Next version
 
 permissions:
   checks: write
@@ -11,20 +11,31 @@ env:
 
 on:
   push:
-    branches: "main"
+    branches: "develop"
     paths-ignore: [ "docs/**" ]
-    tags-ignore: [ "v*" ]
+    tags-ignore: [ "*" ]
 
 jobs:
   qa:
-    uses: ./.github/workflows/qa.yml
+    uses: ./.github/workflows/qa/qa.yml
   publish_reports:
-    uses: ./.github/workflows/publish_reports.yml
+    uses: ./.github/workflows/qa/publish_reports.yml
     if: success() || failure()
     needs: qa
     with:
       publish_test_report: false
     secrets: inherit
+  publish_backend:
+    uses: ./.github/workflows/deploy/publish_image.yml
+    with:
+      image_name: "backend"
+    secrets: inherit
+  deploy:
+    uses: ./.github/workflows/deploy/deploy_yc.yml
+    needs: publish_backend
+    environment: next
+    secrets: inherit
+
 
 #  build:
 #    needs: [ flake8, test, pylint, sonarcloud ]

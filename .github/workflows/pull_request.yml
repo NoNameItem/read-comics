@@ -16,11 +16,11 @@ on:
 
 jobs:
   qa:
-    uses: ./.github/workflows/qa.yml
+    uses: ./.github/workflows/qa/qa.yml
     with:
       silent_linters: true
   publish_reports:
-    uses: ./.github/workflows/publish_reports.yml
+    uses: ./.github/workflows/qa/publish_reports.yml
     if: success() || failure()
     needs: qa
     secrets: inherit

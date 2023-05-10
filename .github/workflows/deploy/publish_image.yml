@@ -1,0 +1,41 @@
+name: Publish image
+
+on:
+  workflow_call:
+    inputs:
+      release:
+        description: release version
+        default: "next"
+        type: string
+        required: false
+      image_name:
+        description: image name
+        type: string
+        required: true
+      tag_latest:
+        description: tag image as latest
+        type: boolean
+        default: false
+        required: false
+
+jobs:
+  build-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Build container image
+        run: docker build -f ./compose/production/django/Dockerfile -t ${{ inputs.image_name }}:${{ inputs.release }} .
+
+      - name: Tag as latest
+        if: inputs.tag_latest
+        run: docker tag ${{ inputs.image_name }}:${{ inputs.release }} ${{ inputs.image_name }}:latest
+
+      - name: Yandex Cloud CR "Login" Action for GitHub Actions
+        uses: yc-actions/yc-cr-login@v0.1-alpha
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
+
+      - name: Push image to Yandex Cloud Container Registry
+        run: docker push -a ${{ inputs.image_name }}
