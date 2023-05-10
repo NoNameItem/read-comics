@@ -13,7 +13,6 @@ on:
   push:
     branches: "develop"
     paths-ignore: [ "docs/**" ]
-    tags-ignore: [ "*" ]
 
 jobs:
   qa:
