@@ -11,8 +11,8 @@ on:
 
 jobs:
   linters:
-    uses: ./.github/workflows/qa/linters.yml
+    uses: ./.github/workflows/linters.yml
     with:
       silent_linters: ${{ inputs.silent_linters }}
   unit_tests:
-    uses: ./.github/workflows/qa/unit_tests.yml
+    uses: ./.github/workflows/unit_tests.yml

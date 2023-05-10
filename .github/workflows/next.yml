@@ -17,7 +17,7 @@ on:
 
 jobs:
   qa:
-    uses: ./.github/workflows/qa/qa.yml
+    uses: ./.github/workflows/qa.yml
   publish_reports:
     uses: ./.github/workflows/qa/publish_reports.yml
     if: success() || failure()
@@ -26,12 +26,12 @@ jobs:
       publish_test_report: false
     secrets: inherit
   publish_backend:
-    uses: ./.github/workflows/deploy/publish_image.yml
+    uses: ./.github/workflows/publish_image.yml
     with:
       image_name: "backend"
     secrets: inherit
   deploy:
-    uses: ./.github/workflows/deploy/deploy_yc.yml
+    uses: ./.github/workflows/deploy_yc.yml
     needs: publish_backend
     environment: next
     secrets: inherit
