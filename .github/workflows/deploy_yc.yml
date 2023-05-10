@@ -41,8 +41,7 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
-    needs: build
+    needs: start_vm
     environment: ${{ inputs.env_name }}
     steps:
       - name: Deploy to Yandex Cloud VM via SSH action
