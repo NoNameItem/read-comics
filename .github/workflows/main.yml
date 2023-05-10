@@ -17,7 +17,7 @@ on:
 
 jobs:
   qa:
-    uses: ./.github/workflows/qa/qa.yml
+    uses: ./.github/workflows/qa.yml
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()

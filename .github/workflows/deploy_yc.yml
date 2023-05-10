@@ -3,6 +3,9 @@ name: Deploy to YC
 on:
   workflow_call:
     inputs:
+      env_name:
+        type: string
+        required: true
       working_dir:
         description: working directory with docker compose file
         default: "~/read_comics"
@@ -40,7 +43,7 @@ jobs:
     runs-on: ubuntu-latest
     if: (github.ref == 'refs/heads/main') && github.event_name == 'push'
     needs: build
-
+    environment: ${{ inputs.env_name }}
     steps:
       - name: Deploy to Yandex Cloud VM via SSH action
         uses: appleboy/ssh-action@v0.1.3
