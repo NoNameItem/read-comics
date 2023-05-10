@@ -12,7 +12,6 @@ env:
 on:
   push:
     branches: "develop"
-    paths-ignore: [ "docs/**" ]
 
 jobs:
   qa:
