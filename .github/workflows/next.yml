@@ -23,14 +23,14 @@ jobs:
     with:
       publish_test_report: false
     secrets: inherit
-#  publish_backend:
-#    uses: ./.github/workflows/publish_image.yml
-#    with:
-#      image_name: "backend"
-#    secrets: inherit
-#  deploy:
-#    uses: ./.github/workflows/deploy_yc.yml
-#    needs: publish_backend
-#    with:
-#      env_name: next
-#    secrets: inherit
+  publish_backend:
+    uses: ./.github/workflows/publish_image.yml
+    with:
+      image_name: "backend"
+    secrets: inherit
+  deploy:
+    uses: ./.github/workflows/deploy_yc.yml
+    needs: publish_backend
+    with:
+      env_name: next
+    secrets: inherit
