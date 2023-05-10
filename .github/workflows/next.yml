@@ -1,0 +1,36 @@
+name: Next version
+
+permissions:
+  checks: write
+  pull-requests: write
+
+# Enable Buildkit and let compose use it to speed up image building
+env:
+  DOCKER_BUILDKIT: 1
+  COMPOSE_DOCKER_CLI_BUILD: 1
+
+on:
+  push:
+    branches: "develop"
+
+jobs:
+  qa:
+    uses: ./.github/workflows/qa.yml
+  publish_reports:
+    uses: ./.github/workflows/publish_reports.yml
+    if: success() || failure()
+    needs: qa
+    with:
+      publish_test_report: false
+    secrets: inherit
+  publish_backend:
+    uses: ./.github/workflows/publish_image.yml
+    with:
+      image_name: "backend"
+    secrets: inherit
+  deploy:
+    uses: ./.github/workflows/deploy_yc.yml
+    needs: publish_backend
+    with:
+      env_name: "next"
+    secrets: inherit
