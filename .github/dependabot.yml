@@ -2,9 +2,11 @@
 # https://help.github.com/github/administering-a-repository/configuration-options-for-dependency-updates
 
 version: 2
+
 updates:
   # Update GitHub actions in workflows
   - package-ecosystem: "github-actions"
+    target-branch: "develop"
     directory: "/"
     # Check for updates to GitHub Actions every weekday
     schedule:
@@ -16,6 +18,7 @@ updates:
   # support wildcards or recursively checking subdirectories. Check this issue for updates:
   # https://github.com/dependabot/dependabot-core/issues/2178
   - package-ecosystem: "docker"
+    target-branch: "develop"
     # Look for a `Dockerfile` in the `compose/local/django` directory
     directory: "compose/local/django/"
     # Check for updates to GitHub Actions every weekday
@@ -24,21 +27,15 @@ updates:
 
   # Enable version updates for Docker
   - package-ecosystem: "docker"
+    target-branch: "develop"
     # Look for a `Dockerfile` in the `compose/production/django` directory
     directory: "compose/production/django/"
     # Check for updates to GitHub Actions every weekday
     schedule:
       interval: "daily"
 
-  # Enable version updates for Docker
-  - package-ecosystem: "docker"
-    # Look for a `Dockerfile` in the `compose/production/traefik` directory
-    directory: "compose/production/traefik/"
-    # Check for updates to GitHub Actions every weekday
-    schedule:
-      interval: "daily"
-
   - package-ecosystem: "pip"
+    target-branch: "develop"
     directory: "/"
     schedule:
       interval: "daily"
