@@ -1,5 +1,37 @@
 # Changelog
 
+## [1.3.0](https://github.com/NoNameItem/read-comics/compare/v1.2.0...v1.3.0) (2023-05-11)
+
+
+### Features
+
+* Disable codecov ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Pull requests setup ([51fb221](https://github.com/NoNameItem/read-comics/commit/51fb221684510bb33e5bc3cdace529bc569c274d))
+* Sonar badges ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Test publishing ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Test publishing ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Unit test continue in error ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Update version in read_comics/__init__.py ([51fb221](https://github.com/NoNameItem/read-comics/commit/51fb221684510bb33e5bc3cdace529bc569c274d))
+
+
+### Bug Fixes
+
+* **core:** Broken accounts urls ([9f39e44](https://github.com/NoNameItem/read-comics/commit/9f39e44b07aba549104557a337cf9199e8933b0d))
+* Delete codecov badge ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Dev: ci pylint ([9f39e44](https://github.com/NoNameItem/read-comics/commit/9f39e44b07aba549104557a337cf9199e8933b0d))
+* Fixed failing test ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Fixed main branch ci permissions ([fc5d4a2](https://github.com/NoNameItem/read-comics/commit/fc5d4a2e0dd29d8d1458fdfef9930a181d811b22))
+* Run actions on release PR ([d328519](https://github.com/NoNameItem/read-comics/commit/d328519b43f4252478fabd69a4eec695dd73258c))
+* Sonar badges ([b12aa7a](https://github.com/NoNameItem/read-comics/commit/b12aa7a648596c14b1a637c20e841e121de9f91e))
+* Test publishing fail job on test fails ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+* Test publishing permissions ([04406d3](https://github.com/NoNameItem/read-comics/commit/04406d3714b1a35edf4917d280d83cfb5875294b))
+
+
+### Build System
+
+* **production-run:** Using standart traefik image ([9f39e44](https://github.com/NoNameItem/read-comics/commit/9f39e44b07aba549104557a337cf9199e8933b0d))
+* **production-run:** Using standart traefik image ([954db68](https://github.com/NoNameItem/read-comics/commit/954db6844c311439ae31b856a38b8823e2e19541))
+
 ## 1.2.0 (2023-05-08)
 
 
