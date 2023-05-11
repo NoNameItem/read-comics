@@ -56,3 +56,4 @@ jobs:
             cd ${{ inputs.working_dir }}
             export PATH="$PATH:${{ inputs.yc_path }}"
             ${{ inputs.script }}
+            docker image prune
