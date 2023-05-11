@@ -17,7 +17,16 @@ on:
         type: boolean
         default: false
         required: false
-#
+      dockerfile:
+        description: path to docker file
+        type: string
+        required: true
+      context:
+        description: Docker build context
+        type: string
+        required: false
+        default: "."
+
 jobs:
   build-publish:
     runs-on: ubuntu-latest
@@ -26,7 +35,7 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build container image
-        run: docker build -f ./compose/production/django/Dockerfile -t cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} .
+        run: docker build -f ${{ inputs.dockerfile }} -t cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} .
 
       - name: Tag as latest
         if: inputs.tag_latest
