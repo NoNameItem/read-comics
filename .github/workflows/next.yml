@@ -14,23 +14,23 @@ on:
     branches: "develop"
 
 jobs:
-#  qa:
-#    uses: ./.github/workflows/qa.yml
-#    with:
-#      silent_linters: true
-#    permissions:
-#      checks: none
-#      pull-requests: none
-#  publish_reports:
-#    uses: ./.github/workflows/publish_reports.yml
-#    if: success() || failure()
-#    needs: qa
-#    with:
-#      publish_test_report: false
-#      sonar_scan_name: SonarCloud - Develop
-#    secrets: inherit
-#    permissions:
-#      checks: none
+  qa:
+    uses: ./.github/workflows/qa.yml
+    with:
+      silent_linters: true
+    permissions:
+      checks: none
+      pull-requests: none
+  publish_reports:
+    uses: ./.github/workflows/publish_reports.yml
+    if: success() || failure()
+    needs: qa
+    with:
+      publish_test_report: false
+      sonar_scan_name: SonarCloud - Develop
+    secrets: inherit
+    permissions:
+      checks: none
 #      pull-requests: none
   publish_backend:
     uses: ./.github/workflows/publish_image.yml
