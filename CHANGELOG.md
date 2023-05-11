@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/NoNameItem/read-comics/compare/1.3.1...1.3.2) (2023-05-11)
+
+
+### Bug Fixes
+
+* Release fix ([b53eb4b](https://github.com/NoNameItem/read-comics/commit/b53eb4b8b0ad390691406d9e46b5ceb9cdd554e2))
+
 ## [1.3.1](https://github.com/NoNameItem/read-comics/compare/v1.3.0...1.3.1) (2023-05-11)
 
 
