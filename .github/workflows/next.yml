@@ -1,4 +1,4 @@
-name: Next version deploy
+name: Next version
 
 permissions:
   checks: none
