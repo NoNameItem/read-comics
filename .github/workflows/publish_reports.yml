@@ -8,10 +8,14 @@ on:
         default: true
         type: boolean
         required: false
+      sonar_scan_name:
+        default: SonarCloud
+        type: string
+        required: false
 
 jobs:
   sonarcloud:
-    name: SonarCloud
+    name: ${{ inputs.sonar_scan_name }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3

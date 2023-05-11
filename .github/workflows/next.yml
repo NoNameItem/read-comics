@@ -22,6 +22,7 @@ jobs:
     needs: qa
     with:
       publish_test_report: false
+      sonar_scan_name: SonarCloud - Develop
     secrets: inherit
   publish_backend:
     uses: ./.github/workflows/publish_image.yml
