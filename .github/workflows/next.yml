@@ -1,8 +1,8 @@
 name: Next version
 
 permissions:
-  checks: write
-  pull-requests: write
+  checks: none
+  pull-requests: none
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
