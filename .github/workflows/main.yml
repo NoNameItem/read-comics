@@ -17,8 +17,11 @@ on:
 jobs:
   qa:
     uses: ./.github/workflows/qa.yml
-  with:
-    silent_linters: true
+    with:
+      silent_linters: true
+    permissions:
+      checks: none
+      pull-requests: none
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()
@@ -26,3 +29,6 @@ jobs:
     with:
       publish_test_report: false
     secrets: inherit
+    permissions:
+      checks: none
+      pull-requests: none
