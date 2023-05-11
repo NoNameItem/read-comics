@@ -1,11 +1,8 @@
 version: '3'
 
-volumes:
-  production_traefik: {}
-
 services:
   django: &django
-    image: cr.yandex/crpkef6i6mmeq12lo3i7/app:latest
+    image: cr.yandex/crpkef6i6mmeq12lo3i7/backend:next
     depends_on:
       - redis
     volumes:
@@ -19,7 +16,7 @@ services:
     depends_on:
       - django
     volumes:
-      - ./compose/production/traefik:/etc/traefik/:z
+      - ./compose/test/traefik:/etc/traefik/:z
     ports:
       - "0.0.0.0:80:80"
       - "0.0.0.0:443:443"
@@ -32,10 +29,6 @@ services:
   celeryworker:
     <<: *django
     command: /start-celeryworker
-
-  celerybeat:
-    <<: *django
-    command: /start-celerybeat
 
   flower:
     <<: *django

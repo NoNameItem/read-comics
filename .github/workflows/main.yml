@@ -1,8 +1,8 @@
-name: Pull request
+name: Current version
 
 permissions:
-  checks: write
-  pull-requests: write
+  checks: none
+  pull-requests: none
 
 # Enable Buildkit and let compose use it to speed up image building
 env:
@@ -10,23 +10,25 @@ env:
   COMPOSE_DOCKER_CLI_BUILD: 1
 
 on:
-  pull_request:
-    branches:
-      - main
+  push:
+    branches: "main"
+    paths-ignore: [ "docs/**" ]
 
 jobs:
   qa:
     uses: ./.github/workflows/qa.yml
-    permissions:
-      checks: write
-      pull-requests: write
     with:
       silent_linters: true
+    permissions:
+      checks: none
+      pull-requests: none
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()
     needs: qa
+    with:
+      publish_test_report: false
     secrets: inherit
     permissions:
-      checks: write
-      pull-requests: write
+      checks: none
+      pull-requests: none
