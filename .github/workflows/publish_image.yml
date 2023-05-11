@@ -39,7 +39,7 @@ jobs:
 
       - name: Tag as latest
         if: inputs.tag_latest
-        run: docker tag cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} ${{ inputs.image_name }}:latest
+        run: docker tag cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:latest
 
       - name: Yandex Cloud CR "Login" Action for GitHub Actions
         uses: yc-actions/yc-cr-login@v1
