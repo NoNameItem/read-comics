@@ -1,9 +1,5 @@
 name: Publish reports
 
-permissions:
-  checks: write
-  pull-requests: write
-
 on:
   workflow_call:
     inputs:
