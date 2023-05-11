@@ -337,3 +337,4 @@ certs/*
 /test_report.xml
 /pylint.txt
 /yc_read_comics_authorized_key.json
+/.envs/.local/.django_unsafe

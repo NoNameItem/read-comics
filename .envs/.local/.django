@@ -19,7 +19,4 @@ MONGO_URL=mongodb://read_comics:read_comics@mongodb.read-comics.net:27017/read_c
 DO_SPACE_DATA_REGION=ams3
 DO_SPACE_DATA_ENDPOINT_URL=https://storage.yandexcloud.net
 DO_SPACE_DATA_BUCKET=readcomicsnet
-DO_SPACE_DATA_KEY=YCAJEcRpcZO2Mdu0l7PSNDY1X
-DO_SPACE_DATA_SECRET=YCPjEzXSnO90-Bn4b8mwEccTxkhUBzvnUCRbMsqY
 DO_SPACE_DATA_PUBLIC_URL=https://storage.yandexcloud.net/readcomicsnet
-COMICVINE_API_KEY=ca39fea03beee82847a491cb9726df210d11cd34
