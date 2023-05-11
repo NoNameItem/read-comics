@@ -17,6 +17,9 @@ on:
 jobs:
   qa:
     uses: ./.github/workflows/qa.yml
+    permissions:
+      checks: write
+      pull-requests: write
     with:
       silent_linters: true
   publish_reports:
@@ -24,3 +27,6 @@ jobs:
     if: success() || failure()
     needs: qa
     secrets: inherit
+    permissions:
+      checks: write
+      pull-requests: write
