@@ -18,6 +18,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
 
+      - name: Generate .django_unsafe
+        run: |
+          touch .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
+          echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
+
       - name: Build the Stack
         run: docker-compose -f local.yml build
 
@@ -52,6 +59,13 @@ jobs:
 
       - name: Checkout Code Repository
         uses: actions/checkout@v3
+
+      - name: Generate .django_unsafe
+        run: |
+          touch .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
+          echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
 
       - name: Build the Stack
         run: docker-compose -f local.yml build
