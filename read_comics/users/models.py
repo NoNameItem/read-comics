@@ -81,11 +81,6 @@ class User(AbstractUser):
 
     @property
     def started_and_not_finished_volumes(self):
-        from read_comics.utils.utils import Union
-
-        i: Union[int, str] = 1
-        print(i)
-
         return self.get_started_and_not_finished(Volume)
 
     @property
