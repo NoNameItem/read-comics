@@ -14,16 +14,6 @@ on:
     branches: "develop"
 
 jobs:
-  qa:
-    uses: ./.github/workflows/qa.yml
-  publish_reports:
-    uses: ./.github/workflows/publish_reports.yml
-    if: success() || failure()
-    needs: qa
-    with:
-      publish_test_report: false
-      sonar_scan_name: SonarCloud - Develop
-    secrets: inherit
   publish_backend:
     uses: ./.github/workflows/publish_image.yml
     with:
