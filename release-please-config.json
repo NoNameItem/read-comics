@@ -2,6 +2,7 @@
   "plugins": ["sentence-case"],
   "release-type": "python",
   "draft": false,
+  "include-v-in-tag": false,
   "packages": {
     ".": {
       "release-type": "python",

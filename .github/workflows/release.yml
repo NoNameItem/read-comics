@@ -19,6 +19,7 @@ jobs:
       image_name: "backend"
       dockerfile: "./compose/production/django/Dockerfile"
       tag_latest: true
+      release:
     secrets: inherit
   deploy:
     uses: ./.github/workflows/deploy_yc.yml
