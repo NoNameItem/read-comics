@@ -1,0 +1,35 @@
+version: '3'
+
+services:
+  django: &django
+    image: cr.yandex/crpkef6i6mmeq12lo3i7/backend:next
+    depends_on:
+      - redis
+    volumes:
+      - ./root.crt:/home/django/.postgresql/root.crt:z
+    env_file:
+      - .env
+    command: /start
+
+  traefik:
+    image: traefik:v2.5.5
+    depends_on:
+      - django
+    volumes:
+      - ./compose/test/traefik:/etc/traefik/:z
+    ports:
+      - "0.0.0.0:80:80"
+      - "0.0.0.0:443:443"
+      - "0.0.0.0:5555:5555"
+
+  redis:
+    image: redis:6
+    container_name: redis
+
+  celeryworker:
+    <<: *django
+    command: /start-celeryworker
+
+  flower:
+    <<: *django
+    command: /start-flower
