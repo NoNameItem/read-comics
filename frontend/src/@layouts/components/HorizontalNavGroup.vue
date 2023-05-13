@@ -1,39 +1,37 @@
-<script lang="ts" setup>
+<script setup>
 import { useLayouts } from '@layouts'
-import { HorizontalNavLink, HorizontalNavPopper } from '@layouts/components'
+import {
+  HorizontalNavLink,
+  HorizontalNavPopper,
+} from '@layouts/components'
 import { config } from '@layouts/config'
 import { canViewNavMenuGroup } from '@layouts/plugins/casl'
-import type { NavGroup } from '@layouts/types'
 import { isNavGroupActive } from '@layouts/utils'
 
-interface Props {
-  item: NavGroup
-  childrenAtEnd?: boolean
-
-  // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling
-  isSubItem?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  childrenAtEnd: false,
-  isSubItem: false,
+const props = defineProps({
+  item: {
+    type: null,
+    required: true,
+  },
+  childrenAtEnd: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  isSubItem: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 })
 
-defineOptions({
-  name: 'HorizontalNavGroup',
-})
+defineOptions({ name: 'HorizontalNavGroup' })
 
 const route = useRoute()
 const router = useRouter()
 const { dynamicI18nProps, isAppRtl } = useLayouts()
-
 const isGroupActive = ref(false)
 
-/*
-  Watch for route changes, more specifically route path. Do note that this won't trigger if route's query is updated.
-
-  updates isActive & isOpen based on active state of group.
-*/
 watch(() => route.path, () => {
   const isActive = isNavGroupActive(props.item.children, router)
 

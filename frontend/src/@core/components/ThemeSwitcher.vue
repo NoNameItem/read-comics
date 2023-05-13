@@ -1,13 +1,20 @@
-<script setup lang="ts">
+<script setup>
 import { useThemeConfig } from '@core/composable/useThemeConfig'
-import type { ThemeSwitcherTheme } from '@layouts/types'
 
-const props = defineProps<{
-  themes: ThemeSwitcherTheme[]
-}>()
+const props = defineProps({
+  themes: {
+    type: Array,
+    required: true,
+  },
+})
 
 const { theme } = useThemeConfig()
-const { state: currentThemeName, next: getNextThemeName, index: currentThemeIndex } = useCycleList(props.themes.map(t => t.name), { initialValue: theme.value })
+
+const {
+  state: currentThemeName,
+  next: getNextThemeName,
+  index: currentThemeIndex,
+} = useCycleList(props.themes.map(t => t.name), { initialValue: theme.value })
 
 const changeTheme = () => {
   theme.value = getNextThemeName()

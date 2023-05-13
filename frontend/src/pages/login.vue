@@ -1,6 +1,5 @@
-<script setup lang="ts">
+<script setup>
 import { VForm } from 'vuetify/components/VForm'
-
 import AuthProvider from '@/views/pages/authentication/AuthProvider.vue'
 import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
 import authV2LoginIllustrationBorderedDark from '@images/pages/auth-v2-login-illustration-bordered-dark.png'
@@ -13,12 +12,9 @@ import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
 import { themeConfig } from '@themeConfig'
 
 const authThemeImg = useGenerateImageVariant(authV2LoginIllustrationLight, authV2LoginIllustrationDark, authV2LoginIllustrationBorderedLight, authV2LoginIllustrationBorderedDark, true)
-
 const authThemeMask = useGenerateImageVariant(authV2MaskLight, authV2MaskDark)
-
 const isPasswordVisible = ref(false)
-
-const refVForm = ref<VForm>()
+const refVForm = ref()
 const email = ref('admin@demo.com')
 const password = ref('admin')
 const rememberMe = ref(false)

@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 const shortcuts = [
   {
     icon: 'tabler-calendar',
@@ -28,7 +28,10 @@ const shortcuts = [
     icon: 'tabler-settings',
     title: 'Settings',
     subtitle: 'Account Settings',
-    to: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
+    to: {
+      name: 'pages-account-settings-tab',
+      params: { tab: 'account' },
+    },
   },
   {
     icon: 'tabler-help',

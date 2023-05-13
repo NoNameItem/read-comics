@@ -1,70 +1,124 @@
-<script setup lang="ts">
+<script setup>
 import Shepherd from 'shepherd.js'
-import type { SearchHeader, SearchItem } from '@/@fake-db/types'
 import axios from '@axios'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 
-interface Suggestion {
-  icon: string
-  title: string
-  url: object
-}
 const { appContentLayoutNav } = useThemeConfig()
 
-interface SuggestionGroup {
-  title: string
-  content: Suggestion[]
-}
-
-defineOptions({
-  inheritAttrs: false,
-})
+defineOptions({ inheritAttrs: false })
 
 // 👉 Is App Search Bar Visible
 const isAppSearchBarVisible = ref(false)
 
 // 👉 Default suggestions
-const suggestionGroups: SuggestionGroup[] = [
+const suggestionGroups = [
   {
     title: 'Popular Searches',
     content: [
-      { icon: 'tabler-chart-donut', title: 'Analytics', url: { name: 'dashboards-analytics' } },
-      { icon: 'tabler-chart-bubble', title: 'CRM', url: { name: 'dashboards-crm' } },
-      { icon: 'tabler-file', title: 'Invoice List', url: { name: 'apps-invoice-list' } },
-      { icon: 'tabler-users', title: 'User List', url: { name: 'apps-user-list' } },
+      {
+        icon: 'tabler-chart-donut',
+        title: 'Analytics',
+        url: { name: 'dashboards-analytics' },
+      },
+      {
+        icon: 'tabler-chart-bubble',
+        title: 'CRM',
+        url: { name: 'dashboards-crm' },
+      },
+      {
+        icon: 'tabler-file',
+        title: 'Invoice List',
+        url: { name: 'apps-invoice-list' },
+      },
+      {
+        icon: 'tabler-users',
+        title: 'User List',
+        url: { name: 'apps-user-list' },
+      },
     ],
   },
   {
     title: 'Apps & Pages',
     content: [
-      { icon: 'tabler-calendar', title: 'Calendar', url: { name: 'apps-calendar' } },
-      { icon: 'tabler-file-plus', title: 'Invoice Add', url: { name: 'apps-invoice-add' } },
-      { icon: 'tabler-currency-dollar', title: 'Pricing', url: { name: 'pages-pricing' } },
-      { icon: 'tabler-user', title: 'Account Settings', url: { name: 'pages-account-settings-tab', params: { tab: 'account' } } },
+      {
+        icon: 'tabler-calendar',
+        title: 'Calendar',
+        url: { name: 'apps-calendar' },
+      },
+      {
+        icon: 'tabler-file-plus',
+        title: 'Invoice Add',
+        url: { name: 'apps-invoice-add' },
+      },
+      {
+        icon: 'tabler-currency-dollar',
+        title: 'Pricing',
+        url: { name: 'pages-pricing' },
+      },
+      {
+        icon: 'tabler-user',
+        title: 'Account Settings',
+        url: {
+          name: 'pages-account-settings-tab',
+          params: { tab: 'account' },
+        },
+      },
     ],
   },
   {
     title: 'User Interface',
     content: [
-      { icon: 'tabler-letter-a', title: 'Typography', url: { name: 'pages-typography' } },
-      { icon: 'tabler-square', title: 'Tabs', url: { name: 'components-tabs' } },
-      { icon: 'tabler-hand-click', title: 'Buttons', url: { name: 'components-button' } },
-      { icon: 'tabler-keyboard', title: 'Statistics', url: { name: 'pages-cards-card-statistics' } },
+      {
+        icon: 'tabler-letter-a',
+        title: 'Typography',
+        url: { name: 'pages-typography' },
+      },
+      {
+        icon: 'tabler-square',
+        title: 'Tabs',
+        url: { name: 'components-tabs' },
+      },
+      {
+        icon: 'tabler-hand-click',
+        title: 'Buttons',
+        url: { name: 'components-button' },
+      },
+      {
+        icon: 'tabler-keyboard',
+        title: 'Statistics',
+        url: { name: 'pages-cards-card-statistics' },
+      },
     ],
   },
   {
     title: 'Popular Searches',
     content: [
-      { icon: 'tabler-list', title: 'Select', url: { name: 'forms-select' } },
-      { icon: 'tabler-space', title: 'Combobox', url: { name: 'forms-combobox' } },
-      { icon: 'tabler-calendar', title: 'Date & Time Picker', url: { name: 'forms-date-time-picker' } },
-      { icon: 'tabler-hexagon', title: 'Rating', url: { name: 'forms-rating' } },
+      {
+        icon: 'tabler-list',
+        title: 'Select',
+        url: { name: 'forms-select' },
+      },
+      {
+        icon: 'tabler-space',
+        title: 'Combobox',
+        url: { name: 'forms-combobox' },
+      },
+      {
+        icon: 'tabler-calendar',
+        title: 'Date & Time Picker',
+        url: { name: 'forms-date-time-picker' },
+      },
+      {
+        icon: 'tabler-hexagon',
+        title: 'Rating',
+        url: { name: 'forms-rating' },
+      },
     ],
   },
 ]
 
 // 👉 No Data suggestion
-const noDataSuggestions: Suggestion[] = [
+const noDataSuggestions = [
   {
     title: 'Analytics Dashboard',
     icon: 'tabler-shopping-cart',
@@ -73,7 +127,10 @@ const noDataSuggestions: Suggestion[] = [
   {
     title: 'Account Settings',
     icon: 'tabler-user',
-    url: { name: 'pages-account-settings-tab', params: { tab: 'account' } },
+    url: {
+      name: 'pages-account-settings-tab',
+      params: { tab: 'account' },
+    },
   },
   {
     title: 'Pricing Page',
@@ -83,24 +140,18 @@ const noDataSuggestions: Suggestion[] = [
 ]
 
 const searchQuery = ref('')
-const searchResult = ref<(SearchItem | SearchHeader)[]>([])
+const searchResult = ref([])
 const router = useRouter()
 
 // 👉 fetch search result API
 watchEffect(() => {
-  axios.get('/app-bar/search', {
-    params: {
-      q: searchQuery.value,
-    },
-  }).then(response => {
+  axios.get('/app-bar/search', { params: { q: searchQuery.value } }).then(response => {
     searchResult.value = response.data
   })
 })
 
-// 👉 redirect the selected page
-const redirectToSuggestedOrSearchedPage = (selected: Suggestion) => {
+const redirectToSuggestedOrSearchedPage = selected => {
   router.push(selected.url)
-
   isAppSearchBarVisible.value = false
   searchQuery.value = ''
 }

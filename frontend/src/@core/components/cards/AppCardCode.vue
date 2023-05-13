@@ -1,30 +1,31 @@
-<script lang="ts" setup>
+<script setup>
 import 'prismjs'
 import 'prismjs/themes/prism-tomorrow.css'
-import type { Ref } from 'vue'
 import Prism from 'vue-prism-component'
 
-interface Props {
-  title: string
-  code: CodeProp
-  codeLanguage?: string
-  noPadding?: boolean
-}
-
-interface CodeProp {
-  ts: string
-  js: string
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  codeLanguage: 'markup',
-  noPadding: false,
+const props = defineProps({
+  title: {
+    type: String,
+    required: true,
+  },
+  code: {
+    type: Object,
+    required: true,
+  },
+  codeLanguage: {
+    type: String,
+    required: false,
+    default: 'markup',
+  },
+  noPadding: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 })
 
-const preferredCodeLanguage = useStorage('preferredCodeLanguage', 'ts') as unknown as Ref<keyof CodeProp>
-
+const preferredCodeLanguage = useStorage('preferredCodeLanguage', 'ts')
 const isCodeShown = ref(false)
-
 const { copy, copied } = useClipboard({ source: computed(() => props.code[preferredCodeLanguage.value]) })
 </script>
 

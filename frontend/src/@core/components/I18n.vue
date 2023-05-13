@@ -1,24 +1,22 @@
-<script setup lang="ts">
-import type { I18nLanguage } from '@layouts/types'
-
-const props = withDefaults(defineProps<Props>(), {
-  location: 'bottom end',
+<script setup>
+const props = defineProps({
+  languages: {
+    type: Array,
+    required: true,
+  },
+  location: {
+    type: null,
+    required: false,
+    default: 'bottom end',
+  },
 })
 
-defineEmits<{
-  (e: 'change', id: string): void
-}>()
-
-interface Props {
-  languages: I18nLanguage[]
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  location?: any
-}
+const emit = defineEmits(['change'])
 
 const { locale } = useI18n({ useScope: 'global' })
 
 watch(locale, val => {
-  document.documentElement.setAttribute('lang', val as string)
+  document.documentElement.setAttribute('lang', val)
 })
 
 const currentLang = ref(['en'])

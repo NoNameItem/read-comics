@@ -1,18 +1,20 @@
-<script lang="ts" setup>
-import type { GridColumn } from '@core/types'
+<script setup>
+const props = defineProps({
+  selectedCheckbox: {
+    type: Array,
+    required: true,
+  },
+  checkboxContent: {
+    type: Array,
+    required: true,
+  },
+  gridColumn: {
+    type: null,
+    required: false,
+  },
+})
 
-interface Props {
-  selectedCheckbox: string[]
-  checkboxContent: { bgImage: string; value: string }[]
-  gridColumn?: GridColumn
-}
-
-interface Emit {
-  (e: 'update:selectedCheckbox', value: string[]): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const emit = defineEmits(['update:selectedCheckbox'])
 
 const selectedOption = ref(structuredClone(toRaw(props.selectedCheckbox)))
 

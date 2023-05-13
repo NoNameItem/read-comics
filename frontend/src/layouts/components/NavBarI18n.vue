@@ -1,11 +1,10 @@
-<script lang="ts" setup>
+<script setup>
 import NavBarI18n from '@core/components/I18n.vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
-import type { I18nLanguage } from '@layouts/types'
 
 const { isAppRtl } = useThemeConfig()
 
-const i18nCompLanguages: I18nLanguage[] = [
+const i18nCompLanguages = [
   {
     label: 'English',
     i18nLang: 'en',
@@ -20,7 +19,7 @@ const i18nCompLanguages: I18nLanguage[] = [
   },
 ]
 
-const handleLangChange = (lang: string) => {
+const handleLangChange = lang => {
   isAppRtl.value = lang === 'ar'
 }
 </script>

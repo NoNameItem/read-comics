@@ -1,18 +1,20 @@
-<script lang="ts" setup>
-import type { GridColumn } from '@core/types'
+<script setup>
+const props = defineProps({
+  selectedRadio: {
+    type: String,
+    required: true,
+  },
+  radioContent: {
+    type: Array,
+    required: true,
+  },
+  gridColumn: {
+    type: null,
+    required: false,
+  },
+})
 
-interface Props {
-  selectedRadio: string
-  radioContent: { bgImage: string; value: string }[]
-  gridColumn?: GridColumn
-}
-
-interface Emit {
-  (e: 'update:selectedRadio', value: string): void
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
+const emit = defineEmits(['update:selectedRadio'])
 
 const selectedOption = ref(structuredClone(toRaw(props.selectedRadio)))
 

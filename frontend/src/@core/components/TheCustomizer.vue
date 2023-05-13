@@ -1,63 +1,51 @@
-<script setup lang="tsx">
+<script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
 import { useTheme } from 'vuetify'
 import { staticPrimaryColor } from '@/plugins/vuetify/theme'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
-import { RouteTransitions, Skins } from '@core/enums'
-import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from '@layouts/enums'
+import {
+  RouteTransitions,
+  Skins,
+} from '@core/enums'
+import {
+  AppContentLayoutNav,
+  ContentWidth,
+  FooterType,
+  NavbarType,
+} from '@layouts/enums'
 import { themeConfig } from '@themeConfig'
 
-// import { useTheme } from 'vuetify'
-
 const isNavDrawerOpen = ref(false)
-
-const {
-  theme,
-  skin,
-  appRouteTransition,
-  navbarType,
-  footerType,
-  isVerticalNavCollapsed,
-  isVerticalNavSemiDark,
-  appContentWidth,
-  appContentLayoutNav,
-  isAppRtl,
-  isNavbarBlurEnabled,
-  isLessThanOverlayNavBreakpoint,
-} = useThemeConfig()
+const { theme, skin, appRouteTransition, navbarType, footerType, isVerticalNavCollapsed, isVerticalNavSemiDark, appContentWidth, appContentLayoutNav, isAppRtl, isNavbarBlurEnabled, isLessThanOverlayNavBreakpoint } = useThemeConfig()
 
 // 👉 Primary Color
 const vuetifyTheme = useTheme()
 
 // const vuetifyThemesName = Object.keys(vuetifyTheme.themes.value)
-
 const initialThemeColors = JSON.parse(JSON.stringify(vuetifyTheme.current.value.colors))
-const colors = ['primary', 'secondary', 'success', 'info', 'warning', 'error']
 
-// ℹ️ It will set primary color for current theme only
-const setPrimaryColor = (color: string) => {
+const colors = [
+  'primary',
+  'secondary',
+  'success',
+  'info',
+  'warning',
+  'error',
+]
+
+const setPrimaryColor = color => {
   const currentThemeName = vuetifyTheme.name.value
 
   vuetifyTheme.themes.value[currentThemeName].colors.primary = color
-
-  // ℹ️ We need to store this color value in localStorage so vuetify plugin can pick on next reload
-  localStorage.setItem(`${themeConfig.app.title}-${currentThemeName}ThemePrimaryColor`, color)
-
-  // ℹ️ Update initial loader color
-  localStorage.setItem(`${themeConfig.app.title}-initial-loader-color`, color)
+  localStorage.setItem(`${ themeConfig.app.title }-${ currentThemeName }ThemePrimaryColor`, color)
+  localStorage.setItem(`${ themeConfig.app.title }-initial-loader-color`, color)
 }
 
-/*
-  ℹ️ This will return static color for first indexed color
-  If we don't make first (primary) color as static then when another color is selected then we will have two theme colors with same hex codes and it will show two check marks
-*/
-const getBoxColor = (color: string, index: number) => index ? color : staticPrimaryColor
-
+const getBoxColor = (color, index) => index ? color : staticPrimaryColor
 const { width: windowWidth } = useWindowSize()
 
 const headerValues = computed(() => {
   const entries = Object.entries(NavbarType)
-
   if (appContentLayoutNav.value === AppContentLayoutNav.Horizontal)
     return entries.filter(([_, val]) => val !== NavbarType.Hidden)
 

@@ -1,4 +1,4 @@
-<script lang="ts" setup>
+<script setup>
 import navItems from '@/navigation/horizontal'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import { themeConfig } from '@themeConfig'

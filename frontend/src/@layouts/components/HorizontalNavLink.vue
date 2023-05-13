@@ -1,19 +1,22 @@
-<script lang="ts" setup>
+<script setup>
 import { useLayouts } from '@layouts'
 import { config } from '@layouts/config'
 import { can } from '@layouts/plugins/casl'
-import type { NavLink } from '@layouts/types'
-import { getComputedNavLinkToProp, isNavLinkActive } from '@layouts/utils'
+import {
+  getComputedNavLinkToProp,
+  isNavLinkActive,
+} from '@layouts/utils'
 
-interface Props {
-  item: NavLink
-
-  // ℹ️ We haven't added this prop in vertical nav because we don't need such differentiation in vertical nav for styling
-  isSubItem?: boolean
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  isSubItem: false,
+const props = defineProps({
+  item: {
+    type: null,
+    required: true,
+  },
+  isSubItem: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 })
 
 const { dynamicI18nProps } = useLayouts()

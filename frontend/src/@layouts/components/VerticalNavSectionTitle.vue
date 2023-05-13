@@ -1,12 +1,14 @@
-<script lang="ts" setup>
+<script setup>
 import { useLayouts } from '@layouts'
 import { config } from '@layouts/config'
 import { can } from '@layouts/plugins/casl'
-import type { NavSectionTitle } from '@layouts/types'
 
-defineProps<{
-  item: NavSectionTitle
-}>()
+const props = defineProps({
+  item: {
+    type: null,
+    required: true,
+  },
+})
 
 const { isVerticalNavMini, dynamicI18nProps } = useLayouts()
 const { width: windowWidth } = useWindowSize()

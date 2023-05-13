@@ -1,10 +1,15 @@
-<script setup lang="ts">
+<script setup>
 import { useTheme } from 'vuetify'
 import ScrollToTop from '@core/components/ScrollToTop.vue'
 import { useThemeConfig } from '@core/composable/useThemeConfig'
 import { hexToRgb } from '@layouts/utils'
 
-const { syncInitialLoaderTheme, syncVuetifyThemeWithTheme: syncConfigThemeWithVuetifyTheme, isAppRtl, handleSkinChanges } = useThemeConfig()
+const {
+  syncInitialLoaderTheme,
+  syncVuetifyThemeWithTheme: syncConfigThemeWithVuetifyTheme,
+  isAppRtl,
+  handleSkinChanges,
+} = useThemeConfig()
 
 const { global } = useTheme()
 

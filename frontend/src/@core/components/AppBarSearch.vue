@@ -1,38 +1,40 @@
-<script setup lang="ts">
+<script setup>
 import { PerfectScrollbar } from 'vue3-perfect-scrollbar'
-import { VList, VListItem, VListSubheader } from 'vuetify/components/VList'
+import {
+  VList,
+  VListItem,
+  VListSubheader,
+} from 'vuetify/components/VList'
 
-interface Emit {
-  (e: 'update:isDialogVisible', value: boolean): void
-  (e: 'update:searchQuery', value: string): void
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (e: 'itemSelected', value: any): void
-}
+const props = defineProps({
+  isDialogVisible: {
+    type: Boolean,
+    required: true,
+  },
+  searchQuery: {
+    type: String,
+    required: true,
+  },
+  searchResults: {
+    type: Array,
+    required: true,
+  },
+  suggestions: {
+    type: Array,
+    required: false,
+  },
+  noDataSuggestion: {
+    type: Array,
+    required: false,
+  },
+})
 
-interface Suggestion {
-  icon: string
-  title: string
-  url: object
-}
+const emit = defineEmits([
+  'update:isDialogVisible',
+  'update:searchQuery',
+  'itemSelected',
+])
 
-interface Suggestions {
-  title: string
-  content: Suggestion[]
-}
-
-interface Props {
-  isDialogVisible: boolean
-  searchQuery: string
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  searchResults: any[]
-  suggestions?: Suggestions[]
-  noDataSuggestion?: Suggestion[]
-}
-
-const props = defineProps<Props>()
-const emit = defineEmits<Emit>()
-
-// 👉 Hotkey
 const { ctrl_k, meta_k } = useMagicKeys({
   passive: false,
   onEventFired(e) {
@@ -41,9 +43,9 @@ const { ctrl_k, meta_k } = useMagicKeys({
   },
 })
 
-const refSearchList = ref<VList>()
+const refSearchList = ref()
 const searchQuery = ref(structuredClone(toRaw(props.searchQuery)))
-const refSearchInput = ref<HTMLInputElement>()
+const refSearchInput = ref()
 const isLocalDialogVisible = ref(structuredClone(toRaw(props.isDialogVisible)))
 const searchResults = ref(structuredClone(toRaw(props.searchResults)))
 
@@ -53,9 +55,10 @@ watch(props, () => {
   searchResults.value = structuredClone(toRaw(props.searchResults))
   searchQuery.value = structuredClone(toRaw(props.searchQuery))
 })
-
-// 👉 watching control + / to open dialog
-watch([ctrl_k, meta_k], () => {
+watch([
+  ctrl_k,
+  meta_k,
+], () => {
   isLocalDialogVisible.value = true
   emit('update:isDialogVisible', true)
 })
@@ -71,37 +74,30 @@ watchEffect(() => {
     searchResults.value = []
 })
 
-// 👉 get fucus on search list
-const getFocusOnSearchList = (e: KeyboardEvent) => {
+const getFocusOnSearchList = e => {
   if (e.key === 'ArrowDown') {
     e.preventDefault()
     refSearchList.value?.focus('next')
-  }
-  else if (e.key === 'ArrowUp') {
+  } else if (e.key === 'ArrowUp') {
     e.preventDefault()
     refSearchList.value?.focus('prev')
   }
 }
 
-const dialogModelValueUpdate = (val: boolean) => {
+const dialogModelValueUpdate = val => {
   emit('update:isDialogVisible', val)
   emit('update:searchQuery', '')
 }
 
-// 👉 resolve categories name
-const resolveCategories = (val: string) => {
+const resolveCategories = val => {
   if (val === 'dashboards')
     return 'Dashboards'
-
   if (val === 'appsPages')
     return 'Apps & Pages'
-
   if (val === 'userInterface')
     return 'User Interface'
-
   if (val === 'formsTables')
     return 'Forms Tables'
-
   if (val === 'chartsMisc')
     return 'Charts Misc'
 

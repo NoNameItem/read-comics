@@ -4,28 +4,24 @@ module.exports = {
     es2021: true,
   },
   extends: [
-    '@antfu/eslint-config-vue',
+    '.eslintrc-auto-import.json',
     'plugin:vue/vue3-recommended',
     'plugin:import/recommended',
-    'plugin:import/typescript',
     'plugin:promise/recommended',
     'plugin:sonarjs/recommended',
-    'plugin:@typescript-eslint/recommended',
 
     // 'plugin:unicorn/recommended',
   ],
   parser: 'vue-eslint-parser',
   parserOptions: {
     ecmaVersion: 13,
-    parser: '@typescript-eslint/parser',
     sourceType: 'module',
   },
   plugins: [
     'vue',
-    '@typescript-eslint',
     'regex',
   ],
-  ignorePatterns: ['src/@iconify/*.js', 'node_modules', 'dist', '*.d.ts'],
+  ignorePatterns: ['src/@iconify/*.js', 'node_modules', 'dist'],
   rules: {
     'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
     'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
@@ -39,7 +35,6 @@ module.exports = {
       multiline: 'below',
     }],
 
-    'antfu/top-level-function': 'off',
 
     // indentation (Already present in TypeScript)
     'indent': ['error', 2],
@@ -76,7 +71,6 @@ module.exports = {
     ],
 
     // Ignore _ as unused variable
-    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_+$' }],
 
     'array-element-newline': ['error', 'consistent'],
     'array-bracket-newline': ['error', 'consistent'],
@@ -121,9 +115,7 @@ module.exports = {
 
     // Thanks: https://stackoverflow.com/a/63961972/10796681
     'no-shadow': 'off',
-    '@typescript-eslint/no-shadow': ['error'],
 
-    '@typescript-eslint/consistent-type-imports': 'error',
 
     // Plugin: eslint-plugin-promise
     'promise/always-return': 'off',
@@ -179,10 +171,6 @@ module.exports = {
     //   },
     // }],
 
-    // Internal Rules
-    'valid-appcardcode-code-prop': 'error',
-    'valid-appcardcode-demo-sfc': 'error',
-
     // https://github.com/gmullerb/eslint-plugin-regex
     'regex/invalid': [
       'error',
@@ -221,9 +209,9 @@ module.exports = {
         {
           regex: 'import axios from \'axios\'',
           replacement: 'import axios from \'@axios\'',
-          message: 'Use axios instances created in \'src/plugin/axios.ts\' instead of unconfigured axios',
+          message: 'Use axios instances created in \'src/plugin/axios.js\' instead of unconfigured axios',
           files: {
-            ignore: '^.*plugins/axios.ts.*',
+            ignore: '^.*plugins/axios.js.*',
           },
         },
       ],
@@ -235,9 +223,8 @@ module.exports = {
   settings: {
     'import/resolver': {
       node: {
-        extensions: ['.ts', '.js', '.tsx', '.jsx', '.mjs', '.png', '.jpg'],
-      },
-      typescript: {},
+        extensions: ['.js', '.js', '.jsx', '.jsx', '.mjs', '.png', '.jpg'],
+      }, alias: { 'extensions': ['.ts', '.js', '.tsx', '.jsx', '.mjs'], 'map': [["@", "./src"], ["@themeConfig", "./themeConfig.js"], ["@core", "./src/@core"], ["@layouts", "./src/@layouts"], ["@images", "./src/assets/images/"], ["@styles", "./src/styles/"], ["@configured-variables", "./src/styles/variables/_template.scss"], ["@axios", "./src/plugins/axios"], ["@validators", "./src/@core/utils/validators"], ["apexcharts", "node_modules/apexcharts-clevision"]] },
     },
   },
 }

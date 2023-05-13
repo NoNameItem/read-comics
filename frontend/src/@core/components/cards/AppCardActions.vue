@@ -1,34 +1,44 @@
-<script setup lang="ts">
-interface Props {
-  collapsed?: boolean
-  noActions?: boolean
-  actionCollapsed?: boolean
-  actionRefresh?: boolean
-  actionRemove?: boolean
-  title?: string
-}
-
-interface Emit {
-  (e: 'collapsed', isContentCollapsed: boolean): void
-  (e: 'refresh', hideOverlay: () => void): void
-  (e: 'trash'): void
-}
-
-const props = withDefaults(defineProps<Props>(), {
-  collapsed: false,
-  noActions: false,
-  actionCollapsed: false,
-  actionRefresh: false,
-  actionRemove: false,
-  title: undefined,
+<script setup>
+const props = defineProps({
+  collapsed: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  noActions: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  actionCollapsed: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  actionRefresh: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  actionRemove: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
+  title: {
+    type: String,
+    required: false,
+    default: undefined,
+  },
 })
 
-const emit = defineEmits<Emit>()
+const emit = defineEmits([
+  'collapsed',
+  'refresh',
+  'trash',
+])
 
-// inherit Attribute make false
-defineOptions({
-  inheritAttrs: false,
-})
+defineOptions({ inheritAttrs: false })
 
 const isContentCollapsed = ref(props.collapsed)
 const isCardRemoved = ref(false)
