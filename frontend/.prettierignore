@@ -1,8 +1,8 @@
-**/.git
-**/.svn
-**/.hg
-**/node_modules
-./src/@core/
-./src/@iconify
-./src/@layouts
-./src/assets
+node_modules
+src/@core/
+src/@iconify
+src/@layouts
+src/assets
+.vscode
+auto-imports.d.ts
+.eslintrc-auto-import.json

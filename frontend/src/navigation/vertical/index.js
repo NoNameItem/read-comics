@@ -2,11 +2,11 @@ export default [
   {
     title: "Home",
     to: { name: "index" },
-    icon: { icon: "tabler-smart-home" },
+    icon: { icon: "fat-house" },
   },
   {
     title: "Second page",
     to: { name: "second-page" },
-    icon: { icon: "tabler-file" },
+    icon: { icon: "fat-file" },
   },
 ];

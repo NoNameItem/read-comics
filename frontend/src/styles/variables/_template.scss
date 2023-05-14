@@ -1,6 +1,3 @@
-@forward "@core/scss/template/variables";
-
-// ℹ️ Remove above import and uncomment below to override core variables.
-// @forward "@core/scss/template/variables" with (
-//   $<variable-name>: <variable-value>
-// )
+ @forward "@core/scss/template/variables" with (
+   $layout-vertical-nav-width: 300px
+ );

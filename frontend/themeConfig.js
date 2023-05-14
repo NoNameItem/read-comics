@@ -2,18 +2,15 @@ import { breakpointsVuetify } from "@vueuse/core";
 import { VIcon } from "vuetify/components/VIcon";
 
 // ❗ Logo SVG must be imported with ?raw suffix
-import logo from "@images/logo.svg?raw";
+import logo from "@/assets/logo.png";
 import { defineThemeConfig } from "@core";
 import { RouteTransitions, Skins } from "@core/enums";
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from "@layouts/enums";
 
 export const { themeConfig, layoutConfig } = defineThemeConfig({
   app: {
-    title: "Read-comics",
-    logo: h("div", {
-      innerHTML: logo,
-      style: "line-height:0; color: rgb(var(--v-global-theme-primary))",
-    }),
+    title: "Read-Comics.Net",
+    logo: h("img", { src: logo, alt: "app-logo" }),
     contentWidth: ContentWidth.Fluid,
     contentLayoutNav: AppContentLayoutNav.Vertical,
     overlayNavFromBreakpoint: breakpointsVuetify.md + 16,
