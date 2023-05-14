@@ -8,17 +8,13 @@ export const useGenerateImageVariant = (imgLight, imgDark, imgLightBordered, img
   const { global } = useTheme()
 
   return computed(() => {
-    if (global.name.value === 'light') {
-      if (skin.value === 'bordered' && bordered)
-        return imgLightBordered
-      else
-        return imgLight
+    if (global.name.value === "light") {
+      if (skin.value === "bordered" && bordered) return imgLightBordered;
+      else return imgLight;
     }
-    if (global.name.value === 'dark') {
-      if (skin.value === 'bordered' && bordered)
-        return imgDarkBordered
-      else
-        return imgDark
+    if (global.name.value === "dark") {
+      if (skin.value === "bordered" && bordered) return imgDarkBordered;
+      else return imgDark;
     }
-  })
+  });
 }

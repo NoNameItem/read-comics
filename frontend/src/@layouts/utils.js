@@ -17,7 +17,7 @@ export const getComputedNavLinkToProp = computed(() => link => {
     props.to = typeof link.to === 'string' ? { name: link.to } : link.to
   else
     props.href = link.href
-
+  
   return props
 })
 
@@ -32,7 +32,7 @@ export const resolveNavLinkRouteName = (link, router) => {
     return null
   if (typeof link.to === 'string')
     return link.to
-
+  
   return router.resolve(link.to).name
 }
 
@@ -48,7 +48,7 @@ export const isNavLinkActive = (link, router) => {
   const resolveRoutedName = resolveNavLinkRouteName(link, router)
   if (!resolveRoutedName)
     return false
-
+  
   return matchedRoutes.some(route => {
     return route.name === resolveRoutedName || route.meta.navActiveLink === resolveRoutedName
   })
@@ -80,7 +80,7 @@ export const hexToRgb = hex => {
   })
 
   const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-
+  
   return result ? `${parseInt(result[1], 16)},${parseInt(result[2], 16)},${parseInt(result[3], 16)}` : null
 }
 

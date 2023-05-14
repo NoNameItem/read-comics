@@ -42,7 +42,7 @@ export default defineComponent({
 
     const router = useRouter()
     const shallShowPageLoading = ref(false)
-
+    
     return () => {
       const verticalNavAttrs = toRef(props, 'verticalNavAttrs')
       const { wrapper: verticalNavWrapper, wrapperProps: verticalNavWrapperProps, ...additionalVerticalNavAttrs } = verticalNavAttrs.value

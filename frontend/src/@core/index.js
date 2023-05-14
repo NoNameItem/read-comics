@@ -7,13 +7,13 @@ export const defineThemeConfig = userConfig => {
   const localStorageSkin = (() => {
     const storageValue = localStorage.getItem(`${userConfig.app.title}-skin`)
 
-    return Object.values(Skins).find(v => v === storageValue)
+    return Object.values(Skins).find((v) => v === storageValue);
   })()
 
   const localStorageTransition = (() => {
-    const storageValue = localStorage.getItem(`${userConfig.app.title}-transition`)
+    const storageValue = localStorage.getItem(`${userConfig.app.title}-transition`);
 
-    return Object.values(RouteTransitions).find(v => v === storageValue)
+    return Object.values(RouteTransitions).find((v) => v === storageValue);
   })()
 
   return {

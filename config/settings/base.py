@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -274,7 +275,7 @@ MANAGERS = ADMINS
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
+    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"}},
     "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "django": {"level": "INFO", "handlers": ["console"]},
@@ -349,19 +350,21 @@ SOCIALACCOUNT_PROVIDERS = {
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        # "rest_framework.authentication.SessionAuthentication",
-        "read_comics.users.api.auth.Auth",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = "read-comics-auth"
-JWT_AUTH_REFRESH_COOKIE = "read-comics-refresh-token"
-
-
-REST_AUTH_SERIALIZERS = {"USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer"}
+REST_AUTH = {
+    "USE_JWT": True,
+    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer",
+    "JWT_AUTH_HTTPONLY": False,
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(env("ACCESS_TOKEN_LIFETIME_MINUTES", default=15))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(env("REFRESH_TOKEN_LIFETIME_DAYS", default=60))),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"

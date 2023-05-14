@@ -3,7 +3,7 @@ export const isEmpty = value => {
   if (value === null || value === undefined || value === '')
     return true
 
-  return !!(Array.isArray(value) && value.length === 0)
+  return !!(Array.isArray(value) && value.length === 0);
 }
 
 // 👉 IsNullOrUndefined
@@ -19,13 +19,13 @@ export const isEmptyArray = arr => {
 // 👉 IsObject
 export const isObject = obj => obj !== null && !!obj && typeof obj === 'object' && !Array.isArray(obj)
 export const isToday = date => {
-  const today = new Date()
+  const today = new Date();
 
   return (
     /* eslint-disable operator-linebreak */
     date.getDate() === today.getDate() &&
-        date.getMonth() === today.getMonth() &&
-        date.getFullYear() === today.getFullYear()
-  /* eslint-enable */
-  )
+    date.getMonth() === today.getMonth() &&
+    date.getFullYear() === today.getFullYear()
+    /* eslint-enable */
+  );
 }

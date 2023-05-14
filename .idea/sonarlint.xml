@@ -3,6 +3,12 @@
   <component name="SonarLintProjectSettings">
     <option name="bindingEnabled" value="true" />
     <option name="bindingSuggestionsEnabled" value="false" />
+    <option name="fileExclusions">
+      <list>
+        <option value="FILE:config/settings/local.py" />
+        <option value="FILE:config/settings/base.py" />
+      </list>
+    </option>
     <option name="projectKey" value="NoNameItem_read-comics" />
     <option name="serverId" value="read-comics" />
   </component>

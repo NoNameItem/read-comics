@@ -19,5 +19,5 @@ export const useResponsiveLeftSidebar = (mobileBreakpoint = undefined) => {
 
   return {
     isLeftSidebarOpen,
-  }
+  };
 }

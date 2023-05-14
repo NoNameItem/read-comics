@@ -12,7 +12,7 @@ export const createLayouts = userConfig => {
 
   const localStorageContentWidth = (() => {
     const storageValue = localStorage.getItem(`${userConfig.app.title}-contentWidth`)
-
+    
     return Object.values(ContentWidth).find(v => v === storageValue)
   })()
 
@@ -41,7 +41,7 @@ export const createLayouts = userConfig => {
   config.icons.verticalNavPinned = userConfig.icons.verticalNavPinned
   config.icons.verticalNavUnPinned = userConfig.icons.verticalNavUnPinned
   config.icons.sectionTitlePlaceholder = userConfig.icons.sectionTitlePlaceholder
-
+  
   return () => {
     useDynamicVhCssProperty()
     _setAppDir(config.app.isRtl.value ? 'rtl' : 'ltr')

@@ -39,7 +39,7 @@ const isAnyChildOpen = children => {
     let result = openGroups.value.includes(child.title)
     if ('children' in child)
       result = isAnyChildOpen(child.children) || result
-
+    
     return result
   })
 }

@@ -1,18 +1,18 @@
 <script setup>
 const themes = [
   {
-    name: 'system',
-    icon: 'tabler-device-laptop',
+    name: "system",
+    icon: "fat-laptop",
   },
   {
-    name: 'light',
-    icon: 'tabler-sun-high',
+    name: "light",
+    icon: "fat-sun-bright",
   },
   {
-    name: 'dark',
-    icon: 'tabler-moon',
+    name: "dark",
+    icon: "fat-moon",
   },
-]
+];
 </script>
 
 <template>

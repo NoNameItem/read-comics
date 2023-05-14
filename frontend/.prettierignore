@@ -1,0 +1,8 @@
+**/.git
+**/.svn
+**/.hg
+**/node_modules
+./src/@core/
+./src/@iconify
+./src/@layouts
+./src/assets
