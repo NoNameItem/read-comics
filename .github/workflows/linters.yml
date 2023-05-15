@@ -112,3 +112,24 @@ jobs:
       - name: Run prettier
         working-directory: frontend
         run: yarn prettier:check
+
+  eslint:
+    name: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn
+
+      - name: Run eslint
+        working-directory: frontend
+        run: yarn lint:check:ci | true
+
+      - name: Upload eslint report
+        uses: actions/upload-artifact@v3
+        with:
+          name: eslint_report
+          path: frontend/eslint-report.json

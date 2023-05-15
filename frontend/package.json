@@ -7,6 +7,9 @@
     "build": "vite build",
     "preview": "vite preview --port 5050",
     "lint": "eslint . -c .eslintrc.js --fix --ext .ts,.js,.vue,.tsx,.jsx",
+    "lint:check": "eslint . -c .eslintrc.js --ext .ts,.js,.vue,.tsx,.jsx",
+    "lint:check:ci": "eslint . -c .eslintrc.js --ext .ts,.js,.vue,.tsx,.jsx -f json > eslint-report.json",
+    "prettier": "prettier --write .",
     "prettier:check": "prettier --check .",
     "build:icons": "node src/@iconify/build-icons.js",
     "postinstall": "npm run build:icons"
