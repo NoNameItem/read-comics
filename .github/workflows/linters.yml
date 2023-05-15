@@ -126,7 +126,10 @@ jobs:
 
       - name: Run eslint
         working-directory: frontend
-        run: yarn lint:check:ci | true
+        run: |
+          yarn lint:check:ci | true
+          sed -i 's+/home/runner/work/read-comics/read-comics+/github/workspace+g' eslint-report.json
+
 
       - name: Upload eslint report
         uses: actions/upload-artifact@v3
