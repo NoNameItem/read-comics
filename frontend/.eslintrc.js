@@ -141,12 +141,6 @@ module.exports = {
           message: "Use '@styles' path alias for importing styles from 'src/styles'",
         },
 
-        // {
-        //   id: 'Disallow icon of icon library',
-        //   regex: 'tabler-\\w',
-        //   message: 'Only \'mdi\' icons are allowed',
-        // },
-
         {
           regex: "@core/\\w",
           message: "You can't use @core when you are in @layouts module",

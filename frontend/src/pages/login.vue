@@ -116,7 +116,7 @@ async function login() {
               <VCol cols="12" class="pt-1 pb-1">
                 <VBtn block type="submit" color="primary" :loading="form.loading">
                   Login
-                  <VIcon end icon="fat-arrow-right-to-bracket" />
+                  <VIcon end icon="fa:arrow-right-to-bracket" />
                 </VBtn>
               </VCol>
 

@@ -12,14 +12,20 @@ import { createApp } from "vue";
 import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+import initIconLibrary from "@/plugins/icons";
 
 loadFonts();
+initIconLibrary();
 
 // Create vue app
 const app = createApp(App);
 
 // Use plugins
 app.use(vuetify);
+
+app.component("FontAwesomeIcon", FontAwesomeIcon); // Register component globally
 
 const pinia = createPinia();
 
