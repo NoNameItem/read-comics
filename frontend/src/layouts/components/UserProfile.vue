@@ -1,11 +1,37 @@
 <script setup>
-import avatar1 from "@images/avatars/avatar-1.png";
+import { useUsersStore } from "@/stores/user";
+import F from "@images/avatars/F_thumb.png";
+import M from "@images/avatars/M_thumb.png";
+import O from "@images/avatars/O_thumb.png";
+import U from "@images/avatars/U_thumb.png";
+
+const userStore = useUsersStore();
+const route = useRoute();
+
+const images = {
+  F: F,
+  M: M,
+  O: O,
+  U: U,
+};
+
+const thumb_url = computed(() => {
+  return userStore.images ? userStore.images.thumbnail : images[userStore.gender];
+});
 </script>
 
 <template>
-  <VBadge dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
-    <VAvatar class="cursor-pointer" color="primary" variant="tonal">
-      <VImg :src="avatar1" />
+  <VBtn
+    v-if="!userStore.username"
+    color="primary"
+    variant="text"
+    :to="{ path: 'login', query: { to: route.fullPath } }"
+  >
+    Login <VIcon end icon="fat-arrow-right-to-bracket" />
+  </VBtn>
+  <VBadge v-else dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
+    <VAvatar class="cursor-pointer avatar" color="primary" variant="tonal">
+      <VImg :src="thumb_url" class="bg-white" />
 
       <!-- SECTION Menu -->
       <VMenu activator="parent" width="230" location="bottom end" offset="14px">
@@ -15,15 +41,15 @@ import avatar1 from "@images/avatars/avatar-1.png";
             <template #prepend>
               <VListItemAction start>
                 <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
-                  <VAvatar color="primary" variant="tonal">
-                    <VImg :src="avatar1" />
+                  <VAvatar class="avatar" color="primary" variant="tonal">
+                    <VImg :src="thumb_url" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
-            <VListItemTitle class="font-weight-semibold"> John Doe </VListItemTitle>
-            <VListItemSubtitle>Admin</VListItemSubtitle>
+            <VListItemTitle class="font-weight-semibold"> {{ userStore.name }} </VListItemTitle>
+            <VListItemSubtitle>@{{ userStore.username }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
@@ -31,46 +57,19 @@ import avatar1 from "@images/avatars/avatar-1.png";
           <!-- 👉 Profile -->
           <VListItem link>
             <template #prepend>
-              <VIcon class="me-2" icon="tabler-user" size="22" />
+              <VIcon class="me-2" icon="fat-user" size="22" />
             </template>
 
             <VListItemTitle>Profile</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Settings -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon class="me-2" icon="tabler-settings" size="22" />
-            </template>
-
-            <VListItemTitle>Settings</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 Pricing -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon class="me-2" icon="tabler-currency-dollar" size="22" />
-            </template>
-
-            <VListItemTitle>Pricing</VListItemTitle>
-          </VListItem>
-
-          <!-- 👉 FAQ -->
-          <VListItem link>
-            <template #prepend>
-              <VIcon class="me-2" icon="tabler-help" size="22" />
-            </template>
-
-            <VListItemTitle>FAQ</VListItemTitle>
           </VListItem>
 
           <!-- Divider -->
           <VDivider class="my-2" />
 
           <!-- 👉 Logout -->
-          <VListItem to="/login">
+          <VListItem @click="userStore.logout">
             <template #prepend>
-              <VIcon class="me-2" icon="tabler-logout" size="22" />
+              <VIcon class="me-2" icon="fat-arrow-right-from-bracket" size="22" />
             </template>
 
             <VListItemTitle>Logout</VListItemTitle>
@@ -81,3 +80,9 @@ import avatar1 from "@images/avatars/avatar-1.png";
     </VAvatar>
   </VBadge>
 </template>
+
+<style>
+.avatar .v-img__img {
+  background-color: white;
+}
+</style>

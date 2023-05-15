@@ -9,6 +9,9 @@ import "@core/scss/template/index.scss";
 import "@styles/styles.scss";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
+import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 loadFonts();
 
@@ -17,9 +20,18 @@ const app = createApp(App);
 
 // Use plugins
 app.use(vuetify);
-app.use(createPinia());
+
+const pinia = createPinia();
+
+pinia.use(piniaPluginPersistedstate);
+app.use(pinia);
 app.use(router);
 app.use(layoutsPlugin);
+app.use(Toast, {
+  transition: "Vue-Toastification__bounce",
+  maxToasts: 20,
+  newestOnTop: true,
+});
 
 // Mount vue app
 app.mount("#app");

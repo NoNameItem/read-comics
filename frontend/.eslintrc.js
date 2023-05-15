@@ -27,9 +27,6 @@ module.exports = {
     // Disable max-len
     "max-len": "off",
 
-    // add new line above comment
-    "newline-before-return": "error",
-
     "vue/multi-word-component-names": "off",
 
     "padding-line-between-statements": [
@@ -89,7 +86,6 @@ module.exports = {
     ],
     "vue/define-macros-order": "error",
     "vue/html-comment-content-newline": "error",
-    "vue/html-comment-content-spacing": "error",
     "vue/html-comment-indent": "error",
     "vue/match-component-file-name": "error",
     "vue/no-child-content": "error",

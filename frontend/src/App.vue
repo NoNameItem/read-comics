@@ -27,5 +27,4 @@ handleSkinChanges();
       <ScrollToTop />
     </VApp>
   </VLocaleProvider>
-  ssdsdsd
 </template>

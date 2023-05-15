@@ -8,6 +8,7 @@ import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from "@layo
 import { themeConfig } from "@themeConfig";
 
 const isNavDrawerOpen = ref(false);
+
 const {
   theme,
   skin,

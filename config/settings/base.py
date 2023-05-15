@@ -356,7 +356,7 @@ REST_FRAMEWORK = {
 
 REST_AUTH = {
     "USE_JWT": True,
-    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer",
+    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserLoginSerializer",
     "JWT_AUTH_HTTPONLY": False,
 }
 SIMPLE_JWT = {
@@ -368,6 +368,10 @@ SIMPLE_JWT = {
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
+
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS", default=["http://localhost:5173", "http://0.0.0.0:5173", "http://127.0.0.1:5173"]
+)
 # Your stuff...
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))

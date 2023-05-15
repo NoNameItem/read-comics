@@ -26,12 +26,12 @@ const sources = {
     },
     {
       dir: "src/assets/images/fontawesome-svg/thin",
-      monotone: false,
+      monotone: true,
       prefix: "fat",
     },
     {
       dir: "src/assets/images/fontawesome-svg/brands",
-      monotone: false,
+      monotone: true,
       prefix: "fab",
     },
     // {

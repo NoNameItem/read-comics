@@ -64,10 +64,3 @@ STATICFILES_DIRS += ["read_comics/static"]  # noqa F405 # Duplicate for PyCharm 
 TEMPLATES[0]["OPTIONS"]["context_processors"] += [  # noqa F405
     "read_comics.users.context_processors.email_verified_context"
 ]  # noqa F405
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://0.0.0.0:5173",
-    "http://127.0.0.1:5173",
-    "http://my-dev-env.local:5173",
-]
