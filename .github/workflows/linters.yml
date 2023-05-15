@@ -97,3 +97,18 @@ jobs:
       - name: Tear down the Stack
         if: success() || failure()
         run: docker-compose -f local.yml down
+
+  prettier:
+    name: prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn
+
+      - name: Run prettier
+        working-directory: frontend
+        run: yarn prettier:check

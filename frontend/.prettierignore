@@ -6,3 +6,4 @@ src/assets
 .vscode
 auto-imports.d.ts
 .eslintrc-auto-import.json
+/components.d.ts
