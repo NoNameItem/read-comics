@@ -27,7 +27,7 @@ const thumb_url = computed(() => {
     variant="text"
     :to="{ path: 'login', query: { to: route.fullPath } }"
   >
-    Login <VIcon end icon="fa:arrow-right-to-bracket" />
+    Login <VIcon end icon="fasl:arrow-right-to-bracket" />
   </VBtn>
   <VBadge v-else dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
     <VAvatar class="cursor-pointer avatar" color="primary" variant="tonal">

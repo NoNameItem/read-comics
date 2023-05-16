@@ -1,5 +1,6 @@
 import { Icon } from "@iconify/vue";
-import { fa } from "vuetify/iconsets/fa-svg";
+import { fasl } from "@/plugins/iconsets/fasl";
+import { fab } from "@/plugins/iconsets/fab";
 
 const aliases = {
   collapse: "tabler-chevron-up",
@@ -48,6 +49,7 @@ export const icons = {
   aliases,
   sets: {
     iconify,
-    fa,
+    fasl,
+    fab,
   },
 };

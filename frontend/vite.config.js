@@ -7,9 +7,10 @@ import { defineConfig } from "vite";
 import Pages from "vite-plugin-pages";
 import Layouts from "vite-plugin-vue-layouts";
 import vuetify from "vite-plugin-vuetify";
-
 // @ts-expect-error Known error: https://github.com/sxzz/unplugin-vue-macros/issues/257#issuecomment-1410752890
 import DefineOptions from "unplugin-vue-define-options/vite";
+// eslint-disable-next-line import/extensions
+import { fontawesomeAutoimport } from "./src/plugins/fontawesome-autoimport.js";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -30,7 +31,7 @@ export default defineConfig({
       layoutsDirs: "./src/layouts/",
     }),
     Components({
-      dirs: ["src/@core/components", "src/views/demos", "src/components"],
+      dirs: ["src/@core/components", "src/components"],
       dts: true,
     }),
     AutoImport({
@@ -42,6 +43,7 @@ export default defineConfig({
       vueTemplate: true,
     }),
     DefineOptions(),
+    fontawesomeAutoimport(),
   ],
   define: { "process.env": {} },
   resolve: {

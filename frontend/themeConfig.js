@@ -28,7 +28,7 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
   footer: { type: FooterType.Static },
   verticalNav: {
     isVerticalNavCollapsed: false,
-    defaultNavItemIconProps: { icon: "tabler-circle", size: 10 },
+    defaultNavItemIconProps: { icon: "fasl:circle" },
     isVerticalNavSemiDark: false,
   },
   horizontalNav: {
@@ -36,11 +36,11 @@ export const { themeConfig, layoutConfig } = defineThemeConfig({
     transition: "slide-y-reverse-transition",
   },
   icons: {
-    chevronDown: { icon: "fat-chevron-down" },
-    chevronRight: { icon: "fat-chevron-right", size: 18 },
-    close: { icon: "tabler-x" },
-    verticalNavPinned: { icon: "tabler-circle-dot" },
-    verticalNavUnPinned: { icon: "tabler-circle" },
-    sectionTitlePlaceholder: { icon: "tabler-separator" },
+    chevronDown: { icon: "fasl:chevron-down" },
+    chevronRight: { icon: "fasl:chevron-right", size: 18 },
+    close: { icon: "fasl:xmark-large" },
+    verticalNavPinned: { icon: "fasl:circle-o" },
+    verticalNavUnPinned: { icon: "fasl:circle" },
+    sectionTitlePlaceholder: { icon: "fasl:ellipsis" },
   },
 });

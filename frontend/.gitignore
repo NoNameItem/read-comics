@@ -32,5 +32,7 @@ dist-ssr
 
 # iconify dist files
 src/@iconify/icons-bundle.js
+src/plugins/icons.js
 
 /.vite/deps/
+/.vite/

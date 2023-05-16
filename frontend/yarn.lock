@@ -705,21 +705,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@fortawesome/free-regular-svg-icons@npm:^6.4.0":
+"@fortawesome/sharp-light-svg-icons@npm:^6.4.0":
   version: 6.4.0
-  resolution: "@fortawesome/free-regular-svg-icons@npm:6.4.0"
+  resolution: "@fortawesome/sharp-light-svg-icons@npm:6.4.0::__archiveUrl=https%3A%2F%2Fnpm.fontawesome.com%2F%40fortawesome%2Fsharp-light-svg-icons%2F-%2F6.4.0%2Fsharp-light-svg-icons-6.4.0.tgz"
   dependencies:
     "@fortawesome/fontawesome-common-types": 6.4.0
-  checksum: a52689349b858a73b179532a207f98d9ee0f28b31e22eaffa6ce23cf3bfec8cc52bcd35770a0943a2dd1328bafbfdea6809231abee7a8601796bc0fb9759d25f
-  languageName: node
-  linkType: hard
-
-"@fortawesome/free-solid-svg-icons@npm:^6.4.0":
-  version: 6.4.0
-  resolution: "@fortawesome/free-solid-svg-icons@npm:6.4.0"
-  dependencies:
-    "@fortawesome/fontawesome-common-types": 6.4.0
-  checksum: efdd1688620be3d52aacaeac36c955571962e174ae981fc697b6e92fb0996b00166d02e7729a59ea93713a514e2c8d564ab1aa79c9653b4cfed0263e4874d070
+  checksum: e66779119ff64980816937c5f214dc43620691e5c5830d70542a9ec68f0c3c235daf7926d737fc7c5aee73a01d9b7bb1fac398156223dc45919a2f2ce10e29b7
   languageName: node
   linkType: hard
 
@@ -6795,6 +6786,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"rollup-plugin-command@npm:^1.1.3":
+  version: 1.1.3
+  resolution: "rollup-plugin-command@npm:1.1.3"
+  checksum: 4ba810519c2c7e62a91f5bd6edfcbb1d2c8ad05acb5d97af70b42241ff4b7d83e5a3521f9983403cbbff282c6cbe9ddc4613d419c16924a1cdf2597657b1f4db
+  languageName: node
+  linkType: hard
+
 "rollup@npm:^3.21.0":
   version: 3.21.7
   resolution: "rollup@npm:3.21.7"
@@ -8178,8 +8176,7 @@ __metadata:
     "@fortawesome/fontawesome-free": ^6.4.0
     "@fortawesome/fontawesome-svg-core": ^6.4.0
     "@fortawesome/free-brands-svg-icons": ^6.4.0
-    "@fortawesome/free-regular-svg-icons": ^6.4.0
-    "@fortawesome/free-solid-svg-icons": ^6.4.0
+    "@fortawesome/sharp-light-svg-icons": ^6.4.0
     "@fortawesome/vue-fontawesome": latest-3
     "@fullcalendar/core": 6.1.6
     "@fullcalendar/daygrid": 6.1.6
@@ -8220,6 +8217,7 @@ __metadata:
     prettier: 2.8.8
     prismjs: 1.29.0
     roboto-fontface: 0.10.0
+    rollup-plugin-command: ^1.1.3
     sass: 1.62.1
     stylelint: 14.15.0
     stylelint-config-idiomatic-order: 9.0.0

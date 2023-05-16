@@ -7,3 +7,7 @@ src/assets
 auto-imports.d.ts
 .eslintrc-auto-import.json
 /components.d.ts
+/.vite/
+
+/dist/
+/src/plugins/icons.js

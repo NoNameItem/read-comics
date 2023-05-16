@@ -2,15 +2,15 @@
 const themes = [
   {
     name: "system",
-    icon: "fat-laptop",
+    icon: "fasl:laptop",
   },
   {
     name: "light",
-    icon: "fat-sun-bright",
+    icon: "fasl:sun-bright",
   },
   {
     name: "dark",
-    icon: "fat-moon",
+    icon: "fasl:moon",
   },
 ];
 </script>

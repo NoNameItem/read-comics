@@ -5,15 +5,15 @@ const { global } = useTheme();
 
 const authProviders = [
   {
-    icon: "fa-facebook",
+    icon: "fab:facebook",
     color: "#4267b2",
   },
   {
-    icon: "fa-google",
+    icon: "fab:google",
     color: "#dd4b39",
   },
   {
-    icon: "fa-twitter",
+    icon: "fab:twitter",
     color: "#1da1f2",
   },
 ];
