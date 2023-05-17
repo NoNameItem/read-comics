@@ -36,3 +36,4 @@ src/plugins/icons.js
 
 /.vite/deps/
 /.vite/
+components.d.ts
