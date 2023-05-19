@@ -9,6 +9,9 @@ on:
         type: boolean
         required: false
 
+env:
+  FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+
 jobs:
   flake8:
     name: Flake8
@@ -127,9 +130,9 @@ jobs:
       - name: Run eslint
         working-directory: frontend
         run: |
+          echo $FONTAWESOME_NPM_AUTH_TOKEN
           yarn lint:check:ci | true
           sed -i 's+/home/runner/work/read-comics/read-comics+/github/workspace+g' eslint-report.json
-
 
       - name: Upload eslint report
         uses: actions/upload-artifact@v3

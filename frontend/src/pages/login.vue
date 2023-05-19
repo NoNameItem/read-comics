@@ -43,7 +43,7 @@ async function login() {
       toast.error("We experencing network troubles", "Please, try again later", { timeout: false });
     }
   } else {
-    toast.success(`${userStore.name ?? userStore.username}, welcome back!`, "We missed you...");
+    toast.success(`${userStore.name || userStore.username}, welcome back!`, "We missed you...");
     await router.replace(route.query.to ? String(route.query.to) : "/");
   }
   form.loading = false;

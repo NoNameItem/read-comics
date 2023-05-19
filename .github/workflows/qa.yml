@@ -14,5 +14,7 @@ jobs:
     uses: ./.github/workflows/linters.yml
     with:
       silent_linters: ${{ inputs.silent_linters }}
+    secrets: inherit
   unit_tests:
     uses: ./.github/workflows/unit_tests.yml
+    secrets: inherit

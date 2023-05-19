@@ -29,13 +29,14 @@ on:
 #
 jobs:
   build-publish:
+    name: ${{ inputs.image_name }}:${{ inputs.release }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v3
 
       - name: Build container image
-        run: docker build -f ${{ inputs.dockerfile }} -t cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} .
+        run: docker build --build-arg FONTAWESOME_AUTH_TOKEN=${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }} -f ${{ inputs.dockerfile }} -t cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} ${{ inputs.context }}
 
       - name: Tag as latest
         if: inputs.tag_latest

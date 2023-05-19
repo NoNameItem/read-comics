@@ -18,12 +18,13 @@ jobs:
     uses: ./.github/workflows/qa.yml
     with:
       silent_linters: true
+    secrets: inherit
     permissions:
       checks: none
       pull-requests: none
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
-    if: success() || failure()
+    if: ${{ success() || failure() }}
     needs: qa
     with:
       publish_test_report: false
@@ -31,19 +32,15 @@ jobs:
     secrets: inherit
     permissions:
       checks: none
-#      pull-requests: none
-  publish_backend:
-    uses: ./.github/workflows/publish_image.yml
-    with:
-      image_name: "backend"
-      dockerfile: "./compose/production/django/Dockerfile"
+  publish:
+    uses: ./.github/workflows/publish.yml
     secrets: inherit
     permissions:
       checks: none
       pull-requests: none
   deploy:
     uses: ./.github/workflows/deploy_yc.yml
-    needs: publish_backend
+    needs: publish
     with:
       env_name: "next"
     secrets: inherit

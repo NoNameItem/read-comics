@@ -24,7 +24,7 @@ jobs:
       pull-requests: none
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
-    if: success() || failure()
+    if: ${{ success() || failure() }}
     needs: qa
     with:
       publish_test_report: false
