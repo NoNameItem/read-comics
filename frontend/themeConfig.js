@@ -2,7 +2,7 @@ import { breakpointsVuetify } from "@vueuse/core";
 import { VIcon } from "vuetify/components/VIcon";
 
 // ❗ Logo SVG must be imported with ?raw suffix
-import logo from "@/assets/logo.png";
+import logo from "@images/logo.png";
 import { defineThemeConfig } from "@core";
 import { RouteTransitions, Skins } from "@core/enums";
 import { AppContentLayoutNav, ContentWidth, FooterType, NavbarType } from "@layouts/enums";

@@ -31,7 +31,7 @@ export default defineConfig({
       layoutsDirs: "./src/layouts/",
     }),
     Components({
-      dirs: ["src/@core/components", "src/components"],
+      dirs: ["src/@core/components", "src/views/demos", "src/components"],
       dts: true,
     }),
     AutoImport({

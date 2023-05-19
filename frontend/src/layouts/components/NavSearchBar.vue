@@ -1,5 +1,4 @@
 <script setup>
-import Shepherd from "shepherd.js";
 import axios from "@axios";
 import { useThemeConfig } from "@core/composable/useThemeConfig";
 
@@ -168,7 +167,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
   >
     <!-- 👉 Search Trigger button -->
     <!-- close active tour while opening search bar using icon -->
-    <IconBtn class="me-1" @click="Shepherd.activeTour?.cancel()">
+    <IconBtn class="me-1">
       <VIcon size="26" icon="tabler-search" />
     </IconBtn>
 

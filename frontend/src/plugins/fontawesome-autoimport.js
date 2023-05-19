@@ -73,7 +73,7 @@ const saveToFile = () => {
   });
 };
 
-function run() {
+function run(logEmpty) {
   beginAt = Date.now();
   parse(src);
   findIcons(path.resolve(__dirname, "../..", "themeConfig.js"));
@@ -83,6 +83,8 @@ function run() {
 
   if (JSON.stringify(oldIcons) !== JSON.stringify(newIcons)) {
     saveToFile();
+  } else if (logEmpty) {
+    console.log(`- Fontawesome treeshaking list: no changes. (took ${Date.now() - beginAt} ms)`);
   }
 }
 
@@ -90,10 +92,10 @@ export const fontawesomeAutoimport = () => {
   return {
     name: "fontawesome-autoimport",
     configResolved(config) {
-      run();
+      run(true);
     },
     handleHotUpdate(config) {
-      run();
+      run(false);
     },
   };
 };

@@ -5,7 +5,10 @@ import { useUsersStore } from "@/stores/user";
 const axiosIns = axios.create({
   // You can add your headers here
   // ================================
-  baseURL: "http://127.0.0.1:8000/api",
+  baseURL:
+    !window?._env_?.API_BASE_URL || window?._env_?.API_BASE_URL === "$API_BASE_URL"
+      ? "http://127.0.0.1:8000/api"
+      : window?._env_?.API_BASE_URL,
   // timeout: 1000,
   // headers: {'X-Custom-Header': 'foobar'}
 });
