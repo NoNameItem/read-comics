@@ -10,6 +10,7 @@ urlpatterns = [
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     # User management
     path("users/", include("read_comics.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),

@@ -41,6 +41,7 @@ export default defineConfig({
       },
       imports: ["vue", "vue-router", "@vueuse/core", "@vueuse/math", "pinia"],
       vueTemplate: true,
+      dts: true,
     }),
     DefineOptions(),
     fontawesomeAutoimport(),

@@ -4,47 +4,62 @@ import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
+import { useTitledToast } from "@/composables/titled-toast";
 import { useUsersStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
-import { useTitledToast } from "@/composables/titled-toast";
+
+const route = useRoute();
+const router = useRouter();
+
+const registerForm = ref(null);
 
 const form = reactive({
   username: "",
+  email: "",
   password: "",
   loading: false,
   valid: false,
   formErrors: null,
 });
 
+const backendErrors = ref({
+  username: [],
+  email: [],
+  password1: [],
+  non_field_errors: [],
+});
+
 const isPasswordVisible = ref(false);
-const loginForm = ref(null);
 
 const userStore = useUsersStore();
-const route = useRoute();
-const router = useRouter();
 
-async function login() {
+async function register() {
   form.loading = true;
-  form.formErrors = null;
-  await loginForm.value.validate();
+  backendErrors.value = {
+    username: [],
+    email: [],
+    password1: [],
+    non_field_errors: [],
+  };
+  await registerForm.value.validate();
   if (!form.valid) {
     form.loading = false;
     return;
   }
 
   const toast = useTitledToast();
-  const loginError = await userStore.login(form.username, form.password);
+  const registerError = await userStore.register(form.username, form.email, form.password);
 
-  if (loginError) {
-    if (loginError?.response?.status === 400) {
-      toast.error("Bad credentials", "");
-      form.formErrors = loginError.data.non_field_errors;
+  if (registerError) {
+    if (registerError?.response?.status === 400) {
+      backendErrors.value = registerError.response.data;
     } else {
       toast.error("We experencing network troubles", "Please, try again later", { timeout: false });
     }
   } else {
-    toast.success(`${userStore.name || userStore.username}, welcome back!`, "We missed you...");
-    await router.replace(route.query.to ? String(route.query.to) : "/");
+    toast.success(`${userStore.username}, nice to meet you!`, "Hope you will like us...");
+    // await router.replace(route.query.to ? String(route.query.to) : "/");
+    await router.replace({ name: "verify-email", query: { to: route.query.to } });
   }
   form.loading = false;
 }
@@ -65,7 +80,7 @@ async function login() {
         class="text-primary auth-v1-bottom-shape d-none d-sm-block"
       />
 
-      <!-- 👉 Auth Card -->
+      <!-- 👉 Auth card -->
       <VCard class="auth-card pa-4" max-width="448">
         <VCardItem class="justify-center">
           <template #prepend>
@@ -74,25 +89,37 @@ async function login() {
             </div>
           </template>
 
-          <VCardTitle class="font-weight-bold text-capitalize text-h5 py-1">
+          <VCardTitle class="font-weight-bold text-h5 text-capitalize py-1">
             {{ themeConfig.app.title }}
           </VCardTitle>
         </VCardItem>
 
-        <VCardText class="pt-1">
-          <h5 class="text-h5 mb-1">
-            Welcome to <span class="text-capitalize">{{ themeConfig.app.title }}</span
-            >! 👋🏻
-          </h5>
-          <p class="mb-0">Please sign-in to your account and start the adventure</p>
+        <VCardText class="pt-2">
+          <h5 class="text-h5 mb-1">Adventure starts here 🚀</h5>
         </VCardText>
 
         <VCardText>
-          <VForm ref="loginForm" v-model="form.valid" @submit.prevent="login">
+          <VForm ref="registerForm" v-model="form.valid" @submit.prevent="register">
             <VRow>
-              <!-- username -->
+              <!-- Username -->
               <VCol cols="12">
-                <AppTextField v-model="form.username" autofocus label="Username" :rules="[requiredValidator]" />
+                <AppTextField
+                  v-model="form.username"
+                  autofocus
+                  label="Username"
+                  :rules="[requiredValidator]"
+                  :error-messages="backendErrors.username"
+                />
+              </VCol>
+              <!-- email -->
+              <VCol cols="12">
+                <AppTextField
+                  v-model="form.email"
+                  label="Email"
+                  type="email"
+                  :error-messages="backendErrors.email"
+                  :rules="[requiredValidator]"
+                />
               </VCol>
 
               <!-- password -->
@@ -100,31 +127,28 @@ async function login() {
                 <AppTextField
                   v-model="form.password"
                   label="Password"
-                  :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'fat-eye-slash' : 'fat-eye'"
                   :rules="[requiredValidator]"
+                  :error-messages="backendErrors.password1"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
               </VCol>
 
-              <FormErrors :error="false" :error-messages="form.formErrors"></FormErrors>
-
-              <VCol cols-12 class="pt-1 pb-1">
-                <RouterLink class="text-primary ms-2 mb-1" :to="{ name: 'login' }"> Forgot Password?</RouterLink>
-              </VCol>
+              <FormErrors :error="false" :error-messages="backendErrors.non_field_errors"></FormErrors>
 
               <VCol cols="12" class="pt-1 pb-1">
-                <VBtn block type="submit" color="primary" :loading="form.loading">
-                  Login
+                <VBtn block type="submit" :loading="form.loading">
+                  Sign up
                   <VIcon end icon="fasl:arrow-right-to-bracket" />
                 </VBtn>
               </VCol>
 
-              <!-- create account -->
+              <!-- login instead -->
               <VCol cols="12" class="text-center text-base">
-                <span>New on our platform?</span>
-                <RouterLink class="text-primary ms-2" :to="{ name: 'register', query: route.query }">
-                  Create an account
+                <span>Already have an account?</span>
+                <RouterLink class="text-primary ms-2" :to="{ name: 'login', query: { to: route.query.to } }">
+                  Sign in instead
                 </RouterLink>
               </VCol>
 
@@ -150,6 +174,6 @@ async function login() {
 @use "@core/scss/template/pages/page-auth.scss";
 </style>
 
-<route lang="yaml">
+<route lang="json">
 { "meta": { "layout": "blank" } }
 </route>

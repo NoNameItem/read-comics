@@ -86,3 +86,7 @@ class User(AbstractUser):
     @property
     def started_and_not_finished_story_arcs(self):
         return self.get_started_and_not_finished(StoryArc)
+
+    @property
+    def email_verified(self):
+        return self.emailaddress_set.get(primary=True).verified
