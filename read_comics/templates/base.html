@@ -66,6 +66,16 @@
 <div class="app-content content">
   <div class="content-overlay"></div>
   <div class="content-wrapper">
+  {% if user.is_authenticated and not user.has_usable_password %}
+    <div class="alert alert-danger m-1" role="alert">
+      <p>Social login functionality will be disabled some time this year. If you want to still be able to login and trace your progress, switch to username/password login by taking following steps:</p>
+      <ol>
+        <li>Remember your login: <b>{{ user.username }}</b></li>
+        <li>Make sure that your email verified. If it's not& there should be notification in upper-right corner of your screen</li>
+        <li>Set yourself a password via <a href="{% url "account_reset_password" %}">"Forgot password?"</a> page</li>
+      </ol>
+    </div>
+  {% endif %}
     <div class="content-header row">
       <div class="content-header-left col-12 mb-2 mt-1">
         <div class="row breadcrumbs-top">
