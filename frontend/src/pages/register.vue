@@ -4,7 +4,7 @@ import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
-import { useTitledToast } from "@/composables/titled-toast";
+import { useTitledToast } from "@/composables/useTitledToast";
 import { useUsersStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
 
@@ -71,14 +71,12 @@ async function register() {
       <!-- 👉 Top shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-top-shape d-none d-sm-block" />
 
       <!-- 👉 Bottom shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
 
       <!-- 👉 Auth card -->
       <VCard class="auth-card pa-4" max-width="448">
@@ -108,8 +106,7 @@ async function register() {
                   autofocus
                   label="Username"
                   :rules="[requiredValidator]"
-                  :error-messages="backendErrors.username"
-                />
+                  :error-messages="backendErrors.username" />
               </VCol>
               <!-- email -->
               <VCol cols="12">
@@ -118,8 +115,7 @@ async function register() {
                   label="Email"
                   type="email"
                   :error-messages="backendErrors.email"
-                  :rules="[requiredValidator]"
-                />
+                  :rules="[requiredValidator]" />
               </VCol>
 
               <!-- password -->
@@ -131,8 +127,7 @@ async function register() {
                   :error-messages="backendErrors.password1"
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
               </VCol>
 
               <FormErrors :error="false" :error-messages="backendErrors.non_field_errors"></FormErrors>

@@ -1,3 +1,6 @@
+from allauth.account.utils import user_pk_to_url_str
+from dj_rest_auth.serializers import PasswordResetSerializer
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.settings import api_settings
@@ -41,6 +44,19 @@ class UserLoginSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ["username", "name", "images", "email", "email_verified", "is_superuser", "is_staff", "gender"]
+
+
+def password_reset_url_generator(request, user, temp_key):
+    return (
+        f"{settings.FRONTEND_BASE_URL}/password-reset-confirm"
+        f"?uid={user_pk_to_url_str(user)}&token={temp_key}&email={user.email}"
+    )
+
+
+class ResetPasswordSerializer(PasswordResetSerializer):
+    def get_email_options(self):
+        """Override this method to change default e-mail options"""
+        return {"url_generator": password_reset_url_generator}
 
 
 class UserDetailSerializer(CurrentUserMixin, serializers.ModelSerializer):

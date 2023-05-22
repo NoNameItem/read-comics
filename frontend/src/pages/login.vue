@@ -6,7 +6,7 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import { useUsersStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
-import { useTitledToast } from "@/composables/titled-toast";
+import { useTitledToast } from "@/composables/useTitledToast";
 
 const form = reactive({
   username: "",
@@ -56,14 +56,12 @@ async function login() {
       <!-- 👉 Top shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-top-shape d-none d-sm-block" />
 
       <!-- 👉 Bottom shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
 
       <!-- 👉 Auth Card -->
       <VCard class="auth-card pa-4" max-width="448">
@@ -103,14 +101,15 @@ async function login() {
                   :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'fat-eye-slash' : 'fat-eye'"
                   :rules="[requiredValidator]"
-                  @click:append-inner="isPasswordVisible = !isPasswordVisible"
-                />
+                  @click:append-inner="isPasswordVisible = !isPasswordVisible" />
               </VCol>
 
               <FormErrors :error="false" :error-messages="form.formErrors"></FormErrors>
 
               <VCol cols-12 class="pt-1 pb-1">
-                <RouterLink class="text-primary ms-2 mb-1" :to="{ name: 'login' }"> Forgot Password?</RouterLink>
+                <RouterLink class="text-primary ms-2 mb-1" :to="{ name: 'reset-password' }">
+                  Forgot Password?</RouterLink
+                >
               </VCol>
 
               <VCol cols="12" class="pt-1 pb-1">

@@ -40,6 +40,7 @@ export default defineConfig({
         filepath: "./.eslintrc-auto-import.json",
       },
       imports: ["vue", "vue-router", "@vueuse/core", "@vueuse/math", "pinia"],
+      dirs: ["src/composables/**"],
       vueTemplate: true,
       dts: true,
     }),

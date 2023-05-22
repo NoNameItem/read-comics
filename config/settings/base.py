@@ -357,6 +357,7 @@ REST_FRAMEWORK = {
 REST_AUTH = {
     "USE_JWT": True,
     "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserLoginSerializer",
+    "PASSWORD_RESET_SERIALIZER": "read_comics.users.api.serializers.ResetPasswordSerializer",
     "JWT_AUTH_HTTPONLY": False,
 }
 SIMPLE_JWT = {
