@@ -35,7 +35,7 @@ djangorestframework-simplejwt==5.2.0  # https://github.com/jazzband/djangorestfr
 pymongo==3.11.3 # https://github.com/mongodb/mongo-python-driver
 
 boto3==1.17.57
-requests==2.25.1
+requests==2.31.0
 unidecode==1.2.0
 
 urllib3~=1.26.2
