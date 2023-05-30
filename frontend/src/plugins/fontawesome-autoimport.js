@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const src = path.resolve(__dirname, "../..", "src");
 const fileRegex = new RegExp(/\.(vue|js)$/);
-const iconRegex = /<VIcon.+?icon="(fasl|fab):([a-z-]+)|icon: "(fasl|fab):([a-z-]+)"/gms;
+const iconRegex = /(fasl|fab):([a-z-]+)/gms;
 
 const outputFolder = `${src}/plugins`;
 const outputFile = `${outputFolder}/icons.js`;
@@ -18,11 +18,11 @@ const pascalCase = (str) => {
 
 const findIcons = (filePath) => {
   [...fs.readFileSync(filePath).toString().matchAll(iconRegex)].forEach((match) => {
-    if ((match[1] ?? match[3]) === "fasl") {
-      icons.add(`fa${pascalCase(match[2] ?? match[4])}`);
+    if (match[1] === "fasl") {
+      icons.add(`fa${pascalCase(match[2])}`);
     }
-    if ((match[1] ?? match[3]) === "fab") {
-      brandIcons.add(`fa${pascalCase(match[2] ?? match[4])}`);
+    if (match[1] === "fab") {
+      brandIcons.add(`fa${pascalCase(match[2])}`);
     }
   });
 };

@@ -3,16 +3,18 @@ import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
-import { useUsersStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import axios from "@axios";
 
-const user = useUsersStore();
+const user = useUserStore();
 const route = useRoute();
 const loading = ref(true);
 
 async function confimEmail() {
   await axios.post("/auth/registration/verify-email/", { key: route.query.key });
   loading.value = false;
+  user.email_verified = true;
+  user.$persist();
 }
 
 onMounted(confimEmail);
@@ -24,14 +26,12 @@ onMounted(confimEmail);
       <!-- 👉 Top shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-top-shape d-none d-sm-block" />
 
       <!-- 👉 Bottom shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
 
       <!-- 👉 Auth card -->
       <VCard class="auth-card pa-4" max-width="448" :loading="loading">
@@ -55,7 +55,7 @@ onMounted(confimEmail);
           <h5 class="text-h5 mb-1">Your email verified</h5>
           <p>Your email address {{ user.email }} verified.</p>
 
-          <VBtn block to="/" class="mb-6"> Start reading </VBtn>
+          <VBtn block to="/" class="mb-6"> Start reading</VBtn>
         </VCardText>
       </VCard>
     </div>

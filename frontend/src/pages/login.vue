@@ -1,10 +1,9 @@
 <script setup>
-import AuthProvider from "@/views/pages/authentication/AuthProvider.vue";
 import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
-import { useUsersStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
 import { useTitledToast } from "@/composables/useTitledToast";
 
@@ -19,7 +18,7 @@ const form = reactive({
 const isPasswordVisible = ref(false);
 const loginForm = ref(null);
 
-const userStore = useUsersStore();
+const userStore = useUserStore();
 const route = useRoute();
 const router = useRouter();
 
@@ -35,10 +34,12 @@ async function login() {
   const toast = useTitledToast();
   const loginError = await userStore.login(form.username, form.password);
 
+  userStore.$persist();
+
   if (loginError) {
     if (loginError?.response?.status === 400) {
       toast.error("Bad credentials", "");
-      form.formErrors = loginError.data.non_field_errors;
+      form.formErrors = loginError.response.data.non_field_errors;
     } else {
       toast.error("We experencing network troubles", "Please, try again later", { timeout: false });
     }
@@ -99,7 +100,7 @@ async function login() {
                   v-model="form.password"
                   label="Password"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'fat-eye-slash' : 'fat-eye'"
+                  :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                   :rules="[requiredValidator]"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible" />
               </VCol>
@@ -108,8 +109,8 @@ async function login() {
 
               <VCol cols-12 class="pt-1 pb-1">
                 <RouterLink class="text-primary ms-2 mb-1" :to="{ name: 'reset-password' }">
-                  Forgot Password?</RouterLink
-                >
+                  Forgot Password?
+                </RouterLink>
               </VCol>
 
               <VCol cols="12" class="pt-1 pb-1">
@@ -125,17 +126,6 @@ async function login() {
                 <RouterLink class="text-primary ms-2" :to="{ name: 'register', query: route.query }">
                   Create an account
                 </RouterLink>
-              </VCol>
-
-              <VCol cols="12" class="d-flex align-center">
-                <VDivider />
-                <span class="mx-4">or</span>
-                <VDivider />
-              </VCol>
-
-              <!-- auth providers -->
-              <VCol cols="12" class="text-center">
-                <AuthProvider />
               </VCol>
             </VRow>
           </VForm>

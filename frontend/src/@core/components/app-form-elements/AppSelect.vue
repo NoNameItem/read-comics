@@ -1,14 +1,7 @@
 <script setup>
 defineOptions({
-  name: "AppSelect",
-  inheritAttrs: false,
-});
-
-const elementId = computed(() => {
-  const attrs = useAttrs();
-  const _elementIdToken = attrs.id || attrs.label;
-
-  return _elementIdToken ? `app-select-${_elementIdToken}-${Math.random().toString(36).slice(2, 7)}` : undefined;
+  name         : "AppSelect",
+  inheritAttrs : false
 });
 
 const label = computed(() => useAttrs().label);
@@ -16,14 +9,10 @@ const label = computed(() => useAttrs().label);
 
 <template>
   <div class="app-select flex-grow-1" :class="$attrs.class">
-    <VLabel v-if="label" :for="elementId" class="mb-1 text-body-2 text-high-emphasis" :text="label" />
     <VSelect
       v-bind="{
         ...$attrs,
-        class: null,
-        label: undefined,
-        variant: 'outlined',
-        id: elementId,
+        variant: 'underlined',
         menuProps: {
           contentClass: [
             'app-inner-list',

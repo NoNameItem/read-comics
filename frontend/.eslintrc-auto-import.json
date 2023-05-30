@@ -242,6 +242,7 @@
     "useProjection": true,
     "useRafFn": true,
     "useRefHistory": true,
+    "useResentEmailConfirmation": true,
     "useResizeObserver": true,
     "useRound": true,
     "useRoute": true,

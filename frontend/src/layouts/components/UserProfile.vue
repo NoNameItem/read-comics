@@ -1,11 +1,11 @@
 <script setup>
-import { useUsersStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import F from "@images/avatars/F_thumb.png";
 import M from "@images/avatars/M_thumb.png";
 import O from "@images/avatars/O_thumb.png";
 import U from "@images/avatars/U_thumb.png";
 
-const userStore = useUsersStore();
+const userStore = useUserStore();
 const route = useRoute();
 
 const images = {
@@ -14,10 +14,6 @@ const images = {
   O: O,
   U: U,
 };
-
-const thumb_url = computed(() => {
-  return userStore.images ? userStore.images.thumbnail : images[userStore.gender];
-});
 </script>
 
 <template>
@@ -25,13 +21,13 @@ const thumb_url = computed(() => {
     v-if="!userStore.username"
     color="primary"
     variant="text"
-    :to="{ path: 'login', query: { to: route.fullPath } }"
-  >
-    Login <VIcon end icon="fasl:arrow-right-to-bracket" />
+    :to="{ path: 'login', query: { to: route.fullPath } }">
+    Login
+    <VIcon end icon="fasl:arrow-right-to-bracket" />
   </VBtn>
   <VBadge v-else dot location="bottom right" offset-x="3" offset-y="3" bordered color="success">
     <VAvatar class="cursor-pointer avatar" color="primary" variant="tonal">
-      <VImg :src="thumb_url" class="bg-white" />
+      <VImg :src="userStore.thumbnail" class="bg-white" />
 
       <!-- SECTION Menu -->
       <VMenu activator="parent" width="230" location="bottom end" offset="14px">
@@ -42,22 +38,22 @@ const thumb_url = computed(() => {
               <VListItemAction start>
                 <VBadge dot location="bottom right" offset-x="3" offset-y="3" color="success">
                   <VAvatar class="avatar" color="primary" variant="tonal">
-                    <VImg :src="thumb_url" />
+                    <VImg :src="userStore.thumbnail" />
                   </VAvatar>
                 </VBadge>
               </VListItemAction>
             </template>
 
-            <VListItemTitle class="font-weight-semibold"> {{ userStore.name }} </VListItemTitle>
+            <VListItemTitle class="font-weight-semibold"> {{ userStore.name }}</VListItemTitle>
             <VListItemSubtitle>@{{ userStore.username }}</VListItemSubtitle>
           </VListItem>
 
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem link>
+          <VListItem to="profile">
             <template #prepend>
-              <VIcon class="me-2" icon="fat-user" size="22" />
+              <VIcon class="me-2" icon="fasl:user" size="22" />
             </template>
 
             <VListItemTitle>Profile</VListItemTitle>
@@ -69,7 +65,7 @@ const thumb_url = computed(() => {
           <!-- 👉 Logout -->
           <VListItem @click="userStore.logout">
             <template #prepend>
-              <VIcon class="me-2" icon="fat-arrow-right-from-bracket" size="22" />
+              <VIcon class="me-2" icon="fasl:arrow-right-from-bracket" size="22" />
             </template>
 
             <VListItemTitle>Logout</VListItemTitle>

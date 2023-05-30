@@ -163,8 +163,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
     class="d-flex align-center cursor-pointer"
     v-bind="$attrs"
     style="user-select: none"
-    @click="isAppSearchBarVisible = !isAppSearchBarVisible"
-  >
+    @click="isAppSearchBarVisible = !isAppSearchBarVisible">
     <!-- 👉 Search Trigger button -->
     <!-- close active tour while opening search bar using icon -->
     <IconBtn class="me-1">
@@ -174,8 +173,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
     <span
       v-if="appContentLayoutNav === 'vertical'"
       class="d-none d-md-flex align-center text-disabled"
-      @click="Shepherd.activeTour?.cancel()"
-    >
+      @click="Shepherd.activeTour?.cancel()">
       <span class="me-3">Search</span>
       <span class="meta-key">&#8984;K</span>
     </span>
@@ -188,8 +186,7 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
     :search-results="searchResult"
     :suggestions="suggestionGroups"
     :no-data-suggestion="noDataSuggestions"
-    @item-selected="redirectToSuggestedOrSearchedPage"
-  >
+    @item-selected="redirectToSuggestedOrSearchedPage">
     <!--
       <template #suggestions>
       use this slot if you want to override default suggestions

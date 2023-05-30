@@ -12,9 +12,8 @@
     <inspection_tool class="PyCompatibilityInspection" enabled="true" level="WARNING" enabled_by_default="true">
       <option name="ourVersions">
         <value>
-          <list size="2">
-            <item index="0" class="java.lang.String" itemvalue="3.9" />
-            <item index="1" class="java.lang.String" itemvalue="3.10" />
+          <list size="1">
+            <item index="0" class="java.lang.String" itemvalue="3.10" />
           </list>
         </value>
       </option>
@@ -99,6 +98,7 @@
           <option value="django_magnificent_messages.models.*" />
           <option value="django.http.request.HttpRequest.*" />
           <option value="django.db.models.fields.related.ForeignKey.read_messages" />
+          <option value="users.models.User.emailaddress_set" />
         </list>
       </option>
     </inspection_tool>

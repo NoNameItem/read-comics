@@ -23,8 +23,7 @@ const { width: windowWidth } = useWindowSize();
           v-if="isLessThanOverlayNavBreakpoint(windowWidth)"
           id="vertical-nav-toggle-btn"
           class="ms-n3"
-          @click="toggleVerticalOverlayNavActive(true)"
-        >
+          @click="toggleVerticalOverlayNavActive(true)">
           <VIcon size="26" icon="tabler-menu-2" />
         </IconBtn>
 

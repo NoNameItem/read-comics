@@ -75,7 +75,7 @@ const { formData, valid, formRef, status, loading, errors, responseData, respons
                     :type="isPasswordVisible ? 'text' : 'password'"
                     :rules="[requiredValidator]"
                     :error-messages="errors.new_password1"
-                    :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                    :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible" />
                 </VCol>
 
@@ -88,7 +88,7 @@ const { formData, valid, formRef, status, loading, errors, responseData, respons
                     :type="isConfirmPasswordVisible ? 'text' : 'password'"
                     :rules="[requiredValidator]"
                     :error-messages="errors.new_password2"
-                    :append-inner-icon="isConfirmPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                    :append-inner-icon="isConfirmPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                     @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible" />
                 </VCol>
 

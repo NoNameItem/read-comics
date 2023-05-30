@@ -25,8 +25,7 @@ defineOptions({ inheritAttrs: false });
     flat
     class="text-center search-header"
     :class="props.customClass"
-    :style="`background: url(${AppSearchHeaderBg});`"
-  >
+    :style="`background: url(${AppSearchHeaderBg});`">
     <VCardText>
       <h5 class="text-h3 font-weight-medium">
         {{ props.title }}
@@ -37,8 +36,7 @@ defineOptions({ inheritAttrs: false });
         v-bind="$attrs"
         placeholder="Search a question..."
         class="search-header-input mx-auto my-3"
-        density="comfortable"
-      >
+        density="comfortable">
         <template #prepend-inner>
           <VIcon icon="tabler-search" size="23" />
         </template>

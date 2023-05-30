@@ -1,11 +1,10 @@
 <script setup>
-import AuthProvider from "@/views/pages/authentication/AuthProvider.vue";
 import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import { useTitledToast } from "@/composables/useTitledToast";
-import { useUsersStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
 
 const route = useRoute();
@@ -31,7 +30,7 @@ const backendErrors = ref({
 
 const isPasswordVisible = ref(false);
 
-const userStore = useUsersStore();
+const userStore = useUserStore();
 
 async function register() {
   form.loading = true;
@@ -50,6 +49,8 @@ async function register() {
   const toast = useTitledToast();
   const registerError = await userStore.register(form.username, form.email, form.password);
 
+  userStore.$persist();
+
   if (registerError) {
     if (registerError?.response?.status === 400) {
       backendErrors.value = registerError.response.data;
@@ -58,7 +59,6 @@ async function register() {
     }
   } else {
     toast.success(`${userStore.username}, nice to meet you!`, "Hope you will like us...");
-    // await router.replace(route.query.to ? String(route.query.to) : "/");
     await router.replace({ name: "verify-email", query: { to: route.query.to } });
   }
   form.loading = false;
@@ -126,7 +126,7 @@ async function register() {
                   :rules="[requiredValidator]"
                   :error-messages="backendErrors.password1"
                   :type="isPasswordVisible ? 'text' : 'password'"
-                  :append-inner-icon="isPasswordVisible ? 'tabler-eye-off' : 'tabler-eye'"
+                  :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible" />
               </VCol>
 
@@ -145,17 +145,6 @@ async function register() {
                 <RouterLink class="text-primary ms-2" :to="{ name: 'login', query: { to: route.query.to } }">
                   Sign in instead
                 </RouterLink>
-              </VCol>
-
-              <VCol cols="12" class="d-flex align-center">
-                <VDivider />
-                <span class="mx-4">or</span>
-                <VDivider />
-              </VCol>
-
-              <!-- auth providers -->
-              <VCol cols="12" class="text-center">
-                <AuthProvider />
               </VCol>
             </VRow>
           </VForm>

@@ -3,7 +3,8 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
-from rest_framework.authtoken.views import obtain_auth_token
+
+from read_comics.users.api.views import ChangeEmailView, FinishedIssuesStatsView, ProfileView
 
 urlpatterns = [
     path("", include("read_comics.pages.urls", namespace="pages")),
@@ -33,8 +34,9 @@ urlpatterns = [
 urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
-    # DRF auth token
-    path("auth-token/", obtain_auth_token),
+    path("api/profile/", ProfileView.as_view()),
+    path("api/profile/finished-stats/", FinishedIssuesStatsView.as_view()),
+    path("api/profile/change-email/", ChangeEmailView.as_view()),
 ]
 
 if settings.DEBUG:

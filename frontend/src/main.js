@@ -13,6 +13,7 @@ import piniaPluginPersistedstate from "pinia-plugin-persistedstate";
 import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+import { VueQueryPlugin } from "@tanstack/vue-query";
 
 import initIconLibrary from "@/plugins/icons";
 
@@ -38,6 +39,7 @@ app.use(Toast, {
   maxToasts: 20,
   newestOnTop: true,
 });
+app.use(VueQueryPlugin);
 
 // Mount vue app
 app.mount("#app");

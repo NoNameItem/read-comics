@@ -3,15 +3,11 @@ import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw";
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw";
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
-import { useUsersStore } from "@/stores/user";
-import axios from "@axios";
+import { useUserStore } from "@/stores/user";
 
-const user = useUsersStore();
+const user = useUserStore();
 const route = useRoute();
-
-async function resendConfirmation() {
-  await axios.post("/auth/registration/resend-email/", { email: user.email });
-}
+const { resentConfirmation } = useResentEmailConfirmation();
 </script>
 
 <template>
@@ -20,14 +16,12 @@ async function resendConfirmation() {
       <!-- 👉 Top shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1TopShape })"
-        class="text-primary auth-v1-top-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-top-shape d-none d-sm-block" />
 
       <!-- 👉 Bottom shape -->
       <VNodeRenderer
         :nodes="h('div', { innerHTML: authV1BottomShape })"
-        class="text-primary auth-v1-bottom-shape d-none d-sm-block"
-      />
+        class="text-primary auth-v1-bottom-shape d-none d-sm-block" />
 
       <!-- 👉 Auth card -->
       <VCard class="auth-card pa-4" max-width="448">
@@ -50,10 +44,10 @@ async function resendConfirmation() {
             continue.
           </p>
 
-          <VBtn block :to="route.query.to ? String(route.query.to) : '/'" class="mb-6"> Skip for now </VBtn>
+          <VBtn block :to="route.query.to ? String(route.query.to) : '/'" class="mb-6"> Skip for now</VBtn>
 
           <div class="d-flex align-center justify-center">
-            <span class="me-1">Didn't get the mail? </span><a href="#" @click="resendConfirmation">Resend</a>
+            <span class="me-1">Didn't get the mail? </span><a href="#" @click="resentConfirmation">Resend</a>
           </div>
         </VCardText>
       </VCard>

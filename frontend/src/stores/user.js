@@ -1,55 +1,127 @@
 import { defineStore } from "pinia";
+import { useRoute } from "vue-router";
 import axios from "@axios";
 
-export const useUsersStore = defineStore("user", {
-  state: () => ({
-    accessToken: null,
-    refreshToken: null,
+import F_thumb from "@images/avatars/F_thumb.png";
+import M_thumb from "@images/avatars/M_thumb.png";
+import O_thumb from "@images/avatars/O_thumb.png";
+import U_thumb from "@images/avatars/U_thumb.png";
 
-    username: null,
-    name: null,
-    email: null,
-    email_verified: null,
-    gender: null,
-    images: null,
-    isSuperuser: false,
-    isStaff: false,
-  }),
-  actions: {
-    setUser(user) {
-      this.username = user?.username;
-      this.name = user?.name;
-      this.email = user?.email;
-      this.email_verified = user?.email_verified;
-      this.gender = user?.gender;
-      this.images = user?.images;
-      this.isSuperuser = user?.is_superuser;
-      this.isStaff = user?.is_staff;
-    },
+import F from "@images/avatars/F.png";
+import M from "@images/avatars/M.png";
+import O from "@images/avatars/O.png";
+import U from "@images/avatars/U.png";
 
-    setTokens(accessToken, refreshToken) {
-      this.accessToken = accessToken;
-      this.refreshToken = refreshToken;
-    },
+const default_images = {
+  F: F,
+  M: M,
+  O: O,
+  U: U,
+};
 
-    async login(username, password) {
+const default_thumbnails = {
+  F: F_thumb,
+  M: M_thumb,
+  O: O_thumb,
+  U: U_thumb,
+};
+
+export const useUserStore = defineStore(
+  "user",
+  () => {
+    const route = useRoute();
+    const router = useRouter();
+
+    const accessToken = ref(null);
+    const refreshToken = ref(null);
+
+    const username = ref(null);
+    const name = ref(null);
+    const email = ref(null);
+    const email_verified = ref(null);
+    const gender = ref(null);
+    const images = ref(null);
+    const birthDate = ref(null);
+    const registerDate = ref(null);
+    const isSuperuser = ref(false);
+    const isStaff = ref(false);
+
+    const $reset = () => {
+      accessToken.value = null;
+      refreshToken.value = null;
+      username.value = null;
+      name.value = null;
+      email.value = null;
+      email_verified.value = null;
+      gender.value = null;
+      images.value = null;
+      birthDate.value = null;
+      registerDate.value = null;
+      isSuperuser.value = false;
+      isStaff.value = false;
+    };
+
+    const image = computed(() => images.value?.image ?? default_images[gender.value?.value ?? "O"]);
+    const thumbnail = computed(() => images.value?.thumbnail ?? default_thumbnails[gender.value?.value ?? "O"]);
+    const loggedIn = computed(() => !!accessToken.value);
+
+    const setUser = (user) => {
+      username.value = user?.username;
+      name.value = user?.name;
+      email.value = user?.email;
+      email_verified.value = user?.email_verified ?? email_verified.value;
+      gender.value = user?.gender;
+      images.value = user?.images;
+      birthDate.value = user?.birth_date;
+      registerDate.value = user?.date_joined;
+      isSuperuser.value = user?.is_superuser ?? isSuperuser.value;
+      isStaff.value = user?.is_staff ?? isStaff.value;
+    };
+
+    const setImage = (user) => {
+      images.value = user?.images;
+    };
+
+    const resetImage = () => {
+      images.value = null;
+    };
+
+    const setTokens = (newAccessToken, newRefreshToken) => {
+      accessToken.value = newAccessToken;
+      refreshToken.value = newRefreshToken;
+    };
+
+    const login = async (username, password) => {
       const loginUrl = "/auth/login/";
       try {
         const response = await axios.post(loginUrl, { username, password });
         if (response?.status === 200) {
           const data = await response.data;
 
-          this.setTokens(data.access, data.refresh);
-          this.setUser(data.user);
+          setTokens(data.access, data.refresh);
+          setUser(data.user);
         }
       } catch (e) {
         console.log(e);
         return e;
       }
-      this.$persist();
-    },
+    };
 
-    async register(username, email, password) {
+    const refreshTokens = async () => {
+      const refreshUrl = "/auth/token/refresh/";
+      try {
+        const response = await axios.post(refreshUrl, { refresh: refreshToken.value });
+        if (response.status === 200) {
+          const data = await response.data;
+
+          setTokens(data.access, data.refresh);
+        }
+      } catch (e) {
+        console.log(e);
+      }
+    };
+
+    const register = async (username, email, password) => {
       const registerUrl = "/auth/registration/";
       try {
         const response = await axios.post(registerUrl, { username, email, password1: password, password2: password });
@@ -57,37 +129,53 @@ export const useUsersStore = defineStore("user", {
         if (response?.status === 201) {
           const data = await response.data;
 
-          this.setTokens(data.access, data.refresh);
-          this.setUser(data.user);
+          setTokens(data.access, data.refresh);
+          setUser(data.user);
         }
       } catch (e) {
-        console.log(e);
         return e;
       }
-      this.$persist();
-    },
+    };
 
-    logout() {
-      this.$reset();
-      this.$persist();
-    },
-
-    async refreshTokens() {
-      const refreshUrl = "/auth/token/refresh/";
-
-      this.$hydrate();
-      try {
-        const response = await axios.post(refreshUrl, { refresh: this.refreshToken });
-        if (response.status === 200) {
-          const data = await response.data;
-
-          this.setTokens(data.access, data.refresh);
-          this.$persist();
-        }
-      } catch (e) {
-        console.log(e);
+    const logout = () => {
+      if (route.meta?.loginRequired) {
+        router.push({
+          path: "/login",
+          query: { to: route.fullPath },
+        });
       }
-    },
+
+      $reset();
+    };
+
+    return {
+      accessToken,
+      refreshToken,
+      username,
+      name,
+      email,
+      email_verified,
+      gender,
+      images,
+      birthDate,
+      registerDate,
+      isSuperuser,
+      isStaff,
+
+      image,
+      thumbnail,
+      loggedIn,
+
+      setUser,
+      setImage,
+      resetImage,
+      $reset,
+      setTokens,
+      login,
+      refreshTokens,
+      register,
+      logout,
+    };
   },
-  persist: true,
-});
+  { persist: true }
+);

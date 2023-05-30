@@ -8,37 +8,39 @@ import { filterInputAttrs } from "vuetify/lib/util/helpers";
 import { useThemeConfig } from "@core/composable/useThemeConfig";
 
 const props = defineProps({
-  autofocus: Boolean,
-  counter: [Boolean, Number, String],
-  counterValue: Function,
-  prefix: String,
-  placeholder: String,
-  persistentPlaceholder: Boolean,
-  persistentCounter: Boolean,
-  suffix: String,
-  type: {
-    type: String,
-    default: "text",
+  autofocus             : Boolean,
+  counter               : [Boolean, Number, String],
+  counterValue          : Function,
+  prefix                : String,
+  placeholder           : String,
+  persistentPlaceholder : Boolean,
+  persistentCounter     : Boolean,
+  suffix                : String,
+  type                  : {
+    type    : String,
+    default : "text"
   },
-  modelModifiers: Object,
+  modelModifiers        : Object,
   ...makeVInputProps({
-    density: "compact",
-    hideDetails: "auto",
+    density     : "compact",
+    hideDetails : "auto"
   }),
   ...makeVFieldProps({
-    variant: "outlined",
-    color: "primary",
-  }),
+    variant : "outlined",
+    color   : "primary"
+  })
 });
 
 const emit = defineEmits(["click:control", "mousedown:control", "update:focused", "update:modelValue", "click:clear"]);
 
-defineOptions({ inheritAttrs: false });
+defineOptions({ inheritAttrs : false });
+
+const datepickerWrapper = ref(null);
 
 const attrs = useAttrs();
 const [rootAttrs, compAttrs] = filterInputAttrs(attrs);
 
-const [{ modelValue: _, ...inputProps }] = VInput.filterProps(props);
+const [{ modelValue : _, ...inputProps }] = VInput.filterProps(props);
 
 const [fieldProps] = filterFieldProps(props);
 const refFlatPicker = ref();
@@ -49,7 +51,7 @@ const isInlinePicker = ref(false);
 // flat picker prop manipulation
 if (compAttrs.config && compAttrs.config.inline) {
   isInlinePicker.value = compAttrs.config.inline;
-  Object.assign(compAttrs, { altInputClass: "inlinePicker" });
+  Object.assign(compAttrs, { altInputClass : "inlinePicker" });
 }
 
 const onClear = (el) => {
@@ -91,19 +93,13 @@ const elementId = computed(() => {
 </script>
 
 <template>
-  <div class="app-picker-field">
+  <div :id="elementId + '-datepickerWrapper'" class="app-picker-field">
     <!-- v-input -->
-    <VLabel
-      v-if="fieldProps.label"
-      class="mb-1 text-body-2 text-high-emphasis"
-      :for="elementId"
-      :text="fieldProps.label"
-    />
-
     <VInput
       v-bind="{ ...inputProps, ...rootAttrs }"
       :model-value="modelValue"
       :hide-details="props.hideDetails"
+
       :class="[
         {
           'v-text-field--prefixed': props.prefix,
@@ -118,8 +114,9 @@ const elementId = computed(() => {
       <template #default="{ id, isDirty, isValid, isDisabled }">
         <!-- v-field -->
         <VField
-          v-bind="{ ...fieldProps, label: undefined }"
+          v-bind="{ ...fieldProps, label: fieldProps.label }"
           :id="id.value"
+          variant="underlined"
           role="textbox"
           :active="focused || isDirty.value || isCalendarOpen"
           :focused="focused || isCalendarOpen"
@@ -133,7 +130,7 @@ const elementId = computed(() => {
               <!-- flat-picker  -->
               <FlatPickr
                 v-if="!isInlinePicker"
-                v-bind="compAttrs"
+                v-bind="{...compAttrs }"
                 :id="elementId"
                 ref="refFlatPicker"
                 :model-value="modelValue"
@@ -165,7 +162,6 @@ const elementId = computed(() => {
       v-bind="compAttrs"
       ref="refFlatPicker"
       :model-value="modelValue"
-      @update:model-value="emitModelValue"
       @on-open="isCalendarOpen = true"
       @on-close="isCalendarOpen = false"
     />

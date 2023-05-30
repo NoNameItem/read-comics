@@ -1,6 +1,10 @@
+from datetime import date
+from typing import TypeVar
+
 from django.contrib.auth.models import AbstractUser
 from django.db import models
-from django.db.models import Count, F, Max, Q
+from django.db.models import Avg, Count, F, Max, Q, QuerySet
+from django.db.models.functions import Trunc
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from utils import logging
@@ -8,6 +12,8 @@ from utils.fields import ThumbnailImageField
 
 from read_comics.story_arcs.models import StoryArc
 from read_comics.volumes.models import Volume
+
+ModelType = TypeVar("ModelType", bound=models.Model)
 
 logger = logging.getLogger(__name__)
 
@@ -65,7 +71,7 @@ class User(AbstractUser):
                 self.name = self.last_name
         super(User, self).save(*args, **kwargs)
 
-    def get_started_and_not_finished(self, model):
+    def get_started_and_not_finished(self, model: type[ModelType]) -> QuerySet[ModelType]:
         return (
             model.objects.was_matched()
             .annotate(issue_count=Count("issues", distinct=True))
@@ -80,13 +86,29 @@ class User(AbstractUser):
         )
 
     @property
-    def started_and_not_finished_volumes(self):
+    def started_and_not_finished_volumes(self) -> QuerySet[Volume]:
         return self.get_started_and_not_finished(Volume)
 
     @property
-    def started_and_not_finished_story_arcs(self):
+    def started_and_not_finished_story_arcs(self) -> QuerySet[StoryArc]:
         return self.get_started_and_not_finished(StoryArc)
 
     @property
-    def email_verified(self):
+    def email_verified(self) -> bool:
         return self.emailaddress_set.get(primary=True).verified
+
+    @property
+    def finished_count(self) -> int:
+        return self.finished.count()
+
+    @property
+    def today_finished_count(self) -> int:
+        return self.finished.filter(finish_date__date=date.today()).count()
+
+    @property
+    def reading_speed(self) -> int:
+        return (
+            self.finished.values(created_day=Trunc("finish_date", "day", output_field=models.DateTimeField()))
+            .annotate(cnt=Count("id"))
+            .aggregate(speed=Avg("cnt"))
+        )["speed"]

@@ -1,5 +1,5 @@
 import axios from "axios";
-import { useUsersStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user";
 
 const axiosIns = axios.create({
   // You can add your headers here
@@ -15,7 +15,7 @@ const axiosIns = axios.create({
 // ℹ️ Add request interceptor to send the authorization header on each subsequent request after login
 axiosIns.interceptors.request.use(
   async (config) => {
-    const userStore = useUsersStore();
+    const userStore = useUserStore();
 
     userStore.$hydrate();
     if (userStore.accessToken) {
@@ -37,17 +37,20 @@ axiosIns.interceptors.response.use(
     return response;
   },
   async function (error) {
-    const userStore = useUsersStore();
+    const userStore = useUserStore();
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     const originalRequest = error.config;
     if (error.response?.status === 401 && originalRequest.url.includes("auth/token/refresh/")) {
-      userStore.$reset();
+      userStore.logout();
+      userStore.$persist();
 
       return Promise.reject(error);
     } else if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
+      userStore.$hydrate();
       await userStore.refreshTokens();
+      userStore.$persist();
 
       return axiosIns(originalRequest);
     }
