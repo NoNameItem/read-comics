@@ -19,7 +19,15 @@ module.exports = {
     sourceType: "module",
   },
   plugins: ["vue", "regex"],
-  ignorePatterns: ["src/@iconify/*.js", "node_modules", "dist", "auto-imports.d.ts", "components.d.ts"],
+  ignorePatterns: [
+    "src/@core",
+    "src/@layouts",
+    "src/@iconify/*.js",
+    "node_modules",
+    "dist",
+    "auto-imports.d.ts",
+    "components.d.ts",
+  ],
   rules: {
     "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
