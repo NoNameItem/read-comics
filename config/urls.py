@@ -34,9 +34,9 @@ urlpatterns = [
 urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
-    path("api/profile/", ProfileView.as_view()),
-    path("api/profile/finished-stats/", FinishedIssuesStatsView.as_view()),
-    path("api/profile/change-email/", ChangeEmailView.as_view()),
+    path("api/profile/", ProfileView.as_view(), name="profile"),
+    path("api/profile/finished-stats/", FinishedIssuesStatsView.as_view(), name="finished_stats"),
+    path("api/profile/change-email/", ChangeEmailView.as_view(), name="change_email"),
 ]
 
 if settings.DEBUG:
