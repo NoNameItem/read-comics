@@ -3,6 +3,7 @@ import { useTheme } from "vuetify";
 import ScrollToTop from "@core/components/ScrollToTop.vue";
 import { useThemeConfig } from "@core/composable/useThemeConfig";
 import { hexToRgb } from "@layouts/utils";
+import { useUserStore } from "@/stores/user";
 
 const {
   syncInitialLoaderTheme,
@@ -17,6 +18,20 @@ const { global } = useTheme();
 syncInitialLoaderTheme();
 syncConfigThemeWithVuetifyTheme();
 handleSkinChanges();
+
+// logout redirect
+const user = useUserStore();
+const route = useRoute();
+const router = useRouter();
+
+watch(user, () => {
+  if (route.meta?.loginRequired) {
+    router.push({
+      path: "/login",
+      query: { to: route.fullPath },
+    });
+  }
+});
 </script>
 
 <template>

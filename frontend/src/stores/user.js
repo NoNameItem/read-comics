@@ -1,5 +1,4 @@
 import { defineStore } from "pinia";
-import { useRoute } from "vue-router";
 import axios from "@axios";
 
 import F_thumb from "@images/avatars/F_thumb.png";
@@ -29,9 +28,6 @@ const default_thumbnails = {
 export const useUserStore = defineStore(
   "user",
   () => {
-    const route = useRoute();
-    const router = useRouter();
-
     const accessToken = ref(null);
     const refreshToken = ref(null);
 
@@ -138,13 +134,6 @@ export const useUserStore = defineStore(
     };
 
     const logout = () => {
-      if (route.meta?.loginRequired) {
-        router.push({
-          path: "/login",
-          query: { to: route.fullPath },
-        });
-      }
-
       $reset();
     };
 
