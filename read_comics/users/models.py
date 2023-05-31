@@ -16,7 +16,7 @@ from read_comics.issues.models import Issue
 from read_comics.story_arcs.models import StoryArc
 from read_comics.volumes.models import Volume
 
-modelType = TypeVar("modelType", bound=ComicvineSyncModel)
+ModelTypeT = TypeVar("ModelTypeT", bound=ComicvineSyncModel)
 
 logger = logging.getLogger(__name__)
 
@@ -53,15 +53,13 @@ class User(AbstractUser):
     def image_url(self):
         if self._user_image:
             return self._user_image.url
-        else:
-            return f"/static/images/avatars/{self.gender}.png"
+        return f"/static/images/avatars/{self.gender}.png"
 
     @property
     def image_thumb_url(self):
         if self._user_image:
             return self._user_image.thumb_url
-        else:
-            return f"/static/images/avatars/{self.gender}_thumb.png"
+        return f"/static/images/avatars/{self.gender}_thumb.png"
 
     def __str__(self):
         return self.name or self.username.title()
@@ -75,9 +73,9 @@ class User(AbstractUser):
                 self.name = self.first_name
             elif self.last_name:
                 self.name = self.last_name
-        super(User, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
-    def get_started_and_not_finished(self, model: type[modelType]) -> QuerySet[modelType]:
+    def get_started_and_not_finished(self, model: type[ModelTypeT]) -> QuerySet[ModelTypeT]:
         return (
             model.objects.was_matched()
             .annotate(issue_count=Count("issues", distinct=True))

@@ -17,10 +17,11 @@ good-names=i,
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=missing-docstring
+disable=missing-docstring,too-complex
 
 [DESIGN]
 max-parents=13
+max-attributes=20
 
 [TYPECHECK]
 generated-members=REQUEST,acl_users,aq_parent,"[a-zA-Z]+_set{1,2}",save,delete

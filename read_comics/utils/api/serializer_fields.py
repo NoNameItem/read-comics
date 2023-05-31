@@ -12,7 +12,7 @@ class ThumbnailImageField(Field):
     }
 
     def __init__(self, *args, **kwargs) -> None:
-        self._DjangoImageField = kwargs.pop("_DjangoImageField", DjangoImageField)
+        self._django_image_field = kwargs.pop("_DjangoImageField", DjangoImageField)
         self.max_length = kwargs.pop("max_length", None)
         self.allow_empty_file = kwargs.pop("allow_empty_file", False)
         if "use_url" in kwargs:
@@ -38,7 +38,7 @@ class ThumbnailImageField(Field):
 
         file_object = data
 
-        django_field = self._DjangoImageField()
+        django_field = self._django_image_field()
         django_field.error_messages = self.error_messages
         return django_field.clean(file_object)
 
