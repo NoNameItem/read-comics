@@ -54,14 +54,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
     FIELD_MAPPING = {
         "html_description": {"path": "description", "method": "get_description"},
         "number": "issue_number",
-        "cover_date": {
-            "path": "cover_date",
-            "method": "convert_date",
-        },
-        "store_date": {
-            "path": "store_date",
-            "method": "convert_date",
-        },
+        "cover_date": {"path": "cover_date", "method": "convert_date"},
+        "store_date": {"path": "store_date", "method": "convert_date"},
         "characters": {"path": "character_credits", "method": "get_character"},
         "characters_died": {"path": "character_died_in", "method": "get_character"},
         "concepts": {"path": "concept_credits", "method": "get_concept"},
@@ -157,9 +151,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         role = comicvine_author.get("role")
         from read_comics.people.models import Person
 
-        person, created, matched = Person.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        person, _, _ = Person.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return person, {"role": role}
 
     # noinspection DuplicatedCode
@@ -200,7 +192,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
     def get_description(text):
         description = text
         if description:
-            description = re.sub(r"<(a|/a).*?>", "", description)
+            description = re.sub(r"<(a|/a)[^>]*>", "", description)
             description = re.sub(
                 r"<h4>List of covers and their creators:<\/h4><table[^>]*>.*?<\/table>", "", description
             )
@@ -224,7 +216,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
             separator=" ",
             lowercase=False,
             hexadecimal=False,
-            regex_pattern=re.compile(r"[^-a-zA-Z0-9.#*,;]+"),
+            regex_pattern=r"[^-a-zA-Z0-9.#*,;]+",
             replacements=(("/", "*"), (":", "*"), ("½", ".5")),
         )
         s3_client = boto3.client(
@@ -284,7 +276,10 @@ class Issue(ImageMixin, ComicvineSyncModel):
 class IssuePerson(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="authors")
     person = models.ForeignKey("people.Person", on_delete=models.CASCADE, related_name="authored_issues")
-    role = models.CharField(max_length=100, null=True)
+    role = models.CharField(max_length=100, blank=True)
+
+    def __str__(self) -> str:
+        return repr(self)
 
 
 class FinishedIssue(models.Model):
@@ -294,3 +289,6 @@ class FinishedIssue(models.Model):
 
     class Meta:
         unique_together = (("user", "issue"),)
+
+    def __str__(self) -> str:
+        return repr(self)

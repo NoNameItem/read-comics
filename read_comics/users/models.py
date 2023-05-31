@@ -1,6 +1,7 @@
 from datetime import date
 from typing import TypeVar
 
+from allauth.account.models import EmailAddress
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models import Avg, Count, F, Max, Q, QuerySet
@@ -9,11 +10,13 @@ from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
 from utils import logging
 from utils.fields import ThumbnailImageField
+from utils.models import ComicvineSyncModel
 
+from read_comics.issues.models import Issue
 from read_comics.story_arcs.models import StoryArc
 from read_comics.volumes.models import Volume
 
-ModelType = TypeVar("ModelType", bound=models.Model)
+modelType = TypeVar("modelType", bound=ComicvineSyncModel)
 
 logger = logging.getLogger(__name__)
 
@@ -23,6 +26,9 @@ def get_user_image_name(instance, filename):
 
 
 class User(AbstractUser):
+    emailaddress_set: QuerySet[EmailAddress]
+    finished_issues: QuerySet[Issue]
+
     class Gender(models.TextChoices):
         MALE = "M", _("Male")
         FEMALE = "F", _("Female")
@@ -71,7 +77,7 @@ class User(AbstractUser):
                 self.name = self.last_name
         super(User, self).save(*args, **kwargs)
 
-    def get_started_and_not_finished(self, model: type[ModelType]) -> QuerySet[ModelType]:
+    def get_started_and_not_finished(self, model: type[modelType]) -> QuerySet[modelType]:
         return (
             model.objects.was_matched()
             .annotate(issue_count=Count("issues", distinct=True))

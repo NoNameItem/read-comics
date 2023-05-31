@@ -61,6 +61,3 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
 STATICFILES_DIRS += ["read_comics/static"]  # noqa F405 # Duplicate for PyCharm Code Insight
-TEMPLATES[0]["OPTIONS"]["context_processors"] += [  # noqa F405
-    "read_comics.users.context_processors.email_verified_context"
-]  # noqa F405

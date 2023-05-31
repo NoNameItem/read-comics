@@ -14,7 +14,7 @@ import Toast from "vue-toastification";
 import "vue-toastification/dist/index.css";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { VueQueryPlugin } from "@tanstack/vue-query";
-
+// eslint-disable-next-line
 import initIconLibrary from "@/plugins/icons";
 
 loadFonts();

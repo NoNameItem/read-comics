@@ -67,9 +67,8 @@ const changeImageMutation = useMutation({
 });
 
 const changeImage = async (file) => {
-  const fileReader = new FileReader();
   const { files } = file.target;
-  if (files && files.length) {
+  if (files?.length) {
     const formData = new FormData();
 
     formData.append("images", files[0]);
@@ -143,7 +142,9 @@ const resetImage = async () => {
                   :loading="resetImageMutation.isLoading.value"
                   @click="resetImage">
                 </VBtn>
-                <VTooltip :activator="resetImageButtonRef" location="bottom">Reset Image</VTooltip>
+                <VTooltip v-if="showImageResetBadge" :activator="resetImageButtonRef" location="bottom"
+                  >Reset Image
+                </VTooltip>
               </div>
             </div>
 

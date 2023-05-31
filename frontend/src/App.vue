@@ -25,7 +25,7 @@ const route = useRoute();
 const router = useRouter();
 
 watch(user, () => {
-  if (route.meta?.loginRequired) {
+  if (!user.accessToken && route.meta?.loginRequired) {
     router.push({
       path: "/login",
       query: { to: route.fullPath },

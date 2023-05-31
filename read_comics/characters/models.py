@@ -117,12 +117,12 @@ class Character(ImageMixin, ComicvineSyncModel):
     class Meta:
         ordering = ("name",)
 
-    def __str__(self):
-        if self.get_publisher_name():
+    def __str__(self) -> str:
+        if self.publisher is not None:
             return f"{self.name} ({self.publisher.name})"
-        return self.name
+        return self.name or ""
 
-    def get_publisher_name(self):
+    def get_publisher_name(self) -> str | None:
         if self.publisher:
             return self.publisher.name
         else:

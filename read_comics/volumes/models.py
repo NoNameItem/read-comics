@@ -94,10 +94,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
     tracker = FieldTracker()
 
     class Meta:
-        ordering = (
-            "name",
-            "start_year",
-        )
+        ordering = ("name", "start_year")
 
     def __str__(self):
         publisher_name = self.get_publisher_name()
@@ -165,9 +162,11 @@ class Volume(ImageMixin, ComicvineSyncModel):
         return f"{self.name} ({self.start_year or 'Unknown'})"
 
     @property
-    def real_last_issue_number(self) -> str:
+    def real_last_issue_number(self) -> str | None:
         try:
             real_last_issue = self.issues.order_by("-numerical_number", "-number")[0]
             return real_last_issue.number
         except IndexError:
-            return self.last_issue.number
+            if self.last_issue is not None:
+                return self.last_issue.number
+            return None

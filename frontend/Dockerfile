@@ -1,4 +1,4 @@
-FROM node:16.19 as builder
+FROM node:16.19 AS builder
 WORKDIR /app
 
 ARG FONTAWESOME_AUTH_TOKEN

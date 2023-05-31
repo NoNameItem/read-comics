@@ -42,7 +42,7 @@ const getOldIcons = () => {
         (match) => match[0]
       )
     ),
-  ].sort();
+  ].sort((a, b) => a.localeCompare(b));
 };
 
 const generateImports = (iconsSet, p) => `import { ${[...iconsSet].join(", ")} } from "${p}";`;
@@ -79,7 +79,7 @@ function run(logEmpty) {
   findIcons(path.resolve(__dirname, "../..", "themeConfig.js"));
 
   const oldIcons = getOldIcons();
-  const newIcons = [...icons, ...brandIcons].sort();
+  const newIcons = [...icons, ...brandIcons].sort((a, b) => a.localeCompare(b));
 
   if (JSON.stringify(oldIcons) !== JSON.stringify(newIcons)) {
     saveToFile();

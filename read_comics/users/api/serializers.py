@@ -49,6 +49,14 @@ def password_reset_url_generator(request, user, temp_key) -> str:
 
 
 class ResetPasswordSerializer(PasswordResetSerializer):
+    def update(self, instance: Any, validated_data: Any) -> None:
+        # empty override just to shut up pylint
+        pass
+
+    def create(self, validated_data: Any) -> None:
+        # empty override just to shut up pylint
+        pass
+
     def get_email_options(self) -> dict:
         """Override this method to change default e-mail options"""
         return {"url_generator": password_reset_url_generator}
