@@ -22,6 +22,7 @@ jobs:
     permissions:
       checks: none
       pull-requests: none
+    secrets: inherit
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: ${{ success() || failure() }}
