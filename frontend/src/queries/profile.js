@@ -2,7 +2,7 @@ import { createQueryKeys } from "@lukemorales/query-key-factory";
 import axios from "@axios";
 
 const PROFILE_URL = "/profile/";
-const FINISHED_STATS_URL = "/profile/finished-stats/";
+const FINISHED_STATS_URL = `${PROFILE_URL}finished-stats/`;
 
 export const profile = createQueryKeys("profile", {
   profileData: {

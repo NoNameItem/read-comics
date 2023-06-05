@@ -1,5 +1,6 @@
 # General
 # ------------------------------------------------------------------------------
+USE_SILK=True
 USE_DOCKER=yes
 IPYTHONDIR=/app/.ipython
 # Redis

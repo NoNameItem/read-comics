@@ -30,6 +30,7 @@ export const useUserStore = defineStore(
   () => {
     const accessToken = ref(null);
     const refreshToken = ref(null);
+    const refreshingToken = ref(false);
 
     const username = ref(null);
     const name = ref(null);
@@ -45,6 +46,7 @@ export const useUserStore = defineStore(
     const $reset = () => {
       accessToken.value = null;
       refreshToken.value = null;
+      refreshingToken.value = false;
       username.value = null;
       name.value = null;
       email.value = null;
@@ -140,6 +142,8 @@ export const useUserStore = defineStore(
     return {
       accessToken,
       refreshToken,
+      refreshingToken,
+
       username,
       name,
       email,

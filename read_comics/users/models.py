@@ -77,7 +77,7 @@ class User(AbstractUser):
 
     def get_started_and_not_finished(self, model: type[ModelTypeT]) -> QuerySet[ModelTypeT]:
         return (
-            model.objects.was_matched()
+            model.objects.matched()
             .annotate(issue_count=Count("issues", distinct=True))
             .select_related("publisher")
             .annotate(

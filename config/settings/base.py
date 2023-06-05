@@ -18,6 +18,7 @@ if READ_DOT_ENV_FILE:
 
 # GENERAL
 # ------------------------------------------------------------------------------
+USE_SILK = env.bool("USE_SILK", default=False)
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
 # Local time zone. Choices are
@@ -88,12 +89,14 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
-    "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig",
     "watson",
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "rest_framework_simplejwt.token_blacklist",
 ]
+
+if USE_SILK:
+    THIRD_PARTY_APPS += ["silk"]
 
 LOCAL_APPS = [
     "read_comics.utils.apps.UtilsConfig",
@@ -157,23 +160,27 @@ AUTH_PASSWORD_VALIDATORS = [
 # MIDDLEWARE
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.common.BrokenLinkEmailsMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_magnificent_messages.middleware.MessageMiddleware",
-    "crum.CurrentRequestUserMiddleware",
-    "users.middleware.LastActiveMiddleware",
-    "watson.middleware.SearchContextMiddleware",
-]
+MIDDLEWARE = (
+    [
+        "django.middleware.security.SecurityMiddleware",
+        "corsheaders.middleware.CorsMiddleware",
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    ]
+    + (["silk.middleware.SilkyMiddleware"] if USE_SILK else [])
+    + [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.locale.LocaleMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.common.BrokenLinkEmailsMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        "crum.CurrentRequestUserMiddleware",
+        "users.middleware.LastActiveMiddleware",
+        "watson.middleware.SearchContextMiddleware",
+    ]
+)
 
 # STATIC
 # ------------------------------------------------------------------------------
@@ -347,7 +354,8 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 30,
 }
 
 REST_AUTH = {
@@ -369,6 +377,16 @@ CORS_URLS_REGEX = r"^/api/.*$"
 CORS_ALLOWED_ORIGINS = env.list(
     "CORS_ALLOWED_ORIGINS", default=["http://localhost:5173", "http://0.0.0.0:5173", "http://127.0.0.1:5173"]
 )
+# Silk
+# ------------------------------------------------------------------------------
+SILKY_META = True
+SILKY_MAX_RECORDED_REQUESTS = 10000
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+SILKY_ANALYZE_QUERIES = False
+SILKY_PYTHON_PROFILER = True
+SILKY_MAX_REQUEST_BODY_SIZE = -1
+SILKY_MAX_RESPONSE_BODY_SIZE = 4096
+
 # Your stuff...
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))

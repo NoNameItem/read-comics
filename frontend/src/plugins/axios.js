@@ -49,10 +49,22 @@ axiosIns.interceptors.response.use(
     } else if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
       userStore.$hydrate();
-      await userStore.refreshTokens();
-      userStore.$persist();
-
-      return axiosIns(originalRequest);
+      if (!userStore.refreshingToken) {
+        userStore.refreshingToken = true;
+        userStore.$persist();
+        await userStore.refreshTokens();
+        userStore.refreshingToken = false;
+        userStore.$persist();
+        return axiosIns(originalRequest);
+      } else {
+        const intervalId = setInterval(() => {
+          userStore.$hydrate();
+          if (!userStore.refreshingToken) {
+            clearInterval(intervalId);
+            return axiosIns(originalRequest);
+          }
+        }, 100);
+      }
     }
 
     return Promise.reject(error);

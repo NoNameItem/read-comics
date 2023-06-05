@@ -15,4 +15,9 @@ export default createVuetify({
   defaults,
   icons,
   theme,
+  display: {
+    thresholds: {
+      lg: 1300,
+    },
+  },
 });
