@@ -7,6 +7,10 @@ import { useTitledToast } from "@/composables/useTitledToast";
 import { useUserStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Register";
+
 const route = useRoute();
 const router = useRouter();
 

@@ -7,6 +7,10 @@ import axios from "@axios";
 import { emailValidator, requiredValidator } from "@validators";
 import { usePostForm } from "@/composables/usePostForm";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Reset Password";
+
 const emailSent = ref(false);
 
 const { formData, valid, formRef, status, loading, errors, post } = usePostForm({

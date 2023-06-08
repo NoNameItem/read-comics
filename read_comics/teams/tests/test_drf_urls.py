@@ -1,6 +1,8 @@
-from utils.test_utils.api_urls_mixins import CountAPIUrlTestMixin
+from django.urls import resolve, reverse
 
 
-class TestTeamsApiUrls(CountAPIUrlTestMixin):
-    base_url = "teams"
-    base_name = "team"
+class TestTeamsApiUrls:
+    @staticmethod
+    def test_count() -> None:
+        assert reverse("api:team-count") == "/api/teams/count/"
+        assert resolve("/api/teams/count/").view_name == "api:team-count"

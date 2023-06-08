@@ -354,8 +354,8 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
-    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
-    "PAGE_SIZE": 30,
+    "DEFAULT_PAGINATION_CLASS": "read_comics.utils.api.pagination.Pagination",
+    "PAGE_SIZE": 48,
 }
 
 REST_AUTH = {

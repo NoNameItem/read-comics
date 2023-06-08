@@ -6,6 +6,10 @@ import { themeConfig } from "@themeConfig";
 import { useUserStore } from "@/stores/user";
 import axios from "@axios";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Email Verification";
+
 const user = useUserStore();
 const route = useRoute();
 const loading = ref(true);

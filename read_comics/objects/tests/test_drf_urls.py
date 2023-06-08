@@ -1,6 +1,8 @@
-from utils.test_utils.api_urls_mixins import CountAPIUrlTestMixin
+from django.urls import resolve, reverse
 
 
-class TestObjectsApiUrls(CountAPIUrlTestMixin):
-    base_url = "objects"
-    base_name = "object"
+class TestObjectsApiUrls:
+    @staticmethod
+    def test_count() -> None:
+        assert reverse("api:object-count") == "/api/objects/count/"
+        assert resolve("/api/objects/count/").view_name == "api:object-count"

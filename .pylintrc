@@ -1,7 +1,7 @@
 [MASTER]
 load-plugins=pylint_django, pylint_celery
 django-settings-module=config.settings.local
-ignore=migrations
+ignore=migrations,tests
 
 [BASIC]
 good-names=i,
@@ -17,7 +17,7 @@ good-names=i,
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=C0111,C0415,R0401,R0801
+disable=C0111,C0415,R0401,R0801,R0901
 
 [DESIGN]
 max-parents=13

@@ -1,13 +1,19 @@
-from django.db.models import Count
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from utils.api.viewset_mixins import CountModelMixin
+from utils.api.viewset_actions_mixins import CountActionMixin
+from utils.api.viewset_queryset_mixins import (
+    IssuesCountQuerySetMixin,
+    OnlyWithIssuesQuerySetMixin,
+    VolumesCountQuerySetMixin,
+)
 
 from ..models import Location
 
 
-class LocationViewSet(CountModelMixin, ReadOnlyModelViewSet):
-    queryset = (
-        Location.objects.was_matched()
-        .annotate(volume_count=Count("issues__volume", distinct=True))
-        .annotate(issue_count=Count("issues", distinct=True))
-    )
+class LocationViewSet(
+    CountActionMixin,
+    OnlyWithIssuesQuerySetMixin,
+    IssuesCountQuerySetMixin,
+    VolumesCountQuerySetMixin,
+    ReadOnlyModelViewSet,
+):
+    queryset = Location.objects.was_matched()

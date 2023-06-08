@@ -4,7 +4,7 @@ from factory.django import DjangoModelFactory
 from users.tests.factories import UserFactory
 from utils.test_utils.factories import ComicvineSyncModelFactory
 
-from read_comics.issues.models import FinishedIssue, Issue
+from read_comics.issues.models import FinishedIssue, Issue, IssuePerson
 
 
 class IssueFactory(ComicvineSyncModelFactory):
@@ -21,6 +21,15 @@ class IssueFactory(ComicvineSyncModelFactory):
     class Meta:
         model = Issue
         exclude = ["number_int"]
+
+
+class IssuePersonFactory(DjangoModelFactory):
+    issue = factory.SubFactory(IssueFactory)
+    person = factory.SubFactory("read_comics.people.tests.factories.PersonFactory")
+    role = Faker("job")
+
+    class Meta:
+        model = IssuePerson
 
 
 class FinishedIssueFactory(DjangoModelFactory):

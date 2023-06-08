@@ -3,12 +3,17 @@ import TotalProgress from "@/views/home/TotalProgress.vue";
 import { useUserStore } from "@/stores/user";
 import StatisticCards from "@/views/home/HomeStatistics.vue";
 import StartedAndNotFinished from "@/views/home/StartedAndNotFinished.vue";
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 
 const user = useUserStore();
+const breadcrumb = useBreadcrumbsStore();
+
+breadcrumb.setBreadcrumbs("Home", []);
 </script>
 
 <template>
   <div>
+    <Breadcrumb />
     <VRow>
       <VCol v-if="user.loggedIn" col="12">
         <TotalProgress />

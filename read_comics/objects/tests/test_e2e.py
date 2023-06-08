@@ -1,12 +1,20 @@
 import pytest
 
-from read_comics.utils.test_utils.e2e_mixins import CountTestMixin
-
-from .factories import ObjectFactory
-
 pytestmark = pytest.mark.django_db
 
 
-class TestObjectsE2E(CountTestMixin):
-    factory = ObjectFactory
-    count_url = "/api/objects/count/"
+class TestObjectsE2E:
+    # Count tests
+    ##########################
+
+    @staticmethod
+    def test_count(api_client, objects_no_issues, objects_with_issues) -> None:
+        response = api_client().get("/api/objects/count/")
+        assert response.status_code == 200
+        assert response.data["count"] == len(objects_with_issues)
+
+    @staticmethod
+    def test_count_all(api_client, objects_no_issues, objects_with_issues) -> None:
+        response = api_client().get("/api/objects/count/?show-all=yes")
+        assert response.status_code == 200
+        assert response.data["count"] == len(objects_with_issues) + len(objects_no_issues)

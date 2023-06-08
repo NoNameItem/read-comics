@@ -4,6 +4,10 @@ import misc404 from "@images/pages/404.jpg";
 import miscMaskDark from "@images/pages/misc-mask-dark.png";
 import miscMaskLight from "@images/pages/misc-mask-light.png";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "[Read-Comics.Net] Not found";
+
 const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark);
 </script>
 
@@ -18,20 +22,18 @@ const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark);
       class=""
       error-title="Page Not Found :("
       error-description="We couldn't find the page you are looking for." />
-    <VBtn to="/" class="mb-12"> Back to Home </VBtn>
+    <VBtn to="/" class="mb-12"> Back to Home</VBtn>
   </div>
 </template>
 
 <style lang="scss">
 @use "@core/scss/template/pages/misc.scss";
+
 .misc-avatar {
   margin-bottom: 30px;
 }
 </style>
 
-<route lang="yaml">
-meta:
-  layout: blank
-  action: read
-  subject: Auth
+<route lang="json">
+{ "meta": { "layout": "blank" } }
 </route>

@@ -5,6 +5,10 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import { useUserStore } from "@/stores/user";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Email Verification";
+
 const user = useUserStore();
 const route = useRoute();
 const { resentConfirmation } = useResentEmailConfirmation();

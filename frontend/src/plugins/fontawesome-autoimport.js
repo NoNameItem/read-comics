@@ -4,7 +4,7 @@ const fs = require("fs");
 
 const src = path.resolve(__dirname, "../..", "src");
 const fileRegex = new RegExp(/\.(vue|js)$/);
-const iconRegex = /(fasl|fab):([a-z-]+)/gms;
+const iconRegex = /(fasl|fab):([a-z0-9-]+)/gms;
 
 const outputFolder = `${src}/plugins`;
 const outputFile = `${outputFolder}/icons.js`;
@@ -38,7 +38,7 @@ const parse = (path) => {
 const getOldIcons = () => {
   return [
     ...new Set(
-      [...(fs.existsSync(outputFile) && fs.readFileSync(outputFile)).toString().matchAll(/fa[A-Z]\w+/gms)].map(
+      [...(fs.existsSync(outputFile) && fs.readFileSync(outputFile)).toString().matchAll(/fa[A-Z0-9]\w+/gms)].map(
         (match) => match[0]
       )
     ),

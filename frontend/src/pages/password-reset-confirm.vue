@@ -5,6 +5,10 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer";
 import { themeConfig } from "@themeConfig";
 import { requiredValidator } from "@validators";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Reset Password";
+
 const route = useRoute();
 
 const isPasswordVisible = ref(false);

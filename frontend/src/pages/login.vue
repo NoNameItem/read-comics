@@ -7,6 +7,10 @@ import { useUserStore } from "@/stores/user";
 import { requiredValidator } from "@validators";
 import { useTitledToast } from "@/composables/useTitledToast";
 
+const htmlTitle = useTitle();
+
+htmlTitle.value = "Login";
+
 const form = reactive({
   username: "",
   password: "",

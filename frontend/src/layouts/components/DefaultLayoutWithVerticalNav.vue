@@ -48,3 +48,12 @@ const { width: windowWidth } = useWindowSize();
     </template>
   </VerticalNavLayout>
 </template>
+
+<style scoped>
+.page-title {
+  border-right: 1px solid #828d99;
+  padding-right: 1rem;
+  margin-right: 1rem;
+  font-weight: 800;
+}
+</style>

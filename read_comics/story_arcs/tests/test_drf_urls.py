@@ -1,6 +1,13 @@
-from utils.test_utils.api_urls_mixins import CountAPIUrlTestMixin, StartedAPIUrlTestMixin
+from django.urls import resolve, reverse
 
 
-class TestStoryArcsApiUrls(CountAPIUrlTestMixin, StartedAPIUrlTestMixin):
-    base_url = "story-arcs"
-    base_name = "story-arc"
+class TestStoryArcsApiUrls:
+    @staticmethod
+    def test_count() -> None:
+        assert reverse("api:story-arc-count") == "/api/story-arcs/count/"
+        assert resolve("/api/story-arcs/count/").view_name == "api:story-arc-count"
+
+    @staticmethod
+    def test_started() -> None:
+        assert reverse("api:story-arc-started") == "/api/story-arcs/started/"
+        assert resolve("/api/story-arcs/started/").view_name == "api:story-arc-started"

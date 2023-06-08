@@ -1,6 +1,8 @@
-from utils.test_utils.api_urls_mixins import CountAPIUrlTestMixin
+from django.urls import resolve, reverse
 
 
-class TestPublishersApiUrls(CountAPIUrlTestMixin):
-    base_url = "publishers"
-    base_name = "publisher"
+class TestPublishersApiUrls:
+    @staticmethod
+    def test_count() -> None:
+        assert reverse("api:publisher-count") == "/api/publishers/count/"
+        assert resolve("/api/publishers/count/").view_name == "api:publisher-count"
