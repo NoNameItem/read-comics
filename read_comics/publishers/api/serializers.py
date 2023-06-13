@@ -8,4 +8,4 @@ class NestedPublisherSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Publisher
-        fields = ["name", "image"]
+        fields = ["name", "image", "slug"]

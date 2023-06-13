@@ -17,12 +17,11 @@ good-names=i,
 max-line-length=120
 
 [MESSAGES CONTROL]
-disable=C0111,C0415,R0401,R0801,R0901
+disable=C0111,C0415,R0401,R0801,R0901,R0903
 
 [DESIGN]
 max-parents=13
 max-attributes=20
-min-public-methods=1
 
 [SIMILARITIES]
 min-similarity-lines=30

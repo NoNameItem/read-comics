@@ -21,7 +21,7 @@ const images = {
     v-if="!userStore.username"
     color="primary"
     variant="text"
-    :to="{ path: 'login', query: { to: route.fullPath } }">
+    :to="{ path: '/login', query: { to: route.fullPath } }">
     Login
     <VIcon end icon="fasl:arrow-right-to-bracket" />
   </VBtn>
@@ -51,7 +51,7 @@ const images = {
           <VDivider class="my-2" />
 
           <!-- 👉 Profile -->
-          <VListItem to="profile">
+          <VListItem to="/profile">
             <template #prepend>
               <VIcon class="me-2" icon="fasl:user" size="22" />
             </template>

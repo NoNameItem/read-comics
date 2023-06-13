@@ -62,6 +62,7 @@ export const useUserStore = defineStore(
     const image = computed(() => images.value?.image ?? default_images[gender.value?.value ?? "O"]);
     const thumbnail = computed(() => images.value?.thumbnail ?? default_thumbnails[gender.value?.value ?? "O"]);
     const loggedIn = computed(() => !!accessToken.value);
+    const isSuperuserOrStaff = computed(() => isSuperuser.value || isStaff.value);
 
     const setUser = (user) => {
       username.value = user?.username;
@@ -158,6 +159,7 @@ export const useUserStore = defineStore(
       image,
       thumbnail,
       loggedIn,
+      isSuperuserOrStaff,
 
       setUser,
       setImage,

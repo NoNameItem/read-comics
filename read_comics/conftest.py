@@ -6,7 +6,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from read_comics.issues.models import Issue
 from read_comics.users.models import User
-from read_comics.users.tests.factories import UserFactory
+from read_comics.users.tests.factories import StaffFactory, SuperuserFactory, UserFactory
 
 
 @pytest.fixture(autouse=True)
@@ -29,8 +29,36 @@ def authenticated_api_client(user) -> APIClient:
 
 
 @pytest.fixture
+def staff_api_client(staff) -> APIClient:
+    client = APIClient()
+    refresh = RefreshToken.for_user(staff)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+    return client
+
+
+@pytest.fixture
+def superuser_api_client(superuser) -> APIClient:
+    client = APIClient()
+    refresh = RefreshToken.for_user(superuser)
+    client.credentials(HTTP_AUTHORIZATION=f"Bearer {refresh.access_token}")
+
+    return client
+
+
+@pytest.fixture
 def user() -> User:
     return UserFactory()
+
+
+@pytest.fixture
+def superuser() -> User:
+    return SuperuserFactory()
+
+
+@pytest.fixture
+def staff() -> User:
+    return StaffFactory()
 
 
 @pytest.fixture(autouse=True)

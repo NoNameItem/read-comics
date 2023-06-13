@@ -8,7 +8,7 @@ from read_comics.issues.models import FinishedIssue, Issue, IssuePerson
 
 
 class IssueFactory(ComicvineSyncModelFactory):
-    name = Faker("words")
+    name = Faker("sentence")
     short_description = Faker("paragraph")
     number_int = Faker("pyint")
     number = factory.LazyAttribute(lambda o: str(o.number_int))

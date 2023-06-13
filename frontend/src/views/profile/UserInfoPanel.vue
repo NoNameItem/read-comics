@@ -6,6 +6,7 @@ import { useMutation, useQuery } from "@tanstack/vue-query";
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
 import { DateTime } from "luxon";
 import axios from "@axios";
+import { formatDate, formatDateTimeMinutes } from "../../utils/format_utils";
 
 const GENDER_COLORS = {
   F: "danger",
@@ -251,7 +252,7 @@ const resetImage = async () => {
                   <h6 class="text-h6">
                     Birth date:
                     <span class="text-capitalize text-body-1">
-                      {{ DateTime.fromISO(user.birthDate).toLocaleString() }}
+                      {{ formatDate(user.birthDate) }}
                     </span>
                   </h6>
                 </VListItemTitle>
@@ -264,7 +265,7 @@ const resetImage = async () => {
                     <span class="text-capitalize text-body-1">
                       {{ DateTime.fromISO(user.registerDate).toRelative() }}
                       <VTooltip activator="parent" open-delay="500" location="end">
-                        {{ DateTime.fromISO(user.registerDate).toLocaleString(DateTime.DATETIME_SHORT) }}
+                        {{ formatDateTimeMinutes(user.registerDate) }}
                       </VTooltip>
                     </span>
                   </h6>

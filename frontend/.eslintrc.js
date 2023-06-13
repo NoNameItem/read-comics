@@ -98,6 +98,7 @@ module.exports = {
     "vue/match-component-file-name": "error",
     "vue/no-child-content": "error",
     "vue/require-default-prop": "off",
+    "vue/no-v-html": "off",
 
     // NOTE this rule only supported in SFC,  Users of the unplugin-vue-define-options should disable that rule: https://github.com/vuejs/eslint-plugin-vue/issues/1886
     // 'vue/no-duplicate-attr-inheritance': 'error',

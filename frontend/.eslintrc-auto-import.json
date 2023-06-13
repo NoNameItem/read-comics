@@ -315,6 +315,8 @@
     "watchWithFilter": true,
     "whenever": true,
     "toValue": true,
-    "useGetListData": true
+    "useGetListData": true,
+    "useAdminDetailQuery": true,
+    "usePreparedTechnicalInfo": true
   }
 }

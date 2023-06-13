@@ -6,7 +6,7 @@ from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
+from utils.model_mixins import DownloadSizeMixin, ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
@@ -26,7 +26,7 @@ logger = getLogger(__name__ + ".Character")
         "_set_m2m_from_document",
     ],
 )
-class Character(ImageMixin, ComicvineSyncModel):
+class Character(ImageMixin, DownloadSizeMixin, ComicvineSyncModel):
     class Gender(models.IntegerChoices):
         OTHER = 0, "Other"
         MALE = 1, "Male"

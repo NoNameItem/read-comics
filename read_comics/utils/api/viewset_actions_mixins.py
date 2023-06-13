@@ -8,6 +8,7 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework.serializers import Serializer
 from rest_framework.viewsets import GenericViewSet
+from utils.api.permissions import IsSuperuserOrStaff
 from utils.api.viewset_queryset_mixins import FinishedQuerySetMixin
 
 from read_comics.users.models import User
@@ -30,6 +31,16 @@ class CountActionMixin(_ViewSet):
     @action(detail=False)
     def count(self, _request: Request) -> Response:
         return Response({"count": self.get_queryset().count()})
+
+
+class TechnicalInfoActionMixin(_ViewSet):
+    serializer_tech_info_class: type[Serializer]
+
+    @action(detail=True, permission_classes=[IsSuperuserOrStaff], url_path="technical-info")
+    def technical_info(self, _request: Request, *args, **kwargs) -> Response:
+        instance = self.get_object()
+        serializer = self.serializer_tech_info_class(instance)
+        return Response(serializer.data)
 
 
 class StartedActionMixin(_FinishedQuerySetViewSet):

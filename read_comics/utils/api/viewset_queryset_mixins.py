@@ -25,7 +25,7 @@ class ListOnlyQuerySetMixin(_ViewSet):
 
     def get_queryset(self) -> QuerySet:
         qs = super().get_queryset()
-        if self.detail and len(self.list_only) > 0:
+        if not self.detail and len(self.list_only) > 0:
             return qs.only(*self.list_only)
         return qs
 
@@ -35,7 +35,9 @@ class IssuesCountQuerySetMixin(_ViewSet):
 
     def get_queryset(self) -> QuerySet:
         qs = super().get_queryset()
-        return qs.annotate(issues_count=Count(self.issues_lookup, distinct=True))
+        if not self.detail:
+            return qs.annotate(issues_count=Count(self.issues_lookup, distinct=True))
+        return qs
 
 
 class VolumesCountQuerySetMixin(_ViewSet):
@@ -43,7 +45,9 @@ class VolumesCountQuerySetMixin(_ViewSet):
 
     def get_queryset(self) -> QuerySet:
         qs = super().get_queryset()
-        return qs.annotate(volumes_count=Count(self.volumes_lookup, distinct=True))
+        if not self.detail:
+            return qs.annotate(volumes_count=Count(self.volumes_lookup, distinct=True))
+        return qs
 
 
 if typing.TYPE_CHECKING:
@@ -59,6 +63,8 @@ class FinishedQuerySetMixin(_IssueCountViewSet):
     def get_queryset(self) -> QuerySet:
         user = self.request.user
         qs = super().get_queryset()
+        if self.detail:
+            return qs
         if user.is_authenticated:
             return qs.annotate(
                 finished_count=Count(self.issues_lookup, filter=Q(issues__finished_users=user)),

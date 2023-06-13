@@ -25,3 +25,11 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
         django_get_or_create = ["username"]
+
+
+class SuperuserFactory(UserFactory):
+    is_superuser = True
+
+
+class StaffFactory(UserFactory):
+    is_staff = True

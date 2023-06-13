@@ -1,3 +1,9 @@
+from typing import Protocol
+
+from django.db.models import QuerySet, Sum
+from django.template.defaultfilters import filesizeformat
+
+
 class ImageMixin:
     image_url: str
     thumb_url: str
@@ -41,3 +47,13 @@ class ImageMixin:
     def square_medium(self):
         # 480x480
         return self.get_image_size("square_medium")
+
+
+class HasIssuesProtocol(Protocol):
+    issues: QuerySet
+
+
+class DownloadSizeMixin:
+    @property
+    def download_size(self: HasIssuesProtocol) -> str:
+        return filesizeformat(self.issues.filter(comicvine_status="MATCHED").aggregate(v=Sum("size"))["v"])

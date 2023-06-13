@@ -39,7 +39,7 @@ const { isLoading, isError, error, data } = useQuery(queries.profile.profileData
           </VTab>
         </VTabs>
 
-        <VWindow v-model="userTab" class="mt-6 disable-tab-transition fullscreen" :touch="false">
+        <VWindow v-model="userTab" class="mt-6 fullscreen" :touch="false">
           <VWindowItem>
             <VSkeletonLoader type="paragraph" :loading="isLoading" style="background: transparent">
               <p v-if="data?.bio" class="bio">{{ data?.bio }}</p>
