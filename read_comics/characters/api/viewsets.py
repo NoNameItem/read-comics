@@ -25,7 +25,15 @@ class CharacterViewSet(
     ReadOnlyModelViewSet,
 ):
     queryset = Character.objects.was_matched().select_related("publisher")
-    list_only = ["slug", "thumb_url", "name", "publisher__thumb_url", "publisher__name", "short_description"]
+    list_only = [
+        "slug",
+        "thumb_url",
+        "name",
+        "publisher__thumb_url",
+        "publisher__name",
+        "publisher__slug",
+        "short_description",
+    ]
 
     serializer_class = CharactersListSerializer
     serializer_detail_class = CharacterDetailSerializer
