@@ -39,6 +39,9 @@ urlpatterns += [
     path("api/profile/change-email/", ChangeEmailView.as_view(), name="change_email"),
 ]
 
+if "silk" in settings.INSTALLED_APPS:
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
+
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
     # these url in browser to see how these error pages look like.
@@ -48,5 +51,3 @@ if settings.DEBUG:
         path("404/", default_views.page_not_found, kwargs={"exception": Exception("Page not Found")}),
         path("500/", default_views.server_error),
     ]
-    if "silk" in settings.INSTALLED_APPS:
-        urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
