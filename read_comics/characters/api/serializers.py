@@ -56,6 +56,7 @@ class CharacterDetailSerializer(serializers.ModelSerializer):
             "first_issue_name",
             "first_issue_slug",
             "comicvine_url",
+            "short_description",
             "description",
             "download_link",
             "download_size",

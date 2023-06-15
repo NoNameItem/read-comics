@@ -24,16 +24,22 @@ const activeTab = ref(null);
 
 const { isLoading: infoLoading, data: info } = useQuery(queries.characters.detail(route.params.slug));
 
-watch([infoLoading, info], () => {
+const setBreadcrumbs = () => {
   if (!infoLoading.value) {
     breadcrumb.setBreadcrumbs(info.value.name, [
       {
         title: "Characters",
-        to: "/characters/",
+        to: "/characters",
       },
       { title: info.value.name },
     ]);
   }
+};
+
+setBreadcrumbs();
+
+watch([infoLoading, info], () => {
+  setBreadcrumbs();
 });
 
 const preparedInfo = computed(() => ({
@@ -74,6 +80,8 @@ const preparedInfo = computed(() => ({
   ],
 }));
 
+const description = computed(() => info.value?.description || info.value?.short_description);
+
 // Technical info
 //---------------------------------------------------------
 
@@ -83,29 +91,31 @@ const { isLoading: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
 </script>
 
 <template>
-  <div>
-    <VRow>
-      <VCol cols="12" md="5" lg="4" xl="3" xxl="2">
-        <DBInfoFlipper
-          :info="preparedInfo"
-          :info-loading="infoLoading"
-          :technical-info-loading="technicalInfoLoading"
-          :technical-info="preparedTechnicalInfo" />
-      </VCol>
-      <VCol cols="12" md="7" lg="8" xl="9" xxl="10">
-        <VTabs v-model="activeTab" class="v-tabs-pill">
-          <VTab v-for="tab in tabs" :key="tab.icon">
-            <VIcon :size="18" :icon="tab.icon" class="me-1" />
-            <span>{{ tab.title }}</span>
-          </VTab>
-        </VTabs>
+  <VRow>
+    <VCol cols="12" md="5" lg="4" xl="3" xxl="2">
+      <DBInfoFlipper
+        :info="preparedInfo"
+        :info-loading="infoLoading"
+        :technical-info-loading="technicalInfoLoading"
+        :technical-info="preparedTechnicalInfo" />
+    </VCol>
+    <VCol cols="12" md="7" lg="8" xl="9" xxl="10">
+      <VTabs v-model="activeTab" class="v-tabs-pill">
+        <VTab v-for="tab in tabs" :key="tab.icon">
+          <VIcon :size="18" :icon="tab.icon" class="me-1" />
+          <span>{{ tab.title }}</span>
+        </VTab>
+      </VTabs>
 
-        <VWindow v-model="activeTab" class="mt-6 fullscreen" :touch="false">
-          <VWindowItem>
-            <DBDescriptionTab :loading="infoLoading" :description="info?.description" />
-          </VWindowItem>
-        </VWindow>
-      </VCol>
-    </VRow>
-  </div>
+      <VWindow v-model="activeTab" class="mt-6 fullscreen" :touch="false">
+        <VWindowItem>
+          <DBDescriptionTab :loading="infoLoading" :description="description" />
+        </VWindowItem>
+      </VWindow>
+    </VCol>
+  </VRow>
 </template>
+
+<route lang="json">
+{ "meta": { "navActiveLink": "characters" } }
+</route>

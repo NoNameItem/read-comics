@@ -83,9 +83,8 @@ const closeImageDialog = () => {
 
     <VDivider />
 
-    <!-- 👉 Edit and Change image button -->
     <VCardText v-if="props.data?.comicvine_url" class="d-flex justify-start">
-      <a href="props.data.comicvine_url">See at ComicVine</a>
+      <a target="_blank" rel="noopener noreferrer" :href="props.data.comicvine_url">See at ComicVine</a>
     </VCardText>
   </VCard>
 

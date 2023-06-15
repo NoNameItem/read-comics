@@ -57,3 +57,14 @@ class DownloadSizeMixin:
     @property
     def download_size(self: HasIssuesProtocol) -> str:
         return filesizeformat(self.issues.filter(comicvine_status="MATCHED").aggregate(v=Sum("size"))["v"])
+
+
+class HasAliasesProtocol(Protocol):
+    aliases: str
+
+
+class AliasesListMixin:
+    def get_aliases_list(self: HasAliasesProtocol) -> list[str]:
+        if self.aliases:
+            return self.aliases.split("\n")
+        return []

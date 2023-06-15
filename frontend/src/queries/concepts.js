@@ -18,4 +18,14 @@ export const concepts = createQueryKeys("concepts", {
         })
         .then((res) => res.data),
   }),
+  detail: (slug) => ({
+    queryKey: [slug],
+    queryFn: () => axios.get(`concepts/${slug}/`).then((res) => res.data),
+    contextQueries: {
+      technicalInfo: {
+        queryKey: null,
+        queryFn: () => axios.get(`concepts/${slug}/technical-info/`).then((res) => res.data),
+      },
+    },
+  }),
 });

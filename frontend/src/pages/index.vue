@@ -13,7 +13,6 @@ breadcrumb.setBreadcrumbs("Home", []);
 
 <template>
   <div>
-    <Breadcrumb />
     <VRow>
       <VCol v-if="user.loggedIn" col="12">
         <TotalProgress />

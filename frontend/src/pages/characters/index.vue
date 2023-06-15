@@ -65,11 +65,11 @@ watch(data, () => {
 </script>
 
 <template>
-    <CardsList
-      :ordering-variants="orderingVariants"
-      default-ordering="name"
-      without-issues-label="characters"
-      :items="items"
-      :loading="isLoading"
-      :pages-number="pagesNumber" />
+  <CardsList
+    :ordering-variants="orderingVariants"
+    default-ordering="name"
+    without-issues-label="characters"
+    :items="items"
+    :loading="isLoading"
+    :pages-number="pagesNumber" />
 </template>

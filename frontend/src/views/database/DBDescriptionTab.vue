@@ -15,7 +15,7 @@ const props = defineProps({
 
 <template>
   <VSkeletonLoader class="detail-full-description-loader" type="paragraph" :loading="props.loading">
-    <p class="detail-full-description" v-html="props.description"></p>
+    <div class="detail-full-description" v-html="props.description"></div>
   </VSkeletonLoader>
 </template>
 

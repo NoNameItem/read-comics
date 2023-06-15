@@ -107,8 +107,10 @@ class TestCharacterDetail:
             character_with_issues.first_issue.slug if character_with_issues.first_issue is not None else None
         )
         assert response.data["comicvine_url"] == character_with_issues.comicvine_url
+        assert response.data["short_description"] == character_with_issues.short_description
         assert response.data["description"] == character_with_issues.description
         assert response.data["download_size"] == character_with_issues.download_size
+        assert response.data["download_link"] == f"http://testserver{character_with_issues.download_link}"
 
     @staticmethod
     def test_no_first_issue(api_client, character_no_issues: Character):
