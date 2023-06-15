@@ -8,6 +8,11 @@ export default [
         to: "characters",
         icon: { icon: "fasl:bat" },
       },
+      {
+        title: "Concepts",
+        to: "concepts",
+        icon: { icon: "fasl:brain" },
+      },
     ],
   },
 ];

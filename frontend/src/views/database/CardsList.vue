@@ -60,7 +60,7 @@ const props = defineProps({
 
           <div class="d-flex justify-space-between flex-wrap pt-8">
             <div class="me-2 mb-2">
-              <VCardTitle class="pa-0">{{ item.name }}</VCardTitle>
+              <VCardTitle class="pa-0 text-wrap">{{ item.name }}</VCardTitle>
               <VCardSubtitle class="text-caption pa-0">
                 <ul class="list-inline">
                   <li v-for="(subtitleItem, index) in item.subtitleItems" :key="index">{{ subtitleItem }}</li>

@@ -2,20 +2,12 @@
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 import { VSkeletonLoader } from "vuetify/labs/components";
 
-const props = defineProps({
-  loading: {
-    type: Boolean,
-    required: false,
-    default: false,
-  },
-});
-
 const breadcrumbs = useBreadcrumbsStore();
 </script>
 
 <template>
-  <VSkeletonLoader class="breadcrumb-loader" type="text" :loading="props.loading">
-    <VBreadcrumbs v-if="!props.loading" :items="breadcrumbs.fullBreadcrumbs">
+  <VSkeletonLoader class="breadcrumb-loader" type="text" :loading="breadcrumbs.loading">
+    <VBreadcrumbs v-if="!breadcrumbs.loading" :items="breadcrumbs.fullBreadcrumbs">
       <template #prepend>
         <span class="page-title">{{ breadcrumbs.pageTitle }}</span>
       </template>

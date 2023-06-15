@@ -24,14 +24,6 @@ const activeTab = ref(null);
 
 const { isLoading: infoLoading, data: info } = useQuery(queries.characters.detail(route.params.slug));
 
-breadcrumb.setBreadcrumbs(info.value?.name ?? route.params.slug, [
-  {
-    title: "Characters",
-    to: "/characters/",
-  },
-  { title: info.value?.name ?? route.params.slug },
-]);
-
 watch([infoLoading, info], () => {
   if (!infoLoading.value) {
     breadcrumb.setBreadcrumbs(info.value.name, [
@@ -92,7 +84,6 @@ const { isLoading: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
 
 <template>
   <div>
-    <Breadcrumb :loading="infoLoading" />
     <VRow>
       <VCol cols="12" md="5" lg="4" xl="3" xxl="2">
         <DBInfoFlipper

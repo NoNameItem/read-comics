@@ -1,8 +1,7 @@
 version: '3'
 
 volumes:
-  local_postgres_data: {}
-  local_postgres_data_backups: {}
+  local_postgres_data: { }
 
 services:
   django: &django
@@ -26,34 +25,30 @@ services:
     command: /start
 
   postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: read_comics_production_postgres
+    image: postgres:15.2
     container_name: postgres
     volumes:
       - local_postgres_data:/var/lib/postgresql/data:Z
-      - local_postgres_data_backups:/backups:z
     env_file:
       - ./.envs/.local/.postgres
     ports:
       - "5432:5432"
 
-#  docs:
-#    image: read_comics_local_docs
-#    container_name: docs
-#    build:
-#      context: .
-#      dockerfile: ./compose/local/docs/Dockerfile
-#    env_file:
-#      - ./.envs/.local/.django
-#    volumes:
-#      - ./docs:/docs:z
-#      - ./config:/app/config:z
-#      - ./read_comics:/app/read_comics:z
-#    ports:
-#      - "7001:7001"
-#    command: /start-docs
+  #  docs:
+  #    image: read_comics_local_docs
+  #    container_name: docs
+  #    build:
+  #      context: .
+  #      dockerfile: ./compose/local/docs/Dockerfile
+  #    env_file:
+  #      - ./.envs/.local/.django
+  #    volumes:
+  #      - ./docs:/docs:z
+  #      - ./config:/app/config:z
+  #      - ./read_comics:/app/read_comics:z
+  #    ports:
+  #      - "7001:7001"
+  #    command: /start-docs
 
   mailhog:
     image: mailhog/mailhog:v1.0.0
@@ -73,19 +68,19 @@ services:
       - redis
       - postgres
       - mailhog
-    ports: []
+    ports: [ ]
     command: /start-celeryworker
 
-#  celerybeat:
-#    <<: *django
-#    image: read_comics_local_celerybeat
-#    container_name: celerybeat
-#    depends_on:
-#      - redis
-#      - postgres
-#      - mailhog
-#    ports: []
-#    command: /start-celerybeat
+  #  celerybeat:
+  #    <<: *django
+  #    image: read_comics_local_celerybeat
+  #    container_name: celerybeat
+  #    depends_on:
+  #      - redis
+  #      - postgres
+  #      - mailhog
+  #    ports: []
+  #    command: /start-celerybeat
 
   flower:
     <<: *django

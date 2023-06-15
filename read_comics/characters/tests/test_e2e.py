@@ -1,6 +1,7 @@
 from datetime import date
 
 import pytest
+from django.db.models import Count
 from utils.utils import flatten_dict
 
 from ..models import Character
@@ -64,11 +65,19 @@ class TestCharactersList:
 
         response_data = response.data["results"][0]
         assert response_data["slug"] == character_with_issues.slug
+        assert response_data["name"] == character_with_issues.name
         assert response_data["publisher"]["name"] == (
             character_with_issues.publisher.name if character_with_issues.publisher else None
         )
+        assert response_data["publisher"]["slug"] == (
+            character_with_issues.publisher.slug if character_with_issues.publisher else None
+        )
         assert response_data["short_description"] == character_with_issues.short_description
         assert response_data["issues_count"] == character_with_issues.issues.count()
+        assert (
+            response_data["volumes_count"]
+            == character_with_issues.issues.aggregate(v=Count("volume", distinct=True))["v"]
+        )
 
 
 class TestCharacterDetail:

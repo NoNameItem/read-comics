@@ -27,7 +27,6 @@ const { isLoading, isError, error, data } = useQuery(queries.profile.profileData
 
 <template>
   <div>
-    <Breadcrumb />
     <VRow>
       <UserInfoPanel />
 

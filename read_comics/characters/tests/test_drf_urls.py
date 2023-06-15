@@ -3,9 +3,6 @@ from django.urls import resolve, reverse
 
 
 class TestCharactersApiUrls:
-    base_url = "characters"
-    base_name = "character"
-
     @staticmethod
     def test_list() -> None:
         assert reverse("api:character-list") == "/api/characters/"

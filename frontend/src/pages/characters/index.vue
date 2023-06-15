@@ -65,8 +65,6 @@ watch(data, () => {
 </script>
 
 <template>
-  <section>
-    <Breadcrumb />
     <CardsList
       :ordering-variants="orderingVariants"
       default-ordering="name"
@@ -74,5 +72,4 @@ watch(data, () => {
       :items="items"
       :loading="isLoading"
       :pages-number="pagesNumber" />
-  </section>
 </template>
