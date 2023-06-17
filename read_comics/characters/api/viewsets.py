@@ -1,3 +1,4 @@
+from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import DetailSerializerMixin
 from utils.api.filters import UniqueOrderingFilter
@@ -24,7 +25,6 @@ class CharacterViewSet(
     ListOnlyQuerySetMixin,
     ReadOnlyModelViewSet,
 ):
-    queryset = Character.objects.was_matched().select_related("publisher")
     list_only = [
         "slug",
         "thumb_url",
@@ -44,3 +44,11 @@ class CharacterViewSet(
     ordering = ["name"]
     lookup_field = "slug"
     lookup_url_kwarg = "slug"
+
+    @property
+    def queryset(self) -> QuerySet | Manager | None:
+        return Character.objects.was_matched().select_related("publisher")
+
+    @queryset.setter
+    def queryset(self, _value) -> None:
+        return

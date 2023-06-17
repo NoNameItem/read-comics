@@ -9,3 +9,8 @@ class TestIssuesApiUrls:
     def test_count() -> None:
         assert reverse("api:issue-count") == "/api/issues/count/"
         assert resolve("/api/issues/count/").view_name == "api:issue-count"
+
+    @staticmethod
+    def test_list() -> None:
+        assert reverse("api:issue-list") == "/api/issues/"
+        assert resolve("/api/issues/").view_name == "api:issue-list"

@@ -3,6 +3,12 @@ from rest_framework import serializers
 from ..models import Volume
 
 
+class NestedVolumeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Volume
+        fields = ["slug", "display_name", "start_year"]
+
+
 class StartedVolumeSerializer(serializers.ModelSerializer):
     image = serializers.ReadOnlyField(source="square_medium")
     max_finished_date = serializers.ReadOnlyField()

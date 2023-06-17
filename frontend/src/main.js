@@ -16,12 +16,15 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { VueQueryPlugin } from "@tanstack/vue-query";
 // eslint-disable-next-line
 import initIconLibrary from "@/plugins/icons";
+import { Settings } from "luxon";
 
 loadFonts();
 initIconLibrary();
 
 // Create vue app
 const app = createApp(App);
+
+Settings.defaultLocale = "en";
 
 // Use plugins
 app.use(vuetify);

@@ -1,6 +1,5 @@
 <script setup>
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
-import CardsList from "@/views/database/CardsList.vue";
 import { queries } from "@/queries";
 import { useGetListData } from "@/composables/useGetListData";
 
@@ -41,7 +40,11 @@ const orderingVariants = [
   },
 ];
 
-const { isLoading, isError, error, data, page } = useGetListData(queries.characters.list);
+const { isLoading, isError, error, data, page } = useGetListData(queries.characters.list, {
+  "show-all": "no",
+  ordering: "name",
+  page: 1,
+});
 
 const items = computed(() =>
   (data.value?.results ?? []).map((item) => ({
@@ -65,10 +68,11 @@ watch(data, () => {
 </script>
 
 <template>
-  <CardsList
+  <DBCardsList
     :ordering-variants="orderingVariants"
     default-ordering="name"
     without-issues-label="characters"
+    show-without-issues-toggle
     :items="items"
     :loading="isLoading"
     :pages-number="pagesNumber" />

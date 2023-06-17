@@ -10,7 +10,8 @@ from ..models import Volume
 class VolumeFactory(ComicvineSyncModelFactory):
     name = Faker("word")
     short_description = Faker("paragraph")
-    start_year = Faker("year")
+    start_year_str = Faker("year")
+    start_year = factory.LazyAttribute(lambda o: int(o.start_year_str))
     publisher = factory.SubFactory("read_comics.publishers.tests.factories.PublisherFactory")
 
     @factory.post_generation
@@ -24,3 +25,4 @@ class VolumeFactory(ComicvineSyncModelFactory):
 
     class Meta:
         model = Volume
+        exclude = ["start_year_str"]

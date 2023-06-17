@@ -5,16 +5,12 @@ export const concepts = createQueryKeys("concepts", {
   count: {
     queryFn: () => axios.get("/concepts/count/").then((res) => res.data),
   },
-  list: (showAll, ordering, page) => ({
-    queryKey: [showAll, ordering, page],
+  list: (params) => ({
+    queryKey: [params],
     queryFn: () =>
       axios
         .get("/concepts/", {
-          params: {
-            ordering: ordering.value,
-            page: page.value,
-            "show-all": showAll.value,
-          },
+          params: params.value,
         })
         .then((res) => res.data),
   }),

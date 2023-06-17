@@ -287,8 +287,8 @@ class FinishedIssue(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="finished")
     finish_date = models.DateTimeField(auto_now_add=True)
 
+    def __str__(self) -> str:
+        return f"{self.issue.display_name} finished by {self.user.name}"
+
     class Meta:
         unique_together = (("user", "issue"),)
-
-    def __str__(self) -> str:
-        return repr(self)

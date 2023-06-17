@@ -13,6 +13,11 @@ export default [
         to: "concepts",
         icon: { icon: "fasl:brain" },
       },
+      {
+        title: "Issues",
+        to: "issues",
+        icon: { icon: "fasl:book-open" },
+      },
     ],
   },
 ];
