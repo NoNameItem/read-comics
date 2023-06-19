@@ -6,7 +6,7 @@ from ..models import Volume
 class NestedVolumeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Volume
-        fields = ["slug", "display_name", "start_year"]
+        fields = ["slug", "display_name", "start_year", "name"]
 
 
 class StartedVolumeSerializer(serializers.ModelSerializer):

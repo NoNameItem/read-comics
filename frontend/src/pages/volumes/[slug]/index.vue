@@ -5,3 +5,7 @@ const route = useRoute();
 <template>
   <section>{{ route }}</section>
 </template>
+
+<route lang="json">
+{ "meta": { "navActiveLink": "volumes" } }
+</route>

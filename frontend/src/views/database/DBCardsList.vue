@@ -74,7 +74,7 @@ const user = useUserStore();
         <h2>{{ item.groupSubBreak }}</h2>
       </VCol>
       <VCol cols="12" sm="6" md="4" lg="3" xxl="2">
-        <VBadge color="success" icon="fasl:check" :model-value="item.isFinished">
+        <VBadge color="success" icon="fasl:check" :model-value="!!item.isFinished">
           <VCard :class="{ finished: item.isFinished }" :to="item.to">
             <VImg :src="item.image" min-height="250px">
               <template #placeholder>

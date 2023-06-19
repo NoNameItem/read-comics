@@ -18,6 +18,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
   },
+  batchDownload: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
 const infoFlipped = ref(false);
@@ -34,7 +39,7 @@ const user = useUserStore();
     <div class="flipper-inner-wrapper w-100">
       <FlipCard :flipped="user.isSuperuserOrStaff && infoFlipped">
         <template #front>
-          <DBInfoPanel :data="props.info" :loading="props.infoLoading" />
+          <DBInfoPanel :data="props.info" :loading="props.infoLoading" :batch-download="props.batchDownload" />
         </template>
         <template v-if="props.technicalInfo" #back>
           <DBTechInfoPanel :data="props.technicalInfo" :loading="props.technicalInfoLoading" />

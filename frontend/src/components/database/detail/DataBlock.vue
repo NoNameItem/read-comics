@@ -11,7 +11,7 @@ const props = defineProps({
   },
 });
 
-const show = computed(() => props.item.value || props.item.valueList?.length > 0);
+const show = computed(() => props.item.value || props.item.html || props.item.valueList?.length > 0);
 </script>
 
 <template>
@@ -22,6 +22,7 @@ const show = computed(() => props.item.value || props.item.valueList?.length > 0
       <ul v-else-if="item?.valueList">
         <li v-for="value in item?.valueList" :key="value" class="text-disabled">{{ value }}</li>
       </ul>
+      <span v-else-if="item?.html" class="text-disabled" v-html="item?.html"></span>
       <span v-else class="text-disabled">{{ item?.value }}</span>
     </VListItemSubtitle>
   </VListItem>

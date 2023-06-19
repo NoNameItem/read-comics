@@ -15,13 +15,19 @@ const props = defineProps({
 
 <template>
   <VSkeletonLoader class="detail-full-description-loader" type="paragraph" :loading="props.loading">
-    <div class="detail-full-description" v-html="props.description"></div>
+    <div class="detail-full-description">
+      <div v-html="props.description" />
+    </div>
   </VSkeletonLoader>
 </template>
 
 <style lang="scss">
 .detail-full-description-loader {
   background: rgb(var(--v-theme-background));
+}
+
+.detail-full-description {
+  display: block;
 }
 
 .detail-full-description figure {

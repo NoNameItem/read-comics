@@ -3,9 +3,11 @@ from random import randrange
 
 import pytest
 from issues.tests.factories import FinishedIssueFactory, IssueFactory
+from rest_framework.test import APIClient
 
 from read_comics.users.models import User
 
+from ..models import StoryArc
 from ..tests.factories import StoryArcFactory
 
 pytestmark = pytest.mark.django_db
@@ -16,14 +18,18 @@ class TestStoryArcsE2E:
     ##########################
 
     @staticmethod
-    def test_count(api_client, story_arcs_no_issues, story_arcs_with_issues) -> None:
-        response = api_client().get("/api/story-arcs/count/")
+    def test_count(
+        api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    ) -> None:
+        response = api_client.get("/api/story-arcs/count/")
         assert response.status_code == 200
         assert response.data["count"] == len(story_arcs_with_issues)
 
     @staticmethod
-    def test_count_all(api_client, story_arcs_no_issues, story_arcs_with_issues) -> None:
-        response = api_client().get("/api/story-arcs/count/?show-all=yes")
+    def test_count_all(
+        api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    ) -> None:
+        response = api_client.get("/api/story-arcs/count/?show-all=yes")
         assert response.status_code == 200
         assert response.data["count"] == len(story_arcs_with_issues) + len(story_arcs_no_issues)
 
@@ -58,11 +64,11 @@ class TestStoryArcsE2E:
             self._generate_unfinished_issue(item)
 
     @staticmethod
-    def test_started_not_authenticated(api_client) -> None:
-        response = api_client().get("/api/story-arcs/started/")
+    def test_started_not_authenticated(api_client: APIClient) -> None:
+        response = api_client.get("/api/story-arcs/started/")
         assert response.status_code == 401
 
-    def test_started_authenticated(self, user, authenticated_api_client) -> None:
+    def test_started_authenticated(self, user: User, authenticated_api_client: APIClient) -> None:
         unfinished = self._create_unfinished(user)
         self._create_finished(user)
         self._create_not_started()
@@ -76,7 +82,7 @@ class TestStoryArcsE2E:
         assert len(response.data["results"]) == len(unfinished)
         assert unfinished_slugs == response_slugs
 
-    def test_no_unfinished_authenticated(self, user, authenticated_api_client) -> None:
+    def test_no_unfinished_authenticated(self, user: User, authenticated_api_client: APIClient) -> None:
         self._create_finished(user)
         self._create_not_started()
 

@@ -5,9 +5,9 @@ export function formatDate(dttmString) {
 }
 
 export function formatDateTimeMinutes(dttmString) {
-  return dttmString ? DateTime.fromISO(dttmString).toLocaleString(DateTime.DATETIME_SHORT) : "";
+  return dttmString ? DateTime.fromISO(dttmString).toLocaleString(DateTime.DATETIME_FULL) : "";
 }
 
 export function formatDateTimeSeconds(dttmString) {
-  return dttmString ? DateTime.fromISO(dttmString).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS) : "";
+  return dttmString ? DateTime.fromISO(dttmString).toLocaleString(DateTime.DATETIME_FULL_WITH_SECONDS) : "";
 }

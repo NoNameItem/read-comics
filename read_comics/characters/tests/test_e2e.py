@@ -2,6 +2,7 @@ from datetime import date
 
 import pytest
 from django.db.models import Count
+from rest_framework.test import APIClient
 from utils.utils import flatten_dict
 
 from ..models import Character
@@ -11,14 +12,18 @@ pytestmark = pytest.mark.django_db
 
 class TestCharactersCount:
     @staticmethod
-    def test_no_show_all(api_client, characters_no_issues, characters_with_issues) -> None:
-        response = api_client().get("/api/characters/count/")
+    def test_no_show_all(
+        api_client: APIClient, characters_no_issues: list[Character], characters_with_issues: list[Character]
+    ) -> None:
+        response = api_client.get("/api/characters/count/")
         assert response.status_code == 200
         assert response.data["count"] == len(characters_with_issues)
 
     @staticmethod
-    def test_show_all(api_client, characters_no_issues, characters_with_issues) -> None:
-        response = api_client().get("/api/characters/count/?show-all=yes")
+    def test_show_all(
+        api_client: APIClient, characters_no_issues: list[Character], characters_with_issues: list[Character]
+    ) -> None:
+        response = api_client.get("/api/characters/count/?show-all=yes")
         assert response.status_code == 200
         assert response.data["count"] == len(characters_with_issues) + len(characters_no_issues)
 
@@ -36,8 +41,10 @@ class TestCharactersList:
         "volumes_count",
     }
 
-    def test_no_show_all(self, api_client, characters_no_issues, characters_with_issues) -> None:
-        response = api_client().get("/api/characters/")
+    def test_no_show_all(
+        self, api_client: APIClient, characters_no_issues: list[Character], characters_with_issues: list[Character]
+    ) -> None:
+        response = api_client.get("/api/characters/")
 
         assert response.status_code == 200
         assert response.data["count"] == len(characters_with_issues)
@@ -46,8 +53,10 @@ class TestCharactersList:
         for item in flatten_response_data:
             assert self.list_keys == set(item.keys())
 
-    def test_show_all(self, api_client, characters_no_issues, characters_with_issues) -> None:
-        response = api_client().get("/api/characters/?show-all=yes")
+    def test_show_all(
+        self, api_client: APIClient, characters_no_issues: list[Character], characters_with_issues: list[Character]
+    ) -> None:
+        response = api_client.get("/api/characters/?show-all=yes")
 
         assert response.status_code == 200
         assert response.data["count"] == len(characters_no_issues) + len(characters_with_issues)
@@ -57,8 +66,8 @@ class TestCharactersList:
             assert self.list_keys == set(item.keys())
 
     @staticmethod
-    def test_data(api_client, character_with_issues: Character):
-        response = api_client().get("/api/characters/")
+    def test_data(api_client: APIClient, character_with_issues: Character) -> None:
+        response = api_client.get("/api/characters/")
 
         assert response.status_code == 200
         assert response.data["count"] == 1
@@ -82,8 +91,8 @@ class TestCharactersList:
 
 class TestCharacterDetail:
     @staticmethod
-    def test_with_first_issue(api_client, character_with_issues: Character):
-        response = api_client().get(f"/api/characters/{character_with_issues.slug}/")
+    def test_with_first_issue(api_client: APIClient, character_with_issues: Character) -> None:
+        response = api_client.get(f"/api/characters/{character_with_issues.slug}/")
 
         assert response.status_code == 200
 
@@ -113,8 +122,8 @@ class TestCharacterDetail:
         assert response.data["download_link"] == f"http://testserver{character_with_issues.download_link}"
 
     @staticmethod
-    def test_no_first_issue(api_client, character_no_issues: Character):
-        response = api_client().get(f"/api/characters/{character_no_issues.slug}/")
+    def test_no_first_issue(api_client: APIClient, character_no_issues: Character) -> None:
+        response = api_client.get(f"/api/characters/{character_no_issues.slug}/")
 
         assert response.status_code == 200
 
@@ -125,25 +134,25 @@ class TestCharacterDetail:
 
 class TestCharacterTechnicalInfo:
     @staticmethod
-    def test_no_auth(api_client, character_no_issues: Character):
-        response = api_client().get(f"/api/characters/{character_no_issues.slug}/technical-info/")
+    def test_no_auth(api_client: APIClient, character_no_issues: Character) -> None:
+        response = api_client.get(f"/api/characters/{character_no_issues.slug}/technical-info/")
 
         assert response.status_code == 401
 
     @staticmethod
-    def test_regular_user(authenticated_api_client, character_no_issues: Character):
+    def test_regular_user(authenticated_api_client: APIClient, character_no_issues: Character) -> None:
         response = authenticated_api_client.get(f"/api/characters/{character_no_issues.slug}/technical-info/")
 
         assert response.status_code == 403
 
     @staticmethod
-    def test_staff(staff_api_client, character_no_issues: Character):
+    def test_staff(staff_api_client: APIClient, character_no_issues: Character) -> None:
         response = staff_api_client.get(f"/api/characters/{character_no_issues.slug}/technical-info/")
 
         assert response.status_code == 200
 
     @staticmethod
-    def test_superuser(superuser_api_client, character_no_issues: Character):
+    def test_superuser(superuser_api_client: APIClient, character_no_issues: Character) -> None:
         response = superuser_api_client.get(f"/api/characters/{character_no_issues.slug}/technical-info/")
 
         assert response.status_code == 200

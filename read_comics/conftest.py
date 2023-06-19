@@ -15,8 +15,8 @@ def media_storage(settings, tmpdir) -> None:
 
 
 @pytest.fixture
-def api_client() -> type:
-    return APIClient
+def api_client() -> APIClient:
+    return APIClient()
 
 
 @pytest.fixture

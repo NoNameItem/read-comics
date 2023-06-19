@@ -1,5 +1,6 @@
 import pytest
 from django.db.models import Count
+from rest_framework.test import APIClient
 from utils.utils import flatten_dict
 
 from read_comics.concepts.models import Concept
@@ -12,14 +13,18 @@ class TestConceptsCount:
     ##########################
 
     @staticmethod
-    def test_count(api_client, concepts_no_issues, concepts_with_issues) -> None:
-        response = api_client().get("/api/concepts/count/")
+    def test_count(
+        api_client: APIClient, concepts_no_issues: list[Concept], concepts_with_issues: list[Concept]
+    ) -> None:
+        response = api_client.get("/api/concepts/count/")
         assert response.status_code == 200
         assert response.data["count"] == len(concepts_with_issues)
 
     @staticmethod
-    def test_count_all(api_client, concepts_no_issues, concepts_with_issues) -> None:
-        response = api_client().get("/api/concepts/count/?show-all=yes")
+    def test_count_all(
+        api_client: APIClient, concepts_no_issues: list[Concept], concepts_with_issues: list[Concept]
+    ) -> None:
+        response = api_client.get("/api/concepts/count/?show-all=yes")
         assert response.status_code == 200
         assert response.data["count"] == len(concepts_with_issues) + len(concepts_no_issues)
 
@@ -27,8 +32,10 @@ class TestConceptsCount:
 class TestConceptsList:
     list_keys = {"slug", "image", "name", "short_description", "issues_count", "volumes_count"}
 
-    def test_no_show_all(self, api_client, concepts_no_issues, concepts_with_issues) -> None:
-        response = api_client().get("/api/concepts/")
+    def test_no_show_all(
+        self, api_client: APIClient, concepts_no_issues: list[Concept], concepts_with_issues: list[Concept]
+    ) -> None:
+        response = api_client.get("/api/concepts/")
 
         assert response.status_code == 200
         assert response.data["count"] == len(concepts_with_issues)
@@ -37,8 +44,10 @@ class TestConceptsList:
         for item in flatten_response_data:
             assert self.list_keys == set(item.keys())
 
-    def test_show_all(self, api_client, concepts_no_issues, concepts_with_issues) -> None:
-        response = api_client().get("/api/concepts/?show-all=yes")
+    def test_show_all(
+        self, api_client: APIClient, concepts_no_issues: list[Concept], concepts_with_issues: list[Concept]
+    ) -> None:
+        response = api_client.get("/api/concepts/?show-all=yes")
 
         assert response.status_code == 200
         assert response.data["count"] == len(concepts_no_issues) + len(concepts_with_issues)
@@ -48,8 +57,8 @@ class TestConceptsList:
             assert self.list_keys == set(item.keys())
 
     @staticmethod
-    def test_data(api_client, concept_with_issues: Concept):
-        response = api_client().get("/api/concepts/")
+    def test_data(api_client: APIClient, concept_with_issues: Concept):
+        response = api_client.get("/api/concepts/")
 
         assert response.status_code == 200
         assert response.data["count"] == 1
@@ -67,8 +76,8 @@ class TestConceptsList:
 
 class TestConceptDetail:
     @staticmethod
-    def test_with_first_issue(api_client, concept_with_issues: Concept):
-        response = api_client().get(f"/api/concepts/{concept_with_issues.slug}/")
+    def test_with_first_issue(api_client: APIClient, concept_with_issues: Concept) -> None:
+        response = api_client.get(f"/api/concepts/{concept_with_issues.slug}/")
 
         assert response.status_code == 200
 
@@ -89,8 +98,8 @@ class TestConceptDetail:
         assert response.data["download_link"] == f"http://testserver{concept_with_issues.download_link}"
 
     @staticmethod
-    def test_no_first_issue(api_client, concept_no_issues: Concept):
-        response = api_client().get(f"/api/concepts/{concept_no_issues.slug}/")
+    def test_no_first_issue(api_client: APIClient, concept_no_issues: Concept) -> None:
+        response = api_client.get(f"/api/concepts/{concept_no_issues.slug}/")
 
         assert response.status_code == 200
 
@@ -101,25 +110,25 @@ class TestConceptDetail:
 
 class TestConceptTechnicalInfo:
     @staticmethod
-    def test_no_auth(api_client, concept_no_issues: Concept):
-        response = api_client().get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
+    def test_no_auth(api_client: APIClient, concept_no_issues: Concept) -> None:
+        response = api_client.get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
 
         assert response.status_code == 401
 
     @staticmethod
-    def test_regular_user(authenticated_api_client, concept_no_issues: Concept):
+    def test_regular_user(authenticated_api_client: APIClient, concept_no_issues: Concept) -> None:
         response = authenticated_api_client.get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
 
         assert response.status_code == 403
 
     @staticmethod
-    def test_staff(staff_api_client, concept_no_issues: Concept):
+    def test_staff(staff_api_client: APIClient, concept_no_issues: Concept) -> None:
         response = staff_api_client.get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
 
         assert response.status_code == 200
 
     @staticmethod
-    def test_superuser(superuser_api_client, concept_no_issues: Concept):
+    def test_superuser(superuser_api_client: APIClient, concept_no_issues: Concept) -> None:
         response = superuser_api_client.get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
 
         assert response.status_code == 200

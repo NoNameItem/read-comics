@@ -4,6 +4,7 @@ from datetime import datetime
 import boto3
 from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import filesizeformat
 from django.utils.encoding import escape_uri_path
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
@@ -269,8 +270,18 @@ class Issue(ImageMixin, ComicvineSyncModel):
             self.numerical_number = None
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         return self.get_full_name()
+
+    @property
+    def volume_last_number(self) -> str:
+        if self.volume is not None and self.volume.last_issue_number is not None:
+            return self.volume.last_issue_number
+        return "unknown"
+
+    @property
+    def download_size(self) -> str:
+        return filesizeformat(self.size) if self.size is not None else "size unknown"
 
 
 class IssuePerson(models.Model):

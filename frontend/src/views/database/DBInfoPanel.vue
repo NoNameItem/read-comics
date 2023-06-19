@@ -12,6 +12,11 @@ const props = defineProps({
     required: false,
     default: true,
   },
+  batchDownload: {
+    type: Boolean,
+    required: false,
+    default: true,
+  },
 });
 
 const isImageDialogVisible = ref(false);
@@ -30,29 +35,26 @@ const closeImageDialog = () => {
 
   <VCard v-else position="sticky">
     <VCardText class="text-center pt-15">
-      <!-- 👉 Avatar -->
-      <div class="avatar-with-badge-btn">
-        <div class="avatar-wrapper">
-          <VAvatar
-            rounded
-            class="main-image"
-            :size="300"
-            :color="!props.data.image ? 'primary' : undefined"
-            :variant="!props.data.image ? 'tonal' : undefined"
-            @click="openImageDialog">
-            <VImg v-if="props.data.image" ref="imageDisplayRef" cover :src="props.data.square_image">
-              <template #placeholder>
-                <div class="d-flex align-center justify-center fill-height">
-                  <VSkeletonLoader type="avatar"></VSkeletonLoader>
-                </div>
-              </template>
-            </VImg>
-            <span v-else class="text-5xl font-weight-medium">
-              {{ avatarText(props.data.title) }}
-            </span>
-          </VAvatar>
-        </div>
-      </div>
+      <VBadge color="success" icon="fasl:check" :model-value="!!props.data.isFinished">
+        <VAvatar
+          rounded
+          class="main-image"
+          :size="300"
+          :color="!props.data.image ? 'primary' : undefined"
+          :variant="!props.data.image ? 'tonal' : undefined"
+          @click="openImageDialog">
+          <VImg v-if="props.data.image" ref="imageDisplayRef" cover :src="props.data.square_image">
+            <template #placeholder>
+              <div class="d-flex align-center justify-center fill-height">
+                <VSkeletonLoader type="avatar"></VSkeletonLoader>
+              </div>
+            </template>
+          </VImg>
+          <span v-else class="text-5xl font-weight-medium">
+            {{ avatarText(props.data.title) }}
+          </span>
+        </VAvatar>
+      </VBadge>
 
       <h6 class="text-h4 mt-4">
         {{ props.data.title }}
@@ -64,7 +66,20 @@ const closeImageDialog = () => {
     </VCardText>
 
     <VCardText class="d-flex justify-center">
-      <BatchDownloadButton :download-link="props.data?.download_link" :download-size="props.data?.download_size" />
+      <VBtn size="38" class="mr-1" :disabled="!props.data?.prevLink" :to="props.data?.prevLink">
+        <VIcon icon="fasl:chevron-left" size="22" />
+      </VBtn>
+      <BatchDownloadButton
+        v-if="props.batchDownload"
+        :download-link="props.data?.download_link"
+        :download-size="props.data?.download_size" />
+      <VBtn v-else color="info" v-bind="props" :href="props.data?.download_link">
+        <VIcon start icon="fasl:download" />
+        Download ({{ props.data?.download_size }})
+      </VBtn>
+      <VBtn size="38" class="ml-1" :disabled="!props.data?.nextLink" :to="props.data?.nextLink">
+        <VIcon icon="fasl:chevron-right" size="22" />
+      </VBtn>
     </VCardText>
 
     <VDivider />
