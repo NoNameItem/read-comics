@@ -145,6 +145,7 @@ const user = useUserStore();
 :deep(.v-badge__wrapper),
 :deep(a.v-card) {
   width: 100%;
+  height: 100%;
 }
 
 .group-break-link {

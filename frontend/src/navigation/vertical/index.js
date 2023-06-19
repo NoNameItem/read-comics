@@ -18,6 +18,11 @@ export default [
         to: "issues",
         icon: { icon: "fasl:book-open" },
       },
+      {
+        title: "Locations",
+        to: "locations",
+        icon: { icon: "fasl:location-dot" },
+      },
     ],
   },
 ];

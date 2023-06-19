@@ -58,7 +58,7 @@ const cardPropsUnauthorized = [
   },
   {
     title: "Locations",
-    icon: "fasl:location-pin",
+    icon: "fasl:location-dot",
     color: "error",
     "count-query": "locations.count",
     "card-props": {
