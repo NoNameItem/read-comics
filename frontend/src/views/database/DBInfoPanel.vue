@@ -17,6 +17,11 @@ const props = defineProps({
     required: false,
     default: true,
   },
+  showPrevNextButtons: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const isImageDialogVisible = ref(false);
@@ -66,7 +71,12 @@ const closeImageDialog = () => {
     </VCardText>
 
     <VCardText class="d-flex justify-center">
-      <VBtn size="38" class="mr-1" :disabled="!props.data?.prevLink" :to="props.data?.prevLink">
+      <VBtn
+        v-if="props.showPrevNextButtons"
+        size="38"
+        class="mr-1"
+        :disabled="!props.data?.prevLink"
+        :to="props.data?.prevLink">
         <VIcon icon="fasl:chevron-left" size="22" />
       </VBtn>
       <BatchDownloadButton
@@ -77,7 +87,12 @@ const closeImageDialog = () => {
         <VIcon start icon="fasl:download" />
         Download ({{ props.data?.download_size }})
       </VBtn>
-      <VBtn size="38" class="ml-1" :disabled="!props.data?.nextLink" :to="props.data?.nextLink">
+      <VBtn
+        v-if="props.showPrevNextButtons"
+        size="38"
+        class="ml-1"
+        :disabled="!props.data?.nextLink"
+        :to="props.data?.nextLink">
         <VIcon icon="fasl:chevron-right" size="22" />
       </VBtn>
     </VCardText>

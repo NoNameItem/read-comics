@@ -72,3 +72,72 @@ class TestLocationsList:
             response_data["volumes_count"]
             == location_with_issues.issues.aggregate(v=Count("volume", distinct=True))["v"]
         )
+
+
+class TestLocationDetail:
+    @staticmethod
+    def test_with_first_issue(api_client: APIClient, location_with_issues: Location) -> None:
+        response = api_client.get(f"/api/locations/{location_with_issues.slug}/")
+
+        assert response.status_code == 200
+
+        assert response.data["slug"] == location_with_issues.slug
+        assert response.data["name"] == location_with_issues.name
+        assert response.data["aliases"] == location_with_issues.get_aliases_list()
+        assert response.data["start_year"] == location_with_issues.start_year
+        assert response.data["first_issue_name"] == (
+            location_with_issues.first_issue.display_name if location_with_issues.first_issue is not None else None
+        )
+        assert response.data["first_issue_slug"] == (
+            location_with_issues.first_issue.slug if location_with_issues.first_issue is not None else None
+        )
+        assert response.data["comicvine_url"] == location_with_issues.comicvine_url
+        assert response.data["short_description"] == location_with_issues.short_description
+        assert response.data["description"] == location_with_issues.description
+        assert response.data["download_size"] == location_with_issues.download_size
+        assert response.data["download_link"] == f"http://testserver{location_with_issues.download_link}"
+
+    @staticmethod
+    def test_no_first_issue(api_client: APIClient, location_no_issues: Location) -> None:
+        response = api_client.get(f"/api/locations/{location_no_issues.slug}/")
+
+        assert response.status_code == 200
+
+        assert response.data["first_issue_name"] == location_no_issues.first_issue_name
+        assert response.data["first_issue_slug"] is None
+        assert response.data["download_size"] == "0\xa0bytes"
+
+
+class TestConceptTechnicalInfo:
+    @staticmethod
+    def test_no_auth(api_client: APIClient, location_with_issues: Location) -> None:
+        response = api_client.get(f"/api/locations/{location_with_issues.slug}/technical-info/")
+
+        assert response.status_code == 401
+
+    @staticmethod
+    def test_regular_user(authenticated_api_client: APIClient, location_with_issues: Location) -> None:
+        response = authenticated_api_client.get(f"/api/locations/{location_with_issues.slug}/technical-info/")
+
+        assert response.status_code == 403
+
+    @staticmethod
+    def test_staff(staff_api_client: APIClient, location_with_issues: Location) -> None:
+        response = staff_api_client.get(f"/api/locations/{location_with_issues.slug}/technical-info/")
+
+        assert response.status_code == 200
+
+    @staticmethod
+    def test_superuser(superuser_api_client: APIClient, location_with_issues: Location) -> None:
+        response = superuser_api_client.get(f"/api/locations/{location_with_issues.slug}/technical-info/")
+
+        assert response.status_code == 200
+
+        assert response.data["id"] == location_with_issues.id
+        assert response.data["comicvine_id"] == location_with_issues.comicvine_id
+        assert response.data["comicvine_status"] == location_with_issues.get_comicvine_status_display()
+        assert response.data["comicvine_last_match"] == location_with_issues.comicvine_last_match.strftime(
+            "%Y-%m-%dT%H:%M:%SZ"
+        )
+        assert response.data["created_dt"] == location_with_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        assert response.data["modified_dt"] == location_with_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")

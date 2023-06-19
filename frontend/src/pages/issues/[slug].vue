@@ -110,7 +110,8 @@ const { isLoading: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
         :info-loading="infoLoading"
         :technical-info-loading="technicalInfoLoading"
         :technical-info="preparedTechnicalInfo"
-        :batch-download="false" />
+        :batch-download="false"
+        show-prev-next-buttons />
     </VCol>
     <VCol cols="12" md="7" lg="8" xl="9" xxl="10">
       <VTabs v-model="activeTab" class="v-tabs-pill">

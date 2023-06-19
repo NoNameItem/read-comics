@@ -14,4 +14,14 @@ export const locations = createQueryKeys("locations", {
         })
         .then((res) => res.data),
   }),
+  detail: (slug) => ({
+    queryKey: [slug],
+    queryFn: () => axios.get(`/locations/${slug}/`).then((res) => res.data),
+    contextQueries: {
+      technicalInfo: {
+        queryKey: null,
+        queryFn: () => axios.get(`/locations/${slug}/technical-info/`).then((res) => res.data),
+      },
+    },
+  }),
 });

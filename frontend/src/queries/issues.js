@@ -16,11 +16,11 @@ export const issues = createQueryKeys("issues", {
   }),
   detail: (slug, ordering) => ({
     queryKey: [slug, ordering],
-    queryFn: () => axios.get(`issues/${slug}/`, { params: { ordering: ordering } }).then((res) => res.data),
+    queryFn: () => axios.get(`/issues/${slug}/`, { params: { ordering: ordering } }).then((res) => res.data),
     contextQueries: {
       technicalInfo: {
         queryKey: null,
-        queryFn: () => axios.get(`issues/${slug}/technical-info/`).then((res) => res.data),
+        queryFn: () => axios.get(`/issues/${slug}/technical-info/`).then((res) => res.data),
       },
     },
   }),

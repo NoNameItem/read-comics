@@ -23,6 +23,11 @@ const props = defineProps({
     required: false,
     default: true,
   },
+  showPrevNextButtons: {
+    type: Boolean,
+    required: false,
+    default: false,
+  },
 });
 
 const infoFlipped = ref(false);
@@ -39,7 +44,11 @@ const user = useUserStore();
     <div class="flipper-inner-wrapper w-100">
       <FlipCard :flipped="user.isSuperuserOrStaff && infoFlipped">
         <template #front>
-          <DBInfoPanel :data="props.info" :loading="props.infoLoading" :batch-download="props.batchDownload" />
+          <DBInfoPanel
+            :data="props.info"
+            :loading="props.infoLoading"
+            :batch-download="props.batchDownload"
+            :show-prev-next-buttons="props.showPrevNextButtons" />
         </template>
         <template v-if="props.technicalInfo" #back>
           <DBTechInfoPanel :data="props.technicalInfo" :loading="props.technicalInfoLoading" />

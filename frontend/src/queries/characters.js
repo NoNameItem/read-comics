@@ -16,11 +16,11 @@ export const characters = createQueryKeys("characters", {
   }),
   detail: (slug) => ({
     queryKey: [slug],
-    queryFn: () => axios.get(`characters/${slug}/`).then((res) => res.data),
+    queryFn: () => axios.get(`/characters/${slug}/`).then((res) => res.data),
     contextQueries: {
       technicalInfo: {
         queryKey: null,
-        queryFn: () => axios.get(`characters/${slug}/technical-info/`).then((res) => res.data),
+        queryFn: () => axios.get(`/characters/${slug}/technical-info/`).then((res) => res.data),
       },
     },
   }),
