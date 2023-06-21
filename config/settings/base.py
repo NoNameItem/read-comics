@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+from datetime import timedelta
 from pathlib import Path
 
 import environ
@@ -17,6 +18,7 @@ if READ_DOT_ENV_FILE:
 
 # GENERAL
 # ------------------------------------------------------------------------------
+USE_SILK = env.bool("USE_SILK", default=False)
 # https://docs.djangoproject.com/en/dev/ref/settings/#debug
 DEBUG = env.bool("DJANGO_DEBUG", False)
 # Local time zone. Choices are
@@ -87,12 +89,14 @@ THIRD_PARTY_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "corsheaders",
-    "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig",
     "watson",
     "dj_rest_auth",
     "dj_rest_auth.registration",
     "rest_framework_simplejwt.token_blacklist",
 ]
+
+if USE_SILK:
+    THIRD_PARTY_APPS += ["silk"]
 
 LOCAL_APPS = [
     "read_comics.utils.apps.UtilsConfig",
@@ -156,23 +160,27 @@ AUTH_PASSWORD_VALIDATORS = [
 # MIDDLEWARE
 # ------------------------------------------------------------------------------
 # https://docs.djangoproject.com/en/dev/ref/settings/#middleware
-MIDDLEWARE = [
-    "django.middleware.security.SecurityMiddleware",
-    "corsheaders.middleware.CorsMiddleware",
-    "whitenoise.middleware.WhiteNoiseMiddleware",
-    "django.contrib.sessions.middleware.SessionMiddleware",
-    "django.middleware.locale.LocaleMiddleware",
-    "django.middleware.common.CommonMiddleware",
-    "django.middleware.csrf.CsrfViewMiddleware",
-    "django.contrib.auth.middleware.AuthenticationMiddleware",
-    "django.contrib.messages.middleware.MessageMiddleware",
-    "django.middleware.common.BrokenLinkEmailsMiddleware",
-    "django.middleware.clickjacking.XFrameOptionsMiddleware",
-    "django_magnificent_messages.middleware.MessageMiddleware",
-    "crum.CurrentRequestUserMiddleware",
-    "users.middleware.LastActiveMiddleware",
-    "watson.middleware.SearchContextMiddleware",
-]
+MIDDLEWARE = (
+    [
+        "django.middleware.security.SecurityMiddleware",
+        "corsheaders.middleware.CorsMiddleware",
+        "whitenoise.middleware.WhiteNoiseMiddleware",
+    ]
+    + (["silk.middleware.SilkyMiddleware"] if USE_SILK else [])
+    + [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.middleware.locale.LocaleMiddleware",
+        "django.middleware.common.CommonMiddleware",
+        "django.middleware.csrf.CsrfViewMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+        "django.contrib.messages.middleware.MessageMiddleware",
+        "django.middleware.common.BrokenLinkEmailsMiddleware",
+        "django.middleware.clickjacking.XFrameOptionsMiddleware",
+        "crum.CurrentRequestUserMiddleware",
+        "users.middleware.LastActiveMiddleware",
+        "watson.middleware.SearchContextMiddleware",
+    ]
+)
 
 # STATIC
 # ------------------------------------------------------------------------------
@@ -261,10 +269,6 @@ EMAIL_TIMEOUT = 5
 # ------------------------------------------------------------------------------
 # Django Admin URL.
 ADMIN_URL = "admin/"
-# https://docs.djangoproject.com/en/dev/ref/settings/#admins
-ADMINS = []
-# https://docs.djangoproject.com/en/dev/ref/settings/#managers
-MANAGERS = ADMINS
 
 # LOGGING
 # ------------------------------------------------------------------------------
@@ -274,7 +278,7 @@ MANAGERS = ADMINS
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
+    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"}},
     "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "django": {"level": "INFO", "handlers": ["console"]},
@@ -349,22 +353,40 @@ SOCIALACCOUNT_PROVIDERS = {
 # -------------------------------------------------------------------------------
 # django-rest-framework - https://www.django-rest-framework.org/api-guide/settings/
 REST_FRAMEWORK = {
-    "DEFAULT_AUTHENTICATION_CLASSES": (
-        # "rest_framework.authentication.SessionAuthentication",
-        "read_comics.users.api.auth.Auth",
-    ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    "DEFAULT_AUTHENTICATION_CLASSES": ("rest_framework_simplejwt.authentication.JWTAuthentication",),
+    "DEFAULT_PAGINATION_CLASS": "read_comics.utils.api.pagination.Pagination",
+    "PAGE_SIZE": 48,
 }
 
-REST_USE_JWT = True
-JWT_AUTH_COOKIE = "read-comics-auth"
-JWT_AUTH_REFRESH_COOKIE = "read-comics-refresh-token"
-
-
-REST_AUTH_SERIALIZERS = {"USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserDetailSerializer"}
+REST_AUTH = {
+    "USE_JWT": True,
+    "USER_DETAILS_SERIALIZER": "read_comics.users.api.serializers.UserLoginSerializer",
+    "PASSWORD_RESET_SERIALIZER": "read_comics.users.api.serializers.ResetPasswordSerializer",
+    "JWT_AUTH_HTTPONLY": False,
+}
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(env("ACCESS_TOKEN_LIFETIME_MINUTES", default=15))),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=int(env("REFRESH_TOKEN_LIFETIME_DAYS", default=60))),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
+
+CORS_ALLOWED_ORIGINS = env.list(
+    "CORS_ALLOWED_ORIGINS", default=["http://localhost:5173", "http://0.0.0.0:5173", "http://127.0.0.1:5173"]
+)
+# Silk
+# ------------------------------------------------------------------------------
+SILKY_META = True
+SILKY_MAX_RECORDED_REQUESTS = 10000
+SILKY_MAX_RECORDED_REQUESTS_CHECK_PERCENT = 10
+SILKY_ANALYZE_QUERIES = False
+SILKY_PYTHON_PROFILER = True
+SILKY_MAX_REQUEST_BODY_SIZE = -1
+SILKY_MAX_RESPONSE_BODY_SIZE = 4096
+
 # Your stuff...
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
@@ -382,3 +404,4 @@ DO_SPACE_DATA_PUBLIC_URL = env("DO_SPACE_DATA_PUBLIC_URL")
 
 SKIP_DAYS = int(env("SKIP_DAYS", default=7))
 DOWNLOAD_TIMEOUT = int(env("DOWNLOAD_TIMEOUT", default=30))
+FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://127.0.0.1:5173")

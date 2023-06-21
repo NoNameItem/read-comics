@@ -32,3 +32,4 @@ venv
 /.codeclimate.yml
 /.pytest_cache/
 /.ipython/
+/frontend/

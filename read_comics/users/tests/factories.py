@@ -1,4 +1,5 @@
-from typing import Any, Sequence
+from collections.abc import Sequence
+from typing import Any
 
 from django.contrib.auth import get_user_model
 from factory import Faker, post_generation
@@ -24,3 +25,11 @@ class UserFactory(DjangoModelFactory):
     class Meta:
         model = get_user_model()
         django_get_or_create = ["username"]
+
+
+class SuperuserFactory(UserFactory):
+    is_superuser = True
+
+
+class StaffFactory(UserFactory):
+    is_staff = True

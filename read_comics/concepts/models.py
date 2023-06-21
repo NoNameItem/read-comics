@@ -4,7 +4,7 @@ from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
+from utils.model_mixins import AliasesListMixin, DownloadSizeMixin, ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
@@ -24,7 +24,7 @@ logger = getLogger(__name__ + ".Concept")
         "_set_m2m_from_document",
     ],
 )
-class Concept(ImageMixin, ComicvineSyncModel):
+class Concept(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_concepts"
     MONGO_PROJECTION = {
         "count_of_issue_appearances": 0,
@@ -95,8 +95,3 @@ class Concept(ImageMixin, ComicvineSyncModel):
         from django.urls import reverse
 
         return reverse("concepts:download", args=[self.slug])
-
-    def get_aliases_list(self):
-        if self.aliases:
-            return self.aliases.split("\n")
-        return []

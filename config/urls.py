@@ -3,13 +3,15 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path
 from django.views import defaults as default_views
-from rest_framework.authtoken.views import obtain_auth_token
+
+from read_comics.users.api.views import ChangeEmailView, FinishedIssuesStatsView, ProfileView
 
 urlpatterns = [
     path("", include("read_comics.pages.urls", namespace="pages")),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/auth/", include("dj_rest_auth.urls")),
+    path("api/auth/registration/", include("dj_rest_auth.registration.urls")),
     # User management
     path("users/", include("read_comics.users.urls", namespace="users")),
     path("accounts/", include("allauth.urls")),
@@ -32,9 +34,13 @@ urlpatterns = [
 urlpatterns += [
     # API base url
     path("api/", include("config.api_router")),
-    # DRF auth token
-    path("auth-token/", obtain_auth_token),
+    path("api/profile/", ProfileView.as_view(), name="profile"),
+    path("api/profile/finished-stats/", FinishedIssuesStatsView.as_view(), name="finished_stats"),
+    path("api/profile/change-email/", ChangeEmailView.as_view(), name="change_email"),
 ]
+
+if "silk" in settings.INSTALLED_APPS:
+    urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
 
 if settings.DEBUG:
     # This allows the error pages to be debugged during development, just visit
@@ -45,7 +51,3 @@ if settings.DEBUG:
         path("404/", default_views.page_not_found, kwargs={"exception": Exception("Page not Found")}),
         path("500/", default_views.server_error),
     ]
-    if "debug_toolbar" in settings.INSTALLED_APPS:
-        import debug_toolbar
-
-        urlpatterns = [path("__debug__/", include(debug_toolbar.urls))] + urlpatterns

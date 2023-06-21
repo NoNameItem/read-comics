@@ -5,10 +5,7 @@ from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from django.conf import settings
 from django.contrib.messages.constants import DEFAULT_LEVELS as DJANGO_DEFAULT_LEVELS
 from django.http import HttpRequest
-from django.template import TemplateDoesNotExist
-from django.template.loader import render_to_string
 from django.urls import reverse
-from django_magnificent_messages import notifications
 from django_magnificent_messages.constants import DEFAULT_LEVELS as DMM_DEFAULT_LEVELS
 
 
@@ -24,22 +21,14 @@ class AccountAdapter(DefaultAccountAdapter):
     def is_open_for_signup(self, request: HttpRequest):
         return getattr(settings, "ACCOUNT_ALLOW_REGISTRATION", True)
 
-    def add_message(self, request, level, message_template, message_context=None, extra_tags=""):
+    def get_email_confirmation_url(self, request, emailconfirmation):
+        """Constructs the email confirmation (activation) url.
+
+        Note that if you have architected your system such that email
+        confirmations are sent outside of the request context `request`
+        can be `None` here.
         """
-        Using django magnificent messages instead of boring standart messages
-        """
-        if (
-            "django_magnificent_messages" in settings.INSTALLED_APPS
-            or "django_magnificent_messages.apps.DjangoMagnificentMessagesConfig" in settings.INSTALLED_APPS
-        ):
-            try:
-                if message_context is None:
-                    message_context = {}
-                message = render_to_string(message_template, message_context).strip()
-                if message:
-                    notifications.add(request, self.MESSAGE_LEVEL_MAPPING.get(level, level), message, extra=extra_tags)
-            except TemplateDoesNotExist:
-                pass
+        return f"{settings.FRONTEND_BASE_URL}/confirm-email?key={emailconfirmation.key}"
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):

@@ -22,6 +22,7 @@ jobs:
       pull-requests: write
     with:
       silent_linters: true
+    secrets: inherit
   publish_reports:
     uses: ./.github/workflows/publish_reports.yml
     if: success() || failure()

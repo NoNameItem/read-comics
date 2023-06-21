@@ -9,6 +9,9 @@ on:
         type: boolean
         required: false
 
+env:
+  FONTAWESOME_NPM_AUTH_TOKEN: ${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }}
+
 jobs:
   flake8:
     name: Flake8
@@ -97,3 +100,90 @@ jobs:
       - name: Tear down the Stack
         if: success() || failure()
         run: docker-compose -f local.yml down
+
+  mypy:
+    name: MyPy
+    runs-on: ubuntu-latest
+    steps:
+
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Generate .django_unsafe
+        run: |
+          touch .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
+          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
+          echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
+
+      - name: Build the Stack
+        run: docker-compose -f local.yml build
+
+      - name: set pipefail
+        run: set -o pipefail
+
+      - name: Run mypy silent
+        if: ${{ inputs.silent_linters }}
+        run: docker-compose -f local.yml run --rm django mypy --soft-error-limit=-1 .  | tee mypy.txt
+
+      - name: Run mypy
+        if: ${{ !inputs.silent_linters }}
+        run: |
+          set -o pipefail
+          docker-compose -f local.yml run --rm django mypy --soft-error-limit=-1 .  | tee mypy.txt
+
+      - name: reset pipefail
+        if: success() || failure()
+        run: set +o pipefail
+
+      - name: Upload mypy report
+        if: success() || failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: mypy_report
+          path: mypy.txt
+
+      - name: Tear down the Stack
+        if: success() || failure()
+        run: docker-compose -f local.yml down
+
+  prettier:
+    name: prettier
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: yarn
+
+      - name: Run prettier
+        working-directory: frontend
+        run: yarn prettier:check
+
+  eslint:
+    name: eslint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code Repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: |
+          echo $FONTAWESOME_NPM_AUTH_TOKEN
+          yarn
+
+      - name: Run eslint
+        working-directory: frontend
+        run: |
+          echo $FONTAWESOME_NPM_AUTH_TOKEN
+          yarn lint:check:ci | true
+          sed -i 's+/home/runner/work/read-comics/read-comics+/github/workspace+g' eslint-report.json
+
+      - name: Upload eslint report
+        uses: actions/upload-artifact@v3
+        with:
+          name: eslint_report
+          path: frontend/eslint-report.json

@@ -1,6 +1,10 @@
-from typing import Union
+import typing
+from typing import Any, Union
 
 from django.core.paginator import Page, Paginator
+
+if typing.TYPE_CHECKING:
+    from _typeshed import SupportsNext
 
 
 def url_add_query_params(base_url, get, **kwargs):
@@ -52,7 +56,7 @@ class WrappedQuerySet:
 
     def __init__(self, queryset):
         self._queryset = queryset
-        self._iter = None
+        self._iter: SupportsNext[Any] | None = None
 
     def __getitem__(self, item):
         if isinstance(item, int):
@@ -70,7 +74,9 @@ class WrappedQuerySet:
 
     def __next__(self):
         try:
-            return self.wrapper(next(self._iter))
+            if self._iter is not None:
+                return self.wrapper(next(self._iter))
+            raise StopIteration
         except StopIteration:
             raise StopIteration
 
@@ -79,6 +85,17 @@ class EndlessPaginator(Paginator):
     # Returns last page if page index greater than page number
 
     def page(self, number: Union[int, str]) -> Page:
-        if number > self.num_pages:
+        if int(number) > self.num_pages:
             number = self.num_pages
         return super(EndlessPaginator, self).page(number)
+
+
+def flatten_dict(dictionary: dict, base_name: str = "") -> dict:
+    result: dict = {}
+    for key, value in dictionary.items():
+        new_key = f"{base_name}__{key}" if base_name else key
+        if isinstance(value, dict):
+            result.update(**flatten_dict(value, new_key))
+        else:
+            result[new_key] = value
+    return result

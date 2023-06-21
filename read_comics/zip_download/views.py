@@ -1,34 +1,48 @@
 import math
-from typing import Any
+from typing import Any, Generic, Protocol, TypeVar
 from zipfile import ZIP_DEFLATED
 
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Model, QuerySet
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
+from rest_framework.request import Request
 from zip_download.zip_downloader import ZipDownloader
 
+from read_comics.issues.models import Issue
+from read_comics.users.models import User
 
-class BaseZipDownloadView(LoginRequiredMixin, View):
-    sublist_querysets = None
-    base_model = None
+
+class HasGetIssuesQuerySetProtocol(Protocol):
+    def get_issues_queryset(self, obj: Model, user: User | None = None) -> QuerySet[Issue]:
+        ...
+
+
+ModelT = TypeVar("ModelT", bound=Model)
+
+
+class BaseZipDownloadView(View, Generic[ModelT]):
+    sublist_querysets: HasGetIssuesQuerySetProtocol
+    base_model: type[ModelT]
     base_slug_kwarg = "slug"
 
     def __init__(self, **kwargs: Any):
         super().__init__(**kwargs)
-        self.obj = None
+        self.obj: ModelT | None = None
 
     @staticmethod
-    def escape_file_name(filename):
+    def escape_file_name(filename: str) -> str:
         return filename.replace("/", " - ").replace(":", " - ").replace("\t", " ").replace("\n", " ")
 
-    def get_issues_queryset(self):
-        return self.sublist_querysets.get_issues_queryset(self.obj)
+    def get_issues_queryset(self) -> QuerySet[Issue]:
+        if self.obj is not None:
+            return self.sublist_querysets.get_issues_queryset(self.obj)
+        return Issue.objects.none()
 
-    def get_base_object(self):
+    def get_base_object(self) -> ModelT:
         return get_object_or_404(self.base_model, slug=self.kwargs.get(self.base_slug_kwarg))
 
-    def get_grouped_filename(self, issue):
+    def get_grouped_filename(self, issue: Issue) -> str:
         filename = ""
         if issue.volume:
             filename = (
@@ -42,7 +56,7 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
         else:
             filename = "Unknown volume/Unknown volume #"
 
-        filename += issue.number
+        filename += issue.number if issue.number is not None else "unknown"
 
         if issue.name:
             filename += f" {self.escape_file_name(issue.name)}"
@@ -51,13 +65,13 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
 
         return filename
 
-    def get_grouped_files(self):
+    def get_grouped_files(self) -> list[tuple[str, str]]:
         self.obj = self.get_base_object()
         q = self.get_issues_queryset()
 
         return [(self.get_grouped_filename(x), x.download_link) for x in q]
 
-    def get_ordered_files(self):
+    def get_ordered_files(self) -> list[tuple[str, str]]:
         self.obj = self.get_base_object()
         q = self.get_issues_queryset().order_by(
             "cover_date", "volume__name", "volume__start_year", "numerical_number", "number"
@@ -70,8 +84,8 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
             return [
                 (
                     self.escape_file_name(
-                        f"{str(num).rjust(num_length, '0')} - {x.volume.name} #{x.number} {x.name or ''}".rstrip(" ")
-                        + x.space_key[-4:]
+                        f"{str(num).rjust(num_length, '0')} - {x.volume.name if x.volume else 'Unknown volume'} "
+                        f"#{x.number} {x.name or ''}".rstrip(" ") + x.space_key[-4:]
                     ),
                     x.download_link,
                 )
@@ -80,10 +94,10 @@ class BaseZipDownloadView(LoginRequiredMixin, View):
         else:
             return []
 
-    def get_zip_name(self):
+    def get_zip_name(self) -> str:
         return self.escape_file_name(str(self.obj))
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs) -> StreamingHttpResponse:
         ordering = self.request.GET.get("names")
         if ordering == "ordered":
             files = self.get_ordered_files()

@@ -4,6 +4,7 @@ from datetime import datetime
 import boto3
 from django.conf import settings
 from django.db import models
+from django.template.defaultfilters import filesizeformat
 from django.utils.encoding import escape_uri_path
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
@@ -54,14 +55,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
     FIELD_MAPPING = {
         "html_description": {"path": "description", "method": "get_description"},
         "number": "issue_number",
-        "cover_date": {
-            "path": "cover_date",
-            "method": "convert_date",
-        },
-        "store_date": {
-            "path": "store_date",
-            "method": "convert_date",
-        },
+        "cover_date": {"path": "cover_date", "method": "convert_date"},
+        "store_date": {"path": "store_date", "method": "convert_date"},
         "characters": {"path": "character_credits", "method": "get_character"},
         "characters_died": {"path": "character_died_in", "method": "get_character"},
         "concepts": {"path": "concept_credits", "method": "get_concept"},
@@ -157,9 +152,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         role = comicvine_author.get("role")
         from read_comics.people.models import Person
 
-        person, created, matched = Person.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        person, _, _ = Person.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return person, {"role": role}
 
     # noinspection DuplicatedCode
@@ -200,7 +193,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
     def get_description(text):
         description = text
         if description:
-            description = re.sub(r"<(a|/a).*?>", "", description)
+            description = re.sub(r"<(a|/a)[^>]*>", "", description)
             description = re.sub(
                 r"<h4>List of covers and their creators:<\/h4><table[^>]*>.*?<\/table>", "", description
             )
@@ -224,7 +217,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
             separator=" ",
             lowercase=False,
             hexadecimal=False,
-            regex_pattern=re.compile(r"[^-a-zA-Z0-9.#*,;]+"),
+            regex_pattern=r"[^-a-zA-Z0-9.#*,;]+",
             replacements=(("/", "*"), (":", "*"), ("½", ".5")),
         )
         s3_client = boto3.client(
@@ -277,20 +270,36 @@ class Issue(ImageMixin, ComicvineSyncModel):
             self.numerical_number = None
 
     @property
-    def display_name(self):
+    def display_name(self) -> str:
         return self.get_full_name()
+
+    @property
+    def volume_last_number(self) -> str:
+        if self.volume is not None and self.volume.last_issue_number is not None:
+            return self.volume.last_issue_number
+        return "unknown"
+
+    @property
+    def download_size(self) -> str:
+        return filesizeformat(self.size) if self.size is not None else "size unknown"
 
 
 class IssuePerson(models.Model):
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="authors")
     person = models.ForeignKey("people.Person", on_delete=models.CASCADE, related_name="authored_issues")
-    role = models.CharField(max_length=100, null=True)
+    role = models.CharField(max_length=100, blank=True)
+
+    def __str__(self) -> str:
+        return repr(self)
 
 
 class FinishedIssue(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="finished")
     issue = models.ForeignKey(Issue, on_delete=models.CASCADE, related_name="finished")
     finish_date = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self) -> str:
+        return f"{self.issue.display_name} finished by {self.user.name}"
 
     class Meta:
         unique_together = (("user", "issue"),)

@@ -1,0 +1,23 @@
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active {
+  -webkit-box-shadow: 0 0 0px 1000px rgb(var(--v-theme-surface)) inset;
+}
+
+.layout-nav-type-vertical .layout-vertical-nav .nav-header .header-action {
+  margin-inline-end: 0;
+}
+
+.layout-nav-type-vertical .layout-vertical-nav .nav-group .nav-group .nav-item-icon,
+.layout-nav-type-vertical .layout-vertical-nav .nav-group .nav-link .nav-item-icon {
+  font-size: 1rem;
+}
+
+.nav-group-children {
+  padding-left: 1rem;
+}
+
+.text-capitalize {
+  text-transform: capitalize !important;
+}

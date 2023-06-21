@@ -4,7 +4,7 @@ from django_extensions.db.fields import AutoSlugField
 from locations.tasks import location_comicvine_info_task
 from model_utils import FieldTracker
 from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
+from utils.model_mixins import AliasesListMixin, DownloadSizeMixin, ImageMixin
 from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
@@ -24,7 +24,7 @@ logger = getLogger(__name__ + ".Location")
         "_set_m2m_from_document",
     ],
 )
-class Location(ImageMixin, ComicvineSyncModel):
+class Location(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_locations"
     MONGO_PROJECTION = {
         "count_of_issue_appearances": 0,
