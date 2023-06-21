@@ -38,6 +38,11 @@ export default [
         to: "publishers",
         icon: { icon: "fasl:building" },
       },
+      {
+        title: "Story Arcs",
+        to: "story-arcs",
+        icon: { icon: "fasl:books" },
+      },
     ],
   },
 ];

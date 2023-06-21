@@ -2,8 +2,10 @@ from datetime import datetime, timedelta
 from random import randrange
 
 import pytest
+from django.db.models import Count
 from issues.tests.factories import FinishedIssueFactory, IssueFactory
 from rest_framework.test import APIClient
+from utils.utils import flatten_dict
 
 from read_comics.users.models import User
 
@@ -13,10 +15,7 @@ from ..tests.factories import StoryArcFactory
 pytestmark = pytest.mark.django_db
 
 
-class TestStoryArcsE2E:
-    # Count tests
-    ##########################
-
+class TestStoryArcsCount:
     @staticmethod
     def test_count(
         api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
@@ -33,9 +32,69 @@ class TestStoryArcsE2E:
         assert response.status_code == 200
         assert response.data["count"] == len(story_arcs_with_issues) + len(story_arcs_no_issues)
 
-    # Started tests
-    ##########################
 
+class TestStoryArcsList:
+    list_keys = {
+        "slug",
+        "image",
+        "publisher__name",
+        "publisher__image",
+        "publisher__slug",
+        "name",
+        "short_description",
+        "issues_count",
+        "volumes_count",
+    }
+
+    def test_no_show_all(
+        self, api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    ) -> None:
+        response = api_client.get("/api/story-arcs/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(story_arcs_with_issues)
+
+        flatten_response_data = [flatten_dict(response_item) for response_item in response.data["results"]]
+        for item in flatten_response_data:
+            assert self.list_keys == set(item.keys())
+
+    def test_show_all(
+        self, api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    ) -> None:
+        response = api_client.get("/api/story-arcs/?show-all=yes")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(story_arcs_no_issues) + len(story_arcs_with_issues)
+
+        flatten_response_data = [flatten_dict(response_item) for response_item in response.data["results"]]
+        for item in flatten_response_data:
+            assert self.list_keys == set(item.keys())
+
+    @staticmethod
+    def test_data(api_client: APIClient, story_arc_with_issues: StoryArc) -> None:
+        response = api_client.get("/api/story-arcs/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == 1
+
+        response_data = response.data["results"][0]
+        assert response_data["slug"] == story_arc_with_issues.slug
+        assert response_data["name"] == story_arc_with_issues.name
+        assert response_data["publisher"]["name"] == (
+            story_arc_with_issues.publisher.name if story_arc_with_issues.publisher else None
+        )
+        assert response_data["publisher"]["slug"] == (
+            story_arc_with_issues.publisher.slug if story_arc_with_issues.publisher else None
+        )
+        assert response_data["short_description"] == story_arc_with_issues.short_description
+        assert response_data["issues_count"] == story_arc_with_issues.issues.count()
+        assert (
+            response_data["volumes_count"]
+            == story_arc_with_issues.issues.aggregate(v=Count("volume", distinct=True))["v"]
+        )
+
+
+class TestStoryArcsStarted:
     @staticmethod
     def _generate_finished_issues(item, usr: User, finished_date_step: int = 0) -> None:
         finish_date = datetime.min + timedelta(days=finished_date_step)
