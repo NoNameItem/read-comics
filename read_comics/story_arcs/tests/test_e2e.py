@@ -18,19 +18,16 @@ pytestmark = pytest.mark.django_db
 class TestStoryArcsCount:
     @staticmethod
     def test_count(
-        api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+        api_client: APIClient,
+        story_arcs_no_issues: list[StoryArc],
+        story_arcs_with_issues: list[StoryArc],
+        finished_story_arcs: list[StoryArc],
     ) -> None:
         response = api_client.get("/api/story-arcs/count/")
         assert response.status_code == 200
-        assert response.data["count"] == len(story_arcs_with_issues)
-
-    @staticmethod
-    def test_count_all(
-        api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
-    ) -> None:
-        response = api_client.get("/api/story-arcs/count/?show-all=yes")
-        assert response.status_code == 200
-        assert response.data["count"] == len(story_arcs_with_issues) + len(story_arcs_no_issues)
+        assert response.data["count"] == len(story_arcs_with_issues) + len(story_arcs_no_issues) + len(
+            finished_story_arcs
+        )
 
 
 class TestStoryArcsList:
@@ -44,12 +41,34 @@ class TestStoryArcsList:
         "short_description",
         "issues_count",
         "volumes_count",
+        "finished_count",
+        "is_finished",
     }
 
-    def test_no_show_all(
-        self, api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    def test_dont_hide_finished(
+        self,
+        user: User,
+        authenticated_api_client: APIClient,
+        story_arcs_with_issues: list[StoryArc],
+        finished_story_arcs: list[StoryArc],
     ) -> None:
-        response = api_client.get("/api/story-arcs/")
+        response = authenticated_api_client.get("/api/story-arcs/?hide-finished=no")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(story_arcs_with_issues) + len(finished_story_arcs)
+
+        flatten_response_data = [flatten_dict(response_item) for response_item in response.data["results"]]
+        for item in flatten_response_data:
+            assert self.list_keys == set(item.keys())
+
+    def test_hide_finished(
+        self,
+        user: User,
+        authenticated_api_client: APIClient,
+        story_arcs_with_issues: list[StoryArc],
+        finished_story_arcs: list[StoryArc],
+    ) -> None:
+        response = authenticated_api_client.get("/api/story-arcs/")
 
         assert response.status_code == 200
         assert response.data["count"] == len(story_arcs_with_issues)
@@ -58,17 +77,25 @@ class TestStoryArcsList:
         for item in flatten_response_data:
             assert self.list_keys == set(item.keys())
 
-    def test_show_all(
-        self, api_client: APIClient, story_arcs_no_issues: list[StoryArc], story_arcs_with_issues: list[StoryArc]
+    @staticmethod
+    def test_finished_mark(user: User, authenticated_api_client: APIClient, finished_story_arc: StoryArc) -> None:
+        response = authenticated_api_client.get("/api/story-arcs/?hide-finished=no")
+        response_data = response.data["results"][0]
+        assert response_data["is_finished"]
+
+    @staticmethod
+    def test_no_finished_mark(user: User, authenticated_api_client: APIClient, story_arc_with_issues: StoryArc) -> None:
+        response = authenticated_api_client.get("/api/story-arcs/")
+        response_data = response.data["results"][0]
+        assert not response_data["is_finished"]
+
+    @staticmethod
+    def test_no_auth_finished_mark(
+        api_client: APIClient, story_arc_with_issues: StoryArc, finished_story_arc: StoryArc
     ) -> None:
-        response = api_client.get("/api/story-arcs/?show-all=yes")
-
-        assert response.status_code == 200
-        assert response.data["count"] == len(story_arcs_no_issues) + len(story_arcs_with_issues)
-
-        flatten_response_data = [flatten_dict(response_item) for response_item in response.data["results"]]
-        for item in flatten_response_data:
-            assert self.list_keys == set(item.keys())
+        response = api_client.get("/api/story-arcs/")
+        for response_issue in response.data["results"]:
+            assert response_issue["is_finished"] is None
 
     @staticmethod
     def test_data(api_client: APIClient, story_arc_with_issues: StoryArc) -> None:

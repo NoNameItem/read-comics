@@ -2,6 +2,7 @@
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs";
 import { queries } from "@/queries";
 import { useGetListData } from "@/composables/useGetListData";
+import { useUserStore } from "@/stores/user";
 
 const breadcrumb = useBreadcrumbsStore();
 
@@ -41,19 +42,24 @@ const orderingVariants = [
 ];
 
 const { isLoading, isError, error, data, page } = useGetListData(queries.storyArcs.list, {
-  "show-all": "no",
+  "hide-finished": "yes",
   ordering: "name",
   page: 1,
 });
 
+const user = useUserStore();
+
 const items = computed(() =>
   (data.value?.results ?? []).map((item) => ({
     ...item,
-    subtitleItems: [
-      item.publisher?.name ?? "No publisher",
-      `${item.volumes_count} volume(s)`,
-      `${item.issues_count} issue(s)`,
-    ],
+    subtitleItems: user.loggedIn
+      ? [
+          item.publisher?.name ?? "No publisher",
+          `${item.volumes_count} volume(s)`,
+          `${item.issues_count} issue(s)`,
+          `${item.finished_count} finished`,
+        ]
+      : [item.publisher?.name ?? "No publisher", `${item.volumes_count} volume(s)`, `${item.issues_count} issue(s)`],
     to: `/story-arcs/${item.slug}`,
   }))
 );
@@ -72,7 +78,7 @@ watch(data, () => {
     :ordering-variants="orderingVariants"
     default-ordering="name"
     without-issues-label="story arcs"
-    show-without-issues-toggle
+    show-finished-toggle
     :items="items"
     :loading="isLoading"
     :pages-number="pagesNumber" />

@@ -2,7 +2,12 @@ from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from utils.api.filters import UniqueOrderingFilter
 from utils.api.viewset_actions_mixins import CountActionMixin, StartedActionMixin
-from utils.api.viewset_queryset_mixins import FinishedQuerySetMixin, HideFinishedQuerySetMixin, IssuesCountQuerySetMixin
+from utils.api.viewset_queryset_mixins import (
+    FinishedQuerySetMixin,
+    HideFinishedQuerySetMixin,
+    IssuesCountQuerySetMixin,
+    ListOnlyQuerySetMixin,
+)
 
 from ..models import Volume
 from .serializers import StartedVolumeSerializer, VolumesListSerializer
@@ -14,6 +19,7 @@ class VolumesViewSet(
     HideFinishedQuerySetMixin,
     FinishedQuerySetMixin,
     IssuesCountQuerySetMixin,
+    ListOnlyQuerySetMixin,
     ReadOnlyModelViewSet,
 ):
     list_only = [

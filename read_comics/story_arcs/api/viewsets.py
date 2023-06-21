@@ -4,9 +4,9 @@ from utils.api.filters import UniqueOrderingFilter
 from utils.api.viewset_actions_mixins import CountActionMixin, StartedActionMixin
 from utils.api.viewset_queryset_mixins import (
     FinishedQuerySetMixin,
+    HideFinishedQuerySetMixin,
     IssuesCountQuerySetMixin,
     ListOnlyQuerySetMixin,
-    OnlyWithIssuesQuerySetMixin,
     VolumesCountQuerySetMixin,
 )
 
@@ -17,8 +17,8 @@ from .serializers import StartedStoryArcSerializer, StoryArcsListSerializer
 class StoryArcsViewSet(
     StartedActionMixin,
     CountActionMixin,
+    HideFinishedQuerySetMixin,
     FinishedQuerySetMixin,
-    OnlyWithIssuesQuerySetMixin,
     IssuesCountQuerySetMixin,
     VolumesCountQuerySetMixin,
     ListOnlyQuerySetMixin,

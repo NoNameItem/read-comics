@@ -39,6 +39,7 @@ class TestStoryArcsList:
         "name",
         "short_description",
         "issues_count",
+        "finished_count",
         "is_finished",
     }
 
