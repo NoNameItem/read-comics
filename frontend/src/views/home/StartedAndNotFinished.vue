@@ -57,7 +57,7 @@ const groupedData = computed(() => {
     ?.map((elem) => ({
       title: elem?.display_name,
       lastFinishedDate: DateTime.fromISO(elem?.max_finished_date).toRelative(),
-      stats: `Finished ${elem?.finished_count} of ${elem?.issue_count}`,
+      stats: `Finished ${elem?.finished_count} of ${elem?.issues_count}`,
       image: elem.image,
       linkText: "Continue",
       linkUrl: `/${props.cardUrlBase}/${elem?.slug}`,

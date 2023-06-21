@@ -48,6 +48,11 @@ export default [
         to: "teams",
         icon: { icon: "fasl:users" },
       },
+      {
+        title: "Volumes",
+        to: "volumes",
+        icon: { icon: "fasl:book-sparkles" },
+      },
     ],
   },
 ];

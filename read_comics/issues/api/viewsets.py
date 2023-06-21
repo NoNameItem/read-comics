@@ -65,7 +65,7 @@ class IssueViewSet(DetailSerializerMixin, TechnicalInfoActionMixin, CountActionM
             q = q.annotate(finished_flg=Value(0, output_field=IntegerField()))
 
         # Hide finished
-        if not self.detail and self.request.GET.get("hide-finished", "yes") == "yes":
+        if self.action == "list" and self.request.GET.get("hide-finished", "yes") == "yes":
             return q.filter(finished_flg=0)
         return q
 

@@ -81,3 +81,20 @@ class FinishedQuerySetMixin(_IssueCountViewSet):
             is_started=Value(None, output_field=BooleanField()),
             is_finished=Value(None, output_field=BooleanField()),
         )
+
+
+if typing.TYPE_CHECKING:
+
+    class _FinishedQuerySetViewSet(FinishedQuerySetMixin, GenericViewSet):
+        pass
+
+else:
+    _FinishedQuerySetViewSet = object
+
+
+class HideFinishedQuerySetMixin(_FinishedQuerySetViewSet):
+    def get_queryset(self) -> QuerySet:
+        q = super().get_queryset()
+        if self.action == "list" and self.request.GET.get("hide-finished", "yes") == "yes":
+            return q.filter(Q(is_finished=False) | Q(is_finished__isnull=True))
+        return q

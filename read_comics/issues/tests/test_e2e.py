@@ -21,6 +21,7 @@ class TestIssuesList:
     list_keys = {
         "slug",
         "image",
+        "start_year",
         "publisher__name",
         "publisher__image",
         "publisher__slug",
