@@ -8,7 +8,7 @@ from ..models import Object
 pytestmark = pytest.mark.django_db
 
 
-class TestObjectsE2E:
+class TestObjectsCount:
     # Count tests
     ##########################
 

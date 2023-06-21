@@ -28,6 +28,11 @@ export default [
         to: "objects",
         icon: { icon: "fasl:swords-laser" },
       },
+      {
+        title: "People",
+        to: "people",
+        icon: { icon: "fasl:people-carry-box" },
+      },
     ],
   },
 ];

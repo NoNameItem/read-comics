@@ -8,7 +8,7 @@ from ..models import Location
 pytestmark = pytest.mark.django_db
 
 
-class TestLocationsE2E:
+class TestLocationsCount:
     # Count tests
     ##########################
 
