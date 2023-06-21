@@ -23,6 +23,11 @@ export default [
         to: "locations",
         icon: { icon: "fasl:location-dot" },
       },
+      {
+        title: "Objects",
+        to: "objects",
+        icon: { icon: "fasl:swords-laser" },
+      },
     ],
   },
 ];

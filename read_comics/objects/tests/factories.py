@@ -10,7 +10,10 @@ from ..models import Object
 class ObjectFactory(ComicvineSyncModelFactory):
     name = Faker("city")
     short_description = Faker("paragraph")
-    start_year = Faker("year")
+    start_year_str = Faker("year")
+    start_year = factory.LazyAttribute(lambda o: int(o.start_year_str))
+    aliases_list = Faker("words", nb=6)
+    aliases = factory.LazyAttribute(lambda o: "\n".join(o.aliases_list))
 
     @factory.post_generation
     def add_issues(self: Object, create, extracted, **kwargs):
@@ -24,3 +27,4 @@ class ObjectFactory(ComicvineSyncModelFactory):
 
     class Meta:
         model = Object
+        exclude = ["aliases_list", "start_year_str"]
