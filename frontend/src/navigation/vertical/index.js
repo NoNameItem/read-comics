@@ -33,6 +33,11 @@ export default [
         to: "people",
         icon: { icon: "fasl:people-carry-box" },
       },
+      {
+        title: "Publishers",
+        to: "publishers",
+        icon: { icon: "fasl:building" },
+      },
     ],
   },
 ];
