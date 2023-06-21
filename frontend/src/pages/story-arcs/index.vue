@@ -71,7 +71,7 @@ watch(data, () => {
   <DBCardsList
     :ordering-variants="orderingVariants"
     default-ordering="name"
-    without-issues-label="story arcsc"
+    without-issues-label="story arcs"
     show-without-issues-toggle
     :items="items"
     :loading="isLoading"

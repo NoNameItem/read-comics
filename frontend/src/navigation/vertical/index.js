@@ -43,6 +43,11 @@ export default [
         to: "story-arcs",
         icon: { icon: "fasl:books" },
       },
+      {
+        title: "Teams",
+        to: "teams",
+        icon: { icon: "fasl:users" },
+      },
     ],
   },
 ];
