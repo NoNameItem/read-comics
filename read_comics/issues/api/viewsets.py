@@ -62,11 +62,11 @@ class IssueViewSet(DetailSerializerMixin, TechnicalInfoActionMixin, CountActionM
                 finished_flg=Count("finished_users", distinct=True, filter=Q(finished_users=self.request.user))
             )
         else:
-            q = q.annotate(finished_flg=Value(0, output_field=IntegerField()))
+            q = q.annotate(finished_flg=Value(None, output_field=IntegerField()))
 
         # Hide finished
         if self.action == "list" and self.request.GET.get("hide-finished", "yes") == "yes":
-            return q.filter(finished_flg=0)
+            return q.filter(Q(finished_flg=0) | Q(finished_flg__isnull=True))
         return q
 
     def get_orderings(self) -> Sequence[str]:

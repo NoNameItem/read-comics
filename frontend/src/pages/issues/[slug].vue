@@ -63,7 +63,7 @@ const preparedInfo = computed(() => ({
   download_link: info.value?.download_link,
   download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
-  isFinished: info.value?.finished_flg === 1,
+  isFinished: info.value?.is_finished,
   prevLink: info.value?.prev_issue_slug ? addOrdering(`/issues/${info.value.prev_issue_slug}`) : null,
   nextLink: info.value?.next_issue_slug ? addOrdering(`/issues/${info.value.next_issue_slug}`) : null,
   dataItems: [

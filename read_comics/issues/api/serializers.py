@@ -10,11 +10,16 @@ class IssuesListSerializer(serializers.ModelSerializer):
     publisher = NestedPublisherSerializer(read_only=True, source="volume.publisher")
     name = serializers.ReadOnlyField(source="display_name")
     volume = NestedVolumeSerializer(read_only=True)
-    finished_flg = serializers.ReadOnlyField()
+    is_finished = serializers.SerializerMethodField()
+
+    def get_is_finished(self, obj: Issue):
+        if obj.finished_flg is None:
+            return None
+        return obj.finished_flg == 1
 
     class Meta:
         model = Issue
-        fields = ["slug", "image", "publisher", "name", "short_description", "cover_date", "volume", "finished_flg"]
+        fields = ["slug", "image", "publisher", "name", "short_description", "cover_date", "volume", "is_finished"]
 
 
 class IssueDetailSerializer(serializers.ModelSerializer):
@@ -22,11 +27,16 @@ class IssueDetailSerializer(serializers.ModelSerializer):
     square_image = serializers.ReadOnlyField(source="square_medium")
     publisher = NestedPublisherSerializer(read_only=True, source="volume.publisher")
     volume = NestedVolumeSerializer(read_only=True)
-    finished_flg = serializers.ReadOnlyField()
+    is_finished = serializers.SerializerMethodField()
     prev_issue_slug = serializers.SerializerMethodField()
     next_issue_slug = serializers.SerializerMethodField()
     number_in_sublist = serializers.SerializerMethodField()
     total_in_sublist = serializers.SerializerMethodField()
+
+    def get_is_finished(self, obj: Issue):
+        if obj.finished_flg is None:
+            return None
+        return obj.finished_flg == 1
 
     def get_prev_issue_slug(self, _obj: Issue) -> str | None:
         return self.context.get("prev_issue_slug")
@@ -58,7 +68,7 @@ class IssueDetailSerializer(serializers.ModelSerializer):
             "comicvine_url",
             "download_link",
             "download_size",
-            "finished_flg",
+            "is_finished",
             "prev_issue_slug",
             "next_issue_slug",
             "number_in_sublist",

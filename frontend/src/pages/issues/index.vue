@@ -63,7 +63,6 @@ const items = computed(() =>
     ...getBreaks(item),
     subtitleItems: [item.publisher?.name ?? "No publisher", formatDate(item.cover_date) || "Cover date unknown"],
     to: route.query?.ordering ? `/issues/${item.slug}?ordering=${route.query?.ordering}` : `/issues/${item.slug}`,
-    isFinished: item.finished_flg === 1,
   }))
 );
 

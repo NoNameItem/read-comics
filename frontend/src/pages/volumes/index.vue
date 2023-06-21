@@ -68,7 +68,6 @@ const items = computed(() =>
       ? [item.publisher?.name ?? "No publisher", `${item.issues_count} issue(s)`, `${item.finished_count} finished`]
       : [item.publisher?.name ?? "No publisher", `${item.issues_count} issue(s)`],
     to: `/volumes/${item.slug}`,
-    isFinished: item.is_finished,
   }))
 );
 

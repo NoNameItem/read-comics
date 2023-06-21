@@ -21,7 +21,6 @@ class TestIssuesList:
     list_keys = {
         "slug",
         "image",
-        "start_year",
         "publisher__name",
         "publisher__image",
         "publisher__slug",
@@ -32,7 +31,7 @@ class TestIssuesList:
         "volume__display_name",
         "volume__start_year",
         "volume__name",
-        "finished_flg",
+        "is_finished",
     }
 
     def test_dont_hide_finished(
@@ -63,19 +62,19 @@ class TestIssuesList:
     def test_finished_mark(user: User, authenticated_api_client: APIClient, finished_issue: Issue) -> None:
         response = authenticated_api_client.get("/api/issues/?hide-finished=no")
         response_data = response.data["results"][0]
-        assert response_data["finished_flg"] == 1
+        assert response_data["is_finished"]
 
     @staticmethod
     def test_no_finished_mark(user: User, authenticated_api_client: APIClient, issue: Issue) -> None:
         response = authenticated_api_client.get("/api/issues/")
         response_data = response.data["results"][0]
-        assert response_data["finished_flg"] == 0
+        assert not response_data["is_finished"]
 
     @staticmethod
     def test_no_auth_finished_mark(api_client: APIClient, issue: Issue, finished_issue: Issue) -> None:
         response = api_client.get("/api/issues/")
         for response_issue in response.data["results"]:
-            assert response_issue["finished_flg"] == 0
+            assert response_issue["is_finished"] is None
 
     @staticmethod
     def test_data(api_client: APIClient, issue: Issue) -> None:
@@ -124,28 +123,28 @@ class TestIssueDetail:
         response = api_client.get(f"/api/issues/{issue.slug}/")
 
         assert response.status_code == 200
-        assert response.data["finished_flg"] == 0
+        assert response.data["is_finished"] is None
 
     @staticmethod
     def test_anonymous_finished_flg_finished(api_client: APIClient, finished_issue: Issue) -> None:
         response = api_client.get(f"/api/issues/{finished_issue.slug}/")
 
         assert response.status_code == 200
-        assert response.data["finished_flg"] == 0
+        assert response.data["is_finished"] is None
 
     @staticmethod
     def test_finished_flg_not_finished(authenticated_api_client: APIClient, issue: Issue) -> None:
         response = authenticated_api_client.get(f"/api/issues/{issue.slug}/")
 
         assert response.status_code == 200
-        assert response.data["finished_flg"] == 0
+        assert not response.data["is_finished"]
 
     @staticmethod
     def test_finished_flg_finished(authenticated_api_client: APIClient, finished_issue: Issue) -> None:
         response = authenticated_api_client.get(f"/api/issues/{finished_issue.slug}/")
 
         assert response.status_code == 200
-        assert response.data["finished_flg"] == 1
+        assert response.data["is_finished"]
 
     @staticmethod
     def test_prev_issue_slug_by_cover_date_asc(api_client: APIClient, issues: list[Issue]) -> None:
