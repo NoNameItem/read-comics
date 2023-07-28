@@ -22,7 +22,7 @@ types-python-slugify==8.0.0.2  # https://pypi.org/project/types-python-slugify/
 
 # Documentation
 # ------------------------------------------------------------------------------
-sphinx==4.3.1  # https://github.com/sphinx-doc/sphinx
+sphinx==7.1.1  # https://github.com/sphinx-doc/sphinx
 sphinx-autobuild==2021.3.14 # https://github.com/GaretJax/sphinx-autobuild
 
 # Code quality
