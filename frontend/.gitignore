@@ -1,20 +1,29 @@
+# Nuxt dev/build outputs
+.output
+.data
+.nuxt
+.nitro
+.cache
+dist
+
+# Node dependencies
+node_modules
+
 # Logs
 logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
+# Misc
 .DS_Store
-dist
-dist-ssr
-*.local
+.fleet
+.idea
 
-/cypress/videos/
-/cypress/screenshots/
+# Local env files
+.env
+.env.*
+!.env.example
+
+# 👉 Custom Git ignores
 
 # Editor directories and files
 .vscode/*
@@ -31,10 +40,12 @@ dist-ssr
 .yarn
 
 # iconify dist files
-src/@iconify/icons-bundle.js
-src/plugins/icons.js
+plugins/iconify/icons.css
 
-/.vite/deps/
-/.vite/
-components.d.ts
-/auto-imports.d.ts
+# Ignore MSW script
+public/mockServiceWorker.js
+
+# Env files
+.env*
+!.env.example
+/plugins/01.icons.js

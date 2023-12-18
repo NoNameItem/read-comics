@@ -368,14 +368,22 @@ SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=int(env("ACCESS_TOKEN_LIFETIME_MINUTES", default=15))),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=int(env("REFRESH_TOKEN_LIFETIME_DAYS", default=60))),
     "ROTATE_REFRESH_TOKENS": True,
-    "BLACKLIST_AFTER_ROTATION": True,
+    "BLACKLIST_AFTER_ROTATION": False,
 }
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
 
 CORS_ALLOWED_ORIGINS = env.list(
-    "CORS_ALLOWED_ORIGINS", default=["http://localhost:5173", "http://0.0.0.0:5173", "http://127.0.0.1:5173"]
+    "CORS_ALLOWED_ORIGINS",
+    default=[
+        "http://localhost:5173",
+        "http://0.0.0.0:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:3000",
+        "http://0.0.0.0:3000",
+        "http://127.0.0.1:3000",
+    ],
 )
 # Silk
 # ------------------------------------------------------------------------------
@@ -404,4 +412,4 @@ DO_SPACE_DATA_PUBLIC_URL = env("DO_SPACE_DATA_PUBLIC_URL")
 
 SKIP_DAYS = int(env("SKIP_DAYS", default=7))
 DOWNLOAD_TIMEOUT = int(env("DOWNLOAD_TIMEOUT", default=30))
-FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://127.0.0.1:5173")
+FRONTEND_BASE_URL = env("FRONTEND_BASE_URL", default="http://localhost:3000")
