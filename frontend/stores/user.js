@@ -1,15 +1,15 @@
-import { defineStore } from 'pinia'
-import axios from '@axios'
+import { defineStore } from "pinia"
+import axios from "@axios"
 
-import FThumb from '@images/avatars/F_thumb.png'
-import MThumb from '@images/avatars/M_thumb.png'
-import OThumb from '@images/avatars/O_thumb.png'
-import UThumb from '@images/avatars/U_thumb.png'
+import FThumb from "@images/avatars/F_thumb.png"
+import MThumb from "@images/avatars/M_thumb.png"
+import OThumb from "@images/avatars/O_thumb.png"
+import UThumb from "@images/avatars/U_thumb.png"
 
-import F from '@images/avatars/F.png'
-import M from '@images/avatars/M.png'
-import O from '@images/avatars/O.png'
-import U from '@images/avatars/U.png'
+import F from "@images/avatars/F.png"
+import M from "@images/avatars/M.png"
+import O from "@images/avatars/O.png"
+import U from "@images/avatars/U.png"
 
 const defaultImages = {
   F,
@@ -26,7 +26,7 @@ const defaultThumbnails = {
 }
 
 export const useUserStore = defineStore(
-  'user',
+  "user",
   () => {
     const accessToken = ref(null)
     const refreshToken = ref(null)
@@ -59,12 +59,12 @@ export const useUserStore = defineStore(
       isStaff.value = false
     }
 
-    const image = computed(() => images.value?.image ?? defaultImages[gender.value?.value ?? 'O'])
-    const thumbnail = computed(() => images.value?.thumbnail ?? defaultThumbnails[gender.value?.value ?? 'O'])
+    const image = computed(() => images.value?.image ?? defaultImages[gender.value?.value ?? "O"])
+    const thumbnail = computed(() => images.value?.thumbnail ?? defaultThumbnails[gender.value?.value ?? "O"])
     const loggedIn = computed(() => !!accessToken.value)
     const isSuperuserOrStaff = computed(() => isSuperuser.value || isStaff.value)
 
-    const setUser = user => {
+    const setUser = (user) => {
       username.value = user?.username
       name.value = user?.name
       email.value = user?.email
@@ -77,7 +77,7 @@ export const useUserStore = defineStore(
       isStaff.value = user?.is_staff ?? isStaff.value
     }
 
-    const setImage = user => {
+    const setImage = (user) => {
       images.value = user?.images
     }
 
@@ -91,7 +91,7 @@ export const useUserStore = defineStore(
     }
 
     const login = async (username, password) => {
-      const loginUrl = '/auth/login/'
+      const loginUrl = "/auth/login/"
       try {
         const response = await axios.post(loginUrl, { username, password })
         if (response?.status === 200) {
@@ -102,14 +102,12 @@ export const useUserStore = defineStore(
         }
       }
       catch (e) {
-        console.log(e)
-
         return e
       }
     }
 
     const refreshTokens = async () => {
-      const refreshUrl = '/auth/token/refresh/'
+      const refreshUrl = "/auth/token/refresh/"
       try {
         const response = await axios.post(refreshUrl, { refresh: refreshToken.value })
         if (response.status === 200) {
@@ -119,12 +117,11 @@ export const useUserStore = defineStore(
         }
       }
       catch (e) {
-        console.log(e)
       }
     }
 
     const register = async (username, email, password) => {
-      const registerUrl = '/auth/registration/'
+      const registerUrl = "/auth/registration/"
       try {
         const response = await axios.post(registerUrl, { username, email, password1: password, password2: password })
 

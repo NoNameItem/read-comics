@@ -1,26 +1,26 @@
 <script setup>
 const props = defineProps({
   label: {
-    type: String,
+    type:     String,
     required: true,
   },
-});
+})
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
-const showAll = ref((route.query["show-all"] ?? "no") === "no");
+const showAll = ref((route.query["show-all"] ?? "no") === "no")
 
 watch(showAll, () => {
   router.push({
-    name: route.name,
+    name:  route.name,
     query: {
       ...route.query,
-      page: 1,
+      "page":     1,
       "show-all": showAll.value ? "no" : "yes",
     },
-  });
-});
+  })
+})
 </script>
 
 <template>

@@ -1,11 +1,11 @@
 <script setup>
-import { useQuery } from '@tanstack/vue-query'
-import { onServerPrefetch, watch } from 'vue'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
-import { queries } from '@/queries'
+import { useQuery } from "@tanstack/vue-query"
+import { onServerPrefetch, watch } from "vue"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { queries } from "@/queries"
 
 definePageMeta({
-  navActiveLink: 'issues',
+  navActiveLink: "issues",
 })
 
 const route = useRoute()
@@ -16,8 +16,8 @@ const breadcrumb = useBreadcrumbsStore()
 // ---------------------------------------------------------
 const tabs = [
   {
-    icon: 'fasl:circle-info',
-    title: 'Info',
+    icon:  "fasl:circle-info",
+    title: "Info",
   },
 ]
 
@@ -32,12 +32,12 @@ const addOrdering = issueLink =>
 const { isPending: infoLoading, data: info, suspense } = useQuery(
   queries.issues.detail(
     route.params.slug,
-    route.query?.ordering ?? 'cover_date,volume__name,volume__start_year,numerical_number,number',
+    route.query?.ordering ?? "cover_date,volume__name,volume__start_year,numerical_number,number",
   ),
 )
 
 useServerSeoMeta({
-  title: () => `[${info.value.number_in_sublist.toLocaleString()} / ${info.value.total_in_sublist.toLocaleString('en-us')}] ${
+  title: () => `[${info.value.number_in_sublist.toLocaleString()} / ${info.value.total_in_sublist.toLocaleString("en-us")}] ${
     info.value.volume?.display_name
   } #${info.value.number}`,
 })
@@ -45,13 +45,13 @@ useServerSeoMeta({
 const setBreadcrumbs = () => {
   if (!infoLoading.value) {
     breadcrumb.setBreadcrumbs(
-      `[${info.value.number_in_sublist.toLocaleString()} / ${info.value.total_in_sublist.toLocaleString('en-us')}] ${
+      `[${info.value.number_in_sublist.toLocaleString()} / ${info.value.total_in_sublist.toLocaleString("en-us")}] ${
         info.value.volume?.display_name
       } #${info.value.number}`,
       [
         {
-          title: 'Issues',
-          to: addOrdering('/issues'),
+          title: "Issues",
+          to:    addOrdering("/issues"),
         },
         { title: `${info.value.volume?.display_name} #${info.value.number}` },
       ],
@@ -71,37 +71,37 @@ watch([infoLoading, info], () => {
 })
 
 const preparedInfo = computed(() => ({
-  title: `${info.value?.volume?.display_name} #${info.value?.number}`,
-  subtitle: info.value?.name,
-  image: info.value?.image,
-  square_image: info.value?.square_image,
+  title:         `${info.value?.volume?.display_name} #${info.value?.number}`,
+  subtitle:      info.value?.name,
+  image:         info.value?.image,
+  square_image:  info.value?.square_image,
   download_link: info.value?.download_link,
   download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
-  isFinished: info.value?.is_finished,
-  prevLink: info.value?.prev_issue_slug ? addOrdering(`/issues/${info.value.prev_issue_slug}`) : null,
-  nextLink: info.value?.next_issue_slug ? addOrdering(`/issues/${info.value.next_issue_slug}`) : null,
-  dataItems: [
+  isFinished:    info.value?.is_finished,
+  prevLink:      info.value?.prev_issue_slug ? addOrdering(`/issues/${info.value.prev_issue_slug}`) : null,
+  nextLink:      info.value?.next_issue_slug ? addOrdering(`/issues/${info.value.next_issue_slug}`) : null,
+  dataItems:     [
     {
-      title: 'Volume',
+      title: "Volume",
       value: info.value?.volume?.display_name,
-      to: `/volumes/${info.value?.volume?.slug}`,
+      to:    `/volumes/${info.value?.volume?.slug}`,
     },
     {
-      title: 'Publisher',
+      title: "Publisher",
       value: info.value?.publisher?.name,
-      to: `/publishers/${info.value?.publisher?.slug}`,
+      to:    `/publishers/${info.value?.publisher?.slug}`,
     },
     {
-      title: 'Number',
-      html: `${info.value?.number} <small>(of ${info.value?.volume_last_number})</small>`,
+      title: "Number",
+      html:  `${info.value?.number} <small>(of ${info.value?.volume_last_number})</small>`,
     },
     {
-      title: 'Cover Date',
+      title: "Cover Date",
       value: utilsFormatDate(info.value?.cover_date),
     },
     {
-      title: 'Store Date',
+      title: "Store Date",
       value: utilsFormatDate(info.value?.store_date),
     },
   ],

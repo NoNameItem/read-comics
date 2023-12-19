@@ -1,22 +1,20 @@
 <script setup>
 const props = defineProps({
   flipped: {
-    type: Boolean,
+    type:     Boolean,
     required: true,
   },
-});
-
-const flipped = ref(false);
+})
 </script>
 
 <template>
   <div :class="props.flipped ? 'flip-container flipped' : 'flip-container'">
     <div class="flipper">
       <div class="front">
-        <slot name="front"></slot>
+        <slot name="front" />
       </div>
       <div class="back">
-        <slot name="back"></slot>
+        <slot name="back" />
       </div>
     </div>
   </div>

@@ -1,6 +1,6 @@
 <script setup>
-import { useQuery } from '@tanstack/vue-query'
-import { queries } from '@/queries'
+import { useQuery } from "@tanstack/vue-query"
+import { queries } from "@/queries"
 
 const { isPending: finishedisPending, data: finishedData, suspense: finishedSuspense } = useQuery(queries.profile.finishedStats)
 const { isPending: totalisPending, data: totalData, suspense: totalSuspense } = useQuery(queries.issues.count)
@@ -9,8 +9,6 @@ onServerPrefetch(async () => {
   await finishedSuspense()
   await totalSuspense()
 })
-
-const loading = computed(() => finishedisPending || totalisPending)
 </script>
 
 <template>

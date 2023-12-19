@@ -1,16 +1,16 @@
 <script setup>
-import TotalProgress from '@/views/home/TotalProgress.vue'
-import { useUserStore } from '@/stores/user'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
+import TotalProgress from "@/views/home/TotalProgress.vue"
+import { useUserStore } from "@/stores/user"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 
 const user = useUserStore()
 const breadcrumb = useBreadcrumbsStore()
 
 useServerSeoMeta({
-  title: 'Home',
+  title: "Home",
 })
 
-breadcrumb.setBreadcrumbs('Home', [])
+breadcrumb.setBreadcrumbs("Home", [])
 </script>
 
 <template>

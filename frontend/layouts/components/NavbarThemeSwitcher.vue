@@ -1,18 +1,18 @@
 <script setup lang="ts">
-import type { ThemeSwitcherTheme } from '@layouts/types'
+import type { ThemeSwitcherTheme } from "@layouts/types"
 
 const themes: ThemeSwitcherTheme[] = [
   {
-    name: 'system',
-    icon: 'fasl:laptop',
+    name: "system",
+    icon: "fasl:laptop",
   },
   {
-    name: 'light',
-    icon: 'fasl:sun-bright',
+    name: "light",
+    icon: "fasl:sun-bright",
   },
   {
-    name: 'dark',
-    icon: 'fasl:moon',
+    name: "dark",
+    icon: "fasl:moon",
   },
 ]
 </script>

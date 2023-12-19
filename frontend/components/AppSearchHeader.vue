@@ -1,22 +1,22 @@
 <script setup>
-import AppSearchHeaderBg from "@images/pages/app-search-header-bg.png";
+import AppSearchHeaderBg from "@images/pages/app-search-header-bg.png"
+
+defineOptions({ inheritAttrs: false })
 
 const props = defineProps({
   title: {
-    type: String,
+    type:     String,
     required: false,
   },
   subtitle: {
-    type: String,
+    type:     String,
     required: false,
   },
   customClass: {
-    type: String,
+    type:     String,
     required: false,
   },
-});
-
-defineOptions({ inheritAttrs: false });
+})
 </script>
 
 <template>
@@ -25,7 +25,8 @@ defineOptions({ inheritAttrs: false });
     flat
     class="text-center search-header"
     :class="props.customClass"
-    :style="`background: url(${AppSearchHeaderBg});`">
+    :style="`background: url(${AppSearchHeaderBg});`"
+  >
     <VCardText>
       <h5 class="text-h3 font-weight-medium">
         {{ props.title }}
@@ -36,7 +37,8 @@ defineOptions({ inheritAttrs: false });
         v-bind="$attrs"
         placeholder="Search a question..."
         class="search-header-input mx-auto my-3"
-        density="comfortable">
+        density="comfortable"
+      >
         <template #prepend-inner>
           <VIcon icon="tabler-search" size="23" />
         </template>

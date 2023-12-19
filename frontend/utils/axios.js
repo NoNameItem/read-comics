@@ -1,10 +1,10 @@
-import axios from 'axios'
-import { useUserStore } from '@/stores/user'
+import axios from "axios"
+import { useUserStore } from "@/stores/user"
 
 const axiosIns = axios.create({
   // You can add your headers here
   // ================================
-  baseURL: 'http://127.0.0.1:8000/api',
+  baseURL: "http://127.0.0.1:8000/api",
 
   // timeout: 1000,
   // headers: {'X-Custom-Header': 'foobar'}
@@ -12,7 +12,7 @@ const axiosIns = axios.create({
 
 // ℹ️ Add request interceptor to send the authorization header on each subsequent request after login
 axiosIns.interceptors.request.use(
-  async config => {
+  async (config) => {
     const userStore = useUserStore()
 
     userStore.$hydrate()
@@ -21,25 +21,25 @@ axiosIns.interceptors.request.use(
 
     return config
   },
-  error => {
+  (error) => {
     return Promise.reject(error)
   },
 )
 
 // ℹ️ Add response interceptor to handle 401 response
 axiosIns.interceptors.response.use(
-  response => {
+  (response) => {
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response
   },
-  async error => {
+  async (error) => {
     const userStore = useUserStore()
 
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     const originalRequest = error.config
-    if (error.response?.status === 401 && originalRequest.url.includes('auth/token/refresh/')) {
+    if (error.response?.status === 401 && originalRequest.url.includes("auth/token/refresh/")) {
       userStore.logout()
       userStore.$persist()
 

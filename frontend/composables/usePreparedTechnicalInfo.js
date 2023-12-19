@@ -1,5 +1,5 @@
-import { useAdminDetailQuery } from '@/composables/useAdminDetailQuery'
-import { formatDateTimeSeconds } from '@/utils/format_utils'
+import { useAdminDetailQuery } from "@/composables/useAdminDetailQuery"
+import { formatDateTimeSeconds } from "@/utils/format_utils"
 
 export function usePreparedTechnicalInfo(query) {
   const { isPending, data } = useAdminDetailQuery(query)
@@ -8,27 +8,27 @@ export function usePreparedTechnicalInfo(query) {
     data.value
       ? [
           {
-            title: 'ID',
+            title: "ID",
             value: data.value?.id,
           },
           {
-            title: 'ComicVine ID',
+            title: "ComicVine ID",
             value: data.value?.comicvine_id,
           },
           {
-            title: 'ComicVine Status',
+            title: "ComicVine Status",
             value: data.value?.comicvine_status,
           },
           {
-            title: 'ComicVine last match',
+            title: "ComicVine last match",
             value: formatDateTimeSeconds(data.value?.comicvine_last_match),
           },
           {
-            title: 'Created',
+            title: "Created",
             value: formatDateTimeSeconds(data.value?.created_dt),
           },
           {
-            title: 'Modified',
+            title: "Modified",
             value: formatDateTimeSeconds(data.value?.modified_dt),
           },
         ]

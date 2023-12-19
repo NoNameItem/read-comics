@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import { requiredValidator } from '@validators'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
+import { requiredValidator } from "@validators"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Log In' })
+useHead({ title: "Log In" })
 
 const form = reactive({
-  username: '',
-  password: '',
-  loading: false,
-  valid: false,
+  username:   "",
+  password:   "",
+  loading:    false,
+  valid:      false,
   formErrors: null,
 })
 
@@ -44,16 +44,16 @@ async function login() {
 
   if (loginError) {
     if (loginError?.response?.status === 400) {
-      toast.error('Bad credentials', '')
+      toast.error("Bad credentials", "")
       form.formErrors = loginError.response.data.non_field_errors
     }
     else {
-      toast.error('We experencing network troubles', 'Please, try again later', { timeout: false })
+      toast.error("We experencing network troubles", "Please, try again later", { timeout: false })
     }
   }
   else {
-    toast.success(`${userStore.name || userStore.username}, welcome back!`, 'We missed you...')
-    await router.replace(route.query.to ? String(route.query.to) : '/')
+    toast.success(`${userStore.name || userStore.username}, welcome back!`, "We missed you...")
+    await router.replace(route.query.to ? String(route.query.to) : "/")
   }
   form.loading = false
 }

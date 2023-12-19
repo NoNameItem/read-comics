@@ -1,9 +1,9 @@
-export default defineNuxtRouteMiddleware((to, from) => {
+export default defineNuxtRouteMiddleware((to, _from) => {
   const user = useUserStore()
 
   if (to.meta?.loginRequired && !user.loggedIn) {
     return navigateTo({
-      path: '/login',
+      path:  "/login",
       query: { to: to.fullPath },
     })
   }

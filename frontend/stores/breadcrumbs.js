@@ -1,5 +1,5 @@
-export const useBreadcrumbsStore = defineStore('breadcrumbs', () => {
-  const pageTitle = ref('')
+export const useBreadcrumbsStore = defineStore("breadcrumbs", () => {
+  const pageTitle = ref("")
   const breadcrumbs = ref([])
   const loading = ref(true)
 
@@ -14,9 +14,9 @@ export const useBreadcrumbsStore = defineStore('breadcrumbs', () => {
   }
 
   const fullBreadcrumbs = computed(() => [{
-    icon: 'fasl:home',
-    title: 'Home',
-    to: '/',
+    icon:  "fasl:home",
+    title: "Home",
+    to:    "/",
     exact: true,
   }, ...breadcrumbs.value.map(item => ({ ...item, exact: true }))])
 

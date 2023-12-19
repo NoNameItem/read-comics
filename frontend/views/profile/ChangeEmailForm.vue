@@ -1,21 +1,21 @@
 <script setup>
-import { requiredValidator } from '@validators'
+import { requiredValidator } from "@validators"
 
 const user = useUserStore()
 
 const { formData, valid, formRef, status, loading, errors, responseData, post } = usePostForm({
-  url: '/profile/change-email/',
+  url:              "/profile/change-email/",
   formInitialValue: {
     email: user.email,
   },
-  httpMethod: 'put',
+  httpMethod: "put",
 })
 
 const toast = useTitledToast()
 
 watch(status, () => {
-  if (status.value === 'success') {
-    toast.success('Your email has been changed.', 'Please check your inbox and verify email')
+  if (status.value === "success") {
+    toast.success("Your email has been changed.", "Please check your inbox and verify email")
     user.email = responseData.value.email
     user.email_verified = responseData.value.verified
   }

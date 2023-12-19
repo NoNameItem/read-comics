@@ -1,39 +1,39 @@
 <script setup>
-import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
-import { useQuery } from '@tanstack/vue-query'
-import { queries } from '@/queries'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
+import { useQuery } from "@tanstack/vue-query"
+import { queries } from "@/queries"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 
 definePageMeta({
   loginRequired: true,
 })
 
 useServerSeoMeta({
-  title: 'My profile',
+  title: "My profile",
 })
 
 const userTab = ref(null)
 
 const tabs = [
   {
-    icon: 'fasl:user',
-    title: 'Info',
+    icon:  "fasl:user",
+    title: "Info",
   },
   {
-    icon: 'fasl:lock',
-    title: 'Security',
+    icon:  "fasl:lock",
+    title: "Security",
   },
 ]
 
 const breadcrumb = useBreadcrumbsStore()
 
-breadcrumb.setBreadcrumbs('My profile', [{ title: 'My profile' }])
+breadcrumb.setBreadcrumbs("My profile", [{ title: "My profile" }])
 
 const { isPending, data, suspense } = useQuery(queries.profile.profileData)
 
-// onServerPrefetch(async () => {
-//   await suspense()
-// })
+onServerPrefetch(async () => {
+  await suspense()
+})
 </script>
 
 <template>

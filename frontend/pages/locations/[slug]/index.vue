@@ -1,12 +1,12 @@
 <script setup>
-import { useQuery } from '@tanstack/vue-query'
-import { onServerPrefetch } from 'vue'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
-import { queries } from '@/queries'
-import PageWithBreadcrumb from '~/components/PageWithBreadcrumb.vue'
+import { useQuery } from "@tanstack/vue-query"
+import { onServerPrefetch } from "vue"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { queries } from "@/queries"
+import PageWithBreadcrumb from "~/components/PageWithBreadcrumb.vue"
 
 definePageMeta({
-  navActiveLink: 'locations',
+  navActiveLink: "locations",
 })
 
 const route = useRoute()
@@ -17,8 +17,8 @@ const breadcrumb = useBreadcrumbsStore()
 // ---------------------------------------------------------
 const tabs = [
   {
-    icon: 'fasl:circle-info',
-    title: 'Info',
+    icon:  "fasl:circle-info",
+    title: "Info",
   },
 ]
 
@@ -30,8 +30,8 @@ const setBreadcrumbs = () => {
   if (!infoLoading.value) {
     breadcrumb.setBreadcrumbs(info.value.name, [
       {
-        title: 'Locations',
-        to: '/locations',
+        title: "Locations",
+        to:    "/locations",
       },
       { title: info.value.name },
     ])
@@ -54,25 +54,25 @@ onServerPrefetch(async () => {
 })
 
 const preparedInfo = computed(() => ({
-  title: info.value?.name,
-  image: info.value?.image,
-  square_image: info.value?.square_image,
+  title:         info.value?.name,
+  image:         info.value?.image,
+  square_image:  info.value?.square_image,
   download_link: info.value?.download_link,
   download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
-  dataItems: [
+  dataItems:     [
     {
-      title: 'Aliases',
+      title:     "Aliases",
       valueList: info.value?.aliases,
     },
     {
-      title: 'Start year',
+      title: "Start year",
       value: info.value?.start_year,
     },
     {
-      title: 'First Issue',
+      title: "First Issue",
       value: info.value?.first_issue_name,
-      to: info.value?.first_issue_slug ? `/issues/${info.value?.first_issue_slug}` : null,
+      to:    info.value?.first_issue_slug ? `/issues/${info.value?.first_issue_slug}` : null,
     },
   ],
 }))

@@ -1,23 +1,25 @@
 <script setup>
 const componentProps = defineProps({
-  variants: { type: Array, required: true },
+  variants:        { type: Array, required: true },
   defaultOrdering: { type: String, required: true },
-});
+})
 
-const route = useRoute();
-const router = useRouter();
+const route = useRoute()
+const router = useRouter()
 
 const setOrdering = (ordering) => {
-  router.push({ name: route.name, query: { ...route.query, page: 1, ordering: ordering } });
-};
+  router.push({ name: route.name, query: { ...route.query, page: 1, ordering } })
+}
 
-const currentOrdering = computed(() => route.query.ordering ?? componentProps.defaultOrdering);
+const currentOrdering = computed(() => route.query.ordering ?? componentProps.defaultOrdering)
 </script>
 
 <template>
   <VMenu>
     <template #activator="{ props }">
-      <VBtn color="primary" v-bind="props"> Order By</VBtn>
+      <VBtn color="primary" v-bind="props">
+        Order By
+      </VBtn>
     </template>
 
     <VList density="compact">
@@ -26,9 +28,10 @@ const currentOrdering = computed(() => route.query.ordering ?? componentProps.de
         :key="item.value"
         :value="item.value"
         :active="item.value === currentOrdering"
-        @click="setOrdering(item.value)">
+        @click="setOrdering(item.value)"
+      >
         <template #prepend>
-          <VIcon :icon="item.icon"></VIcon>
+          <VIcon :icon="item.icon" />
         </template>
         <VListItemTitle>{{ item.title }}</VListItemTitle>
       </VListItem>

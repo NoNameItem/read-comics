@@ -1,114 +1,114 @@
 <script setup>
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user"
 
 const cardPropsUnauthorized = [
   {
-    title: "Issues",
-    icon: "fasl:book-open",
-    color: "info",
+    "title":       "Issues",
+    "icon":        "fasl:book-open",
+    "color":       "info",
     "count-query": "issues.count",
-    "card-props": {
+    "card-props":  {
       to: "/issues",
     },
   },
   {
-    title: "Publishers",
-    icon: "fasl:building",
-    color: "warning",
+    "title":       "Publishers",
+    "icon":        "fasl:building",
+    "color":       "warning",
     "count-query": "publishers.count",
-    "card-props": {
+    "card-props":  {
       to: "/publishers",
     },
   },
   {
-    title: "Story Arcs",
-    icon: "fasl:books",
-    color: "error",
+    "title":       "Story Arcs",
+    "icon":        "fasl:books",
+    "color":       "error",
     "count-query": "storyArcs.count",
-    "card-props": {
+    "card-props":  {
       to: "/story-arcs",
     },
   },
   {
-    title: "Volumes",
-    icon: "fasl:book-sparkles",
-    color: "primary",
+    "title":       "Volumes",
+    "icon":        "fasl:book-sparkles",
+    "color":       "primary",
     "count-query": "volumes.count",
-    "card-props": {
+    "card-props":  {
       to: "/volumes",
     },
   },
   {
-    title: "Characters",
-    icon: "fasl:bat",
-    color: "info",
+    "title":       "Characters",
+    "icon":        "fasl:bat",
+    "color":       "info",
     "count-query": "characters.count",
-    "card-props": {
+    "card-props":  {
       to: "/characters",
     },
   },
   {
-    title: "Teams",
-    icon: "fasl:users",
-    color: "warning",
+    "title":       "Teams",
+    "icon":        "fasl:users",
+    "color":       "warning",
     "count-query": "teams.count",
-    "card-props": {
+    "card-props":  {
       to: "/teams",
     },
   },
   {
-    title: "Locations",
-    icon: "fasl:location-dot",
-    color: "error",
+    "title":       "Locations",
+    "icon":        "fasl:location-dot",
+    "color":       "error",
     "count-query": "locations.count",
-    "card-props": {
+    "card-props":  {
       to: "/locations",
     },
   },
   {
-    title: "Objects",
-    icon: "fasl:swords-laser",
-    color: "primary",
+    "title":       "Objects",
+    "icon":        "fasl:swords-laser",
+    "color":       "primary",
     "count-query": "objects.count",
-    "card-props": {
+    "card-props":  {
       to: "/objects",
     },
   },
   {
-    title: "Concepts",
-    icon: "fasl:brain",
-    color: "info",
+    "title":       "Concepts",
+    "icon":        "fasl:brain",
+    "color":       "info",
     "count-query": "concepts.count",
-    "card-props": {
+    "card-props":  {
       to: "/concepts",
     },
   },
   {
-    title: "People",
-    icon: "fasl:people-carry-box",
-    color: "warning",
+    "title":       "People",
+    "icon":        "fasl:people-carry-box",
+    "color":       "warning",
     "count-query": "people.count",
-    "card-props": {
+    "card-props":  {
       to: "/people",
     },
   },
-];
+]
 
 const missingIssueCard = {
-  title: "Missing issues",
-  icon: "fasl:eye",
-  color: "error",
+  "title":       "Missing issues",
+  "icon":        "fasl:eye",
+  "color":       "error",
   "count-query": "missingIssues.count",
-  "card-props": {
+  "card-props":  {
     to: "/missing-issues",
   },
-};
+}
 
-const user = useUserStore();
+const user = useUserStore()
 
 const cardProps = computed(() =>
-  user.loggedIn ? [...cardPropsUnauthorized, missingIssueCard] : cardPropsUnauthorized
-);
+  user.loggedIn ? [...cardPropsUnauthorized, missingIssueCard] : cardPropsUnauthorized,
+)
 </script>
 
 <template>

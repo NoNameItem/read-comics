@@ -2,7 +2,7 @@
 const route = useRoute()
 
 definePageMeta({
-  navActiveLink: 'story-arcs',
+  navActiveLink: "story-arcs",
 })
 </script>
 

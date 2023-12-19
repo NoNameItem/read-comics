@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { useTheme } from 'vuetify'
-import ScrollToTop from '@core/components/ScrollToTop.vue'
-import initCore from '@core/initCore'
-import { initConfigStore, useConfigStore } from '@core/stores/config'
-import { hexToRgb } from '@layouts/utils'
-import { useBreadcrumbsStore } from '~/stores/breadcrumbs'
+import { useTheme } from "vuetify"
+import ScrollToTop from "@core/components/ScrollToTop.vue"
+import initCore from "@core/initCore"
+import { initConfigStore, useConfigStore } from "@core/stores/config"
+import { hexToRgb } from "@layouts/utils"
 
 const { global } = useTheme()
 
@@ -15,16 +14,15 @@ initConfigStore()
 const configStore = useConfigStore()
 const { isMobile } = useDevice()
 if (isMobile)
-  configStore.appContentLayoutNav = 'vertical'
+  configStore.appContentLayoutNav = "vertical"
 
 const user = useUserStore()
 const route = useRoute()
-const breadcrumbs = useBreadcrumbsStore()
 
 watch(user, () => {
   if (!user.accessToken && route.meta?.loginRequired) {
     navigateTo({
-      path: '/login',
+      path:  "/login",
       query: { to: route.fullPath },
     })
   }

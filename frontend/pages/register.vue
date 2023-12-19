@@ -1,34 +1,33 @@
 <script setup>
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import { requiredValidator } from '@validators'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
+import { requiredValidator } from "@validators"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Register' })
+useHead({ title: "Register" })
 
 const route = useRoute()
-const router = useRouter()
 
 const registerForm = ref(null)
 
 const form = reactive({
-  username: '',
-  email: '',
-  password: '',
-  loading: false,
-  valid: false,
+  username:   "",
+  email:      "",
+  password:   "",
+  loading:    false,
+  valid:      false,
   formErrors: null,
 })
 
 const backendErrors = ref({
-  username: [],
-  email: [],
-  password1: [],
+  username:         [],
+  email:            [],
+  password1:        [],
   non_field_errors: [],
 })
 
@@ -39,9 +38,9 @@ const userStore = useUserStore()
 async function register() {
   form.loading = true
   backendErrors.value = {
-    username: [],
-    email: [],
-    password1: [],
+    username:         [],
+    email:            [],
+    password1:        [],
     non_field_errors: [],
   }
   form.valid = (await registerForm.value.validate()).valid
@@ -60,11 +59,11 @@ async function register() {
     if (registerError?.response?.status === 400)
       backendErrors.value = registerError.response.data
     else
-      toast.error('We experencing network troubles', 'Please, try again later', { timeout: false })
+      toast.error("We experencing network troubles", "Please, try again later", { timeout: false })
   }
   else {
-    toast.success(`${userStore.username}, nice to meet you!`, 'Hope you will like us...')
-    await navigateTo({ name: 'verify-email', query: { to: route.query.to } })
+    toast.success(`${userStore.username}, nice to meet you!`, "Hope you will like us...")
+    await navigateTo({ name: "verify-email", query: { to: route.query.to } })
   }
   form.loading = false
 }

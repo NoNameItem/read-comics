@@ -1,30 +1,30 @@
 <script setup>
-import { useQuery } from '@tanstack/vue-query'
-import { getQueryByString } from '@/queries'
+import { useQuery } from "@tanstack/vue-query"
+import { getQueryByString } from "@/queries"
 
 const props = defineProps({
   title: {
-    type: String,
+    type:     String,
     required: true,
   },
   color: {
-    type: String,
+    type:     String,
     required: false,
-    default: 'primary',
+    default:  "primary",
   },
   icon: {
-    type: String,
+    type:     String,
     required: true,
   },
   cardProps: {
-    type: Object,
+    type:     Object,
     required: false,
     default(_) {
       return {}
     },
   },
   countQuery: {
-    type: String,
+    type:     String,
     required: true,
   },
 })

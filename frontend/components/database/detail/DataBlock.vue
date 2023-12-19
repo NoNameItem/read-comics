@@ -1,13 +1,13 @@
 <script setup>
 const props = defineProps({
   item: {
-    type: Object,
+    type:     Object,
     required: false,
   },
   last: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: true,
+    default:  true,
   },
 })
 

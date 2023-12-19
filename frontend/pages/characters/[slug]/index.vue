@@ -1,11 +1,11 @@
 <script setup>
-import { useQuery } from '@tanstack/vue-query'
-import { ref } from 'vue'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
-import { queries } from '@/queries'
+import { useQuery } from "@tanstack/vue-query"
+import { ref } from "vue"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { queries } from "@/queries"
 
 definePageMeta({
-  navActiveLink: 'characters',
+  navActiveLink: "characters",
 })
 
 const route = useRoute()
@@ -16,8 +16,8 @@ const breadcrumb = useBreadcrumbsStore()
 // ---------------------------------------------------------
 const tabs = [
   {
-    icon: 'fasl:circle-info',
-    title: 'Info',
+    icon:  "fasl:circle-info",
+    title: "Info",
   },
 ]
 
@@ -32,8 +32,8 @@ const setBreadcrumbs = () => {
   if (!infoLoading.value) {
     breadcrumb.setBreadcrumbs(info.value.name, [
       {
-        title: 'Characters',
-        to: '/characters',
+        title: "Characters",
+        to:    "/characters",
       },
       { title: info.value.name },
     ])
@@ -57,39 +57,39 @@ watch([infoLoading, info], () => {
 })
 
 const preparedInfo = computed(() => ({
-  title: info.value?.name,
-  image: info.value?.image,
-  square_image: info.value?.square_image,
-  subtitle: info.value?.real_name,
+  title:         info.value?.name,
+  image:         info.value?.image,
+  square_image:  info.value?.square_image,
+  subtitle:      info.value?.real_name,
   download_link: info.value?.download_link,
   download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
-  dataItems: [
+  dataItems:     [
     {
-      title: 'Publisher',
+      title: "Publisher",
       value: info.value?.publisher?.name,
-      to: `/publishers/${info.value?.publisher?.slug}`,
+      to:    `/publishers/${info.value?.publisher?.slug}`,
     },
     {
-      title: 'Aliases',
+      title:     "Aliases",
       valueList: info.value?.aliases,
     },
     {
-      title: 'Birth date',
+      title: "Birth date",
       value: utilsFormatDate(info.value?.birth),
     },
     {
-      title: 'Gender',
+      title: "Gender",
       value: info.value?.gender,
     },
     {
-      title: 'Powers',
+      title:     "Powers",
       valueList: info.value?.powers,
     },
     {
-      title: 'First Issue',
+      title: "First Issue",
       value: info.value?.first_issue_name,
-      to: info.value?.first_issue_slug ? `/issues/${info.value?.first_issue_slug}` : null,
+      to:    info.value?.first_issue_slug ? `/issues/${info.value?.first_issue_slug}` : null,
     },
   ],
 }))

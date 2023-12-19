@@ -1,16 +1,11 @@
 <script setup>
-import misc404 from '@images/pages/404.jpg'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
-import miscMaskDark from '@images/pages/misc-mask-dark.png'
-import miscMaskLight from '@images/pages/misc-mask-light.png'
+import misc404 from "@images/pages/404.jpg"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Page not found' })
-
-const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
+useHead({ title: "Page not found" })
 </script>
 
 <template>

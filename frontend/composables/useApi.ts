@@ -1,13 +1,13 @@
-import { defu } from 'defu'
-import type { UseFetchOptions } from 'nuxt/app'
+import { defu } from "defu"
+import type { UseFetchOptions } from "nuxt/app"
 
 export const useApi: typeof useFetch = <T>(url: MaybeRefOrGetter<string>, options: UseFetchOptions<T> = {}) => {
   const config = useRuntimeConfig()
-  const accessToken = useCookie('accessToken')
+  const accessToken = useCookie("accessToken")
 
   const defaults: UseFetchOptions<T> = {
     baseURL: config.public.apiBaseUrl,
-    key: toValue(url),
+    key:     toValue(url),
     headers: accessToken.value ? { Authorization: `Bearer ${accessToken.value}` } : {},
   }
 

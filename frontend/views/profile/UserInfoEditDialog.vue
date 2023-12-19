@@ -1,35 +1,35 @@
 <script setup>
-import { useUserStore } from "@/stores/user";
-import { useQuery, useQueryClient } from "@tanstack/vue-query";
-import { queries } from "@/queries";
-import { usePostForm } from "@/composables/usePostForm";
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
+import { useUserStore } from "@/stores/user"
+import { queries } from "@/queries"
+import { usePostForm } from "@/composables/usePostForm"
 
 const props = defineProps({
   isDialogVisible: {
-    type: Boolean,
+    type:     Boolean,
     required: true,
   },
-});
+})
 
-const emit = defineEmits(["submit", "update:isDialogVisible"]);
+const emit = defineEmits(["submit", "update:isDialogVisible"])
 
 const GENDERS = [
   { value: "F", label: "Female" },
   { value: "M", label: "Male" },
   { value: "U", label: "Unicorn" },
   { value: "O", label: "Other" },
-];
+]
 
-const { data: profileData } = useQuery(queries.profile.profileData);
+const { data: profileData } = useQuery(queries.profile.profileData)
 
-const user = useUserStore();
+const user = useUserStore()
 
 const getUserData = () => ({
-  name: user.name,
-  gender: user.gender,
+  name:       user.name,
+  gender:     user.gender,
   birth_date: user.birthDate,
-  bio: profileData.value?.bio,
-});
+  bio:        profileData.value?.bio,
+})
 
 const {
   formData: userData,
@@ -42,35 +42,35 @@ const {
   post,
   reset,
 } = usePostForm({
-  url: "/profile/",
+  url:              "/profile/",
   formInitialValue: getUserData(),
-  httpMethod: "patch",
-});
+  httpMethod:       "patch",
+})
 
-const queryClient = useQueryClient();
+const queryClient = useQueryClient()
 
 watch(status, () => {
   if (status.value === "success") {
-    user.setUser(responseData.value);
-    queryClient.invalidateQueries({ queryKey: ["profile"] });
-    status.value = null;
-    emit("update:isDialogVisible", false);
+    user.setUser(responseData.value)
+    queryClient.invalidateQueries({ queryKey: ["profile"] })
+    status.value = null
+    emit("update:isDialogVisible", false)
   }
-});
+})
 
 watch(profileData, () => {
-  userData.value = getUserData();
-});
+  userData.value = getUserData()
+})
 
 const onFormReset = () => {
-  emit("update:isDialogVisible", false);
-  userData.value = getUserData();
-  reset();
-};
+  emit("update:isDialogVisible", false)
+  userData.value = getUserData()
+  reset()
+}
 
 const dialogModelValueUpdate = (val) => {
-  emit("update:isDialogVisible", val);
-};
+  emit("update:isDialogVisible", val)
+}
 </script>
 
 <template>
@@ -78,13 +78,16 @@ const dialogModelValueUpdate = (val) => {
     id="userInfoDialog"
     :width="$vuetify.display.smAndDown ? 'auto' : 677"
     :model-value="props.isDialogVisible"
-    @update:model-value="dialogModelValueUpdate">
+    @update:model-value="dialogModelValueUpdate"
+  >
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
     <VCard class="pa-sm-8 pa-5" :loading="loading">
       <VCardItem class="text-center">
-        <VCardTitle class="text-h5 mb-3"> Edit User Information</VCardTitle>
+        <VCardTitle class="text-h5 mb-3">
+          Edit User Information
+        </VCardTitle>
       </VCardItem>
 
       <VCardText>
@@ -103,7 +106,8 @@ const dialogModelValueUpdate = (val) => {
                 label="Gender"
                 :items="GENDERS"
                 item-title="label"
-                item-value="value" />
+                item-value="value"
+              />
             </VCol>
 
             <!-- 👉 Birth Date -->
@@ -112,7 +116,8 @@ const dialogModelValueUpdate = (val) => {
                 v-model="userData.birth_date"
                 label="Birth Date"
                 type="date"
-                :error-messages="errors.birth_date"></AppTextField>
+                :error-messages="errors.birth_date"
+              />
             </VCol>
 
             <!-- 👉 Bi0 -->
@@ -121,18 +126,23 @@ const dialogModelValueUpdate = (val) => {
                 v-model="userData.bio"
                 label="Tell us about yourself"
                 type="date"
-                :error-messages="errors.bio"></AppTextarea>
+                :error-messages="errors.bio"
+              />
             </VCol>
 
             <VCol cols-12>
-              <FormErrors :error="false" :error-messages="errors.non_field_errors"></FormErrors>
+              <FormErrors :error="false" :error-messages="errors.non_field_errors" />
             </VCol>
 
             <!-- 👉 Submit and Cancel -->
             <VCol cols="12" class="d-flex flex-wrap justify-center gap-4">
-              <VBtn type="submit" :loading="loading"> Submit</VBtn>
+              <VBtn type="submit" :loading="loading">
+                Submit
+              </VBtn>
 
-              <VBtn color="secondary" variant="tonal" :loading="loading" @click="onFormReset"> Cancel</VBtn>
+              <VBtn color="secondary" variant="tonal" :loading="loading" @click="onFormReset">
+                Cancel
+              </VBtn>
             </VCol>
           </VRow>
         </VForm>

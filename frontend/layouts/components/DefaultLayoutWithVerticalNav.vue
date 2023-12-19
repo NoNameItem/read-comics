@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { themeConfig } from '@themeConfig'
-import NavBarI18n from '@core/components/I18n.vue'
-import { VerticalNavLayout } from '@layouts'
-import navItems from '@/navigation/vertical'
+import { themeConfig } from "@themeConfig"
+import NavBarI18n from "@core/components/I18n.vue"
+import { VerticalNavLayout } from "@layouts"
+import navItems from "@/navigation/vertical"
 
 // Components
-import Footer from '@/layouts/components/Footer.vue'
-import NavbarThemeSwitcher from '@/layouts/components/NavbarThemeSwitcher.vue'
-import UserProfile from '@/layouts/components/UserProfile.vue'
+import Footer from "@/layouts/components/Footer.vue"
+import NavbarThemeSwitcher from "@/layouts/components/NavbarThemeSwitcher.vue"
+import UserProfile from "@/layouts/components/UserProfile.vue"
 
 // @layouts plugin
 </script>

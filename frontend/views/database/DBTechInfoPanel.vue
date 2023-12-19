@@ -1,17 +1,17 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/components";
+import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
   data: {
-    type: Object,
+    type:     Object,
     required: false,
   },
   loading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: true,
+    default:  true,
   },
-});
+})
 </script>
 
 <template>
@@ -24,7 +24,8 @@ const props = defineProps({
           v-for="(item, index) in props.data"
           :key="index"
           :item="item"
-          :last="index === props.data.length - 1" />
+          :last="index === props.data.length - 1"
+        />
       </VList>
     </VCardText>
   </VCard>

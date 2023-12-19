@@ -1,27 +1,27 @@
 <script setup>
 const componentProps = defineProps({
   downloadLink: {
-    type: String,
+    type:     String,
     required: false,
   },
   downloadSize: {
-    type: String,
+    type:     String,
     required: false,
   },
-});
+})
 
 const linkVariants = computed(() => [
   {
-    icon: "fasl:folder",
+    icon:  "fasl:folder",
     title: "Grouped by publisher and volume",
-    link: componentProps.downloadLink,
+    link:  componentProps.downloadLink,
   },
   {
-    icon: "fasl:arrow-down-1-9",
+    icon:  "fasl:arrow-down-1-9",
     title: "Chronologically by cover date",
-    link: `${componentProps.downloadLink}?names=ordered`,
+    link:  `${componentProps.downloadLink}?names=ordered`,
   },
-]);
+])
 </script>
 
 <template>
@@ -36,7 +36,7 @@ const linkVariants = computed(() => [
     <VList density="compact">
       <VListItem v-for="item in linkVariants" :key="item.link" :href="item.link">
         <template #prepend>
-          <VIcon :icon="item.icon"></VIcon>
+          <VIcon :icon="item.icon" />
         </template>
         <VListItemTitle>{{ item.title }}</VListItemTitle>
       </VListItem>

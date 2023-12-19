@@ -5,7 +5,7 @@
         ...$attrs,
       }"
       :error="false"
-      max-errors="100">
-    </VInput>
+      max-errors="100"
+    />
   </VCol>
 </template>

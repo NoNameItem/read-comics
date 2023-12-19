@@ -1,21 +1,21 @@
 <script setup lang="ts">
-import { useQuery } from '@tanstack/vue-query'
-import { useDisplay } from 'vuetify'
-import { DateTime } from 'luxon'
-import { getQueryByString } from '@/queries'
-import comics_covers from '@images/comics_covers.jpeg'
+import { useQuery } from "@tanstack/vue-query"
+import { useDisplay } from "vuetify"
+import { DateTime } from "luxon"
+import comics_covers from "@images/comics_covers.jpeg"
+import { getQueryByString } from "@/queries"
 
 const props = defineProps({
   queryName: {
-    type: String,
+    type:     String,
     required: true,
   },
   cardUrlBase: {
-    type: String,
+    type:     String,
     required: true,
   },
   title: {
-    type: String,
+    type:     String,
     required: true,
   },
 })
@@ -25,11 +25,11 @@ const { name: displayBreakpoint } = useDisplay()
 const slide = ref(null)
 
 const itemsOnSlide = {
-  xs: 1,
-  sm: 1,
-  md: 1,
-  lg: 2,
-  xl: 3,
+  xs:  1,
+  sm:  1,
+  md:  1,
+  lg:  2,
+  xl:  3,
   xxl: 3,
 }
 
@@ -49,7 +49,7 @@ const groupedData = computed(() => {
   if (data.value?.count === 0) {
     res.push([
       {
-        title: 'There is nothing here. Good Job',
+        title: "There is nothing here. Good Job",
         image: comics_covers,
       },
     ])
@@ -59,14 +59,14 @@ const groupedData = computed(() => {
 
   data.value?.results
     ?.map(elem => ({
-      title: elem?.display_name,
+      title:            elem?.display_name,
       lastFinishedDate: DateTime.fromISO(elem?.max_finished_date).toRelative(),
-      stats: `Finished ${elem?.finished_count} of ${elem?.issues_count}`,
-      image: elem.image,
-      linkText: 'Continue',
-      linkUrl: `/${props.cardUrlBase}/${elem?.slug}`,
+      stats:            `Finished ${elem?.finished_count} of ${elem?.issues_count}`,
+      image:            elem.image,
+      linkText:         "Continue",
+      linkUrl:          `/${props.cardUrlBase}/${elem?.slug}`,
     }))
-    .forEach(el => {
+    .forEach((el) => {
       group.push(el)
       if (group.length === itemsOnSlide[displayBreakpoint.value]) {
         res.push([...group])
@@ -77,10 +77,10 @@ const groupedData = computed(() => {
   if (data.value?.next) {
     res.push([
       {
-        title: 'There is more...',
-        image: comics_covers,
-        linkText: 'View all',
-        linkUrl: `/${props.cardUrlBase}/started`,
+        title:    "There is more...",
+        image:    comics_covers,
+        linkText: "View all",
+        linkUrl:  `/${props.cardUrlBase}/started`,
       },
     ])
   }
@@ -92,6 +92,8 @@ const nextSlide = () => {
   if (groupedData.value?.length > 1)
     slide.value = slide.value + 1 < groupedData.value.length ? slide.value + 1 : 0
 }
+
+const intervalId = ref(null)
 
 const nextSlideManual = () => {
   nextSlide()
@@ -114,15 +116,13 @@ const prevSlideManual = () => {
   }
 }
 
-const toggleSlide = n => {
+const toggleSlide = (n) => {
   slide.value = n
   if (intervalId.value) {
     clearInterval(intervalId.value)
     intervalId.value = null
   }
 }
-
-const intervalId = ref(null)
 
 onMounted(() => {
   intervalId.value = setInterval(nextSlide, 5000)

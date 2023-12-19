@@ -1,37 +1,37 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/components";
+import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
   title: {
-    type: String,
+    type:     String,
     required: true,
   },
   color: {
-    type: String,
+    type:     String,
     required: false,
-    default: "primary",
+    default:  "primary",
   },
   icon: {
-    type: String,
+    type:     String,
     required: true,
   },
   stats: {
-    type: String,
+    type:     String,
     required: false,
   },
   cardProps: {
-    type: Object,
+    type:     Object,
     required: false,
     default(_) {
-      return {};
+      return {}
     },
   },
   statsLoading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
-});
+})
 </script>
 
 <template>

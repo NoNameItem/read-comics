@@ -1,22 +1,22 @@
 <script setup>
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import axios from '@axios'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
+import axios from "@axios"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Confirm Email' })
+useHead({ title: "Confirm Email" })
 
 const user = useUserStore()
 const route = useRoute()
 const loading = ref(true)
 
 async function confimEmail() {
-  await axios.post('/auth/registration/verify-email/', { key: route.query.key })
+  await axios.post("/auth/registration/verify-email/", { key: route.query.key })
   loading.value = false
   user.email_verified = true
   user.$persist()

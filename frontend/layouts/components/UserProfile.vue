@@ -1,18 +1,6 @@
 <script setup>
-import F from '@images/avatars/F_thumb.png'
-import M from '@images/avatars/M_thumb.png'
-import O from '@images/avatars/O_thumb.png'
-import U from '@images/avatars/U_thumb.png'
-
 const userStore = useUserStore()
 const route = useRoute()
-
-const images = {
-  F,
-  M,
-  O,
-  U,
-}
 </script>
 
 <template>

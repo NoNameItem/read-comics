@@ -1,42 +1,42 @@
 <script setup>
-import { useUserStore } from "@/stores/user";
+import { useUserStore } from "@/stores/user"
 
 const props = defineProps({
   info: {
-    type: Object,
+    type:     Object,
     required: false,
   },
   infoLoading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
   },
   technicalInfo: {
-    type: Object,
+    type:     Object,
     required: false,
   },
   technicalInfoLoading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
   },
   batchDownload: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: true,
+    default:  true,
   },
   showPrevNextButtons: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
-});
+})
 
-const infoFlipped = ref(false);
+const infoFlipped = ref(false)
 
 const flipInfo = () => {
-  infoFlipped.value = !infoFlipped.value;
-};
+  infoFlipped.value = !infoFlipped.value
+}
 
-const user = useUserStore();
+const user = useUserStore()
 </script>
 
 <template>
@@ -48,7 +48,8 @@ const user = useUserStore();
             :data="props.info"
             :loading="props.infoLoading"
             :batch-download="props.batchDownload"
-            :show-prev-next-buttons="props.showPrevNextButtons" />
+            :show-prev-next-buttons="props.showPrevNextButtons"
+          />
         </template>
         <template v-if="props.technicalInfo" #back>
           <DBTechInfoPanel :data="props.technicalInfo" :loading="props.technicalInfoLoading" />
@@ -56,13 +57,12 @@ const user = useUserStore();
       </FlipCard>
       <VBtn
         v-if="props.technicalInfo"
-        ref="resetImageButtonRef"
         elevation="20"
         size="x-small"
         class="flip-btn"
         icon="fasl:refresh"
-        @click="flipInfo">
-      </VBtn>
+        @click="flipInfo"
+      />
     </div>
   </div>
 </template>

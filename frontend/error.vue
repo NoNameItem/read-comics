@@ -1,16 +1,11 @@
 <script setup>
-import pages500 from '@images/pages/500.jpg'
-import miscMaskDark from '@images/pages/misc-mask-dark.png'
-import miscMaskLight from '@images/pages/misc-mask-light.png'
-import { useGenerateImageVariant } from '@core/composable/useGenerateImageVariant'
+import pages500 from "@images/pages/500.jpg"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Server error' })
-
-const authThemeMask = useGenerateImageVariant(miscMaskLight, miscMaskDark)
+useHead({ title: "Server error" })
 </script>
 
 <template>

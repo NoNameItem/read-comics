@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/vue-query'
+import { useQuery } from "@tanstack/vue-query"
 
 export function useGetListData(query, defaultParams) {
   const route = useRoute()

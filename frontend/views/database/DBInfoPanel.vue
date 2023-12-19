@@ -1,38 +1,38 @@
 <script setup>
-import { avatarText } from "@core/utils/formatters";
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
+import { avatarText } from "@core/utils/formatters"
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
 
 const props = defineProps({
   data: {
-    type: Object,
+    type:     Object,
     required: false,
   },
   loading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: true,
+    default:  true,
   },
   batchDownload: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: true,
+    default:  true,
   },
   showPrevNextButtons: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
-});
+})
 
-const isImageDialogVisible = ref(false);
+const isImageDialogVisible = ref(false)
 
 const openImageDialog = () => {
-  isImageDialogVisible.value = true;
-};
+  isImageDialogVisible.value = true
+}
 
 const closeImageDialog = () => {
-  isImageDialogVisible.value = false;
-};
+  isImageDialogVisible.value = false
+}
 </script>
 
 <template>
@@ -47,11 +47,12 @@ const closeImageDialog = () => {
           :size="300"
           :color="!props.data.image ? 'primary' : undefined"
           :variant="!props.data.image ? 'tonal' : undefined"
-          @click="openImageDialog">
-          <VImg v-if="props.data.image" ref="imageDisplayRef" cover :src="props.data.square_image">
+          @click="openImageDialog"
+        >
+          <VImg v-if="props.data.image" cover :src="props.data.square_image">
             <template #placeholder>
               <div class="d-flex align-center justify-center fill-height">
-                <VSkeletonLoader type="avatar"></VSkeletonLoader>
+                <VSkeletonLoader type="avatar" />
               </div>
             </template>
           </VImg>
@@ -76,13 +77,15 @@ const closeImageDialog = () => {
         size="38"
         class="mr-1"
         :disabled="!props.data?.prevLink"
-        :to="props.data?.prevLink">
+        :to="props.data?.prevLink"
+      >
         <VIcon icon="fasl:chevron-left" size="22" />
       </VBtn>
       <BatchDownloadButton
         v-if="props.batchDownload"
         :download-link="props.data?.download_link"
-        :download-size="props.data?.download_size" />
+        :download-size="props.data?.download_size"
+      />
       <VBtn v-else color="info" v-bind="props" :href="props.data?.download_link">
         <VIcon start icon="fasl:download" />
         Download ({{ props.data?.download_size }})
@@ -92,7 +95,8 @@ const closeImageDialog = () => {
         size="38"
         class="ml-1"
         :disabled="!props.data?.nextLink"
-        :to="props.data?.nextLink">
+        :to="props.data?.nextLink"
+      >
         <VIcon icon="fasl:chevron-right" size="22" />
       </VBtn>
     </VCardText>
@@ -107,7 +111,8 @@ const closeImageDialog = () => {
           v-for="(item, index) in props.data.dataItems"
           :key="index"
           :item="item"
-          :last="index === props.data.dataItems.length - 1" />
+          :last="index === props.data.dataItems.length - 1"
+        />
       </VList>
     </VCardText>
 
@@ -122,7 +127,7 @@ const closeImageDialog = () => {
   <VDialog v-model="isImageDialogVisible" fullscreen>
     <DialogCloseBtn class="image-dialog-close-btn" @click="closeImageDialog" />
     <VCard>
-      <VImg width="100%" height="100%" :src="props.data.image"></VImg>
+      <VImg width="100%" height="100%" :src="props.data.image" />
     </VCard>
   </VDialog>
 </template>

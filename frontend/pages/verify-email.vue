@@ -1,14 +1,14 @@
 <script setup>
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Email Verification' })
+useHead({ title: "Email Verification" })
 
 const user = useUserStore()
 const route = useRoute()

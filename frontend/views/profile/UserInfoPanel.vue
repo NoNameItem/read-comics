@@ -1,24 +1,24 @@
 <script setup>
-import { useMutation, useQuery } from '@tanstack/vue-query'
-import { VSkeletonLoader } from 'vuetify/labs/VSkeletonLoader'
-import { DateTime } from 'luxon'
-import { avatarText, kFormatter } from '@core/utils/formatters'
-import { useUserStore } from '@/stores/user'
-import { queries } from '@/queries'
-import axios from '@axios'
+import { useMutation, useQuery } from "@tanstack/vue-query"
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
+import { DateTime } from "luxon"
+import { avatarText, kFormatter } from "@core/utils/formatters"
+import axios from "@axios"
+import { useUserStore } from "@/stores/user"
+import { queries } from "@/queries"
 
 const GENDER_COLORS = {
-  F: 'error',
-  M: 'primary',
-  O: 'info',
-  U: 'success',
+  F: "error",
+  M: "primary",
+  O: "info",
+  U: "success",
 }
 
 const user = useUserStore()
 
 user.$hydrate()
 
-const { isPending, isError, error, data, suspense } = useQuery(queries.profile.finishedStats)
+const { isPending, isError, data, suspense } = useQuery(queries.profile.finishedStats)
 
 onServerPrefetch(async () => {
   await suspense()
@@ -26,27 +26,27 @@ onServerPrefetch(async () => {
 
 const isUserInfoEditDialogVisible = ref(false)
 
-const emailBadgeColor = computed(() => (user.email_verified ? 'success' : 'danger'))
-const emailBadgeText = computed(() => (user.email_verified ? 'Verified' : 'Not verified'))
+const emailBadgeColor = computed(() => (user.email_verified ? "success" : "danger"))
+const emailBadgeText = computed(() => (user.email_verified ? "Verified" : "Not verified"))
 const genderBadgeColor = computed(() => GENDER_COLORS[user.gender?.value])
 
 const role = computed(() => {
   if (user.isSuperuser) {
     return {
-      color: 'success',
-      text: 'Superuser',
+      color: "success",
+      text:  "Superuser",
     }
   }
   if (user.isStaff) {
     return {
-      color: 'warning',
-      text: 'Staff',
+      color: "warning",
+      text:  "Staff",
     }
   }
 
   return {
-    color: 'primary',
-    text: 'Reader',
+    color: "primary",
+    text:  "Reader",
   }
 })
 
@@ -58,25 +58,25 @@ const imageInputRef = ref(null)
 const imageDisplayRef = ref(null)
 const resetImageButtonRef = ref(null)
 
-const showImageResetBadge = computed(() => user.images && imageDisplayRef.value?.state === 'loaded')
+const showImageResetBadge = computed(() => user.images && imageDisplayRef.value?.state === "loaded")
 
 // Change Image
 const changeImageMutation = useMutation({
-  mutationKey: 'changeImage',
-  mutationFn: formData =>
-    axios.patch('/profile/', formData, {
+  mutationKey: "changeImage",
+  mutationFn:  formData =>
+    axios.patch("/profile/", formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
+        "Content-Type": "multipart/form-data",
       },
     }),
 })
 
-const changeImage = async file => {
+const changeImage = async (file) => {
   const { files } = file.target
   if (files?.length) {
     const formData = new FormData()
 
-    formData.append('images', files[0])
+    formData.append("images", files[0])
     try {
       const result = await changeImageMutation.mutateAsync(formData)
       const data = await result.data
@@ -86,15 +86,14 @@ const changeImage = async file => {
     catch (error) {
       const toast = useTitledToast()
 
-      toast.error('Could not upload image')
-      console.log(error)
+      toast.error("Could not upload image")
     }
   }
 }
 
 const resetImageMutation = useMutation({
-  mutationKey: 'resetImage',
-  mutationFn: () => axios.patch('/profile/', { images: null }),
+  mutationKey: "resetImage",
+  mutationFn:  () => axios.patch("/profile/", { images: null }),
 })
 
 const resetImage = async () => {
@@ -106,8 +105,7 @@ const resetImage = async () => {
   catch (error) {
     const toast = useTitledToast()
 
-    toast.error('Could not reset image')
-    console.log(error)
+    toast.error("Could not reset image")
   }
 }
 </script>

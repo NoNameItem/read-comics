@@ -1,21 +1,19 @@
 <script setup>
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import { emailValidator, requiredValidator } from '@validators'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
+import { emailValidator, requiredValidator } from "@validators"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Reset Password' })
-
-const emailSent = ref(false)
+useHead({ title: "Reset Password" })
 
 const { formData, valid, formRef, status, loading, errors, post } = usePostForm({
-  url: '/auth/password/reset/',
-  formInitialValue: { email: '' },
+  url:              "/auth/password/reset/",
+  formInitialValue: { email: "" },
 })
 </script>
 

@@ -1,16 +1,16 @@
 <script setup>
 const props = defineProps({
   length: {
-    type: Number,
+    type:     Number,
     required: true,
   },
 })
 
 const route = useRoute()
 const router = useRouter()
-const currentPage = ref(Number(route.query.page ?? '1'))
+const currentPage = ref(Number(route.query.page ?? "1"))
 
-watch(route, () => (currentPage.value = Number(route.query.page ?? '1')))
+watch(route, () => (currentPage.value = Number(route.query.page ?? "1")))
 
 watch(currentPage, () => {
   router.push({ name: route.name, query: { ...route.query, page: currentPage.value } })
@@ -19,8 +19,8 @@ watch(currentPage, () => {
 const scrollToTop = () => {
   setTimeout(() => {
     window.scrollTo({
-      top: 0,
-      behavior: 'instant',
+      top:      0,
+      behavior: "instant",
     })
   }, 200)
 }
@@ -33,7 +33,7 @@ const scrollToTop = () => {
     variant="outlined"
     :length="props.length"
     :total-visible="15"
-    @update:modelValue="scrollToTop"
+    @update:model-value="scrollToTop"
   />
 </template>
 

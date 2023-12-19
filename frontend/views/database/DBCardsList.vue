@@ -1,42 +1,42 @@
 <script setup>
-import { VSkeletonLoader } from 'vuetify/labs/components'
-import OrderingSelector from '@/components/database/list/OrderingSelector.vue'
-import { useUserStore } from '@/stores/user'
+import { VSkeletonLoader } from "vuetify/labs/components"
+import OrderingSelector from "@/components/database/list/OrderingSelector.vue"
+import { useUserStore } from "@/stores/user"
 
 const props = defineProps({
   orderingVariants: {
-    type: Array,
+    type:     Array,
     required: true,
   },
   defaultOrdering: {
-    type: String,
+    type:     String,
     required: true,
   },
   withoutIssuesLabel: {
-    type: String,
+    type:     String,
     required: false,
   },
   items: {
-    type: Array,
+    type:     Array,
     required: true,
   },
   loading: {
-    type: Boolean,
+    type:     Boolean,
     required: true,
   },
   pagesNumber: {
-    type: Number,
+    type:     Number,
     required: true,
   },
   showWithoutIssuesToggle: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
   showFinishedToggle: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
 })
 

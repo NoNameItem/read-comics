@@ -1,26 +1,24 @@
 <script setup>
-import { usePostForm } from "@/composables/usePostForm";
-import { requiredValidator } from "@validators";
+import { requiredValidator } from "@validators"
+import { usePostForm } from "@/composables/usePostForm"
 
-const isOldPasswordVisible = ref(false);
-const isNewPasswordVisible = ref(false);
-const isConfirmPasswordVisible = ref(false);
+const isNewPasswordVisible = ref(false)
+const isConfirmPasswordVisible = ref(false)
 
 const { formData, valid, formRef, status, loading, errors, post } = usePostForm({
-  url: "/auth/password/change/",
+  url:              "/auth/password/change/",
   formInitialValue: {
     new_password1: "",
     new_password2: "",
   },
-});
+})
 
-const toast = useTitledToast();
+const toast = useTitledToast()
 
 watch(status, () => {
-  if (status.value === "success") {
-    toast.success("Your password has been changed");
-  }
-});
+  if (status.value === "success")
+    toast.success("Your password has been changed")
+})
 </script>
 
 <template>
@@ -37,7 +35,8 @@ watch(status, () => {
               :rules="[requiredValidator]"
               :error-messages="errors.new_password1"
               :append-inner-icon="isNewPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
-              @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible" />
+              @click:append-inner="isNewPasswordVisible = !isNewPasswordVisible"
+            />
           </VCol>
           <VCol cols="12">
             <AppTextField
@@ -48,15 +47,18 @@ watch(status, () => {
               :rules="[requiredValidator]"
               :error-messages="errors.new_password2"
               :append-inner-icon="isConfirmPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
-              @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible" />
+              @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
+            />
           </VCol>
 
           <VCol cols="12">
-            <FormErrors max-errors="5" :error="false" :error-messages="errors.non_field_errors"></FormErrors>
+            <FormErrors max-errors="5" :error="false" :error-messages="errors.non_field_errors" />
           </VCol>
 
           <VCol cols="12">
-            <VBtn block type="submit" :loading="loading"> Change Password</VBtn>
+            <VBtn block type="submit" :loading="loading">
+              Change Password
+            </VBtn>
           </VCol>
         </VRow>
       </VForm>

@@ -1,5 +1,5 @@
-import { useQuery } from '@tanstack/vue-query'
-import { useUserStore } from '@/stores/user'
+import { useQuery } from "@tanstack/vue-query"
+import { useUserStore } from "@/stores/user"
 
 export function useAdminDetailQuery(query) {
   const user = useUserStore()
@@ -13,9 +13,9 @@ export function useAdminDetailQuery(query) {
     ? useQuery(query)
     : {
         isPending: false,
-        isError: false,
-        error: null,
-        data: ref(null),
+        isError:   false,
+        error:     null,
+        data:      ref(null),
       }
 
   const data = computed(() => (user.isSuperuserOrStaff ? requestData.value : null))

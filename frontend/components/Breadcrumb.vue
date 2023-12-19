@@ -1,6 +1,6 @@
 <script setup>
-import { VSkeletonLoader } from 'vuetify/labs/components'
-import { useBreadcrumbsStore } from '@/stores/breadcrumbs'
+import { VSkeletonLoader } from "vuetify/labs/components"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 
 const breadcrumbs = useBreadcrumbsStore()
 </script>

@@ -1,29 +1,29 @@
 <script setup>
-import { VSkeletonLoader } from 'vuetify/labs/components'
+import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
   title: {
-    type: String,
+    type:     String,
     required: false,
-    default: '',
+    default:  "",
   },
   current: {
-    type: Number,
+    type:     Number,
     required: false,
   },
   delta: {
-    type: Number,
+    type:     Number,
     required: false,
-    default: 0,
+    default:  0,
   },
   total: {
-    type: Number,
+    type:     Number,
     required: false,
   },
   loading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
-    default: false,
+    default:  false,
   },
 })
 
@@ -31,12 +31,12 @@ const percentage = computed(() => Math.ceil((props.current / props.total) * 100)
 
 const color = computed(() => {
   if (percentage.value < 35)
-    return 'error'
+    return "error"
 
   if (percentage.value < 65)
-    return 'warning'
+    return "warning"
 
-  return 'success'
+  return "success"
 })
 </script>
 

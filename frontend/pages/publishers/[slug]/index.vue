@@ -2,7 +2,7 @@
 const route = useRoute()
 
 definePageMeta({
-  navActiveLink: 'publishers',
+  navActiveLink: "publishers",
 })
 </script>
 

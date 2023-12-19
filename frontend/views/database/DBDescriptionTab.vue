@@ -1,16 +1,16 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader";
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
 
 const props = defineProps({
   loading: {
-    type: Boolean,
+    type:     Boolean,
     required: false,
   },
   description: {
-    type: String,
+    type:     String,
     required: false,
   },
-});
+})
 </script>
 
 <template>

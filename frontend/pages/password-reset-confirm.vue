@@ -1,15 +1,15 @@
 <script setup>
-import authV1BottomShape from '@images/svg/auth-v1-bottom-shape.svg?raw'
-import authV1TopShape from '@images/svg/auth-v1-top-shape.svg?raw'
-import { VNodeRenderer } from '@layouts/components/VNodeRenderer'
-import { themeConfig } from '@themeConfig'
-import { requiredValidator } from '@validators'
+import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
+import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
+import { requiredValidator } from "@validators"
 
 definePageMeta({
-  layout: 'blank',
+  layout: "blank",
 })
 
-useHead({ title: 'Set New Password' })
+useHead({ title: "Set New Password" })
 
 const route = useRoute()
 
@@ -20,16 +20,16 @@ function processErrors(errors) {
   if (errors.uid || errors.token) {
     const non_field_errors = errors.non_field_errors ?? []
 
-    non_field_errors.push('Your password reset link seems to be wrong or expired.')
+    non_field_errors.push("Your password reset link seems to be wrong or expired.")
     errors.non_field_errors = non_field_errors
   }
 
   return errors
 }
 
-const { formData, valid, formRef, status, loading, errors, responseData, responseStatus, post } = usePostForm({
-  url: '/auth/password/reset/confirm/',
-  formInitialValue: { uid: route.query.uid, token: route.query.token, new_password1: '', new_password2: '' },
+const { formData, valid, formRef, status, loading, errors, post } = usePostForm({
+  url:                 "/auth/password/reset/confirm/",
+  formInitialValue:    { uid: route.query.uid, token: route.query.token, new_password1: "", new_password2: "" },
   customProcessErrors: processErrors,
 })
 </script>
