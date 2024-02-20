@@ -29,7 +29,7 @@ class IssueProcessEntryTask(BaseProcessEntryTask):
 
     def __init__(self):
         super().__init__()
-        self._key_regexp = re.compile(r"^.* #[^ \[\]]+ \[\d+\]\.cb.$")
+        self._key_regexp = re.compile(r"^.* #[^ \[\]]+ +\[\d+\]\.cb.$")
 
 
 issue_entry_task = celery_app.register_task(IssueProcessEntryTask())
