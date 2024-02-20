@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.4](https://github.com/NoNameItem/read-comics/compare/1.3.3...1.3.4) (2024-02-20)
+
+
+### Bug Fixes
+
+* Issue DO key fixed ([a10e93d](https://github.com/NoNameItem/read-comics/commit/a10e93dde76da1071816c64e3a6e2484e33a4b6e))
+
 ## [1.3.3](https://github.com/NoNameItem/read-comics/compare/1.3.2...1.3.3) (2023-05-22)
 
 
