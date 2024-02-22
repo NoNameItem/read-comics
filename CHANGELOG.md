@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.5](https://github.com/NoNameItem/read-comics/compare/1.3.4...1.3.5) (2024-02-22)
+
+
+### Bug Fixes
+
+* Bump scrappy version to include fix of https://github.com/scrapy/scrapy/issues/6024 ([9154d97](https://github.com/NoNameItem/read-comics/commit/9154d9756f4481f4e38ced12cec5e042ef89c963))
+
 ## [1.3.4](https://github.com/NoNameItem/read-comics/compare/1.3.3...1.3.4) (2024-02-20)
 
 
