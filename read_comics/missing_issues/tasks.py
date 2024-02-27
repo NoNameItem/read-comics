@@ -175,9 +175,11 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
     MODEL = Publisher
 
     def get_objects(self):
+        ignored_publishers = list(IgnoredPublisher.objects.values_list("id", flat=True))
+        
         return self.MODEL.objects.annotate(
             issue_count=Count("volumes__issues", distinct=True), watchers_count=Count("watchers", distinct=True)
-        ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
+        ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0)).exclude(pk__in=ignored_publishers)
 
     @staticmethod
     def check_object(obj):
