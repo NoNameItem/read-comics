@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.6](https://github.com/NoNameItem/read-comics/compare/1.3.5...1.3.6) (2024-02-27)
+
+
+### Bug Fixes
+
+* Don't find missing issues for ignored publishers even if it watched ([9d90a3e](https://github.com/NoNameItem/read-comics/commit/9d90a3efa96732996a7b3da27f80be25ebf1ec54))
+
 ## [1.3.5](https://github.com/NoNameItem/read-comics/compare/1.3.4...1.3.5) (2024-02-22)
 
 
