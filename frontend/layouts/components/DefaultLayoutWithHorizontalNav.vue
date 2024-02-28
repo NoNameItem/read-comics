@@ -1,14 +1,13 @@
 <script lang="ts" setup>
-import { themeConfig } from "@themeConfig"
-import NavBarI18n from "@core/components/I18n.vue"
-import { HorizontalNavLayout } from "@layouts"
-import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
-import navItems from "@/navigation/horizontal"
-
-// Components
 import Footer from "@/layouts/components/Footer.vue"
 import NavbarThemeSwitcher from "@/layouts/components/NavbarThemeSwitcher.vue"
 import UserProfile from "@/layouts/components/UserProfile.vue"
+import navItems from "@/navigation/horizontal"
+import NavBarI18n from "@core/components/I18n.vue"
+// Components
+import { HorizontalNavLayout } from "@layouts"
+import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
+import { themeConfig } from "@themeConfig"
 </script>
 
 <template>
@@ -16,8 +15,8 @@ import UserProfile from "@/layouts/components/UserProfile.vue"
     <!-- 👉 navbar -->
     <template #navbar>
       <NuxtLink
-        to="/"
         class="app-logo d-flex align-center gap-x-3"
+        to="/"
       >
         <VNodeRenderer :nodes="themeConfig.app.logo" />
 

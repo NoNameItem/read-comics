@@ -1,9 +1,7 @@
 <script setup>
 import misc404 from "@images/pages/404.jpg"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Page not found" })
 </script>
@@ -13,21 +11,21 @@ useHead({ title: "Page not found" })
     <!-- 👉 Image -->
     <div class="misc-avatar w-100 text-center">
       <VImg
+        :max-width="600"
         :src="misc404"
         alt="Coming Soon"
-        :max-width="600"
         class="mx-auto"
       />
     </div>
 
     <ErrorHeader
       class=""
-      error-title="Page Not Found :("
       error-description="We couldn't find the page you are looking for."
+      error-title="Page Not Found :("
     />
     <VBtn
-      to="/"
       class="mb-12"
+      to="/"
     >
       Back to Home
     </VBtn>

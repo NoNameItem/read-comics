@@ -1,8 +1,8 @@
 <script setup>
 const props = defineProps({
   length: {
-    type:     Number,
     required: true,
+    type:     Number,
   },
 })
 
@@ -19,8 +19,8 @@ watch(currentPage, () => {
 const scrollToTop = () => {
   setTimeout(() => {
     window.scrollTo({
-      top:      0,
       behavior: "instant",
+      top:      0,
     })
   }, 200)
 }
@@ -29,10 +29,10 @@ const scrollToTop = () => {
 <template>
   <VPagination
     v-model="currentPage"
-    class="paginator ma-auto"
-    variant="outlined"
     :length="props.length"
     :total-visible="15"
+    class="paginator ma-auto"
+    variant="outlined"
     @update:model-value="scrollToTop"
   />
 </template>

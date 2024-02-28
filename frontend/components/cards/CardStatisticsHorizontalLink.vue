@@ -2,34 +2,34 @@
 import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
-  title: {
-    type:     String,
-    required: true,
-  },
-  color: {
-    type:     String,
-    required: false,
-    default:  "primary",
-  },
-  icon: {
-    type:     String,
-    required: true,
-  },
-  stats: {
-    type:     String,
-    required: false,
-  },
   cardProps: {
-    type:     Object,
-    required: false,
     default(_) {
       return {}
     },
+    required: false,
+    type:     Object,
+  },
+  color: {
+    default:  "primary",
+    required: false,
+    type:     String,
+  },
+  icon: {
+    required: true,
+    type:     String,
+  },
+  stats: {
+    required: false,
+    type:     String,
   },
   statsLoading: {
-    type:     Boolean,
-    required: false,
     default:  false,
+    required: false,
+    type:     Boolean,
+  },
+  title: {
+    required: true,
+    type:     String,
   },
 })
 </script>
@@ -38,7 +38,7 @@ const props = defineProps({
   <VCard v-bind="props.cardProps" :loading="props.statsLoading">
     <VCardText class="d-flex align-center justify-space-between">
       <div>
-        <VSkeletonLoader class="stats-skeleton-loader" type="text" :loading="props.statsLoading">
+        <VSkeletonLoader :loading="props.statsLoading" class="stats-skeleton-loader" type="text">
           <div class="d-flex align-center flex-wrap stats-wrapper">
             <span class="text-h5">{{ props.stats }}</span>
           </div>
@@ -46,7 +46,7 @@ const props = defineProps({
         <span class="text-body-2">{{ props.title }}</span>
       </div>
 
-      <VAvatar :icon="props.icon" :color="props.color" :size="42" variant="tonal" />
+      <VAvatar :color="props.color" :icon="props.icon" :size="42" variant="tonal" />
     </VCardText>
   </VCard>
 </template>

@@ -1,15 +1,12 @@
-import { defineStore } from "pinia"
-import axios from "@axios"
-
 import FThumb from "@images/avatars/F_thumb.png"
-import MThumb from "@images/avatars/M_thumb.png"
-import OThumb from "@images/avatars/O_thumb.png"
-import UThumb from "@images/avatars/U_thumb.png"
-
 import F from "@images/avatars/F.png"
+import MThumb from "@images/avatars/M_thumb.png"
 import M from "@images/avatars/M.png"
+import OThumb from "@images/avatars/O_thumb.png"
 import O from "@images/avatars/O.png"
+import UThumb from "@images/avatars/U_thumb.png"
 import U from "@images/avatars/U.png"
+import { defineStore } from "pinia"
 
 const defaultImages = {
   F,
@@ -91,9 +88,11 @@ export const useUserStore = defineStore(
     }
 
     const login = async (username, password) => {
+      const axios = useAxios()
+
       const loginUrl = "/auth/login/"
       try {
-        const response = await axios.post(loginUrl, { username, password })
+        const response = await axios.post(loginUrl, { password, username })
         if (response?.status === 200) {
           const data = await response.data
 
@@ -107,6 +106,8 @@ export const useUserStore = defineStore(
     }
 
     const refreshTokens = async () => {
+      const axios = useAxios()
+
       const refreshUrl = "/auth/token/refresh/"
       try {
         const response = await axios.post(refreshUrl, { refresh: refreshToken.value })
@@ -121,9 +122,11 @@ export const useUserStore = defineStore(
     }
 
     const register = async (username, email, password) => {
+      const axios = useAxios()
+
       const registerUrl = "/auth/registration/"
       try {
-        const response = await axios.post(registerUrl, { username, email, password1: password, password2: password })
+        const response = await axios.post(registerUrl, { email, password1: password, password2: password, username })
 
         if (response?.status === 201) {
           const data = await response.data
@@ -142,35 +145,35 @@ export const useUserStore = defineStore(
     }
 
     return {
+      $reset,
       accessToken,
-      refreshToken,
-      refreshingToken,
+      birthDate,
 
-      username,
-      name,
       email,
       email_verified: emailVerified,
       gender,
-      images,
-      birthDate,
-      registerDate,
-      isSuperuser,
-      isStaff,
-
       image,
-      thumbnail,
-      loggedIn,
+      images,
+      isStaff,
+      isSuperuser,
       isSuperuserOrStaff,
-
-      setUser,
-      setImage,
-      resetImage,
-      $reset,
-      setTokens,
+      loggedIn,
       login,
+
+      logout,
+      name,
+      refreshingToken,
+      refreshToken,
+
       refreshTokens,
       register,
-      logout,
+      registerDate,
+      resetImage,
+      setImage,
+      setTokens,
+      setUser,
+      thumbnail,
+      username,
     }
   },
   { persist: true },

@@ -7,6 +7,7 @@ Explore wonderfull world of pictures with words
 
 [![Built with Cookiecutter Django](https://img.shields.io/badge/built%20with-Cookiecutter%20Django-ff69b4.svg?logo=cookiecutter)](https://github.com/cookiecutter/cookiecutter-django/)
 [![image](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![code style](https://antfu.me/badge-code-style.svg)](https://github.com/antfu/eslint-config)
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/NoNameItem/read-comics)
 
 

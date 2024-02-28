@@ -1,5 +1,5 @@
-import { useToast } from "vue-toastification"
 import TitledToast from "@/components/TitledToast.vue"
+import { useToast } from "vue-toastification"
 
 export function useTitledToast() {
   const t = useToast()
@@ -9,8 +9,8 @@ export function useTitledToast() {
       {
         component: TitledToast,
         props:     {
-          title,
           message,
+          title,
         },
       },
       config,
@@ -22,8 +22,8 @@ export function useTitledToast() {
       {
         component: TitledToast,
         props:     {
-          title,
           message,
+          title,
         },
       },
       config,
@@ -35,8 +35,8 @@ export function useTitledToast() {
       {
         component: TitledToast,
         props:     {
-          title,
           message,
+          title,
         },
       },
       config,
@@ -48,8 +48,8 @@ export function useTitledToast() {
       {
         component: TitledToast,
         props:     {
-          title,
           message,
+          title,
         },
       },
       config,
@@ -61,8 +61,8 @@ export function useTitledToast() {
       {
         component: TitledToast,
         props:     {
-          title,
           message,
+          title,
         },
       },
       config,
@@ -70,10 +70,10 @@ export function useTitledToast() {
   }
 
   return {
-    toast,
+    error,
     info,
     success,
+    toast,
     warning,
-    error,
   }
 }

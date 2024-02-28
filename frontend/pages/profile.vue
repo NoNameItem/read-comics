@@ -1,16 +1,13 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
-import { useQuery } from "@tanstack/vue-query"
-import { queries } from "@/queries"
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { useQuery } from "@tanstack/vue-query"
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
 
-definePageMeta({
-  loginRequired: true,
-})
+definePageMeta({ loginRequired: true })
 
-useServerSeoMeta({
-  title: "My profile",
-})
+useServerSeoMeta({ title: "My profile" })
+
+const { queries } = useQueryKeys()
 
 const userTab = ref(null)
 
@@ -29,7 +26,7 @@ const breadcrumb = useBreadcrumbsStore()
 
 breadcrumb.setBreadcrumbs("My profile", [{ title: "My profile" }])
 
-const { isPending, data, suspense } = useQuery(queries.profile.profileData)
+const { data, isPending, suspense } = useQuery(queries.profile.profileData)
 
 onServerPrefetch(async () => {
   await suspense()
@@ -44,8 +41,8 @@ onServerPrefetch(async () => {
 
       <VCol
         cols="12"
-        md="7"
         lg="8"
+        md="7"
         xl="9"
         xxl="10"
       >
@@ -58,8 +55,8 @@ onServerPrefetch(async () => {
             :key="tab.icon"
           >
             <VIcon
-              :size="18"
               :icon="tab.icon"
+              :size="18"
               class="me-1"
             />
             <span>{{ tab.title }}</span>
@@ -68,14 +65,14 @@ onServerPrefetch(async () => {
 
         <VWindow
           v-model="userTab"
-          class="mt-6 fullscreen"
           :touch="false"
+          class="mt-6 fullscreen"
         >
           <VWindowItem>
             <VSkeletonLoader
-              type="paragraph"
               :loading="isPending"
               style="background: transparent"
+              type="paragraph"
             >
               <p
                 v-if="data?.bio"

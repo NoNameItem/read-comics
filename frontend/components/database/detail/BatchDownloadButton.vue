@@ -1,25 +1,25 @@
 <script setup>
 const componentProps = defineProps({
   downloadLink: {
-    type:     String,
     required: false,
+    type:     String,
   },
   downloadSize: {
-    type:     String,
     required: false,
+    type:     String,
   },
 })
 
 const linkVariants = computed(() => [
   {
     icon:  "fasl:folder",
-    title: "Grouped by publisher and volume",
     link:  componentProps.downloadLink,
+    title: "Grouped by publisher and volume",
   },
   {
     icon:  "fasl:arrow-down-1-9",
-    title: "Chronologically by cover date",
     link:  `${componentProps.downloadLink}?names=ordered`,
+    title: "Chronologically by cover date",
   },
 ])
 </script>
@@ -28,7 +28,7 @@ const linkVariants = computed(() => [
   <VMenu v-if="componentProps.downloadLink">
     <template #activator="{ props }">
       <VBtn color="info" v-bind="props">
-        <VIcon start icon="fasl:download" />
+        <VIcon icon="fasl:download" start />
         Download (~{{ componentProps.downloadSize }})
       </VBtn>
     </template>

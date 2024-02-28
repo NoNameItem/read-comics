@@ -6,9 +6,9 @@ const route = useRoute()
 <template>
   <VBtn
     v-if="!userStore.username"
+    :to="{ path: '/login', query: { to: route.fullPath } }"
     color="primary"
     variant="text"
-    :to="{ path: '/login', query: { to: route.fullPath } }"
   >
     Login
     <VIcon
@@ -18,12 +18,12 @@ const route = useRoute()
   </VBtn>
   <VBadge
     v-else
+    bordered
+    color="success"
     dot
     location="bottom right"
     offset-x="3"
     offset-y="3"
-    bordered
-    color="success"
   >
     <VAvatar
       class="cursor-pointer avatar"
@@ -38,9 +38,9 @@ const route = useRoute()
       <!-- SECTION Menu -->
       <VMenu
         activator="parent"
-        width="230"
         location="bottom end"
         offset="14px"
+        width="230"
       >
         <VList>
           <!-- 👉 User Avatar & Name -->
@@ -48,11 +48,11 @@ const route = useRoute()
             <template #prepend>
               <VListItemAction start>
                 <VBadge
+                  color="success"
                   dot
                   location="bottom right"
                   offset-x="3"
                   offset-y="3"
-                  color="success"
                 >
                   <VAvatar
                     class="avatar"

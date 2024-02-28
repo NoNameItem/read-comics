@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useConfigStore } from "@core/stores/config"
+import type { SearchResults } from "@db/app-bar-search/types"
 import Shepherd from "shepherd.js"
 import { withQuery } from "ufo"
 import type { RouteLocationRaw } from "vue-router"
-import type { SearchResults } from "@db/app-bar-search/types"
-import { useConfigStore } from "@core/stores/config"
 
 interface Suggestion {
   icon:  string
@@ -11,15 +11,13 @@ interface Suggestion {
   url:   RouteLocationRaw
 }
 
-defineOptions({
-  inheritAttrs: false,
-})
+defineOptions({ inheritAttrs: false })
 
 const configStore = useConfigStore()
 
 interface SuggestionGroup {
-  title:   string
   content: Suggestion[]
+  title:   string
 }
 
 // 👉 Is App Search Bar Visible
@@ -29,58 +27,58 @@ const isAppSearchBarVisible = ref(false)
 
 const suggestionGroups: SuggestionGroup[] = [
   {
-    title:   "Popular Searches",
     content: [
       { icon: "tabler-chart-donut", title: "Analytics", url: { name: "dashboards-analytics" } },
       { icon: "tabler-chart-bubble", title: "CRM", url: { name: "dashboards-crm" } },
       { icon: "tabler-file", title: "Landing Page", url: { name: "front-pages-landing-page" } },
       { icon: "tabler-users", title: "User List", url: { name: "apps-user-list" } },
     ],
+    title: "Popular Searches",
   },
   {
-    title:   "Apps & Pages",
     content: [
       { icon: "tabler-calendar", title: "Calendar", url: { name: "apps-calendar" } },
       { icon: "tabler-shopping-cart", title: "ECommerce Product", url: { name: "apps-ecommerce-product-list" } },
       { icon: "tabler-school", title: "Academy", url: { name: "apps-academy-dashboard" } },
       { icon: "tabler-truck", title: "Logistic Fleet", url: { name: "apps-logistics-fleet" } },
     ],
+    title: "Apps & Pages",
   },
   {
-    title:   "User Interface",
     content: [
       { icon: "tabler-letter-a", title: "Typography", url: { name: "pages-typography" } },
       { icon: "tabler-square", title: "Tabs", url: { name: "components-tabs" } },
       { icon: "tabler-map", title: "Tour", url: { name: "extensions-tour" } },
       { icon: "tabler-keyboard", title: "Statistics", url: { name: "pages-cards-card-statistics" } },
     ],
+    title: "User Interface",
   },
   {
-    title:   "Popular Searches",
     content: [
       { icon: "tabler-list", title: "Select", url: { name: "forms-select" } },
       { icon: "tabler-currency-dollar", title: "Payment", url: { name: "front-pages-payment" } },
       { icon: "tabler-calendar", title: "Date & Time Picker", url: { name: "forms-date-time-picker" } },
       { icon: "tabler-home", title: "Property Listing Wizard", url: { name: "wizard-examples-property-listing" } },
     ],
+    title: "Popular Searches",
   },
 ]
 
 // 👉 No Data suggestion
 const noDataSuggestions: Suggestion[] = [
   {
-    title: "Analytics Dashboard",
     icon:  "tabler-shopping-cart",
+    title: "Analytics Dashboard",
     url:   { name: "dashboards-analytics" },
   },
   {
-    title: "Account Settings",
     icon:  "tabler-user",
+    title: "Account Settings",
     url:   { name: "pages-account-settings-tab", params: { tab: "account" } },
   },
   {
-    title: "Pricing Page",
     icon:  "tabler-cash",
+    title: "Pricing Page",
     url:   { name: "pages-pricing" },
   },
 ]
@@ -122,8 +120,8 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
       @click="Shepherd.activeTour?.cancel()"
     >
       <VIcon
-        size="26"
         icon="tabler-search"
+        size="26"
       />
     </IconBtn>
 
@@ -153,9 +151,9 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
           <VCol
             v-for="suggestion in suggestionGroups"
             :key="suggestion.title"
+            class="ps-6"
             cols="12"
             sm="6"
-            class="ps-6"
           >
             <p class="text-xs text-disabled text-uppercase">
               {{ suggestion.title }}
@@ -164,16 +162,16 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
               <VListItem
                 v-for="item in suggestion.content"
                 :key="item.title"
-                link
                 :title="item.title"
                 class="app-bar-search-suggestion"
+                link
                 @click="redirectToSuggestedOrSearchedPage(item)"
               >
                 <template #prepend>
                   <VIcon
                     :icon="item.icon"
-                    size="20"
                     class="me-2"
+                    size="20"
                   />
                 </template>
               </VListItem>
@@ -193,9 +191,9 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
           @click="redirectToSuggestedOrSearchedPage(suggestion)"
         >
           <VIcon
-            size="20"
             :icon="suggestion.icon"
             class="me-3"
+            size="20"
           />
           <span class="text-sm">{{ suggestion.title }}</span>
         </h6>
@@ -214,16 +212,16 @@ const LazyAppBarSearch = defineAsyncComponent(() => import("@core/components/App
       >
         <template #prepend>
           <VIcon
-            size="20"
             :icon="list.icon"
             class="me-3"
+            size="20"
           />
         </template>
         <template #append>
           <VIcon
-            size="20"
-            icon="tabler-corner-down-left"
             class="enter-icon text-disabled"
+            icon="tabler-corner-down-left"
+            size="20"
           />
         </template>
         <VListItemTitle>

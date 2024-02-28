@@ -2,31 +2,31 @@
 import { useUserStore } from "@/stores/user"
 
 const props = defineProps({
-  info: {
-    type:     Object,
+  batchDownload: {
+    default:  true,
     required: false,
+    type:     Boolean,
+  },
+  info: {
+    required: false,
+    type:     Object,
   },
   infoLoading: {
+    required: false,
     type:     Boolean,
-    required: false,
-  },
-  technicalInfo: {
-    type:     Object,
-    required: false,
-  },
-  technicalInfoLoading: {
-    type:     Boolean,
-    required: false,
-  },
-  batchDownload: {
-    type:     Boolean,
-    required: false,
-    default:  true,
   },
   showPrevNextButtons: {
-    type:     Boolean,
-    required: false,
     default:  false,
+    required: false,
+    type:     Boolean,
+  },
+  technicalInfo: {
+    required: false,
+    type:     Object,
+  },
+  technicalInfoLoading: {
+    required: false,
+    type:     Boolean,
   },
 })
 
@@ -45,9 +45,9 @@ const user = useUserStore()
       <FlipCard :flipped="user.isSuperuserOrStaff && infoFlipped">
         <template #front>
           <DBInfoPanel
+            :batch-download="props.batchDownload"
             :data="props.info"
             :loading="props.infoLoading"
-            :batch-download="props.batchDownload"
             :show-prev-next-buttons="props.showPrevNextButtons"
           />
         </template>
@@ -57,10 +57,10 @@ const user = useUserStore()
       </FlipCard>
       <VBtn
         v-if="props.technicalInfo"
-        elevation="20"
-        size="x-small"
         class="flip-btn"
+        elevation="20"
         icon="fasl:refresh"
+        size="x-small"
         @click="flipInfo"
       />
     </div>

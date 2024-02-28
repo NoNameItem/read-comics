@@ -1,11 +1,12 @@
-<script setup>
-import { useMutation, useQuery } from "@tanstack/vue-query"
-import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
-import { DateTime } from "luxon"
-import { avatarText, kFormatter } from "@core/utils/formatters"
-import axios from "@axios"
+<script setup lang="ts">
 import { useUserStore } from "@/stores/user"
-import { queries } from "@/queries"
+import { avatarText, kFormatter } from "@core/utils/formatters"
+import { useMutation, useQuery } from "@tanstack/vue-query"
+import { DateTime } from "luxon"
+import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
+
+const axios = useAxios()
+const { queries } = useQueryKeys()
 
 const GENDER_COLORS = {
   F: "error",
@@ -18,7 +19,7 @@ const user = useUserStore()
 
 user.$hydrate()
 
-const { isPending, isError, data, suspense } = useQuery(queries.profile.finishedStats)
+const { data, isError, isPending, suspense } = useQuery(queries.profile.finishedStats)
 
 onServerPrefetch(async () => {
   await suspense()
@@ -62,16 +63,12 @@ const showImageResetBadge = computed(() => user.images && imageDisplayRef.value?
 
 // Change Image
 const changeImageMutation = useMutation({
+  mutationFn: formData =>
+    axios.patch("/profile/", formData, { headers: { "Content-Type": "multipart/form-data" } }),
   mutationKey: "changeImage",
-  mutationFn:  formData =>
-    axios.patch("/profile/", formData, {
-      headers: {
-        "Content-Type": "multipart/form-data",
-      },
-    }),
 })
 
-const changeImage = async (file) => {
+const changeImage = async (file): void => {
   const { files } = file.target
   if (files?.length) {
     const formData = new FormData()
@@ -92,8 +89,8 @@ const changeImage = async (file) => {
 }
 
 const resetImageMutation = useMutation({
-  mutationKey: "resetImage",
   mutationFn:  () => axios.patch("/profile/", { images: null }),
+  mutationKey: "resetImage",
 })
 
 const resetImage = async () => {
@@ -111,276 +108,278 @@ const resetImage = async () => {
 </script>
 
 <template>
-  <VCol
-    cols="12"
-    md="5"
-    lg="4"
-    xl="3"
-    xxl="2"
-  >
-    <VRow>
-      <!-- SECTION User Details -->
-      <VCol cols="12">
-        <VCard position="sticky">
-          <VCardText class="text-center pt-15">
-            <!-- 👉 Avatar -->
-            <div class="avatar-with-badge-btn">
-              <div class="avatar-wrapper">
-                <VAvatar
-                  rounded
-                  :size="100"
-                  :color="!user.image ? 'primary' : undefined"
-                  :variant="!user.image ? 'tonal' : undefined"
-                >
-                  <VImg
-                    v-if="user.image"
-                    ref="imageDisplayRef"
-                    :src="user.image"
+  <div>
+    <VCol
+      cols="12"
+      lg="4"
+      md="5"
+      xl="3"
+      xxl="2"
+    >
+      <VRow>
+        <!-- SECTION User Details -->
+        <VCol cols="12">
+          <VCard position="sticky">
+            <VCardText class="text-center pt-15">
+              <!-- 👉 Avatar -->
+              <div class="avatar-with-badge-btn">
+                <div class="avatar-wrapper">
+                  <VAvatar
+                    :color="!user.image ? 'primary' : undefined"
+                    :size="100"
+                    :variant="!user.image ? 'tonal' : undefined"
+                    rounded
                   >
-                    <template #placeholder>
-                      <div class="d-flex align-center justify-center fill-height">
-                        <VSkeletonLoader type="avatar" />
-                      </div>
-                    </template>
-                  </VImg>
-                  <span
-                    v-else
-                    class="text-5xl font-weight-medium"
+                    <VImg
+                      v-if="user.image"
+                      ref="imageDisplayRef"
+                      :src="user.image"
+                    >
+                      <template #placeholder>
+                        <div class="d-flex align-center justify-center fill-height">
+                          <VSkeletonLoader type="avatar" />
+                        </div>
+                      </template>
+                    </VImg>
+                    <span
+                      v-else
+                      class="text-5xl font-weight-medium"
+                    >
+                      {{ avatarText(user.name || user.username) }}
+                    </span>
+                  </VAvatar>
+                  <VBtn
+                    v-if="showImageResetBadge"
+                    ref="resetImageButtonRef"
+                    :loading="resetImageMutation.isPending.value"
+                    class="reset-image-btn"
+                    color="error"
+                    elevation="20"
+                    icon="fasl:xmark-large"
+                    size="x-small"
+                    @click="resetImage"
+                  />
+                  <VTooltip
+                    v-if="showImageResetBadge"
+                    :activator="resetImageButtonRef"
+                    location="bottom"
                   >
-                    {{ avatarText(user.name || user.username) }}
-                  </span>
-                </VAvatar>
-                <VBtn
-                  v-if="showImageResetBadge"
-                  ref="resetImageButtonRef"
-                  elevation="20"
-                  size="x-small"
-                  class="reset-image-btn"
-                  color="error"
-                  icon="fasl:xmark-large"
-                  :loading="resetImageMutation.isPending.value"
-                  @click="resetImage"
-                />
-                <VTooltip
-                  v-if="showImageResetBadge"
-                  :activator="resetImageButtonRef"
-                  location="bottom"
-                >
-                  Reset Image
-                </VTooltip>
+                    Reset Image
+                  </VTooltip>
+                </div>
               </div>
-            </div>
 
-            <!-- 👉 User fullName -->
-            <h6 class="text-h4 mt-4">
-              {{ user.name || `@${user.username}` }}
-            </h6>
+              <!-- 👉 User fullName -->
+              <h6 class="text-h4 mt-4">
+                {{ user.name || `@${user.username}` }}
+              </h6>
 
-            <!-- 👉 Role chip -->
-            <VChip
-              label
-              :color="role.color"
-              size="small"
-              class="text-capitalize mt-3"
-            >
-              {{ role.text }}
-            </VChip>
-          </VCardText>
-
-          <VCardText class="d-flex justify-center mt-3">
-            <div class="d-flex align-center me-4">
-              <VSkeletonLoader
-                v-if="!isError"
-                type="list-item-avatar-two-line"
-                :loading="isPending"
+              <!-- 👉 Role chip -->
+              <VChip
+                :color="role.color"
+                class="text-capitalize mt-3"
+                label
+                size="small"
               >
-                <VAvatar
-                  :size="38"
-                  rounded
-                  color="primary"
-                  variant="tonal"
-                  class="me-3"
+                {{ role.text }}
+              </VChip>
+            </VCardText>
+
+            <VCardText class="d-flex justify-center mt-3">
+              <div class="d-flex align-center me-4">
+                <VSkeletonLoader
+                  v-if="!isError"
+                  :loading="isPending"
+                  type="list-item-avatar-two-line"
                 >
-                  <VIcon icon="fasl:circle-check" />
-                </VAvatar>
+                  <VAvatar
+                    :size="38"
+                    class="me-3"
+                    color="primary"
+                    rounded
+                    variant="tonal"
+                  >
+                    <VIcon icon="fasl:circle-check" />
+                  </VAvatar>
 
-                <div>
-                  <h6 class="text-h6">
-                    {{ kFormatter(data.finished_count) }}
-                    <VChip
-                      v-if="data.today_finished_count > 0"
-                      color="success"
-                      size="x-small"
-                    >
-                      +{{ data.today_finished_count }}
-                    </VChip>
-                  </h6>
-                  <span class="text-sm">Finished issues</span>
-                </div>
-              </VSkeletonLoader>
-            </div>
+                  <div>
+                    <h6 class="text-h6">
+                      {{ kFormatter(data.finished_count) }}
+                      <VChip
+                        v-if="data.today_finished_count > 0"
+                        color="success"
+                        size="x-small"
+                      >
+                        +{{ data.today_finished_count }}
+                      </VChip>
+                    </h6>
+                    <span class="text-sm">Finished issues</span>
+                  </div>
+                </VSkeletonLoader>
+              </div>
 
-            <div class="d-flex align-center">
-              <VSkeletonLoader
-                v-if="!isError"
-                type="list-item-avatar-two-line"
-                :loading="isPending"
+              <div class="d-flex align-center">
+                <VSkeletonLoader
+                  v-if="!isError"
+                  :loading="isPending"
+                  type="list-item-avatar-two-line"
+                >
+                  <VAvatar
+                    :size="38"
+                    class="me-3"
+                    color="primary"
+                    rounded
+                    variant="tonal"
+                  >
+                    <VIcon icon="fasl:gauge-high" />
+                  </VAvatar>
+
+                  <div>
+                    <h6 class="text-h6">
+                      {{ Math.ceil(data.reading_speed).toLocaleString() }}
+                    </h6>
+                    <span class="text-sm">issues/day</span>
+                  </div>
+                </VSkeletonLoader>
+              </div>
+            </VCardText>
+
+            <VDivider />
+
+            <!-- 👉 Details -->
+            <VCardText>
+              <p class="text-sm text-uppercase text-disabled">
+                Details
+              </p>
+
+              <!-- 👉 User Details list -->
+              <VList class="card-list mt-2">
+                <VListItem>
+                  <VListItemTitle>
+                    <h6 class="text-h6">
+                      Username:
+                      <span class="text-body-1">
+                        {{ user.username }}
+                      </span>
+                    </h6>
+                  </VListItemTitle>
+                </VListItem>
+
+                <VListItem>
+                  <VListItemTitle>
+                    <h6 class="text-h6">
+                      Email:
+                      <span class="text-body-1">{{ user.email }}</span>
+                      <br>
+                      <VChip
+                        :color="emailBadgeColor"
+                        class="text-capitalize ml-1"
+                        label
+                        size="small"
+                      >
+                        {{ emailBadgeText }}
+                      </VChip>
+                      <VBtn
+                        v-if="!user.email_verified"
+                        color="info"
+                        size="x-small"
+                        variant="plain"
+                        @click="resentConfirmation"
+                      >
+                        <VIcon icon="fasl:arrows-rotate" />
+                        <VTooltip
+                          activator="parent"
+                          location="bottom"
+                        >
+                          Resent confirmation
+                        </VTooltip>
+                      </VBtn>
+                    </h6>
+                  </VListItemTitle>
+                </VListItem>
+
+                <VListItem>
+                  <VListItemTitle>
+                    <h6 class="text-h6">
+                      Gender:
+
+                      <VChip
+                        :color="genderBadgeColor"
+                        class="text-capitalize ml-1"
+                        label
+                        size="small"
+                      >
+                        {{ user.gender?.label }}
+                      </VChip>
+                    </h6>
+                  </VListItemTitle>
+                </VListItem>
+
+                <VListItem>
+                  <VListItemTitle>
+                    <h6 class="text-h6">
+                      Birth date:
+                      <span class="text-capitalize text-body-1">
+                        {{ formatDate(user.birthDate) }}
+                      </span>
+                    </h6>
+                  </VListItemTitle>
+                </VListItem>
+
+                <VListItem>
+                  <VListItemTitle>
+                    <h6 class="text-h6">
+                      Registered:
+                      <span class="text-capitalize text-body-1">
+                        {{ DateTime.fromISO(user.registerDate).toRelative({ locale: 'en-US' }) }}
+                        <VTooltip
+                          activator="parent"
+                          location="end"
+                          open-delay="500"
+                        >
+                          {{ formatDateTimeMinutes(user.registerDate) }}
+                        </VTooltip>
+                      </span>
+                    </h6>
+                  </VListItemTitle>
+                </VListItem>
+              </VList>
+            </VCardText>
+
+            <!-- 👉 Edit and Change image button -->
+            <VCardText class="d-flex justify-center">
+              <VBtn
+                class="me-4"
+                variant="elevated"
+                @click="isUserInfoEditDialogVisible = true"
               >
-                <VAvatar
-                  :size="38"
-                  rounded
-                  color="primary"
-                  variant="tonal"
-                  class="me-3"
-                >
-                  <VIcon icon="fasl:gauge-high" />
-                </VAvatar>
+                Edit
+              </VBtn>
 
-                <div>
-                  <h6 class="text-h6">
-                    {{ Math.ceil(data.reading_speed).toLocaleString() }}
-                  </h6>
-                  <span class="text-sm">issues/day</span>
-                </div>
-              </VSkeletonLoader>
-            </div>
-          </VCardText>
+              <VBtn
+                variant="elevated"
+                @click="imageInputRef?.click()"
+              >
+                Change avatar
+              </VBtn>
+              <input
+                ref="imageInputRef"
+                accept=".jpeg,.png,.jpg,GIF"
+                hidden
+                name="avatar"
+                type="file"
+                @input="changeImage"
+              >
+            </VCardText>
+          </VCard>
+        </VCol>
+        <!-- !SECTION -->
+      </VRow>
+    </VCol>
 
-          <VDivider />
-
-          <!-- 👉 Details -->
-          <VCardText>
-            <p class="text-sm text-uppercase text-disabled">
-              Details
-            </p>
-
-            <!-- 👉 User Details list -->
-            <VList class="card-list mt-2">
-              <VListItem>
-                <VListItemTitle>
-                  <h6 class="text-h6">
-                    Username:
-                    <span class="text-body-1">
-                      {{ user.username }}
-                    </span>
-                  </h6>
-                </VListItemTitle>
-              </VListItem>
-
-              <VListItem>
-                <VListItemTitle>
-                  <h6 class="text-h6">
-                    Email:
-                    <span class="text-body-1">{{ user.email }}</span>
-                    <br>
-                    <VChip
-                      label
-                      size="small"
-                      :color="emailBadgeColor"
-                      class="text-capitalize ml-1"
-                    >
-                      {{ emailBadgeText }}
-                    </VChip>
-                    <VBtn
-                      v-if="!user.email_verified"
-                      size="x-small"
-                      variant="plain"
-                      color="info"
-                      @click="resentConfirmation"
-                    >
-                      <VIcon icon="fasl:arrows-rotate" />
-                      <VTooltip
-                        activator="parent"
-                        location="bottom"
-                      >
-                        Resent confirmation
-                      </VTooltip>
-                    </VBtn>
-                  </h6>
-                </VListItemTitle>
-              </VListItem>
-
-              <VListItem>
-                <VListItemTitle>
-                  <h6 class="text-h6">
-                    Gender:
-
-                    <VChip
-                      label
-                      size="small"
-                      :color="genderBadgeColor"
-                      class="text-capitalize ml-1"
-                    >
-                      {{ user.gender?.label }}
-                    </VChip>
-                  </h6>
-                </VListItemTitle>
-              </VListItem>
-
-              <VListItem>
-                <VListItemTitle>
-                  <h6 class="text-h6">
-                    Birth date:
-                    <span class="text-capitalize text-body-1">
-                      {{ formatDate(user.birthDate) }}
-                    </span>
-                  </h6>
-                </VListItemTitle>
-              </VListItem>
-
-              <VListItem>
-                <VListItemTitle>
-                  <h6 class="text-h6">
-                    Registered:
-                    <span class="text-capitalize text-body-1">
-                      {{ DateTime.fromISO(user.registerDate).toRelative({ locale: 'en-US' }) }}
-                      <VTooltip
-                        activator="parent"
-                        open-delay="500"
-                        location="end"
-                      >
-                        {{ formatDateTimeMinutes(user.registerDate) }}
-                      </VTooltip>
-                    </span>
-                  </h6>
-                </VListItemTitle>
-              </VListItem>
-            </VList>
-          </VCardText>
-
-          <!-- 👉 Edit and Change image button -->
-          <VCardText class="d-flex justify-center">
-            <VBtn
-              variant="elevated"
-              class="me-4"
-              @click="isUserInfoEditDialogVisible = true"
-            >
-              Edit
-            </VBtn>
-
-            <VBtn
-              variant="elevated"
-              @click="imageInputRef?.click()"
-            >
-              Change avatar
-            </VBtn>
-            <input
-              ref="imageInputRef"
-              type="file"
-              name="avatar"
-              accept=".jpeg,.png,.jpg,GIF"
-              hidden
-              @input="changeImage"
-            >
-          </VCardText>
-        </VCard>
-      </VCol>
-      <!-- !SECTION -->
-    </VRow>
-  </VCol>
-
-  <!-- 👉 Edit user info dialog -->
-  <UserInfoEditDialog v-model:isDialogVisible="isUserInfoEditDialogVisible" />
+    <!-- 👉 Edit user info dialog -->
+    <UserInfoEditDialog v-model:isDialogVisible="isUserInfoEditDialogVisible" />
+  </div>
 </template>
 
 <style lang="scss" scoped>

@@ -1,5 +1,5 @@
 <template>
-  <VCol v-if="$attrs['error-messages']?.length" cols="12" class="pt-1 pb-1">
+  <VCol v-if="$attrs['error-messages']?.length" class="pt-1 pb-1" cols="12">
     <VInput
       v-bind="{
         ...$attrs,

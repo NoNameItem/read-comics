@@ -5,9 +5,7 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
 import { requiredValidator } from "@validators"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Register" })
 
@@ -16,19 +14,19 @@ const route = useRoute()
 const registerForm = ref(null)
 
 const form = reactive({
-  username:   "",
   email:      "",
-  password:   "",
-  loading:    false,
-  valid:      false,
   formErrors: null,
+  loading:    false,
+  password:   "",
+  username:   "",
+  valid:      false,
 })
 
 const backendErrors = ref({
-  username:         [],
   email:            [],
-  password1:        [],
   non_field_errors: [],
+  password1:        [],
+  username:         [],
 })
 
 const isPasswordVisible = ref(false)
@@ -38,10 +36,10 @@ const userStore = useUserStore()
 async function register() {
   form.loading = true
   backendErrors.value = {
-    username:         [],
     email:            [],
-    password1:        [],
     non_field_errors: [],
+    password1:        [],
+    username:         [],
   }
   form.valid = (await registerForm.value.validate()).valid
   if (!form.valid) {
@@ -56,10 +54,8 @@ async function register() {
   userStore.$persist()
 
   if (registerError) {
-    if (registerError?.response?.status === 400)
-      backendErrors.value = registerError.response.data
-    else
-      toast.error("We experencing network troubles", "Please, try again later", { timeout: false })
+    if (registerError?.response?.status === 400) { backendErrors.value = registerError.response.data }
+    else { toast.error("We experencing network troubles", "Please, try again later", { timeout: false }) }
   }
   else {
     toast.success(`${userStore.username}, nice to meet you!`, "Hope you will like us...")
@@ -118,20 +114,20 @@ async function register() {
               <VCol cols="12">
                 <AppTextField
                   v-model="form.username"
+                  :error-messages="backendErrors.username"
+                  :rules="[requiredValidator]"
                   autofocus
                   label="Username"
-                  :rules="[requiredValidator]"
-                  :error-messages="backendErrors.username"
                 />
               </VCol>
               <!-- email -->
               <VCol cols="12">
                 <AppTextField
                   v-model="form.email"
-                  label="Email"
-                  type="email"
                   :error-messages="backendErrors.email"
                   :rules="[requiredValidator]"
+                  label="Email"
+                  type="email"
                 />
               </VCol>
 
@@ -139,11 +135,11 @@ async function register() {
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  label="Password"
-                  :rules="[requiredValidator]"
-                  :error-messages="backendErrors.password1"
-                  :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
+                  :error-messages="backendErrors.password1"
+                  :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  label="Password"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
               </VCol>
@@ -154,13 +150,13 @@ async function register() {
               />
 
               <VCol
-                cols="12"
                 class="pt-1 pb-1"
+                cols="12"
               >
                 <VBtn
+                  :loading="form.loading"
                   block
                   type="submit"
-                  :loading="form.loading"
                 >
                   Sign up
                   <VIcon
@@ -172,13 +168,13 @@ async function register() {
 
               <!-- login instead -->
               <VCol
-                cols="12"
                 class="text-center text-base"
+                cols="12"
               >
                 <span>Already have an account?</span>
                 <NuxtLink
-                  class="text-primary ms-2"
                   :to="{ name: 'login', query: { to: route.query.to } }"
+                  class="text-primary ms-2"
                 >
                   Sign in instead
                 </NuxtLink>

@@ -3,13 +3,13 @@ import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
   data: {
-    type:     Object,
     required: false,
+    type:     Object,
   },
   loading: {
-    type:     Boolean,
-    required: false,
     default:  true,
+    required: false,
+    type:     Boolean,
   },
 })
 </script>
@@ -19,7 +19,7 @@ const props = defineProps({
   <VCard v-else position="sticky">
     <VCardText>
       <!-- 👉 User Details list -->
-      <VList class="card-list" density="compact" :lines="false">
+      <VList :lines="false" class="card-list" density="compact">
         <DataBlock
           v-for="(item, index) in props.data"
           :key="index"

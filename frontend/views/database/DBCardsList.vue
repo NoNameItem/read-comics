@@ -1,42 +1,42 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/components"
 import OrderingSelector from "@/components/database/list/OrderingSelector.vue"
 import { useUserStore } from "@/stores/user"
+import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
-  orderingVariants: {
-    type:     Array,
-    required: true,
-  },
   defaultOrdering: {
-    type:     String,
     required: true,
-  },
-  withoutIssuesLabel: {
     type:     String,
-    required: false,
   },
   items: {
-    type:     Array,
     required: true,
+    type:     Array,
   },
   loading: {
-    type:     Boolean,
     required: true,
+    type:     Boolean,
+  },
+  orderingVariants: {
+    required: true,
+    type:     Array,
   },
   pagesNumber: {
-    type:     Number,
     required: true,
-  },
-  showWithoutIssuesToggle: {
-    type:     Boolean,
-    required: false,
-    default:  false,
+    type:     Number,
   },
   showFinishedToggle: {
-    type:     Boolean,
-    required: false,
     default:  false,
+    required: false,
+    type:     Boolean,
+  },
+  showWithoutIssuesToggle: {
+    default:  false,
+    required: false,
+    type:     Boolean,
+  },
+  withoutIssuesLabel: {
+    required: false,
+    type:     String,
   },
 })
 
@@ -48,8 +48,8 @@ const user = useUserStore()
     <VRow>
       <VCol cols="auto">
         <OrderingSelector
-          :variants="props.orderingVariants"
           :default-ordering="props.defaultOrdering"
+          :variants="props.orderingVariants"
         />
       </VCol>
       <VCol
@@ -70,14 +70,14 @@ const user = useUserStore()
         v-for="n in 48"
         :key="n"
         cols="12"
-        sm="6"
-        md="4"
         lg="3"
+        md="4"
+        sm="6"
         xxl="2"
       >
         <VSkeletonLoader
-          type="card"
           loading
+          type="card"
         />
       </VCol>
     </VRow>
@@ -113,15 +113,15 @@ const user = useUserStore()
         </VCol>
         <VCol
           cols="12"
-          sm="6"
-          md="4"
           lg="3"
+          md="4"
+          sm="6"
           xxl="2"
         >
           <VBadge
+            :model-value="!!item?.is_finished"
             color="success"
             icon="fasl:check"
-            :model-value="!!item?.is_finished"
           >
             <VCard
               :class="{ finished: item?.is_finished }"
@@ -144,9 +144,9 @@ const user = useUserStore()
               <VCardText class="position-relative">
                 <VAvatar
                   v-if="item.publisher"
-                  size="75"
-                  class="avatar-center"
                   :image="item.publisher.image"
+                  class="avatar-center"
+                  size="75"
                 />
                 <div class="d-flex justify-space-between flex-wrap pt-8">
                   <div class="me-2 mb-2">

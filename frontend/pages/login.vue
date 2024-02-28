@@ -5,18 +5,16 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
 import { requiredValidator } from "@validators"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Log In" })
 
 const form = reactive({
-  username:   "",
-  password:   "",
-  loading:    false,
-  valid:      false,
   formErrors: null,
+  loading:    false,
+  password:   "",
+  username:   "",
+  valid:      false,
 })
 
 const isPasswordVisible = ref(false)
@@ -111,9 +109,9 @@ async function login() {
               <VCol cols="12">
                 <AppTextField
                   v-model="form.username"
+                  :rules="[requiredValidator]"
                   autofocus
                   label="Username"
-                  :rules="[requiredValidator]"
                 />
               </VCol>
 
@@ -121,10 +119,10 @@ async function login() {
               <VCol cols="12">
                 <AppTextField
                   v-model="form.password"
-                  label="Password"
-                  :type="isPasswordVisible ? 'text' : 'password'"
                   :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                   :rules="[requiredValidator]"
+                  :type="isPasswordVisible ? 'text' : 'password'"
+                  label="Password"
                   @click:append-inner="isPasswordVisible = !isPasswordVisible"
                 />
               </VCol>
@@ -135,26 +133,26 @@ async function login() {
               />
 
               <VCol
-                cols-12
                 class="pt-1 pb-1"
+                cols-12
               >
                 <NuxtLink
-                  class="text-primary ms-2 mb-1"
                   :to="{ name: 'reset-password' }"
+                  class="text-primary ms-2 mb-1"
                 >
                   Forgot Password?
                 </NuxtLink>
               </VCol>
 
               <VCol
-                cols="12"
                 class="pt-1 pb-1"
+                cols="12"
               >
                 <VBtn
-                  block
-                  type="submit"
-                  color="primary"
                   :loading="form.loading"
+                  block
+                  color="primary"
+                  type="submit"
                 >
                   Login
                   <VIcon
@@ -166,13 +164,13 @@ async function login() {
 
               <!-- create account -->
               <VCol
-                cols="12"
                 class="text-center text-base"
+                cols="12"
               >
                 <span>New on our platform?</span>
                 <NuxtLink
-                  class="text-primary ms-2"
                   :to="{ name: 'register', query: route.query }"
+                  class="text-primary ms-2"
                 >
                   Create an account
                 </NuxtLink>

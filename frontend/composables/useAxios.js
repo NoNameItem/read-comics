@@ -1,20 +1,17 @@
-import axios from "axios"
 import { useUserStore } from "@/stores/user"
+import axios from "axios"
 
 export function useAxios() {
-  const runtimeConfig = useRuntimeConfig()
+  // const runtimeConfig = useRuntimeConfig()
 
-  const axiosIns = axios.create({
-    baseURL: runtimeConfig.apiURL,
-  })
+  const axiosIns = axios.create({ baseURL: "http://127.0.0.1:8000/api" })
 
   axiosIns.interceptors.request.use(
     async (config) => {
       const userStore = useUserStore()
 
       userStore.$hydrate()
-      if (userStore.accessToken)
-        config.headers.Authorization = `Bearer ${userStore.accessToken}`
+      if (userStore.accessToken) { config.headers.Authorization = `Bearer ${userStore.accessToken}` }
 
       return config
     },

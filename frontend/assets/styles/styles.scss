@@ -10,8 +10,16 @@ input:-webkit-autofill:active {
   margin-inline-end: 0;
 }
 
-.layout-nav-type-vertical .layout-vertical-nav .nav-group .nav-group .nav-item-icon,
-.layout-nav-type-vertical .layout-vertical-nav .nav-group .nav-link .nav-item-icon {
+.layout-nav-type-vertical
+  .layout-vertical-nav
+  .nav-group
+  .nav-group
+  .nav-item-icon,
+.layout-nav-type-vertical
+  .layout-vertical-nav
+  .nav-group
+  .nav-link
+  .nav-item-icon {
   font-size: 1rem;
 }
 

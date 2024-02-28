@@ -1,13 +1,12 @@
 <script lang="ts" setup>
-import { themeConfig } from "@themeConfig"
-import NavBarI18n from "@core/components/I18n.vue"
-import { VerticalNavLayout } from "@layouts"
-import navItems from "@/navigation/vertical"
-
-// Components
 import Footer from "@/layouts/components/Footer.vue"
 import NavbarThemeSwitcher from "@/layouts/components/NavbarThemeSwitcher.vue"
 import UserProfile from "@/layouts/components/UserProfile.vue"
+import navItems from "@/navigation/vertical"
+import NavBarI18n from "@core/components/I18n.vue"
+// Components
+import { VerticalNavLayout } from "@layouts"
+import { themeConfig } from "@themeConfig"
 
 // @layouts plugin
 </script>
@@ -23,8 +22,8 @@ import UserProfile from "@/layouts/components/UserProfile.vue"
           @click="toggleVerticalOverlayNavActive(true)"
         >
           <VIcon
-            size="26"
             icon="fasl:bars"
+            size="26"
           />
         </IconBtn>
 

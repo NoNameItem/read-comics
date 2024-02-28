@@ -17,7 +17,7 @@ const configStore = useConfigStore()
 // Remove below composable usage if you are not using horizontal nav layout in your app
 switchToVerticalNavOnLtOverlayNavBreakpoint()
 
-const { layoutAttrs, injectSkinClasses } = useSkins()
+const { injectSkinClasses, layoutAttrs } = useSkins()
 
 injectSkinClasses()
 </script>

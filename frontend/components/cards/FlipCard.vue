@@ -1,8 +1,8 @@
 <script setup>
 const props = defineProps({
   flipped: {
-    type:     Boolean,
     required: true,
+    type:     Boolean,
   },
 })
 </script>

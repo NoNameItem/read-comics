@@ -1,5 +1,6 @@
-import axios from "@axios"
 import { useUserStore } from "@/stores/user"
+
+const axios = useAxios()
 
 export function useResentEmailConfirmation() {
   const user = useUserStore()

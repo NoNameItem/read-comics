@@ -1,9 +1,7 @@
 <script setup>
 const route = useRoute()
 
-definePageMeta({
-  navActiveLink: "story-arcs",
-})
+definePageMeta({ navActiveLink: "story-arcs" })
 </script>
 
 <template>

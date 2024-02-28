@@ -6,8 +6,8 @@ const fasl = {
     const stringIcon = icon
     return h(props.tag, rest, [
       h(resolveComponent("font-awesome-icon"), {
-        key:  stringIcon,
         icon: ["fasl", stringIcon.includes(" fa-") ? stringIcon.split(" fa-") : stringIcon],
+        key:  stringIcon,
       }),
     ])
   },

@@ -7,18 +7,20 @@ export const useBreadcrumbsStore = defineStore("breadcrumbs", () => {
     pageTitle.value = newPageTitle
     breadcrumbs.value = newBreadcrumbs
 
-    if (process.client)
-      useHead({ title: newPageTitle })
+    if (process.client) { useHead({ title: newPageTitle }) }
 
     loading.value = false
   }
 
-  const fullBreadcrumbs = computed(() => [{
-    icon:  "fasl:home",
-    title: "Home",
-    to:    "/",
-    exact: true,
-  }, ...breadcrumbs.value.map(item => ({ ...item, exact: true }))])
+  const fullBreadcrumbs = computed(() => [
+    {
+      exact: true,
+      icon:  "fasl:home",
+      title: "Home",
+      to:    "/",
+    },
+    ...breadcrumbs.value.map(item => ({ ...item, exact: true })),
+  ])
 
-  return { pageTitle, breadcrumbs, loading, fullBreadcrumbs, setBreadcrumbs }
+  return { breadcrumbs, fullBreadcrumbs, loading, pageTitle, setBreadcrumbs }
 })

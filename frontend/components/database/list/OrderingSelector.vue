@@ -1,14 +1,14 @@
 <script setup>
 const componentProps = defineProps({
-  variants:        { type: Array, required: true },
-  defaultOrdering: { type: String, required: true },
+  defaultOrdering: { required: true, type: String },
+  variants:        { required: true, type: Array },
 })
 
 const route = useRoute()
 const router = useRouter()
 
 const setOrdering = (ordering) => {
-  router.push({ name: route.name, query: { ...route.query, page: 1, ordering } })
+  router.push({ name: route.name, query: { ...route.query, ordering, page: 1 } })
 }
 
 const currentOrdering = computed(() => route.query.ordering ?? componentProps.defaultOrdering)
@@ -26,8 +26,8 @@ const currentOrdering = computed(() => route.query.ordering ?? componentProps.de
       <VListItem
         v-for="item in componentProps.variants"
         :key="item.value"
-        :value="item.value"
         :active="item.value === currentOrdering"
+        :value="item.value"
         @click="setOrdering(item.value)"
       >
         <template #prepend>

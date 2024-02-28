@@ -3,13 +3,12 @@ import authV1BottomShape from "@images/svg/auth-v1-bottom-shape.svg?raw"
 import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
-import axios from "@axios"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Confirm Email" })
+
+const axios = useAxios()
 
 const user = useUserStore()
 const route = useRoute()
@@ -42,9 +41,9 @@ onMounted(confimEmail)
 
       <!-- 👉 Auth card -->
       <VCard
+        :loading="loading"
         class="auth-card pa-4"
         max-width="448"
-        :loading="loading"
       >
         <VCardItem class="justify-center">
           <template #prepend>
@@ -78,8 +77,8 @@ onMounted(confimEmail)
 
           <VBtn
             block
-            to="/"
             class="mb-6"
+            to="/"
           >
             Start reading
           </VBtn>

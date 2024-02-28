@@ -1,16 +1,16 @@
 <script setup>
 const props = defineProps({
   errorCode: {
-    type:     String,
     required: false,
-  },
-  errorTitle: {
     type:     String,
-    required: false,
   },
   errorDescription: {
-    type:     String,
     required: false,
+    type:     String,
+  },
+  errorTitle: {
+    required: false,
+    type:     String,
   },
 })
 </script>

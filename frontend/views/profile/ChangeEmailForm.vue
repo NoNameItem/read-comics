@@ -3,12 +3,10 @@ import { requiredValidator } from "@validators"
 
 const user = useUserStore()
 
-const { formData, valid, formRef, status, loading, errors, responseData, post } = usePostForm({
+const { errors, formData, formRef, loading, post, responseData, status, valid } = usePostForm({
+  formInitialValue: { email: user.email },
+  httpMethod:       "put",
   url:              "/profile/change-email/",
-  formInitialValue: {
-    email: user.email,
-  },
-  httpMethod: "put",
 })
 
 const toast = useTitledToast()
@@ -24,8 +22,8 @@ watch(status, () => {
 
 <template>
   <VCard
-    title="Change Email"
     :loading="loading"
+    title="Change Email"
   >
     <VCardText>
       {{ status }}
@@ -43,27 +41,27 @@ watch(status, () => {
           <VCol cols="12">
             <AppTextField
               v-model="formData.email"
+              :error-messages="errors.email"
+              :rules="[requiredValidator]"
               label="Email"
               max-errors="5"
               type="email"
-              :rules="[requiredValidator]"
-              :error-messages="errors.email"
             />
           </VCol>
 
           <VCol cols="12">
             <FormErrors
-              max-errors="5"
               :error="false"
               :error-messages="errors.non_field_errors"
+              max-errors="5"
             />
           </VCol>
 
           <VCol cols="12">
             <VBtn
+              :loading="loading"
               block
               type="submit"
-              :loading="loading"
             >
               Change Email
             </VBtn>

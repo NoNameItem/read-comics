@@ -1,35 +1,36 @@
 <script setup>
 import { useQuery } from "@tanstack/vue-query"
-import { getQueryByString } from "@/queries"
 
 const props = defineProps({
-  title: {
-    type:     String,
-    required: true,
-  },
-  color: {
-    type:     String,
-    required: false,
-    default:  "primary",
-  },
-  icon: {
-    type:     String,
-    required: true,
-  },
   cardProps: {
-    type:     Object,
-    required: false,
     default(_) {
       return {}
     },
+    required: false,
+    type:     Object,
+  },
+  color: {
+    default:  "primary",
+    required: false,
+    type:     String,
   },
   countQuery: {
-    type:     String,
     required: true,
+    type:     String,
+  },
+  icon: {
+    required: true,
+    type:     String,
+  },
+  title: {
+    required: true,
+    type:     String,
   },
 })
 
-const { isPending, data, suspense } = useQuery(getQueryByString(props.countQuery))
+const { getQueryByString } = useQueryKeys()
+
+const { data, isPending, suspense } = useQuery(getQueryByString(props.countQuery))
 
 onServerPrefetch(async () => {
   await suspense()

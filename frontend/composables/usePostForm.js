@@ -1,6 +1,6 @@
-import axios from "@axios"
+const axios = useAxios()
 
-export function usePostForm({ url, formInitialValue, customConstructPostData, customProcessErrors, httpMethod }) {
+export function usePostForm({ customConstructPostData, customProcessErrors, formInitialValue, httpMethod, url }) {
   const formData = ref(formInitialValue ?? {})
   const valid = ref(true)
   const formRef = ref(null)
@@ -80,5 +80,5 @@ export function usePostForm({ url, formInitialValue, customConstructPostData, cu
     }
   }
 
-  return { formData, valid, formRef, status, loading, errors, responseData, responseStatus, post, reset }
+  return { errors, formData, formRef, loading, post, reset, responseData, responseStatus, status, valid }
 }

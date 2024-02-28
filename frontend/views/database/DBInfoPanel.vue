@@ -3,24 +3,24 @@ import { avatarText } from "@core/utils/formatters"
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
 
 const props = defineProps({
-  data: {
-    type:     Object,
+  batchDownload: {
+    default:  true,
     required: false,
+    type:     Boolean,
+  },
+  data: {
+    required: false,
+    type:     Object,
   },
   loading: {
-    type:     Boolean,
-    required: false,
     default:  true,
-  },
-  batchDownload: {
-    type:     Boolean,
     required: false,
-    default:  true,
+    type:     Boolean,
   },
   showPrevNextButtons: {
-    type:     Boolean,
-    required: false,
     default:  false,
+    required: false,
+    type:     Boolean,
   },
 })
 
@@ -40,16 +40,16 @@ const closeImageDialog = () => {
 
   <VCard v-else position="sticky">
     <VCardText class="text-center pt-15">
-      <VBadge color="success" icon="fasl:check" :model-value="!!props.data.isFinished">
+      <VBadge :model-value="!!props.data.isFinished" color="success" icon="fasl:check">
         <VAvatar
-          rounded
-          class="main-image"
-          :size="300"
           :color="!props.data.image ? 'primary' : undefined"
+          :size="300"
           :variant="!props.data.image ? 'tonal' : undefined"
+          class="main-image"
+          rounded
           @click="openImageDialog"
         >
-          <VImg v-if="props.data.image" cover :src="props.data.square_image">
+          <VImg v-if="props.data.image" :src="props.data.square_image" cover>
             <template #placeholder>
               <div class="d-flex align-center justify-center fill-height">
                 <VSkeletonLoader type="avatar" />
@@ -66,7 +66,7 @@ const closeImageDialog = () => {
         {{ props.data.title }}
       </h6>
 
-      <VChip v-if="props.data.subtitle" label color="info" size="small" class="text-capitalize mt-3">
+      <VChip v-if="props.data.subtitle" class="text-capitalize mt-3" color="info" label size="small">
         {{ props.data.subtitle }}
       </VChip>
     </VCardText>
@@ -74,10 +74,10 @@ const closeImageDialog = () => {
     <VCardText class="d-flex justify-center">
       <VBtn
         v-if="props.showPrevNextButtons"
-        size="38"
-        class="mr-1"
         :disabled="!props.data?.prevLink"
         :to="props.data?.prevLink"
+        class="mr-1"
+        size="38"
       >
         <VIcon icon="fasl:chevron-left" size="22" />
       </VBtn>
@@ -87,15 +87,15 @@ const closeImageDialog = () => {
         :download-size="props.data?.download_size"
       />
       <VBtn v-else color="info" v-bind="props" :href="props.data?.download_link">
-        <VIcon start icon="fasl:download" />
+        <VIcon icon="fasl:download" start />
         Download ({{ props.data?.download_size }})
       </VBtn>
       <VBtn
         v-if="props.showPrevNextButtons"
-        size="38"
-        class="ml-1"
         :disabled="!props.data?.nextLink"
         :to="props.data?.nextLink"
+        class="ml-1"
+        size="38"
       >
         <VIcon icon="fasl:chevron-right" size="22" />
       </VBtn>
@@ -106,7 +106,7 @@ const closeImageDialog = () => {
     <!-- 👉 Details -->
     <VCardText>
       <!-- 👉 User Details list -->
-      <VList class="card-list" density="compact" :lines="false">
+      <VList :lines="false" class="card-list" density="compact">
         <DataBlock
           v-for="(item, index) in props.data.dataItems"
           :key="index"
@@ -119,7 +119,7 @@ const closeImageDialog = () => {
     <VDivider />
 
     <VCardText v-if="props.data?.comicvine_url" class="d-flex justify-start">
-      <a target="_blank" rel="noopener noreferrer" :href="props.data.comicvine_url">See at ComicVine</a>
+      <a :href="props.data.comicvine_url" rel="noopener noreferrer" target="_blank">See at ComicVine</a>
     </VCardText>
   </VCard>
 
@@ -127,7 +127,7 @@ const closeImageDialog = () => {
   <VDialog v-model="isImageDialogVisible" fullscreen>
     <DialogCloseBtn class="image-dialog-close-btn" @click="closeImageDialog" />
     <VCard>
-      <VImg width="100%" height="100%" :src="props.data.image" />
+      <VImg :src="props.data.image" height="100%" width="100%" />
     </VCard>
   </VDialog>
 </template>

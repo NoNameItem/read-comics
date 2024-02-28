@@ -5,9 +5,7 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
 import { requiredValidator } from "@validators"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Set New Password" })
 
@@ -27,10 +25,10 @@ function processErrors(errors) {
   return errors
 }
 
-const { formData, valid, formRef, status, loading, errors, post } = usePostForm({
-  url:                 "/auth/password/reset/confirm/",
-  formInitialValue:    { uid: route.query.uid, token: route.query.token, new_password1: "", new_password2: "" },
+const { errors, formData, formRef, loading, post, status, valid } = usePostForm({
   customProcessErrors: processErrors,
+  formInitialValue:    { new_password1: "", new_password2: "", token: route.query.token, uid: route.query.uid },
+  url:                 "/auth/password/reset/confirm/",
 })
 </script>
 
@@ -51,9 +49,9 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
 
       <!-- 👉 Auth Card -->
       <VCard
+        :loading="loading"
         class="auth-card pa-4"
         max-width="448"
-        :loading="loading"
       >
         <VCardItem class="justify-center">
           <template #prepend>
@@ -89,13 +87,13 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
                 <VCol cols="12">
                   <AppTextField
                     v-model="formData.new_password1"
+                    :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
+                    :error-messages="errors.new_password1"
+                    :rules="[requiredValidator]"
+                    :type="isPasswordVisible ? 'text' : 'password'"
                     autofocus
                     label="New Password"
                     max-errors="5"
-                    :type="isPasswordVisible ? 'text' : 'password'"
-                    :rules="[requiredValidator]"
-                    :error-messages="errors.new_password1"
-                    :append-inner-icon="isPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                     @click:append-inner="isPasswordVisible = !isPasswordVisible"
                   />
                 </VCol>
@@ -104,12 +102,12 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
                 <VCol cols="12">
                   <AppTextField
                     v-model="formData.new_password2"
+                    :append-inner-icon="isConfirmPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
+                    :error-messages="errors.new_password2"
+                    :rules="[requiredValidator]"
+                    :type="isConfirmPasswordVisible ? 'text' : 'password'"
                     label="Confirm Password"
                     max-errors="5"
-                    :type="isConfirmPasswordVisible ? 'text' : 'password'"
-                    :rules="[requiredValidator]"
-                    :error-messages="errors.new_password2"
-                    :append-inner-icon="isConfirmPasswordVisible ? 'fasl:eye-slash' : 'fasl:eye'"
                     @click:append-inner="isConfirmPasswordVisible = !isConfirmPasswordVisible"
                   />
                 </VCol>
@@ -124,9 +122,9 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
                 <!-- reset password -->
                 <VCol cols="12">
                   <VBtn
+                    :loading="loading"
                     block
                     type="submit"
-                    :loading="loading"
                   >
                     Set New Password
                   </VBtn>
@@ -139,12 +137,12 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
               <!-- back to login -->
               <VCol cols="12">
                 <NuxtLink
-                  class="d-flex align-center justify-center"
                   :to="{ name: 'login' }"
+                  class="d-flex align-center justify-center"
                 >
                   <VIcon
-                    icon="fasl:chevron-left"
                     class="flip-in-rtl"
+                    icon="fasl:chevron-left"
                   />
                   <span>Back to login</span>
                 </NuxtLink>

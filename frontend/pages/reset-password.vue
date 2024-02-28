@@ -5,15 +5,13 @@ import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
 import { emailValidator, requiredValidator } from "@validators"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Reset Password" })
 
-const { formData, valid, formRef, status, loading, errors, post } = usePostForm({
-  url:              "/auth/password/reset/",
+const { errors, formData, formRef, loading, post, status, valid } = usePostForm({
   formInitialValue: { email: "" },
+  url:              "/auth/password/reset/",
 })
 </script>
 
@@ -34,9 +32,9 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
 
       <!-- 👉 Auth Card -->
       <VCard
+        :loading="loading"
         class="auth-card pa-4"
         max-width="448"
-        :loading="loading"
       >
         <VCardItem class="justify-center">
           <template #prepend>
@@ -69,19 +67,19 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
                 <VCol cols="12">
                   <AppTextField
                     v-model="formData.email"
-                    autofocus
-                    label="Email"
                     :error-messages="errors.email"
                     :rules="[emailValidator, requiredValidator]"
+                    autofocus
+                    label="Email"
                   />
                 </VCol>
 
                 <!-- reset password -->
                 <VCol cols="12">
                   <VBtn
+                    :loading="loading"
                     block
                     type="submit"
-                    :loading="loading"
                   >
                     Reset password
                   </VBtn>
@@ -95,8 +93,8 @@ const { formData, valid, formRef, status, loading, errors, post } = usePostForm(
               <!-- back to login -->
               <VCol cols="12">
                 <NuxtLink
-                  class="d-flex align-center justify-center"
                   :to="{ name: 'login' }"
+                  class="d-flex align-center justify-center"
                 >
                   <VIcon icon="fasl:chevron-left" />
                   <span>Back to login</span>

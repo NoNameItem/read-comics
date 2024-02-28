@@ -1,7 +1,5 @@
 <script setup>
-definePageMeta({
-  navActiveLink: "volumes",
-})
+definePageMeta({ navActiveLink: "volumes" })
 
 const route = useRoute()
 </script>

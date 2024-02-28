@@ -2,7 +2,7 @@ import { useAdminDetailQuery } from "@/composables/useAdminDetailQuery"
 import { formatDateTimeSeconds } from "@/utils/format_utils"
 
 export function usePreparedTechnicalInfo(query) {
-  const { isPending, data } = useAdminDetailQuery(query)
+  const { data, isPending } = useAdminDetailQuery(query)
 
   const preparedTechnicalInfo = computed(() =>
     data.value

@@ -1,59 +1,59 @@
 export default [
   {
-    title:    "Database",
-    icon:     { icon: "fasl:database" },
     children: [
       {
+        icon:  { icon: "fasl:bat" },
         title: "Characters",
         to:    "characters",
-        icon:  { icon: "fasl:bat" },
       },
 
       {
+        icon:  { icon: "fasl:brain" },
         title: "Concepts",
         to:    "concepts",
-        icon:  { icon: "fasl:brain" },
       },
       {
+        icon:  { icon: "fasl:book-open" },
         title: "Issues",
         to:    "issues",
-        icon:  { icon: "fasl:book-open" },
       },
       {
+        icon:  { icon: "fasl:location-dot" },
         title: "Locations",
         to:    "locations",
-        icon:  { icon: "fasl:location-dot" },
       },
       {
+        icon:  { icon: "fasl:swords-laser" },
         title: "Objects",
         to:    "objects",
-        icon:  { icon: "fasl:swords-laser" },
       },
       {
+        icon:  { icon: "fasl:people-carry-box" },
         title: "People",
         to:    "people",
-        icon:  { icon: "fasl:people-carry-box" },
       },
       {
+        icon:  { icon: "fasl:building" },
         title: "Publishers",
         to:    "publishers",
-        icon:  { icon: "fasl:building" },
       },
       {
+        icon:  { icon: "fasl:books" },
         title: "Story Arcs",
         to:    "story-arcs",
-        icon:  { icon: "fasl:books" },
       },
       {
+        icon:  { icon: "fasl:users" },
         title: "Teams",
         to:    "teams",
-        icon:  { icon: "fasl:users" },
       },
       {
+        icon:  { icon: "fasl:book-sparkles" },
         title: "Volumes",
         to:    "volumes",
-        icon:  { icon: "fasl:book-sparkles" },
       },
     ],
+    icon:  { icon: "fasl:database" },
+    title: "Database",
   },
 ]

@@ -1,13 +1,11 @@
 <script setup>
-import { computed, onServerPrefetch } from "vue"
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
-import { queries } from "@/queries"
 import { useGetListData } from "@/composables/useGetListData"
+import { queries } from "@/queries"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 import { useUserStore } from "@/stores/user"
+import { computed, onServerPrefetch } from "vue"
 
-useServerSeoMeta({
-  title: "Volumes",
-})
+useServerSeoMeta({ title: "Volumes" })
 
 const user = useUserStore()
 
@@ -17,38 +15,38 @@ breadcrumb.setBreadcrumbs("Volumes", [{ title: "Volumes" }])
 
 const orderingVariants = [
   {
-    title: "Issues",
     icon:  "fasl:arrow-down-1-9",
+    title: "Issues",
     value: "issues_count",
   },
   {
-    title: "Issues",
     icon:  "fasl:arrow-down-9-1",
+    title: "Issues",
     value: "-issues_count",
   },
   {
-    title: "Name",
     icon:  "fasl:arrow-down-a-z",
+    title: "Name",
     value: "name,start_year",
   },
   {
-    title: "Name",
     icon:  "fasl:arrow-down-z-a",
+    title: "Name",
     value: "-name,-start_year",
   },
   {
-    title: "Start year",
     icon:  "fasl:arrow-down-1-9",
+    title: "Start year",
     value: "start_year",
   },
   {
-    title: "Start year",
     icon:  "fasl:arrow-down-9-1",
+    title: "Start year",
     value: "-start_year",
   },
 ]
 
-const { isPending, data, suspense } = useGetListData(queries.volumes.list, {
+const { data, isPending, suspense } = useGetListData(queries.volumes.list, {
   "hide-finished": "yes",
   "ordering":      "start_year",
   "page":          1,
@@ -61,8 +59,7 @@ const route = useRoute()
 const ordering = computed(() => route.query?.ordering ?? "start_year")
 
 const getGroupBreak = (item) => {
-  if (ordering.value.includes("start_year"))
-    return `${item.start_year}` ?? "Unknown year"
+  if (ordering.value.includes("start_year")) { return `${item.start_year}` ?? "Unknown year" }
 
   return null
 }
@@ -83,12 +80,12 @@ const pagesNumber = computed(() => data.value?.pages_count > 0 ? data.value?.pag
 
 <template>
   <DBCardsList
-    :ordering-variants="orderingVariants"
-    default-ordering="name"
-    without-issues-label="volumes"
-    show-finished-toggle
     :items="items"
     :loading="isPending"
+    :ordering-variants="orderingVariants"
     :pages-number="pagesNumber"
+    default-ordering="name"
+    show-finished-toggle
+    without-issues-label="volumes"
   />
 </template>

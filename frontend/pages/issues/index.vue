@@ -1,13 +1,11 @@
 <script setup>
+import { useGetListData } from "@/composables/useGetListData"
+import { queries } from "@/queries"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 import { DateTime } from "luxon"
 import { computed, onServerPrefetch } from "vue"
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
-import { queries } from "@/queries"
-import { useGetListData } from "@/composables/useGetListData"
 
-useServerSeoMeta({
-  title: "Issues",
-})
+useServerSeoMeta({ title: "Issues" })
 
 const breadcrumb = useBreadcrumbsStore()
 
@@ -15,30 +13,30 @@ breadcrumb.setBreadcrumbs("Issues", [{ title: "Issues" }])
 
 const orderingVariants = [
   {
-    title: "Name",
     icon:  "fasl:arrow-down-a-z",
+    title: "Name",
     value: "volume__name,volume__start_year,numerical_number,number",
   },
   {
-    title: "Name",
     icon:  "fasl:arrow-down-z-a",
+    title: "Name",
     value: "-volume__name,-volume__start_year,-numerical_number,-number",
   },
   {
-    title: "Cover date",
     icon:  "fasl:arrow-down-1-9",
+    title: "Cover date",
     value: "cover_date,volume__name,volume__start_year,numerical_number,number",
   },
   {
-    title: "Cover date",
     icon:  "fasl:arrow-down-9-1",
+    title: "Cover date",
     value: "-cover_date,-volume__name,-volume__start_year,-numerical_number,-number",
   },
 ]
 
 const defaultOrdering = "cover_date,volume__name,volume__start_year,numerical_number,number"
 
-const { isPending, data, suspense } = useGetListData(queries.issues.list, {
+const { data, isPending, suspense } = useGetListData(queries.issues.list, {
   "hide-finished": "yes",
   "ordering":      defaultOrdering,
   "page":          1,
@@ -79,13 +77,13 @@ const pagesNumber = computed(() => data.value?.pages_count > 0 ? data.value?.pag
 <template>
   <PageWithBreadcrumb>
     <DBCardsList
-      :ordering-variants="orderingVariants"
-      default-ordering="name"
-      without-issues-label="characters"
-      show-finished-toggle
       :items="items"
       :loading="isPending"
+      :ordering-variants="orderingVariants"
       :pages-number="pagesNumber"
+      default-ordering="name"
+      show-finished-toggle
+      without-issues-label="characters"
     />
   </PageWithBreadcrumb>
 </template>

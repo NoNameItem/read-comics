@@ -4,9 +4,7 @@ import authV1TopShape from "@images/svg/auth-v1-top-shape.svg?raw"
 import { VNodeRenderer } from "@layouts/components/VNodeRenderer"
 import { themeConfig } from "@themeConfig"
 
-definePageMeta({
-  layout: "blank",
-})
+definePageMeta({ layout: "blank" })
 
 useHead({ title: "Email Verification" })
 
@@ -57,8 +55,8 @@ const { resentConfirmation } = useResentEmailConfirmation()
           </p>
 
           <VBtn
-            block
             :to="route.query.to ? String(route.query.to) : '/'"
+            block
             class="mb-6"
           >
             Skip for now

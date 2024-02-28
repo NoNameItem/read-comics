@@ -9,8 +9,8 @@ watch(hideFinished, () => {
     name:  route.name,
     query: {
       ...route.query,
-      "page":          1,
       "hide-finished": hideFinished.value ? "yes" : "no",
+      "page":          1,
     },
   })
 })

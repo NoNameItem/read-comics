@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query"
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 import { queries } from "@/queries"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { useQuery } from "@tanstack/vue-query"
 
-definePageMeta({
-  navActiveLink: "concepts",
-})
+definePageMeta({ navActiveLink: "concepts" })
 
 const route = useRoute()
 
@@ -22,11 +20,9 @@ const tabs = [
 
 const activeTab = ref(null)
 
-const { isPending: infoLoading, data: info, suspense } = useQuery(queries.concepts.detail(route.params.slug))
+const { data: info, isPending: infoLoading, suspense } = useQuery(queries.concepts.detail(route.params.slug))
 
-useServerSeoMeta({
-  title: () => info.value.name,
-})
+useServerSeoMeta({ title: () => info.value.name })
 
 const setBreadcrumbs = () => {
   if (!infoLoading.value) {
@@ -52,11 +48,6 @@ onServerPrefetch(async () => {
 })
 
 const preparedInfo = computed(() => ({
-  title:         info.value?.name,
-  image:         info.value?.image,
-  square_image:  info.value?.square_image,
-  download_link: info.value?.download_link,
-  download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
   dataItems:     [
     {
@@ -69,10 +60,15 @@ const preparedInfo = computed(() => ({
     },
     {
       title: "First Issue",
-      value: info.value?.first_issue_name,
       to:    info.value?.first_issue_slug ? `/issues/${info.value?.first_issue_slug}` : null,
+      value: info.value?.first_issue_name,
     },
   ],
+  download_link: info.value?.download_link,
+  download_size: info.value?.download_size,
+  image:         info.value?.image,
+  square_image:  info.value?.square_image,
+  title:         info.value?.name,
 }))
 
 const description = computed(() => info.value?.description || info.value?.short_description)
@@ -90,22 +86,22 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
     <VRow>
       <VCol
         cols="12"
-        md="5"
         lg="4"
+        md="5"
         xl="3"
         xxl="2"
       >
         <DBInfoFlipper
           :info="preparedInfo"
           :info-loading="infoLoading"
-          :technical-info-loading="technicalInfoLoading"
           :technical-info="preparedTechnicalInfo"
+          :technical-info-loading="technicalInfoLoading"
         />
       </VCol>
       <VCol
         cols="12"
-        md="7"
         lg="8"
+        md="7"
         xl="9"
         xxl="10"
       >
@@ -118,8 +114,8 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
             :key="tab.icon"
           >
             <VIcon
-              :size="18"
               :icon="tab.icon"
+              :size="18"
               class="me-1"
             />
             <span>{{ tab.title }}</span>
@@ -128,13 +124,13 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
 
         <VWindow
           v-model="activeTab"
-          class="mt-6 fullscreen"
           :touch="false"
+          class="mt-6 fullscreen"
         >
           <VWindowItem>
             <DBDescriptionTab
-              :loading="infoLoading"
               :description="description"
+              :loading="infoLoading"
             />
           </VWindowItem>
         </VWindow>

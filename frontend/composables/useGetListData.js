@@ -6,8 +6,7 @@ export function useGetListData(query, defaultParams) {
   const params = computed(() => {
     const filteredQuery = {}
     for (const key in route.query) {
-      if (key in defaultParams)
-        filteredQuery[key] = route.query[key]
+      if (key in defaultParams) { filteredQuery[key] = route.query[key] }
     }
 
     return {
@@ -16,7 +15,7 @@ export function useGetListData(query, defaultParams) {
     }
   })
 
-  const { isPending, isError, error, data, suspense } = useQuery(query(params))
+  const { data, error, isError, isPending, suspense } = useQuery(query(params))
 
-  return { isPending, isError, error, data, suspense }
+  return { data, error, isError, isPending, suspense }
 }

@@ -2,39 +2,37 @@
 import { VSkeletonLoader } from "vuetify/labs/components"
 
 const props = defineProps({
-  title: {
-    type:     String,
-    required: false,
-    default:  "",
-  },
   current: {
-    type:     Number,
     required: false,
+    type:     Number,
   },
   delta: {
-    type:     Number,
-    required: false,
     default:  0,
-  },
-  total: {
-    type:     Number,
     required: false,
+    type:     Number,
   },
   loading: {
-    type:     Boolean,
-    required: false,
     default:  false,
+    required: false,
+    type:     Boolean,
+  },
+  title: {
+    default:  "",
+    required: false,
+    type:     String,
+  },
+  total: {
+    required: false,
+    type:     Number,
   },
 })
 
 const percentage = computed(() => Math.ceil((props.current / props.total) * 100))
 
 const color = computed(() => {
-  if (percentage.value < 35)
-    return "error"
+  if (percentage.value < 35) { return "error" }
 
-  if (percentage.value < 65)
-    return "warning"
+  if (percentage.value < 65) { return "warning" }
 
   return "success"
 })
@@ -59,10 +57,10 @@ const color = computed(() => {
         type="text"
       >
         <VProgressLinear
-          height="20"
-          :model-value="percentage"
-          :color="color"
           :bg-color="color"
+          :color="color"
+          :model-value="percentage"
+          height="20"
         >
           <strong>{{ current.toLocaleString('en-US') }} / {{ total.toLocaleString('en-US') }}</strong>
         </VProgressLinear>

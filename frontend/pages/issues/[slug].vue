@@ -1,12 +1,10 @@
 <script setup>
+import { queries } from "@/queries"
+import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
 import { useQuery } from "@tanstack/vue-query"
 import { onServerPrefetch, watch } from "vue"
-import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
-import { queries } from "@/queries"
 
-definePageMeta({
-  navActiveLink: "issues",
-})
+definePageMeta({ navActiveLink: "issues" })
 
 const route = useRoute()
 
@@ -29,7 +27,7 @@ const activeTab = ref(null)
 const addOrdering = issueLink =>
   route.query?.ordering ? `${issueLink}?ordering=${route.query.ordering}` : issueLink
 
-const { isPending: infoLoading, data: info, suspense } = useQuery(
+const { data: info, isPending: infoLoading, suspense } = useQuery(
   queries.issues.detail(
     route.params.slug,
     route.query?.ordering ?? "cover_date,volume__name,volume__start_year,numerical_number,number",
@@ -71,30 +69,21 @@ watch([infoLoading, info], () => {
 })
 
 const preparedInfo = computed(() => ({
-  title:         `${info.value?.volume?.display_name} #${info.value?.number}`,
-  subtitle:      info.value?.name,
-  image:         info.value?.image,
-  square_image:  info.value?.square_image,
-  download_link: info.value?.download_link,
-  download_size: info.value?.download_size,
   comicvine_url: info.value?.comicvine_url,
-  isFinished:    info.value?.is_finished,
-  prevLink:      info.value?.prev_issue_slug ? addOrdering(`/issues/${info.value.prev_issue_slug}`) : null,
-  nextLink:      info.value?.next_issue_slug ? addOrdering(`/issues/${info.value.next_issue_slug}`) : null,
   dataItems:     [
     {
       title: "Volume",
-      value: info.value?.volume?.display_name,
       to:    `/volumes/${info.value?.volume?.slug}`,
+      value: info.value?.volume?.display_name,
     },
     {
       title: "Publisher",
-      value: info.value?.publisher?.name,
       to:    `/publishers/${info.value?.publisher?.slug}`,
+      value: info.value?.publisher?.name,
     },
     {
-      title: "Number",
       html:  `${info.value?.number} <small>(of ${info.value?.volume_last_number})</small>`,
+      title: "Number",
     },
     {
       title: "Cover Date",
@@ -105,6 +94,15 @@ const preparedInfo = computed(() => ({
       value: utilsFormatDate(info.value?.store_date),
     },
   ],
+  download_link: info.value?.download_link,
+  download_size: info.value?.download_size,
+  image:         info.value?.image,
+  isFinished:    info.value?.is_finished,
+  nextLink:      info.value?.next_issue_slug ? addOrdering(`/issues/${info.value.next_issue_slug}`) : null,
+  prevLink:      info.value?.prev_issue_slug ? addOrdering(`/issues/${info.value.prev_issue_slug}`) : null,
+  square_image:  info.value?.square_image,
+  subtitle:      info.value?.name,
+  title:         `${info.value?.volume?.display_name} #${info.value?.number}`,
 }))
 
 const description = computed(() => info.value?.description || info.value?.short_description)
@@ -122,24 +120,24 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
     <VRow>
       <VCol
         cols="12"
-        md="5"
         lg="4"
+        md="5"
         xl="3"
         xxl="2"
       >
         <DBInfoFlipper
+          :batch-download="false"
           :info="preparedInfo"
           :info-loading="infoLoading"
-          :technical-info-loading="technicalInfoLoading"
           :technical-info="preparedTechnicalInfo"
-          :batch-download="false"
+          :technical-info-loading="technicalInfoLoading"
           show-prev-next-buttons
         />
       </VCol>
       <VCol
         cols="12"
-        md="7"
         lg="8"
+        md="7"
         xl="9"
         xxl="10"
       >
@@ -153,8 +151,8 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
             :value="index"
           >
             <VIcon
-              :size="18"
               :icon="tab.icon"
+              :size="18"
               class="me-1"
             />
             <span>{{ tab.title }}</span>
@@ -163,13 +161,13 @@ const { isPending: technicalInfoLoading, preparedTechnicalInfo } = usePreparedTe
 
         <VWindow
           v-model="activeTab"
-          class="mt-6 fullscreen"
           :touch="false"
+          class="mt-6 fullscreen"
         >
           <VWindowItem>
             <DBDescriptionTab
-              :loading="infoLoading"
               :description="description"
+              :loading="infoLoading"
             />
           </VWindowItem>
         </VWindow>

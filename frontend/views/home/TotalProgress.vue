@@ -1,9 +1,10 @@
 <script setup>
 import { useQuery } from "@tanstack/vue-query"
-import { queries } from "@/queries"
 
-const { isPending: finishedisPending, data: finishedData, suspense: finishedSuspense } = useQuery(queries.profile.finishedStats)
-const { isPending: totalisPending, data: totalData, suspense: totalSuspense } = useQuery(queries.issues.count)
+const { queries } = useQueryKeys()
+
+const { data: finishedData, isPending: finishedIsPending, suspense: finishedSuspense } = useQuery(queries.profile.finishedStats)
+const { data: totalData, isPending: totalIsPending, suspense: totalSuspense } = useQuery(queries.issues.count)
 
 onServerPrefetch(async () => {
   await finishedSuspense()
@@ -13,10 +14,10 @@ onServerPrefetch(async () => {
 
 <template>
   <ProgressCard
-    title="Reading progress"
-    :total="totalData?.count"
     :current="finishedData?.finished_count"
     :delta="finishedData?.today_finished_count"
-    :loading="finishedisPending || totalisPending"
+    :loading="finishedIsPending || totalIsPending"
+    :total="totalData?.count"
+    title="Reading progress"
   />
 </template>

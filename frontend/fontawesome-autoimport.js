@@ -5,7 +5,7 @@ const fs = require("node:fs")
 const src = path.resolve(__dirname)
 
 const fileRegex = /\.(vue|js|ts|cjs)$/
-const iconRegex = /(fasl|fab):([a-z0-9-]+)/gms
+const iconRegex = /(fasl|fab):([\da-z-]+)/gms
 
 const outputFolder = `${src}/plugins`
 const outputFile = `${outputFolder}/01.icons.js`
@@ -19,19 +19,16 @@ const pascalCase = (str) => {
 
 const findIcons = (filePath) => {
   [...fs.readFileSync(filePath).toString().matchAll(iconRegex)].forEach((match) => {
-    if (match[1] === "fasl")
-      icons.add(`fa${pascalCase(match[2])}`)
+    if (match[1] === "fasl") { icons.add(`fa${pascalCase(match[2])}`) }
 
-    if (match[1] === "fab")
-      brandIcons.add(`fa${pascalCase(match[2])}`)
+    if (match[1] === "fab") { brandIcons.add(`fa${pascalCase(match[2])}`) }
   })
 }
 
 const parse = (path, ignoredPaths) => {
   fs.readdirSync(path).forEach((entry) => {
     const entryPath = `${path}/${entry}`
-    if (ignoredPaths.includes(entryPath))
-      return
+    if (ignoredPaths.includes(entryPath)) { return }
 
     fs.lstatSync(entryPath).isDirectory() ? parse(entryPath, ignoredPaths) : fileRegex.test(entry) && findIcons(entryPath)
   })
@@ -40,7 +37,7 @@ const parse = (path, ignoredPaths) => {
 const getOldIcons = () => {
   return [
     ...new Set(
-      [...(fs.existsSync(outputFile) && fs.readFileSync(outputFile)).toString().matchAll(/fa[A-Z0-9]\w+/gms)].map(
+      [...(fs.existsSync(outputFile) && fs.readFileSync(outputFile)).toString().matchAll(/fa[\dA-Z]\w+/gms)].map(
         match => match[0],
       ),
     ),
@@ -71,8 +68,7 @@ const saveToFile = () => {
   + "})"
 
   fs.mkdir(outputFolder, { recursive: true }, (err) => {
-    if (err)
-      throw err
+    if (err) { throw err }
 
     fs.writeFile(outputFile, output, err =>
       // eslint-disable-next-line no-console
@@ -89,23 +85,22 @@ function run(logEmpty, ignoredPaths) {
   const oldIcons = getOldIcons()
   const newIcons = [...icons, ...brandIcons].sort((a, b) => a.localeCompare(b))
 
-  if (JSON.stringify(oldIcons) !== JSON.stringify(newIcons))
-    saveToFile()
+  if (JSON.stringify(oldIcons) !== JSON.stringify(newIcons)) { saveToFile() }
   else if (logEmpty)
-    // eslint-disable-next-line no-console
-    console.log(`- Fontawesome treeshaking list: no changes. (took ${Date.now() - beginAt} ms)`)
+  // eslint-disable-next-line no-console
+  { console.log(`- Fontawesome treeshaking list: no changes. (took ${Date.now() - beginAt} ms)`) }
 }
 
 export const fontawesomeAutoimport = (ignoredDirs) => {
   const fullIgnoredDirs = (ignoredDirs ?? []).map(dir => path.resolve(__dirname, dir))
 
   return {
-    name: "fontawesome-autoimport",
     configResolved(_config) {
       run(true, fullIgnoredDirs)
     },
     handleHotUpdate(_config) {
       run(false, fullIgnoredDirs)
     },
+    name: "fontawesome-autoimport",
   }
 }

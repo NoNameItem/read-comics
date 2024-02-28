@@ -1,14 +1,12 @@
 <script setup>
-import TotalProgress from "@/views/home/TotalProgress.vue"
-import { useUserStore } from "@/stores/user"
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { useUserStore } from "@/stores/user"
+import TotalProgress from "@/views/home/TotalProgress.vue"
 
 const user = useUserStore()
 const breadcrumb = useBreadcrumbsStore()
 
-useServerSeoMeta({
-  title: "Home",
-})
+useServerSeoMeta({ title: "Home" })
 
 breadcrumb.setBreadcrumbs("Home", [])
 </script>
@@ -30,8 +28,8 @@ breadcrumb.setBreadcrumbs("Home", [])
         md="6"
       >
         <StartedAndNotFinished
-          query-name="volumes.started"
           card-url-base="volumes"
+          query-name="volumes.started"
           title="volumes"
         />
       </VCol>
@@ -40,8 +38,8 @@ breadcrumb.setBreadcrumbs("Home", [])
         md="6"
       >
         <StartedAndNotFinished
-          query-name="storyArcs.started"
           card-url-base="story-arcs"
+          query-name="storyArcs.started"
           title="story arcs"
         />
       </VCol>

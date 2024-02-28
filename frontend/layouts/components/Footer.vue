@@ -6,17 +6,17 @@
       {{ new Date().getFullYear() }}
       Made With
       <VIcon
-        icon="fasl:heart"
-        color="error"
-        size="1.25rem"
         class="mx-1"
+        color="error"
+        icon="fasl:heart"
+        size="1.25rem"
       />
       By
       <a
-        href="https://pixinvent.com"
-        target="_blank"
-        rel="noopener noreferrer"
         class="text-primary ms-1"
+        href="https://pixinvent.com"
+        rel="noopener noreferrer"
+        target="_blank"
       >Pixinvent</a>
     </span>
     <!-- 👉 Footer: right content -->

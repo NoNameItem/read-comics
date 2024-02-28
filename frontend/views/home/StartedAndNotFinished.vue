@@ -1,47 +1,47 @@
 <script setup lang="ts">
-import { useQuery } from "@tanstack/vue-query"
-import { useDisplay } from "vuetify"
-import { DateTime } from "luxon"
 import comics_covers from "@images/comics_covers.jpeg"
-import { getQueryByString } from "@/queries"
+import { useQuery } from "@tanstack/vue-query"
+import { DateTime } from "luxon"
+import { useDisplay } from "vuetify"
 
 const props = defineProps({
-  queryName: {
-    type:     String,
-    required: true,
-  },
   cardUrlBase: {
-    type:     String,
     required: true,
+    type:     String,
+  },
+  queryName: {
+    required: true,
+    type:     String,
   },
   title: {
-    type:     String,
     required: true,
+    type:     String,
   },
 })
+
+const { getQueryByString } = useQueryKeys()
 
 const { name: displayBreakpoint } = useDisplay()
 
 const slide = ref(null)
 
 const itemsOnSlide = {
-  xs:  1,
-  sm:  1,
-  md:  1,
   lg:  2,
+  md:  1,
+  sm:  1,
   xl:  3,
+  xs:  1,
   xxl: 3,
 }
 
-const { isPending, isError, data, suspense } = useQuery(getQueryByString(props.queryName))
+const { data, isError, isPending, suspense } = useQuery(getQueryByString(props.queryName))
 
 onServerPrefetch(async () => {
   await suspense()
 })
 
 const groupedData = computed(() => {
-  if (isPending.value)
-    return
+  if (isPending.value) { return }
 
   const res = []
   let group = []
@@ -49,8 +49,8 @@ const groupedData = computed(() => {
   if (data.value?.count === 0) {
     res.push([
       {
-        title: "There is nothing here. Good Job",
         image: comics_covers,
+        title: "There is nothing here. Good Job",
       },
     ])
 
@@ -59,12 +59,12 @@ const groupedData = computed(() => {
 
   data.value?.results
     ?.map(elem => ({
-      title:            elem?.display_name,
-      lastFinishedDate: DateTime.fromISO(elem?.max_finished_date).toRelative(),
-      stats:            `Finished ${elem?.finished_count} of ${elem?.issues_count}`,
       image:            elem.image,
+      lastFinishedDate: DateTime.fromISO(elem?.max_finished_date).toRelative(),
       linkText:         "Continue",
       linkUrl:          `/${props.cardUrlBase}/${elem?.slug}`,
+      stats:            `Finished ${elem?.finished_count} of ${elem?.issues_count}`,
+      title:            elem?.display_name,
     }))
     .forEach((el) => {
       group.push(el)
@@ -77,10 +77,10 @@ const groupedData = computed(() => {
   if (data.value?.next) {
     res.push([
       {
-        title:    "There is more...",
         image:    comics_covers,
         linkText: "View all",
         linkUrl:  `/${props.cardUrlBase}/started`,
+        title:    "There is more...",
       },
     ])
   }
@@ -89,8 +89,7 @@ const groupedData = computed(() => {
 })
 
 const nextSlide = () => {
-  if (groupedData.value?.length > 1)
-    slide.value = slide.value + 1 < groupedData.value.length ? slide.value + 1 : 0
+  if (groupedData.value?.length > 1) { slide.value = slide.value + 1 < groupedData.value.length ? slide.value + 1 : 0 }
 }
 
 const intervalId = ref(null)
@@ -104,8 +103,7 @@ const nextSlideManual = () => {
 }
 
 const prevSlide = () => {
-  if (groupedData.value?.length > 1)
-    slide.value = slide.value - 1 > 0 ? slide.value - 1 : groupedData.value.length - 1
+  if (groupedData.value?.length > 1) { slide.value = slide.value - 1 > 0 ? slide.value - 1 : groupedData.value.length - 1 }
 }
 
 const prevSlideManual = () => {
@@ -129,8 +127,7 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
-  if (intervalId.value)
-    clearInterval(intervalId.value)
+  if (intervalId.value) { clearInterval(intervalId.value) }
 })
 </script>
 
@@ -158,11 +155,11 @@ onBeforeUnmount(() => {
               col="auto"
             >
               <VImg
-                height="250px"
-                width="250px"
-                cover
                 :src="item.image"
                 class="ma-auto"
+                cover
+                height="250px"
+                width="250px"
               >
                 <template #placeholder>
                   <div class="d-flex align-center justify-center fill-height">
@@ -188,9 +185,9 @@ onBeforeUnmount(() => {
                       class="pt-4"
                     >
                       <VBtn
-                        variant="flat"
-                        color="primary"
                         :to="item.linkUrl"
+                        color="primary"
+                        variant="flat"
                       >
                         {{ item.linkText }}
                       </VBtn>
@@ -208,8 +205,8 @@ onBeforeUnmount(() => {
       class="justify-space-between"
     >
       <VBtn
-        variant="plain"
         icon="fasl:chevron-left"
+        variant="plain"
         @click="prevSlideManual"
       />
       <VItemGroup
@@ -224,19 +221,19 @@ onBeforeUnmount(() => {
           :value="n - 1"
         >
           <VBtn
-            variant="plain"
             :color="isSelected ? 'primary' : 'secondary'"
-            icon="fasl:circle-small"
-            size="x-small"
             class="pa-0"
             density="compact"
+            icon="fasl:circle-small"
+            size="x-small"
+            variant="plain"
             @click="toggleSlide(n - 1)"
           />
         </VItem>
       </VItemGroup>
       <VBtn
-        variant="plain"
         icon="fasl:chevron-right"
+        variant="plain"
         @click="nextSlideManual"
       />
     </VCardActions>

@@ -1,9 +1,7 @@
 <script setup>
 const route = useRoute()
 
-definePageMeta({
-  navActiveLink: "publishers",
-})
+definePageMeta({ navActiveLink: "publishers" })
 </script>
 
 <template>

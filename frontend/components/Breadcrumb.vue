@@ -1,6 +1,6 @@
 <script setup>
-import { VSkeletonLoader } from "vuetify/labs/components"
 import { useBreadcrumbsStore } from "@/stores/breadcrumbs"
+import { VSkeletonLoader } from "vuetify/labs/components"
 
 const breadcrumbs = useBreadcrumbsStore()
 </script>
@@ -8,9 +8,9 @@ const breadcrumbs = useBreadcrumbsStore()
 <template>
   <ClientOnly>
     <VSkeletonLoader
+      :loading="breadcrumbs.loading"
       class="breadcrumb-loader"
       type="text"
-      :loading="breadcrumbs.loading"
     >
       <VBreadcrumbs
         v-if="!breadcrumbs.loading"

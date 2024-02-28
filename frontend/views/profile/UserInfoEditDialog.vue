@@ -1,23 +1,24 @@
 <script setup>
-import { useQuery, useQueryClient } from "@tanstack/vue-query"
-import { useUserStore } from "@/stores/user"
-import { queries } from "@/queries"
 import { usePostForm } from "@/composables/usePostForm"
+import { useUserStore } from "@/stores/user"
+import { useQuery, useQueryClient } from "@tanstack/vue-query"
 
 const props = defineProps({
   isDialogVisible: {
-    type:     Boolean,
     required: true,
+    type:     Boolean,
   },
 })
 
 const emit = defineEmits(["submit", "update:isDialogVisible"])
 
+const { queries } = useQueryKeys()
+
 const GENDERS = [
-  { value: "F", label: "Female" },
-  { value: "M", label: "Male" },
-  { value: "U", label: "Unicorn" },
-  { value: "O", label: "Other" },
+  { label: "Female", value: "F" },
+  { label: "Male", value: "M" },
+  { label: "Unicorn", value: "U" },
+  { label: "Other", value: "O" },
 ]
 
 const { data: profileData } = useQuery(queries.profile.profileData)
@@ -25,26 +26,26 @@ const { data: profileData } = useQuery(queries.profile.profileData)
 const user = useUserStore()
 
 const getUserData = () => ({
-  name:       user.name,
-  gender:     user.gender,
-  birth_date: user.birthDate,
   bio:        profileData.value?.bio,
+  birth_date: user.birthDate,
+  gender:     user.gender,
+  name:       user.name,
 })
 
 const {
-  formData: userData,
-  valid,
-  formRef,
-  status,
-  loading,
   errors,
-  responseData,
+  formData: userData,
+  formRef,
+  loading,
   post,
   reset,
+  responseData,
+  status,
+  valid,
 } = usePostForm({
-  url:              "/profile/",
   formInitialValue: getUserData(),
   httpMethod:       "patch",
+  url:              "/profile/",
 })
 
 const queryClient = useQueryClient()
@@ -76,14 +77,14 @@ const dialogModelValueUpdate = (val) => {
 <template>
   <VDialog
     id="userInfoDialog"
-    :width="$vuetify.display.smAndDown ? 'auto' : 677"
     :model-value="props.isDialogVisible"
+    :width="$vuetify.display.smAndDown ? 'auto' : 677"
     @update:model-value="dialogModelValueUpdate"
   >
     <!-- Dialog close btn -->
     <DialogCloseBtn @click="dialogModelValueUpdate(false)" />
 
-    <VCard class="pa-sm-8 pa-5" :loading="loading">
+    <VCard :loading="loading" class="pa-sm-8 pa-5">
       <VCardItem class="text-center">
         <VCardTitle class="text-h5 mb-3">
           Edit User Information
@@ -96,17 +97,17 @@ const dialogModelValueUpdate = (val) => {
           <VRow>
             <!-- 👉 First Name -->
             <VCol cols="12">
-              <AppTextField v-model="userData.name" label="Name" :error-messages="errors.name" />
+              <AppTextField v-model="userData.name" :error-messages="errors.name" label="Name" />
             </VCol>
 
             <!-- 👉 Gender -->
             <VCol cols="6">
               <AppSelect
                 v-model="userData.gender"
-                label="Gender"
                 :items="GENDERS"
                 item-title="label"
                 item-value="value"
+                label="Gender"
               />
             </VCol>
 
@@ -114,9 +115,9 @@ const dialogModelValueUpdate = (val) => {
             <VCol cols="6">
               <AppTextField
                 v-model="userData.birth_date"
+                :error-messages="errors.birth_date"
                 label="Birth Date"
                 type="date"
-                :error-messages="errors.birth_date"
               />
             </VCol>
 
@@ -124,9 +125,9 @@ const dialogModelValueUpdate = (val) => {
             <VCol cols="12">
               <AppTextarea
                 v-model="userData.bio"
+                :error-messages="errors.bio"
                 label="Tell us about yourself"
                 type="date"
-                :error-messages="errors.bio"
               />
             </VCol>
 
@@ -135,12 +136,12 @@ const dialogModelValueUpdate = (val) => {
             </VCol>
 
             <!-- 👉 Submit and Cancel -->
-            <VCol cols="12" class="d-flex flex-wrap justify-center gap-4">
-              <VBtn type="submit" :loading="loading">
+            <VCol class="d-flex flex-wrap justify-center gap-4" cols="12">
+              <VBtn :loading="loading" type="submit">
                 Submit
               </VBtn>
 
-              <VBtn color="secondary" variant="tonal" :loading="loading" @click="onFormReset">
+              <VBtn :loading="loading" color="secondary" variant="tonal" @click="onFormReset">
                 Cancel
               </VBtn>
             </VCol>

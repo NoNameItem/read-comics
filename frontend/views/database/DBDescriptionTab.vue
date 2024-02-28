@@ -2,19 +2,19 @@
 import { VSkeletonLoader } from "vuetify/labs/VSkeletonLoader"
 
 const props = defineProps({
-  loading: {
-    type:     Boolean,
-    required: false,
-  },
   description: {
-    type:     String,
     required: false,
+    type:     String,
+  },
+  loading: {
+    required: false,
+    type:     Boolean,
   },
 })
 </script>
 
 <template>
-  <VSkeletonLoader class="detail-full-description-loader" type="paragraph" :loading="props.loading">
+  <VSkeletonLoader :loading="props.loading" class="detail-full-description-loader" type="paragraph">
     <div class="detail-full-description">
       <div v-html="props.description" />
     </div>
