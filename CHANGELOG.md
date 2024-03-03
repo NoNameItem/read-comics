@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.2](https://github.com/NoNameItem/read-comics/compare/1.4.1...1.4.2) (2024-03-03)
+
+
+### Bug Fixes
+
+* **missing-issues:** Reset missing issue skip_date when issue no longer skipped ([26d29de](https://github.com/NoNameItem/read-comics/commit/26d29de00859c0b8b7dd1e64fb4348f30b372562))
+
+
+### Performance Improvements
+
+* **missing-issues:** Optimizing publisher missing task mongo query ([3a9fa50](https://github.com/NoNameItem/read-comics/commit/3a9fa504b851d93a35117982475e0904d6261e05))
+
 ## [1.4.1](https://github.com/NoNameItem/read-comics/compare/1.4.0...1.4.1) (2024-03-03)
 
 
