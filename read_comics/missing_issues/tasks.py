@@ -185,6 +185,23 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         # True if publisher not ignored
         return not IgnoredPublisher.objects.filter(comicvine_id=obj.comicvine_id).exists()
 
+    def get_match(self, obj):
+        client = MongoClient(settings.MONGO_URL)
+        db = client.get_default_database()
+        collection = db["comicsvine_volumes"]
+
+        volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
+        volume_ids = [volume["_id"] for volume in volumes]
+
+        return {
+            "$and": [
+                {"volume.id": {"$in": volume_ids}},
+                {"id": {"$not": {"$in": self.get_existing_issues(obj)}}},
+                {"id": {"$not": {"$in": self.get_ignored_issues()}}},
+                {"volume.id": {"$not": {"$in": self.get_ignored_volumes()}}},
+            ]
+        }
+
     def get_issues_from_mongo(self, obj):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
@@ -192,8 +209,8 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
 
         return collection.aggregate(
             [
-                {"$lookup": self.LOOKUP},
                 {"$match": self.get_match(obj)},
+                {"$lookup": self.LOOKUP},
                 {
                     "$lookup": {
                         "from": "comicvine_publishers",
