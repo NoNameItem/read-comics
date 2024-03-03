@@ -175,9 +175,9 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
     MODEL = Publisher
 
     def get_objects(self):
-        ignored_publishers = list(IgnoredPublisher.objects.values_list("id", flat=True))
+        ignored_publishers = list(IgnoredPublisher.objects.values_list("comicvine_id", flat=True))
 
-        return self.MODEL.objects.exclude(pk__in=ignored_publishers)
+        return self.MODEL.objects.exclude(comicvine_id__in=ignored_publishers)
 
     @staticmethod
     def check_object(obj):
