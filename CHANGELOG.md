@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.3](https://github.com/NoNameItem/read-comics/compare/1.4.2...1.4.3) (2024-03-03)
+
+
+### Bug Fixes
+
+* **missing-issues:** Publisher missing task mongo query ([766aa44](https://github.com/NoNameItem/read-comics/commit/766aa4409bbe648f209d1f252fce24e3ded8ebd8))
+
 ## [1.4.2](https://github.com/NoNameItem/read-comics/compare/1.4.1...1.4.2) (2024-03-03)
 
 
