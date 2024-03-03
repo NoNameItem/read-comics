@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.4](https://github.com/NoNameItem/read-comics/compare/1.4.3...1.4.4) (2024-03-03)
+
+
+### Bug Fixes
+
+* **missing-issues:** Publisher missing task fetch volumes ([a71fbdc](https://github.com/NoNameItem/read-comics/commit/a71fbdce46f8d7fdb78b20325195600499e52205))
+
 ## [1.4.3](https://github.com/NoNameItem/read-comics/compare/1.4.2...1.4.3) (2024-03-03)
 
 
