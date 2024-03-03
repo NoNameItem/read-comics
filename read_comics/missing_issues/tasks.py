@@ -191,7 +191,7 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         collection = db["comicsvine_volumes"]
 
         volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
-        volume_ids = [volume["_id"] for volume in volumes]
+        volume_ids = [volume["id"] for volume in volumes]
 
         return {
             "$and": [
