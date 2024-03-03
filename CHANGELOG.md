@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.4.0](https://github.com/NoNameItem/read-comics/compare/1.3.6...1.4.0) (2024-03-03)
+
+
+### Features
+
+* **missing-issues:** Search missing issues for all publishers, even if publisher currently has 0 issues ([fa50a86](https://github.com/NoNameItem/read-comics/commit/fa50a86ea7d2baea370abd8236ad0285002e30c3))
+
+
+### Bug Fixes
+
+* **missing-issues:** Don't search missing issues for ignored publisher in manual run ([dc3b29e](https://github.com/NoNameItem/read-comics/commit/dc3b29ecb065a0e2ae65c5eed33896c4b27d98be))
+
 ## [1.3.6](https://github.com/NoNameItem/read-comics/compare/1.3.5...1.3.6) (2024-02-27)
 
 
