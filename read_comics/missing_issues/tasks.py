@@ -181,7 +181,8 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
 
     @staticmethod
     def check_object(obj):
-        return Issue.objects.filter(volume__publisher=obj).count() > 0 or obj.watchers.count() > 0
+        # True if publisher not ignored
+        return not IgnoredPublisher.objects.filter(comicvine_id=obj.comicvine_id).exists()
 
     def get_issues_from_mongo(self, obj):
         client = MongoClient(settings.MONGO_URL)
