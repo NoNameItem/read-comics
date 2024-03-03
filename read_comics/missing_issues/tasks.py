@@ -188,7 +188,7 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
     def get_match(self, obj):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
-        collection = db["comicsvine_volumes"]
+        collection = db["comicvine_volumes"]
 
         volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
         volume_ids = [volume["id"] for volume in volumes]
