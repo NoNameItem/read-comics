@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/NoNameItem/read-comics/compare/1.4.0...1.4.1) (2024-03-03)
+
+
+### Bug Fixes
+
+* **missing-issues:** Filtering of ignored publishers ([0cac79e](https://github.com/NoNameItem/read-comics/commit/0cac79ea87c5d5da839e1c350863e97f129b3303))
+
 ## [1.4.0](https://github.com/NoNameItem/read-comics/compare/1.3.6...1.4.0) (2024-03-03)
 
 
