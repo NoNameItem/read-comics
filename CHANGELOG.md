@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.6](https://github.com/NoNameItem/read-comics/compare/1.4.5...1.4.6) (2024-04-02)
+
+
+### Bug Fixes
+
+* **missing-issues:** Check if issue is ignored before insert in missing issues ([8693658](https://github.com/NoNameItem/read-comics/commit/869365821c6c3006e5486674bf711210780a8906))
+
 ## [1.4.5](https://github.com/NoNameItem/read-comics/compare/1.4.4...1.4.5) (2024-04-02)
 
 
