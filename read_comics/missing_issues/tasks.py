@@ -137,9 +137,16 @@ class BaseMissingIssuesTask(Task):
 
     def process_mongo_issues(self, obj, mongo_missing_issues):
         for mongo_missing_issue in mongo_missing_issues:
-            missing_issue = self.get_or_create_missing_issue(mongo_missing_issue)
-            if missing_issue:
-                self.add_missing_issue(obj, missing_issue)
+            # Check ignored on insert. Issue/volume/publisher can be marked as ignored between mongo query
+            # start and missing issue processing
+            if (
+                mongo_missing_issue.get("comicvine_id") not in self.get_ignored_issues()
+                and mongo_missing_issue.get("volume_comicvine_id") not in self.get_ignored_volumes()
+                and mongo_missing_issue.get("publisher_comicvine_id") not in self.get_ignored_publishers()
+            ):
+                missing_issue = self.get_or_create_missing_issue(mongo_missing_issue)
+                if missing_issue:
+                    self.add_missing_issue(obj, missing_issue)
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
