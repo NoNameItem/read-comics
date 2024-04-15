@@ -86,27 +86,27 @@ app.conf.beat_schedule = {
     },
     "refresh-publishers-missing-issues": {
         "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "refresh-volumes-missing-issues": {
         "task": "read_comics.missing_issues.tasks.VolumeMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "refresh-character-missing-issues": {
         "task": "read_comics.missing_issues.tasks.CharacterMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "refresh-story-arcs-missing-issues": {
         "task": "read_comics.missing_issues.tasks.StoryArcMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "refresh-teams-missing-issues": {
         "task": "read_comics.missing_issues.tasks.TeamMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "refresh-person-missing-issues": {
         "task": "read_comics.missing_issues.tasks.PersonMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7"),
+        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
     },
     "full_increment_update": {
         "task": "read_comics.utils.tasks.full_increment_update",
