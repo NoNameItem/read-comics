@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.0](https://github.com/NoNameItem/read-comics/compare/1.4.6...1.5.0) (2024-04-15)
+
+
+### Features
+
+* **missing-issues:** Changed missing issues tasks schedule to refresh only on fridays ([4d94161](https://github.com/NoNameItem/read-comics/commit/4d9416102ade2b29e41c747e8a5ce4ac7f8b604e))
+
 ## [1.4.6](https://github.com/NoNameItem/read-comics/compare/1.4.5...1.4.6) (2024-04-02)
 
 
