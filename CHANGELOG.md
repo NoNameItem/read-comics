@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.1](https://github.com/NoNameItem/read-comics/compare/1.5.0...1.5.1) (2024-05-06)
+
+
+### Bug Fixes
+
+* **issues:** Download link available only for logged in users ([f1a6b6e](https://github.com/NoNameItem/read-comics/commit/f1a6b6eb16927e59aaca1510787f46dda14f2f8e))
+
 ## [1.5.0](https://github.com/NoNameItem/read-comics/compare/1.4.6...1.5.0) (2024-04-15)
 
 
