@@ -4,9 +4,8 @@ from random import randrange
 import pytest
 from issues.tests.factories import FinishedIssueFactory, IssueFactory
 from rest_framework.test import APIClient
+from users.models import User
 from utils.utils import flatten_dict
-
-from read_comics.users.models import User
 
 from ..models import Volume
 from .factories import VolumeFactory
@@ -118,7 +117,7 @@ class TestVolumesFinished:
     def _generate_finished_issues(item, usr: User, finished_date_step: int = 0) -> None:
         finish_date = datetime.min + timedelta(days=finished_date_step)
         finished_issues = FinishedIssueFactory.create_batch(size=randrange(1, 5), user=usr, finish_date=finish_date)
-        item.issues.add(*map(lambda x: x.issue, finished_issues))
+        item.issues.add(x.issue for x in finished_issues)
 
     @staticmethod
     def _generate_unfinished_issue(item) -> None:
@@ -151,10 +150,10 @@ class TestVolumesFinished:
         self._create_finished(user)
         self._create_not_started()
 
-        unfinished_slugs = set(map(lambda x: x.slug, unfinished))
+        unfinished_slugs = {x.slug for x in unfinished}
 
         response = authenticated_api_client.get("/api/volumes/started/")
-        response_slugs = set(map(lambda x: x["slug"], response.data["results"]))
+        response_slugs = {x["slug"] for x in response.data["results"]}
 
         assert response.status_code == 200
         assert len(response.data["results"]) == len(unfinished)
