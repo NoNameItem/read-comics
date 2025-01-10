@@ -47,4 +47,4 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
       - name: Push image to Yandex Cloud Container Registry
-        run: docker push -a cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}
+        run: docker push -a cr.yandex/crp2m71jbo1s20lvf839/${{ inputs.image_name }}

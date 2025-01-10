@@ -41,12 +41,12 @@ jobs:
     permissions:
       checks: none
       pull-requests: none
-  deploy:
-    uses: ./.github/workflows/deploy_yc.yml
-    needs: publish_backend
-    with:
-      env_name: "next"
-    secrets: inherit
-    permissions:
-      checks: none
-      pull-requests: none
+#  deploy:
+#    uses: ./.github/workflows/deploy_yc.yml
+#    needs: publish_backend
+#    with:
+#      env_name: "next"
+#    secrets: inherit
+#    permissions:
+#      checks: none
+#      pull-requests: none

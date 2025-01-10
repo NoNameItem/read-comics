@@ -1,0 +1,6 @@
+MONGODB_DATABASE=read_comics
+MONGODB_USERNAME=read_comics
+MONGODB_PASSWORD=read_comics
+
+MONGODB_ROOT_USER=read_comics
+MONGODB_ROOT_PASSWORD=read_comics

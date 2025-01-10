@@ -32,9 +32,12 @@ class HomeView(TemplateView):
                 .exclude(finished_flg=0)
                 .count()
             )
-            context["finished_percent"] = (
-                context["finished_issues_count"] / context["matched_stats"]["issues_count"] * 100
-            )
+            try:
+                context["finished_percent"] = (
+                    context["finished_issues_count"] / context["matched_stats"]["issues_count"] * 100
+                )
+            except ZeroDivisionError:
+                context["finished_percent"] = 0
             context["started_and_not_finished_volumes"] = self.request.user.started_and_not_finished_volumes
             context["started_and_not_finished_story_arcs"] = self.request.user.started_and_not_finished_story_arcs
 

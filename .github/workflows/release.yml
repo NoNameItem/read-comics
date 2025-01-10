@@ -21,9 +21,9 @@ jobs:
       tag_latest: true
       release: ${{ github.ref_name }}
     secrets: inherit
-  deploy:
-    uses: ./.github/workflows/deploy_yc.yml
-    needs: publish_backend
-    with:
-      env_name: "production"
-    secrets: inherit
+#  deploy:
+#    uses: ./.github/workflows/deploy_yc.yml
+#    needs: publish_backend
+#    with:
+#      env_name: "production"
+#    secrets: inherit
