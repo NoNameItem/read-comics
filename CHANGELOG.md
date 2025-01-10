@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.2](https://github.com/NoNameItem/read-comics/compare/1.5.1...1.5.2) (2025-01-10)
+
+
+### Bug Fixes
+
+* Disable Sentry ([4a5309e](https://github.com/NoNameItem/read-comics/commit/4a5309e8064314d797aee31953796355297eee19))
+
 ## [1.5.1](https://github.com/NoNameItem/read-comics/compare/1.5.0...1.5.1) (2024-05-06)
 
 
