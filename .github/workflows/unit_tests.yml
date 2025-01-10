@@ -19,10 +19,10 @@ jobs:
           echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
 
       - name: Build the Stack
-        run: docker-compose -f local.yml build
+        run: docker compose -f local.yml build
 
       - name: Run Django Tests
-        run: docker-compose -f local.yml run --rm django pytest --cov read_comics --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml || true
+        run: docker compose -f local.yml run --rm django pytest --cov read_comics --cov-report xml:coverage.xml --cov-report term --cov-config=setup.cfg --junitxml=test_report.xml || true
 
       - name: Save Coverage report artifact
         if: success() || failure()

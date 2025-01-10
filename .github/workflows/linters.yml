@@ -26,20 +26,20 @@ jobs:
           echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
 
       - name: Build the Stack
-        run: docker-compose -f local.yml build
+        run: docker compose -f local.yml build
 
       - name: set pipefail
         run: set -o pipefail
 
       - name: Run flake8 silent
         if: ${{ inputs.silent_linters }}
-        run: docker-compose -f local.yml run --rm django flake8 --count | tee flake8.txt
+        run: docker compose -f local.yml run --rm django flake8 --count | tee flake8.txt
 
       - name: Run flake8
         if: ${{ !inputs.silent_linters }}
         run: |
           set -o pipefail
-          docker-compose -f local.yml run --rm django flake8 --count | tee flake8.txt
+          docker compose -f local.yml run --rm django flake8 --count | tee flake8.txt
 
       - name: Upload flake8 report
         if: success() || failure()
@@ -68,20 +68,20 @@ jobs:
           echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
 
       - name: Build the Stack
-        run: docker-compose -f local.yml build
+        run: docker compose -f local.yml build
 
       - name: set pipefail
         run: set -o pipefail
 
       - name: Run pylint silent
         if: ${{ inputs.silent_linters }}
-        run: docker-compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
+        run: docker compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
 
       - name: Run pylint
         if: ${{ !inputs.silent_linters }}
         run: |
           set -o pipefail
-          docker-compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
+          docker compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
 
       - name: reset pipefail
         if: success() || failure()
