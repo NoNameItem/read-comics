@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.3](https://github.com/NoNameItem/read-comics/compare/1.5.2...1.5.3) (2025-01-10)
+
+
+### Bug Fixes
+
+* Fix pipeline ([e5a1dd4](https://github.com/NoNameItem/read-comics/commit/e5a1dd48de751ac7be815917b8e13e2e34d97211))
+
 ## [1.5.2](https://github.com/NoNameItem/read-comics/compare/1.5.1...1.5.2) (2025-01-10)
 
 
