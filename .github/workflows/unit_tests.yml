@@ -40,4 +40,4 @@ jobs:
 
       - name: Tear down the Stack
         if: success() || failure()
-        run: docker-compose -f local.yml down
+        run: docker compose -f local.yml down
