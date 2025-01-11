@@ -8,5 +8,6 @@ set -o nounset
 python /app/manage.py migrate --noinput
 python /app/manage.py collectstatic --noinput
 
+echo ---${GUNICORN_CMD_ARGS}---
 
-/usr/local/bin/gunicorn config.wsgi --bind 0.0.0.0:5000 --chdir=/app --worker-class gevent --timeout 900 --max-requests 2000 --max-requests-jitter 20
+/usr/local/bin/gunicorn config.wsgi

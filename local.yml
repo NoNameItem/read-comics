@@ -55,10 +55,6 @@ services:
       - ./.envs/.local/.mongo
     ports:
       - "27017:27017"
-#    healthcheck:
-#      test: test $$(echo "rs.initiate().ok || rs.status().ok" | mongo -u $${MONGO_INITDB_ROOT_USERNAME} -p $${MONGO_INITDB_ROOT_PASSWORD} --quiet) -eq 1
-#      interval: 10s
-#    command: "--bind_ip_all --keyFile /data/db/secret.key --replSet local_replica_set"
 
 
   #  docs:
