@@ -185,3 +185,27 @@ def full_increment_update() -> None:
     p = Processor(settings=spider_settings)
     j = Job(FullSpider, incremental="Y")
     p.run(j)
+
+
+@shared_task
+def full_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="Y", skip_existing=True)
+    p.run(j)
+
+
+@shared_task
+def full_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="N", skip_existing=True)
+    p.run(j)
+
+
+@shared_task
+def full_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="N", skip_existing=False)
+    p.run(j)
