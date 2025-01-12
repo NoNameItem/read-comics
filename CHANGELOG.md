@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.4](https://github.com/NoNameItem/read-comics/compare/1.7.3...1.7.4) (2025-01-12)
+
+
+### Bug Fixes
+
+* **spiders:** Spider delay setting from env ([16f4080](https://github.com/NoNameItem/read-comics/commit/16f4080e8fd79d2260a4ad3ef0e81ef8719399ab))
+
 ## [1.7.3](https://github.com/NoNameItem/read-comics/compare/1.7.2...1.7.3) (2025-01-12)
 
 
