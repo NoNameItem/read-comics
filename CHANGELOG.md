@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/NoNameItem/read-comics/compare/1.6.0...1.6.1) (2025-01-12)
+
+
+### Bug Fixes
+
+* Logging ([f4f967b](https://github.com/NoNameItem/read-comics/commit/f4f967b0959fc0c7e05e44dc41c247dd8eaeab3d))
+
 ## [1.6.0](https://github.com/NoNameItem/read-comics/compare/1.5.4...1.6.0) (2025-01-12)
 
 
