@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.0](https://github.com/NoNameItem/read-comics/compare/1.5.4...1.6.0) (2025-01-12)
+
+
+### Features
+
+* Added ability to http deploy ([afc51f0](https://github.com/NoNameItem/read-comics/commit/afc51f042374458b111b0c790da4095e69b55c90))
+
 ## [1.5.4](https://github.com/NoNameItem/read-comics/compare/1.5.3...1.5.4) (2025-01-11)
 
 
