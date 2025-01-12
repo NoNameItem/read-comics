@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/NoNameItem/read-comics/compare/1.6.1...1.7.0) (2025-01-12)
+
+
+### Features
+
+* **spiders:** Celery tasks for different types of full update ([8b3bd9c](https://github.com/NoNameItem/read-comics/commit/8b3bd9c2145e3e6e78cc26d012698b1623d9c5d9))
+
 ## [1.6.1](https://github.com/NoNameItem/read-comics/compare/1.6.0...1.6.1) (2025-01-12)
 
 
