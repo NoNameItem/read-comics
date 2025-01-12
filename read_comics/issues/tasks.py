@@ -83,5 +83,29 @@ def purge_deleted():
 def issues_increment_update() -> None:
     spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
     p = Processor(settings=spider_settings)
-    j = Job(IssuesSpider, incremental="Y")
+    j = Job(IssuesSpider, incremental="Y", skip_existing="N")
+    p.run(j)
+
+
+@shared_task
+def issues_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="Y", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def issues_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="N", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def issues_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="N", skip_existing="N")
     p.run(j)

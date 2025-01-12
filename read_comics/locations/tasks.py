@@ -29,5 +29,29 @@ locations_refresh_task = celery_app.register_task(LocationsRefreshTask())
 def locations_increment_update() -> None:
     spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
     p = Processor(settings=spider_settings)
-    j = Job(LocationsSpider, incremental="Y")
+    j = Job(LocationsSpider, incremental="Y", skip_existing="N")
+    p.run(j)
+
+
+@shared_task
+def locations_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(LocationsSpider, incremental="Y", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def locations_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(LocationsSpider, incremental="N", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def locations_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(LocationsSpider, incremental="N", skip_existing="N")
     p.run(j)
