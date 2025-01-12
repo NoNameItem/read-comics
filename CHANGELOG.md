@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.3](https://github.com/NoNameItem/read-comics/compare/1.7.2...1.7.3) (2025-01-12)
+
+
+### Bug Fixes
+
+* **spiders:** Comicvine spiders settings ([6b8702f](https://github.com/NoNameItem/read-comics/commit/6b8702fb509b9b34a7d96446f7693fee49c646d5))
+
 ## [1.7.2](https://github.com/NoNameItem/read-comics/compare/1.7.1...1.7.2) (2025-01-12)
 
 
