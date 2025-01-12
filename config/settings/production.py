@@ -177,15 +177,47 @@ ANYMAIL = {
 
 LOGGING = {
     "version": 1,
-    "disable_existing_loggers": True,
-    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"}},
-    "handlers": {"console": {"level": "INFO", "class": "logging.StreamHandler", "formatter": "verbose"}},
+    "disable_existing_loggers": False,
+    "filters": {"require_debug_false": {"()": "django.utils.log.RequireDebugFalse"}},
+    "formatters": {
+        "verbose": {
+            "format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s",
+        }
+    },
+    "handlers": {
+        "mail_admins": {
+            "level": "ERROR",
+            "filters": ["require_debug_false"],
+            "class": "django.utils.log.AdminEmailHandler",
+        },
+        "console": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
     "root": {"level": "INFO", "handlers": ["console"]},
     "loggers": {
-        "django.db.backends": {"level": "ERROR", "handlers": ["console"], "propagate": False},
-        # Errors logged by the SDK itself
-        "sentry_sdk": {"level": "ERROR", "handlers": ["console"], "propagate": False},
-        "django.security.DisallowedHost": {"level": "ERROR", "handlers": ["console"], "propagate": False},
+        "django.request": {
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.security.DisallowedHost": {
+            "level": "ERROR",
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "django": {
+            "level": "INFO",
+            "handlers": ["console"],
+            "propagate": True,
+        },
+        "py.warnings": {
+            "handlers": ["console"],
+            "level": "WARNING",
+            "propagate": True,
+        },
     },
 }
 
