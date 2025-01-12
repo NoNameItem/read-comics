@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.5.4](https://github.com/NoNameItem/read-comics/compare/1.5.3...1.5.4) (2025-01-11)
+
+
+### Bug Fixes
+
+* Moved gunicorn args to env variable ([aedf2ea](https://github.com/NoNameItem/read-comics/commit/aedf2eae2350c4b53412b9f49a28a2f40f490f11))
+
 ## [1.5.3](https://github.com/NoNameItem/read-comics/compare/1.5.2...1.5.3) (2025-01-10)
 
 
