@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/NoNameItem/read-comics/compare/1.7.4...1.8.0) (2025-01-13)
+
+
+### Features
+
+* **spiders:** Save available info from list endpoints ([e594392](https://github.com/NoNameItem/read-comics/commit/e59439263968cad0094f4cad8e5d8c09ce7cca39))
+
 ## [1.7.4](https://github.com/NoNameItem/read-comics/compare/1.7.3...1.7.4) (2025-01-12)
 
 
