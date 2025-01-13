@@ -6,7 +6,8 @@ class IssuesSpider(BaseSpider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/issues/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,image,issue_number,cover_date,"
+        "store_date,volume&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"

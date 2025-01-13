@@ -16,6 +16,7 @@ class SpiderImplementationError(Exception):
 class Endpoint:
     collection: str
     endpoint: str
+    list_url_fields: str
     detail_url_fields: str
 
 
@@ -77,6 +78,8 @@ class FullSpider(scrapy.Spider):
         Endpoint(
             "comicvine_characters",
             "characters",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,real_name,gender,"
+            "birth,origin,publisher",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,real_name,gender,birth,origin,character_friends,character_enemies,"
             "teams,team_enemies,team_friends,publisher,creators,powers",
@@ -84,12 +87,14 @@ class FullSpider(scrapy.Spider):
         Endpoint(
             "comicvine_concepts",
             "concepts",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,start_year",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_issues",
             "issues",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,issue_number,cover_date," "store_date,volume",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,issue_number,"
             "cover_date,store_date,character_credits,character_died_in,concept_credits,location_credits,"
             "object_credits,person_credits,story_arc_credits,team_credits,team_disbanded_in,volume",
@@ -97,40 +102,52 @@ class FullSpider(scrapy.Spider):
         Endpoint(
             "comicvine_locations",
             "locations",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,start_year",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_objects",
             "objects",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image," "first_appeared_in_issue,start_year",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,start_year",
         ),
         Endpoint(
             "comicvine_people",
             "people",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,birth,country,death,hometown",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,birth,country,death," "hometown",
         ),
-        Endpoint("comicvine_powers", "powers", "id,api_detail_url,site_detail_url,name,aliases,description"),
+        Endpoint(
+            "comicvine_powers",
+            "powers",
+            "id,api_detail_url,site_detail_url,name,aliases",
+            "id,api_detail_url,site_detail_url,name,aliases,description",
+        ),
         Endpoint(
             "comicvine_publishers",
             "publishers",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image",
         ),
         Endpoint(
             "comicvine_story_arcs",
             "story_arcs",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,publisher",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_appeared_in_issue,publisher",
         ),
         Endpoint(
             "comicvine_teams",
             "teams",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,publisher",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
             "first_appeared_in_issue,publisher",
         ),
         Endpoint(
             "comicvine_volumes",
             "volumes",
+            "id,api_detail_url,site_detail_url,name,aliases,deck,image,first_issue,publisher,last_issue," "start_year",
             "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_issue,"
             "publisher,last_issue,start_year",
         ),
@@ -138,7 +155,7 @@ class FullSpider(scrapy.Spider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/{endpoint}/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list={list_url_fields}&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"
@@ -194,12 +211,18 @@ class FullSpider(scrapy.Spider):
 
     def start_requests(self):
         for endpoint in self.ENDPOINTS:
-            url = self.construct_list_url(endpoint.endpoint, 0)
+            url = self.construct_list_url(endpoint.endpoint, endpoint.list_url_fields, 0)
             yield EndpointRequest(url=url, endpoint=endpoint, callback=self.parse_list)
 
-    def construct_list_url(self, endpoint, offset):
+    def construct_list_url(self, endpoint, list_url_fields, offset):
         url = self.LIST_URL_PATTERN.format(
-            **{"api_key": self.api_key, "limit": self.LIMIT, "offset": offset, "endpoint": endpoint}
+            **{
+                "api_key": self.api_key,
+                "limit": self.LIMIT,
+                "offset": offset,
+                "endpoint": endpoint,
+                "list_url_fields": list_url_fields,
+            }
         )
         filter_str = ",".join([f"{k}:{v}" for k, v in self.filters.items()])
         url += "&filter=" + filter_str
@@ -227,7 +250,14 @@ class FullSpider(scrapy.Spider):
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
-            if self.skip_existing == "N" or collection.count_documents({"id": int(entry["id"])}) == 0:
+            if (
+                self.skip_existing == "N"
+                or collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0
+            ):
+                entry["crawl_date"] = datetime.datetime.now()
+                entry["crawl_source"] = "list"
+                item = {"_collection": response.request.endpoint.collection, "item": entry}
+                yield item
                 detail_url = self.construct_detail_url(entry["api_detail_url"], endpoint.detail_url_fields)
                 yield EndpointRequest(url=detail_url, endpoint=endpoint, callback=self.parse_detail)
             else:
@@ -247,11 +277,14 @@ class FullSpider(scrapy.Spider):
         number_of_page_results = json_res["number_of_page_results"]
 
         if offset + number_of_page_results < number_of_total_results:
-            next_page = self.construct_list_url(endpoint.endpoint, offset + number_of_page_results)
+            next_page = self.construct_list_url(
+                endpoint.endpoint, endpoint.list_url_fields, offset + number_of_page_results
+            )
             yield EndpointRequest(url=next_page, endpoint=endpoint, callback=self.parse_list)
 
     def parse_detail(self, response):
         entry = json.loads(response.body).get("results", {})
         entry["crawl_date"] = datetime.datetime.now()
+        entry["crawl_source"] = "detail"
         item = {"_collection": response.request.endpoint.collection, "item": entry}
         yield item

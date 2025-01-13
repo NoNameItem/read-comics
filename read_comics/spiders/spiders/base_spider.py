@@ -92,7 +92,13 @@ class BaseSpider(scrapy.Spider):
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
-            if self.skip_existing == "N" or collection.count_documents({"id": int(entry["id"])}) == 0:
+            if (
+                self.skip_existing == "N"
+                or collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0
+            ):
+                entry["crawl_date"] = datetime.datetime.now()
+                entry["crawl_source"] = "list"
+                yield entry
                 detail_url = self.construct_detail_url(entry["api_detail_url"])
                 yield scrapy.Request(url=detail_url, callback=self.parse_detail)
             else:
@@ -118,4 +124,5 @@ class BaseSpider(scrapy.Spider):
     def parse_detail(self, response):
         item = json.loads(response.body).get("results", {})
         item["crawl_date"] = datetime.datetime.now()
+        item["crawl_source"] = "detail"
         return item

@@ -6,7 +6,7 @@ class PeopleSpider(BaseSpider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/people/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,image,birth,country,death,hometown&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"
@@ -15,5 +15,5 @@ class PeopleSpider(BaseSpider):
     name = "comicvine_people"
     # Optimize field list
     DETAIL_FIELD_LIST = (
-        "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,birth,country,death," "hometown"
+        "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,birth,country,death,hometown"
     )

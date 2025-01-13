@@ -6,7 +6,7 @@ class StoryArcsSpider(BaseSpider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/story_arcs/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,publisher&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"
