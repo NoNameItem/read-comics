@@ -43,7 +43,7 @@ jobs:
         run: docker tag cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:latest
 
       - name: Yandex Cloud CR "Login" Action for GitHub Actions
-        uses: yc-actions/yc-cr-login@v1
+        uses: yc-actions/yc-cr-login@v2
         with:
           yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
