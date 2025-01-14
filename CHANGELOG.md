@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.1](https://github.com/NoNameItem/read-comics/compare/1.8.0...1.8.1) (2025-01-14)
+
+
+### Bug Fixes
+
+* **spiders:** Prioritize next list link over detail links ([d00006f](https://github.com/NoNameItem/read-comics/commit/d00006f38cb7358e9e1a2ad9771517f3a0d9efbb))
+
 ## [1.8.0](https://github.com/NoNameItem/read-comics/compare/1.7.4...1.8.0) (2025-01-13)
 
 
