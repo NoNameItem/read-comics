@@ -90,6 +90,15 @@ class BaseSpider(scrapy.Spider):
         mongo_db = mongo_connection.get_default_database()
         collection = mongo_db[self.name]
 
+        # Follow to next list page
+        offset = json_res["offset"]
+        number_of_total_results = json_res["number_of_total_results"]
+        number_of_page_results = json_res["number_of_page_results"]
+
+        if offset + number_of_page_results < number_of_total_results:
+            next_page = self.construct_list_url(offset + number_of_page_results)
+            yield scrapy.Request(url=next_page, callback=self.parse_list, priority=1)
+
         # Follow to detail pages
         for entry in json_res.get("results", []):
             if (
@@ -111,15 +120,6 @@ class BaseSpider(scrapy.Spider):
                 }
 
         mongo_connection.close()
-
-        # Follow to next list page
-        offset = json_res["offset"]
-        number_of_total_results = json_res["number_of_total_results"]
-        number_of_page_results = json_res["number_of_page_results"]
-
-        if offset + number_of_page_results < number_of_total_results:
-            next_page = self.construct_list_url(offset + number_of_page_results)
-            yield scrapy.Request(url=next_page, callback=self.parse_list)
 
     def parse_detail(self, response):
         item = json.loads(response.body).get("results", {})
