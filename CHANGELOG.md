@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.10.2](https://github.com/NoNameItem/read-comics/compare/1.10.1...1.10.2) (2025-01-17)
+
+
+### Bug Fixes
+
+* **core:** Changed delay between api calls tries to half-delay to delay ([f822a10](https://github.com/NoNameItem/read-comics/commit/f822a10a0a4bfff4349528a30d10b834ed390017))
+* **core:** If comicvine data comes from list, refetch from detail api when creating instance ([b802435](https://github.com/NoNameItem/read-comics/commit/b802435360a24c951b4292ddf60b91d1b6726184))
+
 ## [1.10.1](https://github.com/NoNameItem/read-comics/compare/1.10.0...1.10.1) (2025-01-17)
 
 
