@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.1](https://github.com/NoNameItem/read-comics/compare/1.10.0...1.10.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* **core:** Added delay when fetching info from comicvine API ([302da0b](https://github.com/NoNameItem/read-comics/commit/302da0ba4339cdb781330375e79d5cf270a89a3c))
+
 ## [1.10.0](https://github.com/NoNameItem/read-comics/compare/1.9.1...1.10.0) (2025-01-17)
 
 
