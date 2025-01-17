@@ -126,6 +126,7 @@ class ComicvineSyncModel(models.Model):
                 client = MongoClient(settings.MONGO_URL)
                 db = client.get_default_database()
                 d["crawl_date"] = datetime.datetime.now()
+                d["crawl_source"] = "detail"
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
                 return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
@@ -143,7 +144,8 @@ class ComicvineSyncModel(models.Model):
             return
 
         document = self.comicvine_document
-        if document and not force_api_refresh:
+        document_source = document.get("source", "list")
+        if document and not force_api_refresh and document_source == "detail":
             self.logger.info("Document found")
             self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
