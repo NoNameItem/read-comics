@@ -1,5 +1,6 @@
 import datetime
 import json
+import random
 
 import scrapy
 
@@ -16,7 +17,7 @@ class BaseSpider(scrapy.Spider):
     DETAIL_FIELD_LIST = None
     LIMIT = 50
 
-    def __init__(self, incremental="N", api_key=None, filters=None, skip_existing="N", mongo_url=None, **kwargs):
+    def __init__(self, incremental="N", api_keys=None, filters=None, skip_existing="N", mongo_url=None, **kwargs):
         self.logger.info("incremental: " + incremental)
         self.logger.info("skip_existing: " + skip_existing)
         if filters is None:
@@ -24,7 +25,7 @@ class BaseSpider(scrapy.Spider):
         if not self.LIST_URL_PATTERN:
             raise SpiderImplementationError(f"Class `{self.__class__}` should override `LIST_URL_PATTERN`")
         super().__init__(**kwargs)
-        self.api_key = api_key
+        self.api_keys = api_keys
         self.filters = filters
         self.incremental = incremental
         self.skip_existing = skip_existing
@@ -33,11 +34,11 @@ class BaseSpider(scrapy.Spider):
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
         spider = super().from_crawler(crawler, *args, **kwargs)
-        spider.api_key = spider.api_key or spider.settings.get("API_KEY")
+        spider.api_keys = spider.api_keys or spider.settings.get("API_KEYS")
         spider.mongo_url = spider.mongo_url or spider.settings.get("MONGO_URL")
         mongo_connection = Connect.get_connection(spider.mongo_url)
         spider.logger.info("Spider name: " + spider.name)
-        spider.logger.info("API_KEY: " + spider.api_key)
+        spider.logger.info("API_KEY: " + spider.api_keys)
         spider.logger.info("MONGO_URL: " + spider.mongo_url)
         mongo_db = mongo_connection.get_default_database()
 
@@ -65,14 +66,16 @@ class BaseSpider(scrapy.Spider):
         yield scrapy.Request(url=url, callback=self.parse_list)
 
     def construct_list_url(self, offset):
-        url = self.LIST_URL_PATTERN.format(**{"api_key": self.api_key, "limit": self.LIMIT, "offset": offset})
+        url = self.LIST_URL_PATTERN.format(
+            **{"api_key": random.choice(self.api_keys), "limit": self.LIMIT, "offset": offset}
+        )
         filter_str = ",".join([f"{k}:{v}" for k, v in self.filters.items()])
         url += "&filter=" + filter_str
         self.logger.info("List url: " + url)
         return url
 
     def construct_detail_url(self, url):
-        url += "?api_key=" + self.api_key
+        url += "?api_key=" + random.choice(self.api_keys)
         url += "&format=json"
         if self.DETAIL_FIELD_LIST:
             url += "&field_list=" + self.DETAIL_FIELD_LIST

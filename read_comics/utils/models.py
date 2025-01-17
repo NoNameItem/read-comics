@@ -1,4 +1,5 @@
 import datetime
+import random
 import re
 from json import JSONDecodeError
 
@@ -111,7 +112,7 @@ class ComicvineSyncModel(models.Model):
         http = requests.Session()
         http.mount("https://", adapter)
         http.mount("http://", adapter)
-        url = self.COMICVINE_API_URL.format(id=self.comicvine_id, api_key=settings.COMICVINE_API_KEY)
+        url = self.COMICVINE_API_URL.format(id=self.comicvine_id, api_key=random.choice(settings.COMICVINE_API_KEYS))
         headers = {"user-agent": "read-comics.net/1.0.0"}
         try:
             response = http.request("GET", url, headers=headers, timeout=100)

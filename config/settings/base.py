@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+
 from pathlib import Path
 
 import environ
@@ -369,7 +370,7 @@ CORS_URLS_REGEX = r"^/api/.*$"
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
 MONGO_URL = env("MONGO_URL")
-COMICVINE_API_KEY = env("COMICVINE_API_KEY")
+COMICVINE_API_KEYS = env.list("COMICVINE_API_KEYS")
 
 # Digital Ocean Spaces
 # ------------------------------------------------------------------------------
