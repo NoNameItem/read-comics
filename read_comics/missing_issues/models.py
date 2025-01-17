@@ -6,6 +6,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
+class Locks(models.Model):
+    code = models.CharField(max_length=100, unique=True)
+    dttm = models.DateTimeField(null=True)
+
+
 # Create your models here.
 class IgnoredPublisher(models.Model):
     comicvine_id = models.IntegerField(unique=True)

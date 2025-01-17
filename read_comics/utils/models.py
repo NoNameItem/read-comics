@@ -8,13 +8,15 @@ import pytz
 import requests
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from pymongo import MongoClient
 from requests import HTTPError, RequestException
 from requests.adapters import HTTPAdapter
 from slugify import slugify
 from urllib3 import Retry
+
+from read_comics.missing_issues.models import Locks
 
 from . import logging
 from .logging import Logger
@@ -108,15 +110,6 @@ class ComicvineSyncModel(models.Model):
         self.post_save()
 
     def get_document_from_api(self):
-        client = MongoClient(settings.MONGO_URL)
-        db = client.get_default_database()
-        tech_col = db["spider_info"]
-        last_api_call = tech_col.find_one({"name": "last_api_call"})
-        while last_api_call is not None and datetime.datetime.now() - last_api_call[
-            "last_run_dttm"
-        ] < datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
-            sleep(10)
-            last_api_call = tech_col.find_one({"name": "last_api_call"})
         retries = Retry(total=30, backoff_factor=10, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
         adapter = HTTPAdapter(max_retries=retries)
         http = requests.Session()
@@ -129,14 +122,11 @@ class ComicvineSyncModel(models.Model):
             response.raise_for_status()
             d = response.json().get("results", {})
             if d:
+                client = MongoClient(settings.MONGO_URL)
+                db = client.get_default_database()
                 d["crawl_date"] = datetime.datetime.now()
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
-                tech_col.replace_one(
-                    {"name": "last_api_call"},
-                    {"name": "last_api_call", "last_run_dttm": datetime.datetime.now()},
-                    upsert=True,
-                )
                 return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
             else:
                 return None
@@ -153,18 +143,32 @@ class ComicvineSyncModel(models.Model):
 
         document = self.comicvine_document
         if document and not force_api_refresh:
-            self.logger.debug("Document found")
+            self.logger.info("Document found")
             self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
             self.comicvine_status = self.ComicvineStatus.MATCHED
             self.comicvine_last_match = timezone.now()
         else:
-            self.logger.debug(
+            self.logger.info(
                 f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
-            document = self.get_document_from_api()
+            done = False
+            while not done:
+                with transaction.atomic():
+                    now = timezone.now()
+                    lock = Locks.objects.select_for_update().filter(code="COMICVINE_LOCK")[0]
+                    if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
+                        self.logger.info("not waiting API")
+                        document = self.get_document_from_api()
+                        lock.dttm = timezone.now()
+                        lock.save()
+                        break
+                    else:
+                        self.logger.info("waiting API")
+                sleep(random.randint(10, 40))
+
             if document:
-                self.logger.debug("Document found in API")
+                self.logger.info("Document found in API")
                 self.logger.debug(f"Document: {str(document)}")
                 self.process_document(document, follow_m2m)
                 self.comicvine_status = self.ComicvineStatus.MATCHED
