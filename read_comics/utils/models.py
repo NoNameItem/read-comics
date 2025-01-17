@@ -2,6 +2,7 @@ import datetime
 import random
 import re
 from json import JSONDecodeError
+from time import sleep
 
 import pytz
 import requests
@@ -107,6 +108,15 @@ class ComicvineSyncModel(models.Model):
         self.post_save()
 
     def get_document_from_api(self):
+        client = MongoClient(settings.MONGO_URL)
+        db = client.get_default_database()
+        tech_col = db["spider_info"]
+        last_api_call = tech_col.find_one({"name": "last_api_call"})
+        while last_api_call is not None and datetime.datetime.now() - last_api_call[
+            "last_run_dttm"
+        ] < datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
+            sleep(10)
+            last_api_call = tech_col.find_one({"name": "last_api_call"})
         retries = Retry(total=30, backoff_factor=10, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
         adapter = HTTPAdapter(max_retries=retries)
         http = requests.Session()
@@ -120,10 +130,13 @@ class ComicvineSyncModel(models.Model):
             d = response.json().get("results", {})
             if d:
                 d["crawl_date"] = datetime.datetime.now()
-                client = MongoClient(settings.MONGO_URL)
-                db = client.get_default_database()
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
+                tech_col.replace_one(
+                    {"name": "last_api_call"},
+                    {"name": "last_api_call", "last_run_dttm": datetime.datetime.now()},
+                    upsert=True,
+                )
                 return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
             else:
                 return None

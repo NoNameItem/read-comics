@@ -371,6 +371,7 @@ CORS_URLS_REGEX = r"^/api/.*$"
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
 MONGO_URL = env("MONGO_URL")
 COMICVINE_API_KEYS = env.list("COMICVINE_API_KEYS")
+COMICVINE_API_DELAY = env.int("COMICVINE_API_DELAY", default=20)
 
 # Digital Ocean Spaces
 # ------------------------------------------------------------------------------
