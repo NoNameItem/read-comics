@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.2](https://github.com/NoNameItem/read-comics/compare/1.8.1...1.8.2) (2025-01-17)
+
+
+### Bug Fixes
+
+* **spiders:** Decrease list api limit ([5594819](https://github.com/NoNameItem/read-comics/commit/55948190e299690c3c1738122944dffd6ec42cfc))
+
 ## [1.8.1](https://github.com/NoNameItem/read-comics/compare/1.8.0...1.8.1) (2025-01-14)
 
 
