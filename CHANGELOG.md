@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/NoNameItem/read-comics/compare/1.8.2...1.9.0) (2025-01-17)
+
+
+### Features
+
+* **spiders:** Multiple comicvine api keys support ([c5d513e](https://github.com/NoNameItem/read-comics/commit/c5d513e0e4310884039eef7de7ad57441eb32f74))
+
 ## [1.8.2](https://github.com/NoNameItem/read-comics/compare/1.8.1...1.8.2) (2025-01-17)
 
 
