@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.1](https://github.com/NoNameItem/read-comics/compare/1.9.0...1.9.1) (2025-01-17)
+
+
+### Bug Fixes
+
+* **spiders:** Fixed api keys logging ([817f4ad](https://github.com/NoNameItem/read-comics/commit/817f4ad82fe490b19e4a423df390d081305bbffd))
+
 ## [1.9.0](https://github.com/NoNameItem/read-comics/compare/1.8.2...1.9.0) (2025-01-17)
 
 
