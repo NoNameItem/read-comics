@@ -38,7 +38,7 @@ class BaseSpider(scrapy.Spider):
         spider.mongo_url = spider.mongo_url or spider.settings.get("MONGO_URL")
         mongo_connection = Connect.get_connection(spider.mongo_url)
         spider.logger.info("Spider name: " + spider.name)
-        spider.logger.info("API_KEY: " + spider.api_keys)
+        spider.logger.info("API_KEY: " + str(spider.api_keys))
         spider.logger.info("MONGO_URL: " + spider.mongo_url)
         mongo_db = mongo_connection.get_default_database()
 
