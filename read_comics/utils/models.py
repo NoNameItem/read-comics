@@ -2,6 +2,7 @@ import datetime
 import random
 import re
 from json import JSONDecodeError
+from math import floor
 from time import sleep
 
 import pytz
@@ -165,7 +166,7 @@ class ComicvineSyncModel(models.Model):
                         break
                     else:
                         self.logger.info("waiting API")
-                sleep(random.randint(10, 40))
+                sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
 
             if document:
                 self.logger.info("Document found in API")
