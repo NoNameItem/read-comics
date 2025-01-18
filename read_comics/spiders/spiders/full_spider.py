@@ -163,7 +163,7 @@ class FullSpider(scrapy.Spider):
         "api_key={api_key}"
     )
 
-    LIMIT = 100
+    LIMIT = 50
 
     name = "full_spider"
 

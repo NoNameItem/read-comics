@@ -15,7 +15,7 @@ class BaseSpider(scrapy.Spider):
     # LIST_URL_PATTERN should contain 3 placeholders: limit, offset and api_key and should not contain filter parameter
     LIST_URL_PATTERN = None
     DETAIL_FIELD_LIST = None
-    LIMIT = 100
+    LIMIT = 50
 
     def __init__(self, incremental="N", api_keys=None, filters=None, skip_existing="N", mongo_url=None, **kwargs):
         self.logger.info("incremental: " + incremental)
