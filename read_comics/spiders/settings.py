@@ -64,7 +64,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.retry.RetryMiddleware": 543,
+    "read_comics.spiders.middlewares.DelayedRetryMiddleware": 543,
 }
 
 # Enable or disable extensions
