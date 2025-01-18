@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.5](https://github.com/NoNameItem/read-comics/compare/1.10.4...1.10.5) (2025-01-18)
+
+
+### Bug Fixes
+
+* **core:** Decreased offset ([82513fe](https://github.com/NoNameItem/read-comics/commit/82513fe941bdc0a09f6fb20459c6ef8a9073a950))
+
 ## [1.10.4](https://github.com/NoNameItem/read-comics/compare/1.10.3...1.10.4) (2025-01-18)
 
 
