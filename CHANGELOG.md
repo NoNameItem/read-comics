@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.4](https://github.com/NoNameItem/read-comics/compare/1.10.3...1.10.4) (2025-01-18)
+
+
+### Bug Fixes
+
+* **core:** Add 1 hour pause after failed spider request ([ba0f82e](https://github.com/NoNameItem/read-comics/commit/ba0f82edec4eb179627db2ee7d341e3b62a795d6))
+
 ## [1.10.3](https://github.com/NoNameItem/read-comics/compare/1.10.2...1.10.3) (2025-01-18)
 
 
