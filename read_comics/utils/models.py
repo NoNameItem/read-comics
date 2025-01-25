@@ -168,7 +168,7 @@ class ComicvineSyncModel(models.Model):
                         break
                     else:
                         self.logger.debug("waiting API")
-                sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
+                sleep(random.randint(floor(settings.COMICVINE_API_DELAY), settings.COMICVINE_API_DELAY * 4))
 
             if document:
                 self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
