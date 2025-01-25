@@ -64,7 +64,8 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "read_comics.spiders.middlewares.DelayedRetryMiddleware": 543,
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+    "read_comics.spiders.middlewares.TooManyRequestsRetryMiddleware": 543,
 }
 
 # Enable or disable extensions
@@ -101,7 +102,7 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 420]
-RETRY_TIMES = 60
+RETRY_TIMES = 400
 
 API_KEYS = env.list("COMICVINE_API_KEYS")
 MONGO_URL = env("MONGO_URL", default="")
