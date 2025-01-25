@@ -144,7 +144,7 @@ class ComicvineSyncModel(models.Model):
             return
 
         document = self.comicvine_document
-        document_source = document.get("source", "list")
+        document_source = document.get("crawl_source", "list")
         if document and not force_api_refresh and document_source == "detail":
             self.logger.info("Document found")
             self.logger.debug(f"Document: {str(document)}")
@@ -159,7 +159,7 @@ class ComicvineSyncModel(models.Model):
             while not done:
                 with transaction.atomic():
                     now = timezone.now()
-                    lock = Locks.objects.select_for_update().filter(code="COMICVINE_LOCK")[0]
+                    lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
                         self.logger.info("not waiting API")
                         document = self.get_document_from_api()
