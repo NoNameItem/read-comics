@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.8](https://github.com/NoNameItem/read-comics/compare/1.10.7...1.10.8) (2025-01-25)
+
+
+### Bug Fixes
+
+* **spiders:** Retry delay middleware ([fc31766](https://github.com/NoNameItem/read-comics/commit/fc317669a92cff5491c9c56564b1fb61237abb23))
+
 ## [1.10.7](https://github.com/NoNameItem/read-comics/compare/1.10.6...1.10.7) (2025-01-25)
 
 
