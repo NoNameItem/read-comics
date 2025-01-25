@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.7](https://github.com/NoNameItem/read-comics/compare/1.10.6...1.10.7) (2025-01-25)
+
+
+### Bug Fixes
+
+* **core:** Changed logging format ([3e3b15d](https://github.com/NoNameItem/read-comics/commit/3e3b15d3a962ea3fda2dd15e04d57e2bdfe16035))
+* **core:** Changed sleep timeout between API retries in adding info ([50fd15c](https://github.com/NoNameItem/read-comics/commit/50fd15c31e8895a0e3c3f1e905e26710fa17b87b))
+* **spiders:** Retry delay middleware ([5635d5c](https://github.com/NoNameItem/read-comics/commit/5635d5c382d98dbb3e2446573548ac9aa90cccdf))
+
 ## [1.10.6](https://github.com/NoNameItem/read-comics/compare/1.10.5...1.10.6) (2025-01-25)
 
 
