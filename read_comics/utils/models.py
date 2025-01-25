@@ -82,7 +82,7 @@ class ComicvineSyncModel(models.Model):
             return False
         document = self.comicvine_document
         if document:
-            self.logger.debug("Document found")
+            self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
             crawl_date = document["crawl_date"]
             return self.comicvine_last_match > pytz.UTC.localize(crawl_date)
@@ -146,7 +146,7 @@ class ComicvineSyncModel(models.Model):
         document = self.comicvine_document
         document_source = document.get("crawl_source", "list")
         if document and not force_api_refresh and document_source == "detail":
-            self.logger.info("Document found")
+            self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
             self.comicvine_status = self.ComicvineStatus.MATCHED
@@ -161,23 +161,25 @@ class ComicvineSyncModel(models.Model):
                     now = timezone.now()
                     lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
-                        self.logger.info("not waiting API")
+                        self.logger.debug("not waiting API")
                         document = self.get_document_from_api()
                         lock.dttm = timezone.now()
                         lock.save()
                         break
                     else:
-                        self.logger.info("waiting API")
+                        self.logger.debug("waiting API")
                 sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
 
             if document:
-                self.logger.info("Document found in API")
+                self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
                 self.logger.debug(f"Document: {str(document)}")
                 self.process_document(document, follow_m2m)
                 self.comicvine_status = self.ComicvineStatus.MATCHED
                 self.comicvine_last_match = timezone.now()
             else:
-                self.logger.error(f"Document with id `{self.comicvine_id}` not found in API")
+                self.logger.error(
+                    f"Document with id `{self.comicvine_id}` not found in API (`{self.MONGO_COLLECTION}`)"
+                )
                 self.comicvine_status = self.ComicvineStatus.NOT_MATCHED
 
     def process_document(self, document, follow_m2m):
