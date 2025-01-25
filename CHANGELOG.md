@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.6](https://github.com/NoNameItem/read-comics/compare/1.10.5...1.10.6) (2025-01-25)
+
+
+### Bug Fixes
+
+* **core:** Separate locks for comicvine api endpoints ([41a6e5c](https://github.com/NoNameItem/read-comics/commit/41a6e5c5e38c79dcd8db743a635c2d41beeabeb5))
+
 ## [1.10.5](https://github.com/NoNameItem/read-comics/compare/1.10.4...1.10.5) (2025-01-18)
 
 
