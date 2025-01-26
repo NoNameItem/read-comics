@@ -42,6 +42,7 @@ class Publisher(ImageMixin, ComicvineSyncModel):
         "api_key={api_key}&"
         "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image"
     )
+    COMICVINE_FORCE_DETAIL_INFO = True
 
     logger = logger
 

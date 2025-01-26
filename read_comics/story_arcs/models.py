@@ -44,6 +44,7 @@ class StoryArc(ImageMixin, ComicvineSyncModel):
         "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
         "first_appeared_in_issue,publisher"
     )
+    COMICVINE_FORCE_DETAIL_INFO = True
 
     logger = logger
 

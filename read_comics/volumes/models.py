@@ -57,6 +57,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
         "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
         "first_issue,publisher,last_issue,start_year"
     )
+    COMICVINE_FORCE_DETAIL_INFO = True
 
     logger = logger
 

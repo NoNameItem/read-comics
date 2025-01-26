@@ -83,6 +83,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "team_disbanded_in,volume&"
         "api_key={api_key}"
     )
+    COMICVINE_FORCE_DETAIL_INFO = True
 
     logger = logger
 
