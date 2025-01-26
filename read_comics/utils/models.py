@@ -162,13 +162,13 @@ class ComicvineSyncModel(models.Model):
                     now = timezone.now()
                     lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
-                        self.logger.debug("not waiting API")
+                        self.logger.info(f"Finished waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}`")
                         document = self.get_document_from_api()
                         lock.dttm = timezone.now()
                         lock.save()
                         break
                     else:
-                        self.logger.debug("waiting API")
+                        self.logger.info(f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}`")
                 sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
 
             if document:
