@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.10](https://github.com/NoNameItem/read-comics/compare/1.10.9...1.10.10) (2025-01-26)
+
+
+### Bug Fixes
+
+* **core:** Fixed AttributeError while getting crawl_source when no document found in collection ([5228e64](https://github.com/NoNameItem/read-comics/commit/5228e64f596c34821eb5fd0d3782dda122f6b784))
+
 ## [1.10.9](https://github.com/NoNameItem/read-comics/compare/1.10.8...1.10.9) (2025-01-26)
 
 
