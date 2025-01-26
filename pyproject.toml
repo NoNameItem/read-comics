@@ -1,5 +1,5 @@
 [project]
-version = "1.10.8"
+version = "1.10.9"
 
 [tool.black]
 line_length = 120
