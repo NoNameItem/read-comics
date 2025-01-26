@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.10.9](https://github.com/NoNameItem/read-comics/compare/1.10.8...1.10.9) (2025-01-26)
+
+
+### Bug Fixes
+
+* **core:** Request detail info only for issues, story arcs, volumes and publishers ([46651d9](https://github.com/NoNameItem/read-comics/commit/46651d9350776a022983313dd8d9235e66fe6708))
+
 ## [1.10.8](https://github.com/NoNameItem/read-comics/compare/1.10.7...1.10.8) (2025-01-25)
 
 
