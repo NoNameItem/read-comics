@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.10.11](https://github.com/NoNameItem/read-comics/compare/1.10.10...1.10.11) (2025-01-26)
+
+
+### Bug Fixes
+
+* **core:** Changed sleep timeout between API retries in adding info ([8467c9d](https://github.com/NoNameItem/read-comics/commit/8467c9daee8f238c2079f52108401e0585a01e07))
+* **core:** Changed waiting for API logs format ([10b67bd](https://github.com/NoNameItem/read-comics/commit/10b67bd6b6f924dc40a50b8c118c86567461f9be))
+* **core:** Fixed IntegriryError on slug conflicts ([44a63f8](https://github.com/NoNameItem/read-comics/commit/44a63f8fd7ed1ee7786be883d29aaadcf1ef38b2))
+
 ## [1.10.10](https://github.com/NoNameItem/read-comics/compare/1.10.9...1.10.10) (2025-01-26)
 
 
