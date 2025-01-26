@@ -1,3 +1,5 @@
+from time import sleep
+
 from django.db import IntegrityError, models
 from django.db.models.manager import BaseManager
 
@@ -31,6 +33,7 @@ class ComicvineSyncQuerySet(models.QuerySet):
         try:
             instance, created = self.get_or_create(comicvine_id=comicvine_id, defaults=defaults)
         except IntegrityError:
+            sleep(10)
             instance = self.get(comicvine_id=comicvine_id)
             created = False
         logger.debug(f"Found: {not created}")
