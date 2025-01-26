@@ -145,7 +145,7 @@ class ComicvineSyncModel(models.Model):
             return
 
         document = self.comicvine_document
-        document_source = document.get("crawl_source", "list")
+        document_source = document.get("crawl_source", "list") if document else "list"
         if document and not force_api_refresh and (document_source == "detail" or not self.COMICVINE_FORCE_DETAIL_INFO):
             self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
