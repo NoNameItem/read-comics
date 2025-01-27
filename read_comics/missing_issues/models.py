@@ -13,7 +13,7 @@ class Locks(models.Model):
 
 class APIQueue(models.Model):
     endpoint = models.TextField()
-    comicvine_id = models.TextField()
+    comicvine_id = models.IntegerField()
     added_in_queue = models.DateTimeField(auto_now_add=True)
 
 
