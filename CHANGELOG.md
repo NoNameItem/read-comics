@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.2](https://github.com/NoNameItem/read-comics/compare/1.12.1...1.12.2) (2025-01-27)
+
+
+### Bug Fixes
+
+* **core:** Changed datatype for APIQueue.comicvine_id ([3f82002](https://github.com/NoNameItem/read-comics/commit/3f8200244dce54f37bde87ea1dd6528f358adfc3))
+
 ## [1.12.1](https://github.com/NoNameItem/read-comics/compare/1.12.0...1.12.1) (2025-01-27)
 
 
