@@ -160,36 +160,37 @@ class ComicvineSyncModel(models.Model):
             APIQueue.objects.create(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
             while True:
                 with transaction.atomic():
+                    first_in_queue = APIQueue.objects.filter(endpoint=self.MONGO_COLLECTION).order_by("id").first()
+                    if first_in_queue and first_in_queue.comicvine_id != self.comicvine_id:
+                        self.logger.info(
+                            f"Waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
+                            f"(Try: {try_count} "
+                            f"waiting for {timezone.now() - wait_start_dttm})"
+                        )
+                        try_count += 1
+                        sleep(120)
+                        continue
+
                     now = timezone.now()
                     lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
-                        first_in_queue = APIQueue.objects.filter(endpoint=self.MONGO_COLLECTION).order_by("id").first()
-                        if not first_in_queue or first_in_queue.comicvine_id == self.comicvine_id:
-                            self.logger.info(
-                                f"Finished waiting API for `{self.comicvine_id}` in"
-                                f" `{self.MONGO_COLLECTION}` (Try: {try_count}, "
-                                f"waited for {timezone.now() - wait_start_dttm})"
-                            )
-                            document = self.get_document_from_api()
-                            lock.dttm = timezone.now()
-                            lock.save()
-                            first_in_queue.delete()
-                            break
-                        else:
-                            self.logger.info(
-                                f"Waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
-                                f"(Try: {try_count} "
-                                f"waiting for {timezone.now() - wait_start_dttm})"
-                            )
-                            try_count += 1
-                            sleep(120)
+                        self.logger.info(
+                            f"Finished waiting API for `{self.comicvine_id}` in"
+                            f" `{self.MONGO_COLLECTION}` (Try: {try_count}, "
+                            f"waited for {timezone.now() - wait_start_dttm})"
+                        )
+                        document = self.get_document_from_api()
+                        lock.dttm = timezone.now()
+                        lock.save()
+                        first_in_queue.delete()
+                        break
                     else:
                         self.logger.info(
                             f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {try_count} "
                             f"waiting for {timezone.now() - wait_start_dttm})"
                         )
                         try_count += 1
-                sleep(30)
+                        sleep(30)
 
             if document:
                 self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
