@@ -168,7 +168,7 @@ class ComicvineSyncModel(models.Model):
                             f"waiting for {timezone.now() - wait_start_dttm})"
                         )
                         try_count += 1
-                        sleep(120)
+                        sleep(10)
                         continue
 
                     now = timezone.now()
@@ -190,7 +190,7 @@ class ComicvineSyncModel(models.Model):
                             f"waiting for {timezone.now() - wait_start_dttm})"
                         )
                         try_count += 1
-                        sleep(30)
+                        sleep(10)
 
             if document:
                 self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
