@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.11.0](https://github.com/NoNameItem/read-comics/compare/1.10.11...1.11.0) (2025-01-27)
+
+
+### Features
+
+* **core:** Added try count in getting info from API logs ([dc9b0ff](https://github.com/NoNameItem/read-comics/commit/dc9b0ffa54640047a361caa8fdbc1e111cd413c7))
+* **core:** Added waiting time in getting info from API logs ([3240ee9](https://github.com/NoNameItem/read-comics/commit/3240ee9168bc7954a0cfbe9276015245455b686d))
+
 ## [1.10.11](https://github.com/NoNameItem/read-comics/compare/1.10.10...1.10.11) (2025-01-26)
 
 
