@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.3](https://github.com/NoNameItem/read-comics/compare/1.12.2...1.12.3) (2025-01-27)
+
+
+### Bug Fixes
+
+* **core:** Added longer timeout while waiting for queue ([cc60680](https://github.com/NoNameItem/read-comics/commit/cc6068010ce63060fcc3e38cbe672df7ea0945ad))
+* **core:** Changed order of queue wait and api wait ([486b704](https://github.com/NoNameItem/read-comics/commit/486b70404a5697efa76c889eea3130e2b1c8fec1))
+
 ## [1.12.2](https://github.com/NoNameItem/read-comics/compare/1.12.1...1.12.2) (2025-01-27)
 
 
