@@ -11,6 +11,12 @@ class Locks(models.Model):
     dttm = models.DateTimeField(null=True)
 
 
+class APIQueue(models.Model):
+    endpoint = models.TextField()
+    comicvine_id = models.TextField()
+    added_in_queue = models.DateTimeField(auto_now_add=True)
+
+
 # Create your models here.
 class IgnoredPublisher(models.Model):
     comicvine_id = models.IntegerField(unique=True)
