@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/NoNameItem/read-comics/compare/1.11.0...1.11.1) (2025-01-27)
+
+
+### Bug Fixes
+
+* **core:** Spaces in waiting for api logs ([6f0cee0](https://github.com/NoNameItem/read-comics/commit/6f0cee0df0d8c34dcf2327e1aac406f245f0ae08))
+
 ## [1.11.0](https://github.com/NoNameItem/read-comics/compare/1.10.11...1.11.0) (2025-01-27)
 
 
