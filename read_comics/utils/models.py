@@ -174,7 +174,7 @@ class ComicvineSyncModel(models.Model):
                         break
                     else:
                         self.logger.info(
-                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {try_count}"
+                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {try_count} "
                             f"waiting for {timezone.now() - wait_start_dttm})"
                         )
                         try_count += 1
