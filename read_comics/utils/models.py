@@ -156,19 +156,25 @@ class ComicvineSyncModel(models.Model):
             self.logger.info(
                 f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
-            done = False
-            while not done:
+            try_count = 1
+            while True:
                 with transaction.atomic():
                     now = timezone.now()
                     lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
-                        self.logger.info(f"Finished waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}`")
+                        self.logger.info(
+                            f"Finished waiting API for `{self.comicvine_id}` in"
+                            f" `{self.MONGO_COLLECTION}` (Try: {try_count})"
+                        )
                         document = self.get_document_from_api()
                         lock.dttm = timezone.now()
                         lock.save()
                         break
                     else:
-                        self.logger.info(f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}`")
+                        self.logger.info(
+                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {try_count})"
+                        )
+                        try_count += 1
                 sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
 
             if document:
