@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.12.0](https://github.com/NoNameItem/read-comics/compare/1.11.1...1.12.0) (2025-01-27)
+
+
+### Features
+
+* **core:** Queue for collecting info from api ([eb76f8b](https://github.com/NoNameItem/read-comics/commit/eb76f8b0d84eb04c1bd84daaa4c15495b1cd4a99))
+
+
+### Bug Fixes
+
+* **core:** Changed sleep timeout between API retries in adding info ([3a8fbc2](https://github.com/NoNameItem/read-comics/commit/3a8fbc2d83d67b8c00c1e961f821bfb67ec53833))
+* **spiders:** Decrease delay between 420/429 retries to 10 minutes ([9e7ee50](https://github.com/NoNameItem/read-comics/commit/9e7ee5079e60e77403d46a51d43b5429b969fdf2))
+
 ## [1.11.1](https://github.com/NoNameItem/read-comics/compare/1.11.0...1.11.1) (2025-01-27)
 
 
