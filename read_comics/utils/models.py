@@ -2,7 +2,6 @@ import datetime
 import random
 import re
 from json import JSONDecodeError
-from math import floor
 from time import sleep
 
 import pytz
@@ -178,7 +177,7 @@ class ComicvineSyncModel(models.Model):
                             f"waiting for {timezone.now() - wait_start_dttm})"
                         )
                         try_count += 1
-                sleep(random.randint(floor(settings.COMICVINE_API_DELAY / 2), settings.COMICVINE_API_DELAY))
+                sleep(5)
 
             if document:
                 self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
