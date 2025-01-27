@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.4](https://github.com/NoNameItem/read-comics/compare/1.12.3...1.12.4) (2025-01-27)
+
+
+### Bug Fixes
+
+* **core:** Changed order of queue wait and api wait ([3dd3801](https://github.com/NoNameItem/read-comics/commit/3dd3801c30136ece9ee102a845598655c0099399))
+
 ## [1.12.3](https://github.com/NoNameItem/read-comics/compare/1.12.2...1.12.3) (2025-01-27)
 
 
