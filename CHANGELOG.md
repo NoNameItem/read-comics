@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.12.5](https://github.com/NoNameItem/read-comics/compare/1.12.4...1.12.5) (2025-01-28)
+
+
+### Bug Fixes
+
+* **core:** Increased max retries in getting info from API ([18ca001](https://github.com/NoNameItem/read-comics/commit/18ca00168410016e8309e12a5a61357b2fa91ba9))
+* **spiders:** Do not adjust priority on retries ([12e2373](https://github.com/NoNameItem/read-comics/commit/12e23735fc0878852b08dadfe090f7f9e90b2b04))
+
 ## [1.12.4](https://github.com/NoNameItem/read-comics/compare/1.12.3...1.12.4) (2025-01-27)
 
 
