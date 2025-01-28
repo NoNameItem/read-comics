@@ -111,7 +111,7 @@ class ComicvineSyncModel(models.Model):
         self.post_save()
 
     def get_document_from_api(self):
-        retries = Retry(total=10, backoff_factor=300, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
+        retries = Retry(total=100, backoff_factor=300, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
         adapter = HTTPAdapter(max_retries=retries)
         http = requests.Session()
         http.mount("https://", adapter)
