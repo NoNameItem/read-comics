@@ -295,6 +295,7 @@ CELERY_MONGODB_BACKEND_SETTINGS = {
     "database": "read_comics",
     "authSource": "read_comics",
 }
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
 CELERY_ACCEPT_CONTENT = ["json"]
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_serializer

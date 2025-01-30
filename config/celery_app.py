@@ -33,6 +33,9 @@ app.conf.task_queues = [
         queue_arguments={"x-max-priority": 10},
     ),
 ]
+app.conf.task_default_queue = "read-comics-tasks"
+app.conf.task_default_exchange = "read-comics-tasks"
+app.conf.task_default_routing_key = "read-comics-tasks"
 app.conf.task_default_priority = 5
 
 app.conf.beat_schedule = {
