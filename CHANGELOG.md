@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.0](https://github.com/NoNameItem/read-comics/compare/1.13.2...1.14.0) (2025-01-30)
+
+
+### Features
+
+* **core:** Monitor rabbitmq queue from flower ([c4198e4](https://github.com/NoNameItem/read-comics/commit/c4198e43a4b1a60e88c7b038f1edea78814722d1))
+
 ## [1.13.2](https://github.com/NoNameItem/read-comics/compare/1.13.1...1.13.2) (2025-01-30)
 
 
