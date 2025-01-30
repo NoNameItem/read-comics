@@ -8,18 +8,18 @@ REDIS_URL=redis://redis:6379/0
 
 # Celery
 # ------------------------------------------------------------------------------
-CELERY_BROKER_URL=redis://redis:6379/0
+
 
 # Flower
 CELERY_FLOWER_USER=HLnkxkqGxuwPYUTAyRQgCzPnoDBQFUGr
 CELERY_FLOWER_PASSWORD=dSqGqHIfToRoOoptOtk2ctKNT3zVg1l0eCJDnrSbPr443T4pncq8vfDLyF0bIC80
 
 
-MONGO_URL=mongodb://read_comics:read_comics@mongodb:27017/read_comics
 DO_SPACE_DATA_REGION=ams3
 DO_SPACE_DATA_ENDPOINT_URL=http://192.168.1.168:9000
 DO_SPACE_DATA_BUCKET=comics
 DO_SPACE_DATA_PUBLIC_URL=http://192.168.1.168:9000/comics
 SCRAPPY_DOWNLOAD_DELAY=1
+COMICVINE_API_DELAY=10
 
 DJANGO_SETTINGS_MODULE=config.settings.local

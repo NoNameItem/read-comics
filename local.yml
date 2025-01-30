@@ -5,6 +5,7 @@ volumes:
   local_postgres_data_backups: {}
   local_mongodb_data: { }
   local_mongodb_config: { }
+  local_rabbitmq_data: { }
 
 
 services:
@@ -19,6 +20,8 @@ services:
       - redis
       - mailhog
       - celeryworker
+      - rabbitmq
+      - mongodb
     volumes:
       - .:/app:z
     env_file:
@@ -83,12 +86,24 @@ services:
     image: redis:6
     container_name: redis
 
+  rabbitmq:
+    hostname: rabbitmq
+    container_name: rabbitmq
+    image: rabbitmq:4-management
+    env_file:
+      - ./.envs/.local/.rabbit_unsafe
+    volumes:
+      - local_rabbitmq_data:/var/lib/rabbitmq
+    ports:
+      - "15672:15672" # Management UI
+      - "5672:5672"   # Default RabbitMQ Port
+
   celeryworker:
     <<: *django
     image: read_comics_local_celeryworker
     container_name: celeryworker
     depends_on:
-      - redis
+      - rabbitmq
       - postgres
       - mailhog
     ports: []
