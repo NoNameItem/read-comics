@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/NoNameItem/read-comics/compare/1.13.0...1.13.1) (2025-01-30)
+
+
+### Bug Fixes
+
+* **core:** Fixed priorities ([3db95b8](https://github.com/NoNameItem/read-comics/commit/3db95b857d10254e30b58c4c7869a31915f75013))
+
 ## [1.13.0](https://github.com/NoNameItem/read-comics/compare/1.12.5...1.13.0) (2025-01-30)
 
 
