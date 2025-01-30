@@ -139,7 +139,7 @@ class ComicvineSyncModel(models.Model):
         if delay:
             if self.COMICVINE_INFO_TASK:
                 # self.COMICVINE_INFO_TASK.delay(pk=self.pk, follow_m2m=follow_m2m)
-                self.COMICVINE_INFO_TASK.apply_async((), {"pk": self.pk, "follow_m2m": follow_m2m}, priority=9)
+                self.COMICVINE_INFO_TASK.apply_async((), {"pk": self.pk, "follow_m2m": follow_m2m}, priority=1)
                 self.comicvine_status = self.ComicvineStatus.QUEUED
             return
 

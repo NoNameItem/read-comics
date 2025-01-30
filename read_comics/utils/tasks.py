@@ -42,7 +42,7 @@ class BaseSpaceTask(Task):
                 self.PROCESS_ENTRY_TASK.apply_async(
                     (),
                     {"key": s3object[0], "size": s3object[1], "parent_entry_id": kwargs.get("parent_entry_id")},
-                    priority=0,
+                    priority=9,
                 )
         self._logger.debug(f"Ended processing prefix {kwargs['prefix']}")
 
@@ -107,7 +107,7 @@ class BaseProcessEntryTask(Task):
         if self.NEXT_LEVEL_TASK is not None:
             self._logger.debug(f"Creating next level task with prefix {kwargs['key']}")
             # self.NEXT_LEVEL_TASK.delay(prefix=kwargs["key"], parent_entry_id=instance.pk)
-            self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=0)
+            self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=9)
         self._logger.debug(f"Ended processing key {kwargs['key']}")
 
     def __init__(self):

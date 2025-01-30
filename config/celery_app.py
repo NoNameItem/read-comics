@@ -3,6 +3,7 @@ import sys
 
 from celery import Celery
 from celery.schedules import crontab
+from kombu import Exchange, Queue
 
 current_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(current_path, "read_comics"))
@@ -19,10 +20,19 @@ app = Celery("read_comics")
 #   should have a `CELERY_` prefix.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
-app.conf.broker_transport_options = {
-    "priority_steps": list(range(10)),
-    "queue_order_strategy": "priority",
-}
+# app.conf.broker_transport_options = {
+#     "priority_steps": list(range(10)),
+#     "queue_order_strategy": "priority",
+# }
+
+app.conf.task_queues = [
+    Queue(
+        "read-comics-tasks",
+        Exchange("read-comics-tasks"),
+        routing_key="read-comics-tasks",
+        queue_arguments={"x-max-priority": 10},
+    ),
+]
 app.conf.task_default_priority = 5
 
 app.conf.beat_schedule = {
