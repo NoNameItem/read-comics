@@ -7,7 +7,6 @@ spiders are returned as a list.
 
 import collections
 
-from attr import dataclass
 from billiard import Process  # fork of multiprocessing that works with celery
 from billiard.queues import Queue
 from pydispatch import dispatcher
@@ -20,11 +19,18 @@ class ScrapyScriptException(Exception):
     pass
 
 
-@dataclass
-class Job:
-    spider: object
-    args: object
-    kwargs: object
+class Job:  # noqa: SIM119
+    """A job is a single request to call a specific spider. *args and **kwargs
+    will be passed to the spider constructor.
+    """
+
+    def __init__(self, spider, *args, **kwargs):
+        """Parms:
+        spider (spidercls): the spider to be run for this job.
+        """
+        self.spider = spider
+        self.args = args
+        self.kwargs = kwargs
 
 
 class Processor(Process):
