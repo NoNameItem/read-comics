@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.4](https://github.com/NoNameItem/read-comics/compare/1.14.3...1.14.4) (2025-01-30)
+
+
+### Bug Fixes
+
+* **core:** Get timezone from TZ environment variable ([2dee737](https://github.com/NoNameItem/read-comics/commit/2dee737b665892a81c9fde98071235703ed70e6b))
+
 ## [1.14.3](https://github.com/NoNameItem/read-comics/compare/1.14.2...1.14.3) (2025-01-30)
 
 
