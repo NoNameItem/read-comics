@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.13.0](https://github.com/NoNameItem/read-comics/compare/1.12.5...1.13.0) (2025-01-30)
+
+
+### Features
+
+* **missing-issues:** Management command for clearing api queue ([4eae7a9](https://github.com/NoNameItem/read-comics/commit/4eae7a94e949c5b627247e43887f0779fe348c4a))
+
+
+### Build System
+
+* Switch celery to rabbitmq and mongo ([1b32e50](https://github.com/NoNameItem/read-comics/commit/1b32e50692343e8041488158830df325741569f4))
+
 ## [1.12.5](https://github.com/NoNameItem/read-comics/compare/1.12.4...1.12.5) (2025-01-28)
 
 
