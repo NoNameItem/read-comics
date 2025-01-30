@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.14.2](https://github.com/NoNameItem/read-comics/compare/1.14.1...1.14.2) (2025-01-30)
+
+
+### Bug Fixes
+
+* **core:** Update celery and flower ([fe113e2](https://github.com/NoNameItem/read-comics/commit/fe113e2bcdee7095287430c2656cdd8096ee5c4c))
+* **core:** Update celery and flower ([18c0000](https://github.com/NoNameItem/read-comics/commit/18c0000b66a4f085c7c524f55d20a6a55abccd15))
+
 ## [1.14.1](https://github.com/NoNameItem/read-comics/compare/1.14.0...1.14.1) (2025-01-30)
 
 
