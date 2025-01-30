@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/NoNameItem/read-comics/compare/1.13.1...1.13.2) (2025-01-30)
+
+
+### Bug Fixes
+
+* **core:** Celery settings ([c459738](https://github.com/NoNameItem/read-comics/commit/c4597388d54b3c3698c32495b944a1430f59918f))
+
 ## [1.13.1](https://github.com/NoNameItem/read-comics/compare/1.13.0...1.13.1) (2025-01-30)
 
 
