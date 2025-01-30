@@ -2,13 +2,13 @@ import re
 
 from celery import shared_task
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
 from spiders.spiders.publishers_spider import PublishersSpider
 from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 from volumes.tasks import volumes_space_task
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
+from read_comics.spiders.scrappyscript import Job, Processor
 
 
 class PublisherProcessEntryTask(BaseProcessEntryTask):

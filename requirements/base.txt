@@ -5,7 +5,7 @@ argon2-cffi==21.1.0  # https://github.com/hynek/argon2_cffi
 whitenoise==5.3.0  # https://github.com/evansd/whitenoise
 redis==4.0.2  # https://github.com/andymccurdy/redis-py
 hiredis==2.0.0  # https://github.com/redis/hiredis-py
-celery==5.4.0  # pyup: < 6.0  # https://github.com/celery/celery
+celery~=5.4.0
 django-celery-beat==2.2.1  # https://github.com/celery/django-celery-beat
 flower==2.0.0  # https://github.com/mher/flower
 
@@ -45,6 +45,12 @@ beautifulsoup4==4.9.3
 
 # Scrappy
 Scrapy==2.11.1
-scrapyscript==1.1.5 # https://github.com/jschnurr/scrapyscript
+# scrapyscript==1.1.5 # https://github.com/jschnurr/scrapyscript
 
 sentry-sdk==1.5.0
+
+pytest~=7.1.2
+billiard~=4.2.1
+PyDispatcher~=2.0.7
+Twisted~=24.11.0
+psycopg2~=2.9.2

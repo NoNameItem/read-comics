@@ -4,12 +4,12 @@ from celery import shared_task
 from django.apps import apps
 from issues.tasks import issues_space_task
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
 from spiders.spiders.volumes_spider import VolumesSpider
 from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
+from read_comics.spiders.scrappyscript import Job, Processor
 
 
 class VolumeProcessEntryTask(BaseProcessEntryTask):

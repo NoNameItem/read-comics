@@ -21,7 +21,7 @@
     <orderEntry type="library" name="jstree" level="application" />
   </component>
   <component name="PackageRequirementsSettings">
-    <option name="requirementsPath" value="$MODULE_DIR$/requirements/local.txt" />
+    <option name="requirementsPath" value="$MODULE_DIR$/requirements/base.txt" />
   </component>
   <component name="PyDocumentationSettings">
     <option name="renderExternalDocumentation" value="true" />

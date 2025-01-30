@@ -1,10 +1,10 @@
 from celery import shared_task
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
 from utils.tasks import BaseComicvineInfoTask, BaseRefreshTask
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
+from read_comics.spiders.scrappyscript import Job, Processor
 from read_comics.spiders.spiders.characters_spider import CharactersSpider
 
 

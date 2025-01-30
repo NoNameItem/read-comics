@@ -9,10 +9,10 @@ from django.conf import settings
 from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
 from spiders.spiders.full_spider import FullSpider
 
 import read_comics.spiders.settings as spiders_settings_file
+from read_comics.spiders.scrappyscript import Job, Processor
 
 
 class WrongKeyFormatError(Exception):
