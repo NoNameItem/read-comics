@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.6](https://github.com/NoNameItem/read-comics/compare/1.14.5...1.14.6) (2025-01-31)
+
+
+### Bug Fixes
+
+* Allways use timezone.now() ([3545aad](https://github.com/NoNameItem/read-comics/commit/3545aadb3aa19c9d01af0f223bc865dbe985d592))
+
 ## [1.14.5](https://github.com/NoNameItem/read-comics/compare/1.14.4...1.14.5) (2025-01-31)
 
 
