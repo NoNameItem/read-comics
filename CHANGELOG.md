@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.14.5](https://github.com/NoNameItem/read-comics/compare/1.14.4...1.14.5) (2025-01-31)
+
+
+### Build System
+
+* Update django-celery-deat ([8eb2c35](https://github.com/NoNameItem/read-comics/commit/8eb2c35d93d4031e72191b6a147367cb7e13ccff))
+
 ## [1.14.4](https://github.com/NoNameItem/read-comics/compare/1.14.3...1.14.4) (2025-01-30)
 
 
