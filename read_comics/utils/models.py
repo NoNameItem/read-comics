@@ -125,7 +125,7 @@ class ComicvineSyncModel(models.Model):
             if d:
                 client = MongoClient(settings.MONGO_URL)
                 db = client.get_default_database()
-                d["crawl_date"] = datetime.datetime.now()
+                d["crawl_date"] = timezone.now()
                 d["crawl_source"] = "detail"
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)

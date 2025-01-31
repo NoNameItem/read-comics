@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Callable, List, Optional, Tuple, Union
 
 import scrapy
+from django.utils import timezone
 
 from ..mongo_connection import Connect
 
@@ -204,7 +205,7 @@ class FullSpider(scrapy.Spider):
                 spider.filters["date_last_updated"] = f"{start_date}|{end_date}"
 
         mongo_db.spider_info.update(
-            {"name": spider.name}, {"last_run_dttm": datetime.datetime.now(), "name": spider.name}, upsert=True
+            {"name": spider.name}, {"last_run_dttm": timezone.now(), "name": spider.name}, upsert=True
         )
         mongo_connection.close()
 
@@ -266,7 +267,7 @@ class FullSpider(scrapy.Spider):
                 self.skip_existing == "N"
                 or collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0
             ):
-                entry["crawl_date"] = datetime.datetime.now()
+                entry["crawl_date"] = timezone.now()
                 entry["crawl_source"] = "list"
                 item = {"_collection": response.request.endpoint.collection, "item": entry}
                 yield item
@@ -285,7 +286,7 @@ class FullSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         entry = json.loads(response.body).get("results", {})
-        entry["crawl_date"] = datetime.datetime.now()
+        entry["crawl_date"] = timezone.now()
         entry["crawl_source"] = "detail"
         item = {"_collection": response.request.endpoint.collection, "item": entry}
         yield item

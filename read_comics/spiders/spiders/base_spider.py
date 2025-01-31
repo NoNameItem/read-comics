@@ -3,6 +3,7 @@ import json
 import random
 
 import scrapy
+from django.utils import timezone
 
 from ..mongo_connection import Connect
 
@@ -54,7 +55,7 @@ class BaseSpider(scrapy.Spider):
                 spider.filters["date_last_updated"] = f"{start_date}|{end_date}"
 
         mongo_db.spider_info.update(
-            {"name": spider.name}, {"last_run_dttm": datetime.datetime.now(), "name": spider.name}, upsert=True
+            {"name": spider.name}, {"last_run_dttm": timezone.now(), "name": spider.name}, upsert=True
         )
         mongo_connection.close()
 
@@ -108,7 +109,7 @@ class BaseSpider(scrapy.Spider):
                 self.skip_existing == "N"
                 or collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0
             ):
-                entry["crawl_date"] = datetime.datetime.now()
+                entry["crawl_date"] = timezone.now()
                 entry["crawl_source"] = "list"
                 yield entry
                 detail_url = self.construct_detail_url(entry["api_detail_url"])
@@ -126,6 +127,6 @@ class BaseSpider(scrapy.Spider):
 
     def parse_detail(self, response):
         item = json.loads(response.body).get("results", {})
-        item["crawl_date"] = datetime.datetime.now()
+        item["crawl_date"] = timezone.now()
         item["crawl_source"] = "detail"
         return item
