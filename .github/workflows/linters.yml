@@ -43,7 +43,7 @@ jobs:
 
       - name: Upload flake8 report
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: flake8_report
           path: flake8.txt
@@ -89,7 +89,7 @@ jobs:
 
       - name: Upload pylint report
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pylint_report
           path: pylint.txt
