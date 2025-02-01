@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.15.0](https://github.com/NoNameItem/read-comics/compare/1.14.6...1.15.0) (2025-02-01)
+
+
+### Features
+
+* Prometheus integration ([12b3874](https://github.com/NoNameItem/read-comics/commit/12b3874307c3e843b54ac00c14d1906e6828c270))
+
+
+### Build System
+
+* Update github actions ([1ea4ba5](https://github.com/NoNameItem/read-comics/commit/1ea4ba570d6511e6961c97ae288c5fdd279eaa76))
+* Update github actions ([f002f8b](https://github.com/NoNameItem/read-comics/commit/f002f8b22219784839e05d9226cd3f222be615d4))
+
 ## [1.14.6](https://github.com/NoNameItem/read-comics/compare/1.14.5...1.14.6) (2025-01-31)
 
 
