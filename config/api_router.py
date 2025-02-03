@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from read_comics.characters.api.viewsets import CharacterStatsViewSet
 from read_comics.concepts.api.viewsets import ConceptStatsViewSet
+from read_comics.issues.api.viewsets import IssueStatsViewSet
 from read_comics.users.api.views import UserViewSet
 
 if settings.DEBUG:
@@ -13,6 +14,7 @@ else:
 router.register("users", UserViewSet)
 router.register("characters", CharacterStatsViewSet, basename="character")
 router.register("concepts", ConceptStatsViewSet, basename="concept")
+router.register("issues", IssueStatsViewSet, basename="issue")
 
 
 app_name = "api"
