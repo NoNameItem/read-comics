@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.1](https://github.com/NoNameItem/read-comics/compare/1.17.0...1.17.1) (2025-02-03)
+
+
+### Bug Fixes
+
+* **core:** Changed total stats endpoint query params to match grafana syntax ([0850b11](https://github.com/NoNameItem/read-comics/commit/0850b116d2600172bdf3e03a8edb64c0a8f81358))
+
 ## [1.17.0](https://github.com/NoNameItem/read-comics/compare/1.16.0...1.17.0) (2025-02-03)
 
 
