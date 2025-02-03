@@ -7,6 +7,7 @@ from read_comics.issues.api.viewsets import IssueStatsViewSet
 from read_comics.locations.api.viewsets import LocationStatsViewSet
 from read_comics.objects.api.viewsets import ObjectStatsViewSet
 from read_comics.people.api.viewsets import PersonStatsViewSet
+from read_comics.powers.api.viewsets import PowerStatsViewSet
 from read_comics.users.api.views import UserViewSet
 
 if settings.DEBUG:
@@ -22,6 +23,7 @@ router.register("issues", IssueStatsViewSet, basename="issue")
 router.register("locations", LocationStatsViewSet, basename="location")
 router.register("objects", ObjectStatsViewSet, basename="object")
 router.register("people", PersonStatsViewSet, basename="person")
+router.register("powers", PowerStatsViewSet, basename="power")
 
 
 app_name = "api"
