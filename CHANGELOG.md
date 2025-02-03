@@ -1,5 +1,22 @@
 # Changelog
 
+## [1.16.0](https://github.com/NoNameItem/read-comics/compare/1.15.0...1.16.0) (2025-02-03)
+
+
+### Features
+
+* **characters:** Statistics API endpoint ([3294f75](https://github.com/NoNameItem/read-comics/commit/3294f75c6012ccc78ec12e18b8751baaa371a3e0))
+* **concepts:** Statistics API endpoint ([79a9400](https://github.com/NoNameItem/read-comics/commit/79a94005e59092593d6d948b414b19624605bcc3))
+* **issues:** Statistics API endpoint ([313cd17](https://github.com/NoNameItem/read-comics/commit/313cd1795b8ab986c279bb45388267b8f7d19191))
+* **locations:** Statistics API endpoint ([0485d5c](https://github.com/NoNameItem/read-comics/commit/0485d5cd40a719ba74a354a2cb411400d70f1ba5))
+* **objects:** Statistics API endpoint ([27b9acd](https://github.com/NoNameItem/read-comics/commit/27b9acd28b72719b539c4362719825edf46013b4))
+* **people:** Statistics API endpoint ([d87b2e8](https://github.com/NoNameItem/read-comics/commit/d87b2e8e535b1af43b4ab92f39ee834e36f2d082))
+* **powers:** Statistics API endpoint ([36baa67](https://github.com/NoNameItem/read-comics/commit/36baa67b5339f541f5317e6e6bc24998b51afb44))
+* **publishers:** Statistics API endpoint ([9e0c618](https://github.com/NoNameItem/read-comics/commit/9e0c618bc5fb95d2281f1ef818895972b8970f57))
+* **story-arcs:** Statistics API endpoint ([d8ea8df](https://github.com/NoNameItem/read-comics/commit/d8ea8df724586af699c8a08fe979acc6487fb9bf))
+* **teams:** Statistics API endpoint ([48ce8bd](https://github.com/NoNameItem/read-comics/commit/48ce8bd7ea038653713860b816c31cd386d99858))
+* **volumes:** Statistics API endpoint ([d765ce6](https://github.com/NoNameItem/read-comics/commit/d765ce603ec373a34f5b7f7ce5a411b95b2810af))
+
 ## [1.15.0](https://github.com/NoNameItem/read-comics/compare/1.14.6...1.15.0) (2025-02-01)
 
 
