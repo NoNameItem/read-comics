@@ -33,6 +33,10 @@ class BaseStatsViewSet(viewsets.ViewSet):
         return Response(data={"count": collection.count_documents({"crawl_source": "detail"})})
 
     @action(detail=False, methods=["GET"])
+    def db_count(self, request):
+        return Response(data={"count": self.model.objects.count()})
+
+    @action(detail=False, methods=["GET"])
     def matched_count(self, request):
         return Response(data={"count": self.model.objects.matched().count()})
 

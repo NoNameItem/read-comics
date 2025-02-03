@@ -3,6 +3,7 @@ from rest_framework.routers import DefaultRouter, SimpleRouter
 
 from read_comics.characters.api.viewsets import CharacterStatsViewSet
 from read_comics.concepts.api.viewsets import ConceptStatsViewSet
+from read_comics.core.api.viewsets import CoreStatsViewSet
 from read_comics.issues.api.viewsets import IssueStatsViewSet
 from read_comics.locations.api.viewsets import LocationStatsViewSet
 from read_comics.objects.api.viewsets import ObjectStatsViewSet
@@ -20,6 +21,8 @@ else:
     router = SimpleRouter()
 
 router.register("users", UserViewSet)
+
+router.register("core", CoreStatsViewSet, basename="core")
 
 router.register("characters", CharacterStatsViewSet, basename="character")
 router.register("concepts", ConceptStatsViewSet, basename="concept")

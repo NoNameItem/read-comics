@@ -99,6 +99,7 @@ LOCAL_APPS = [
     "read_comics.utils.apps.UtilsConfig",
     "read_comics.users.apps.UsersConfig",
     # Your stuff: custom apps go here
+    "read_comics.core.apps.CoreConfig",
     "read_comics.characters.apps.CharactersConfig",
     "read_comics.concepts.apps.ConceptsConfig",
     "read_comics.issues.apps.IssuesConfig",
