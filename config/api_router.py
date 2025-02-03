@@ -10,6 +10,7 @@ from read_comics.people.api.viewsets import PersonStatsViewSet
 from read_comics.powers.api.viewsets import PowerStatsViewSet
 from read_comics.publishers.api.viewsets import PublisherStatsViewSet
 from read_comics.story_arcs.api.viewsets import StoryArcStatsViewSet
+from read_comics.teams.api.viewsets import TeamStatsViewSet
 from read_comics.users.api.views import UserViewSet
 
 if settings.DEBUG:
@@ -28,6 +29,7 @@ router.register("people", PersonStatsViewSet, basename="person")
 router.register("powers", PowerStatsViewSet, basename="power")
 router.register("publishers", PublisherStatsViewSet, basename="publisher")
 router.register("story_arcs", StoryArcStatsViewSet, basename="story_arc")
+router.register("teams", TeamStatsViewSet, basename="team")
 
 app_name = "api"
 urlpatterns = router.urls
