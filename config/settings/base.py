@@ -359,7 +359,7 @@ REST_FRAMEWORK = {
         # "rest_framework.authentication.SessionAuthentication",
         "read_comics.users.api.auth.Auth",
     ),
-    "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
+    # "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
 }
 
 REST_USE_JWT = True
