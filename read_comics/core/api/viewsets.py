@@ -115,7 +115,7 @@ class CoreStatsViewSet(viewsets.ViewSet):
         return result
 
     def _get_keys(self, request: Request) -> list[str]:
-        potential_keys = request.query_params.getlist("keys")
+        potential_keys = request.query_params.getlist("var-keys")
 
         if not potential_keys:
             return list(self.COLLECTIONS.keys())
@@ -128,7 +128,7 @@ class CoreStatsViewSet(viewsets.ViewSet):
         return potential_keys
 
     @staticmethod
-    def filter_by_keys(
+    def _filter_by_keys(
         d: dict[str, T] | dict[str, ComicvineSyncModel],
         keys: list[str],
     ) -> list[T] | list[ComicvineSyncModel]:
@@ -140,7 +140,7 @@ class CoreStatsViewSet(viewsets.ViewSet):
     def _process_mongo(self, request: Request, method: Callable[[str], int]) -> Response:
         try:
             keys = self._get_keys(request)
-            collections = self.filter_by_keys(self.COLLECTIONS, keys)
+            collections = self._filter_by_keys(self.COLLECTIONS, keys)
             count = self._reduce_mongo(collections, method)
             return Response({"count": count})
         except ExtraKeyError as e:
@@ -154,7 +154,7 @@ class CoreStatsViewSet(viewsets.ViewSet):
     def _process_db(self, request: Request, method: Callable[[Type[ComicvineSyncModel]], int]) -> Response:
         try:
             keys = self._get_keys(request)
-            models = self.filter_by_keys(self.MODELS, keys)
+            models = self._filter_by_keys(self.MODELS, keys)
             count = self._reduce_db(models, method)
             return Response({"count": count})
         except ExtraKeyError as e:
