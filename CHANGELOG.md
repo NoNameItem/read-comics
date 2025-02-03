@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.0](https://github.com/NoNameItem/read-comics/compare/1.16.0...1.17.0) (2025-02-03)
+
+
+### Features
+
+* **core:** Total statistics endpoint ([f945661](https://github.com/NoNameItem/read-comics/commit/f94566102f849fb7299a104a7256059fd1c382a0))
+
 ## [1.16.0](https://github.com/NoNameItem/read-comics/compare/1.15.0...1.16.0) (2025-02-03)
 
 
