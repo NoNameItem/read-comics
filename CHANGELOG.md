@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.3](https://github.com/NoNameItem/read-comics/compare/1.17.2...1.17.3) (2025-02-04)
+
+
+### Bug Fixes
+
+* **spiders:** Update info from list only if there is no info from detail ([fca7983](https://github.com/NoNameItem/read-comics/commit/fca79830546900b0c7287ff862f3d1322c9f60e8))
+
 ## [1.17.2](https://github.com/NoNameItem/read-comics/compare/1.17.1...1.17.2) (2025-02-04)
 
 
