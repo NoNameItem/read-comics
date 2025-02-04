@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.2](https://github.com/NoNameItem/read-comics/compare/1.17.1...1.17.2) (2025-02-04)
+
+
+### Bug Fixes
+
+* **spiders:** Fix scrapyscript ([9b2707f](https://github.com/NoNameItem/read-comics/commit/9b2707f84d530cd4576f55d5c372128460998268))
+
 ## [1.17.1](https://github.com/NoNameItem/read-comics/compare/1.17.0...1.17.1) (2025-02-03)
 
 
