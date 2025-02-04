@@ -19,7 +19,7 @@ class ScrapyScriptException(Exception):
     pass
 
 
-class Job:  # noqa: SIM119
+class Job:  # noqa SIM119
     """A job is a single request to call a specific spider. *args and **kwargs
     will be passed to the spider constructor.
     """
@@ -38,7 +38,7 @@ class Processor(Process):
     Blocks until all have finished.
     """
 
-    def __init__(self, settings=None):
+    def __init__(self, settings=None, ignore_results=True):
         """
         Parms:
           settings (scrapy.settings.Settings) - settings to apply.  Defaults
@@ -46,13 +46,16 @@ class Processor(Process):
         """
         kwargs = {"ctx": __import__("billiard.synchronize")}
 
+        self.ignore_results = ignore_results
+
         self.results = Queue(**kwargs)
         self.items = []
         self.settings = settings or Settings()
         dispatcher.connect(self._item_scraped, signals.item_scraped)
 
     def _item_scraped(self, item):
-        self.items.append(item)
+        if not self.ignore_results:
+            self.items.append(item)
 
     def _crawl(self, requests):
         """
@@ -68,7 +71,8 @@ class Processor(Process):
 
         self.crawler.start()
         self.crawler.stop()
-        self.results.put(self.items)
+        if not self.ignore_results:
+            self.results.put(self.items)
 
     def run(self, jobs):
         """Start the Scrapy engine, and execute all jobs.  Return consolidated results
@@ -84,12 +88,16 @@ class Processor(Process):
             jobs = [jobs]
         self.validate(jobs)
 
+        results = []
+
         p = Process(target=self._crawl, args=[jobs])
         p.start()
+        if not self.ignore_results:
+            results = self.results.get()  # noqa R504
         p.join()
         p.terminate()
 
-        return self.results.get()
+        return results  # noqa R504
 
     def validate(self, jobs):
         if not all([isinstance(x, Job) for x in jobs]):

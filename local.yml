@@ -6,6 +6,7 @@ volumes:
   local_mongodb_data: { }
   local_mongodb_config: { }
   local_rabbitmq_data: { }
+  gerapy_data: { }
 
 
 services:
