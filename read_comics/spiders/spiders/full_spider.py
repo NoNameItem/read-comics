@@ -267,10 +267,12 @@ class FullSpider(scrapy.Spider):
                 self.skip_existing == "N"
                 or collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0
             ):
-                entry["crawl_date"] = timezone.now()
-                entry["crawl_source"] = "list"
-                item = {"_collection": response.request.endpoint.collection, "item": entry}
-                yield item
+                if collection.count_documents({"id": int(entry["id"]), "crawl_source": "detail"}) == 0:
+                    # Updating from list only if there is no version with info from detail
+                    entry["crawl_date"] = timezone.now()
+                    entry["crawl_source"] = "list"
+                    item = {"_collection": response.request.endpoint.collection, "item": entry}
+                    yield item
                 detail_url = self.construct_detail_url(entry["api_detail_url"], endpoint.detail_url_fields)
                 yield EndpointRequest(url=detail_url, endpoint=endpoint, callback=self.parse_detail)
             else:
