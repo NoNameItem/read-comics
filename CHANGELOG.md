@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.4](https://github.com/NoNameItem/read-comics/compare/1.17.3...1.17.4) (2025-02-05)
+
+
+### Bug Fixes
+
+* **spiders:** Crawl in FIFO order ([30e7c22](https://github.com/NoNameItem/read-comics/commit/30e7c22213dc13f3a370cdfdebc7a8bdc9ba6067))
+
 ## [1.17.3](https://github.com/NoNameItem/read-comics/compare/1.17.2...1.17.3) (2025-02-04)
 
 
