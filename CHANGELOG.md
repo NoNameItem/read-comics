@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/NoNameItem/read-comics/compare/1.17.4...1.18.0) (2025-02-07)
+
+
+### Features
+
+* **core:** /metrics endpoint with mongo and db statistics ([d6da536](https://github.com/NoNameItem/read-comics/commit/d6da536ab570bcea9e79cb8deac765e0d91e4384))
+
 ## [1.17.4](https://github.com/NoNameItem/read-comics/compare/1.17.3...1.17.4) (2025-02-05)
 
 
