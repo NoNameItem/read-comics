@@ -30,20 +30,11 @@ class DBCollector(BaseCollector):
 
     def collect(self):
         self._register_metric("read_comics_db_count", help_string="Number of rows in database")
-        self._register_metric(
-            "read_comics_db_matched_count", help_string="Number of rows in database matched with comicvine"
-        )
-        self._register_metric(
-            "read_comics_db_not_matched_count", help_string="Number of rows in database not_matched with comicvine"
-        )
-        self._register_metric(
-            "read_comics_db_queued_count", help_string="Number of rows in database queued for matching"
-        )
 
-        self._set_metric("read_comics_db_count", {"table": "total"}, 0)
-        self._set_metric("read_comics_db_matched_count", {"table": "total"}, 0)
-        self._set_metric("read_comics_db_not_matched_count", {"table": "total"}, 0)
-        self._set_metric("read_comics_db_queued_count", {"table": "total"}, 0)
+        self._set_metric("read_comics_db_count", {"table": "total", "status": "all"}, 0)
+        self._set_metric("read_comics_db_count", {"table": "total", "status": "matched"}, 0)
+        self._set_metric("read_comics_db_count", {"table": "total", "status": "not_matched"}, 0)
+        self._set_metric("read_comics_db_count", {"table": "total", "status": "queued"}, 0)
 
         for k, v in self.MODELS.items():
             count = v.objects.all().count()
@@ -51,12 +42,14 @@ class DBCollector(BaseCollector):
             not_matched_count = v.objects.not_matched().count()
             queued_count = v.objects.queued().count()
 
-            self._set_metric("read_comics_db_count", {"table": k}, count)
-            self._set_metric("read_comics_db_matched_count", {"table": k}, matched_count)
-            self._set_metric("read_comics_db_not_matched_count", {"table": k}, not_matched_count)
-            self._set_metric("read_comics_db_queued_count", {"table": k}, queued_count)
+            self._set_metric("read_comics_db_count", {"table": k, "status": "all"}, count)
+            self._set_metric("read_comics_db_count", {"table": k, "status": "matched"}, matched_count)
+            self._set_metric("read_comics_db_count", {"table": k, "status": "not_matched"}, not_matched_count)
+            self._set_metric("read_comics_db_count", {"table": k, "status": "queued"}, queued_count)
 
-            self._increment_metric("read_comics_db_count", {"table": "total"}, count)
-            self._increment_metric("read_comics_db_matched_count", {"table": "total"}, matched_count)
-            self._increment_metric("read_comics_db_not_matched_count", {"table": "total"}, not_matched_count)
-            self._increment_metric("read_comics_db_queued_count", {"table": "total"}, queued_count)
+            self._increment_metric("read_comics_db_count", {"table": "total", "status": "all"}, count)
+            self._increment_metric("read_comics_db_count", {"table": "total", "status": "matched"}, matched_count)
+            self._increment_metric(
+                "read_comics_db_count", {"table": "total", "status": "not_matched"}, not_matched_count
+            )
+            self._increment_metric("read_comics_db_count", {"table": "total", "status": "queued"}, queued_count)
