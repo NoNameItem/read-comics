@@ -111,7 +111,6 @@ LOCAL_APPS = [
     "read_comics.story_arcs.apps.StoryArcsConfig",
     "read_comics.teams.apps.TeamsConfig",
     "read_comics.volumes.apps.VolumesConfig",
-    "read_comics.pages.apps.PagesConfig",
     "read_comics.search.apps.SearchConfig",
     "read_comics.missing_issues.apps.MissingIssuesConfig",
 ]
@@ -133,7 +132,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "pages:home"
+LOGIN_REDIRECT_URL = "core:home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 

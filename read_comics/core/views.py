@@ -2,15 +2,29 @@ from typing import Any, Dict
 
 from django.db.models import Count, DateTimeField, Q
 from django.db.models.functions import Trunc
+from django.http import HttpResponse
 from django.views.generic import DayArchiveView, TemplateView
-from utils.comicvine_stats import get_matched_stats
 
 from read_comics.issues.models import Issue
 from read_comics.missing_issues.models import MissingIssue
+from read_comics.utils.comicvine_stats import get_matched_stats
+
+from .collectors.db import DBCollector
+from .collectors.mongo import MongoCollector
+
+
+def metrics_view(request) -> HttpResponse:
+    mongo_collector = MongoCollector()
+    db_collector = DBCollector()
+
+    mongo_collector.collect()
+    db_collector.collect()
+
+    return HttpResponse(mongo_collector.report() + db_collector.report(), content_type="text/plain")
 
 
 class HomeView(TemplateView):
-    template_name = "pages/home.html"
+    template_name = "core/home.html"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
         context = super(HomeView, self).get_context_data(**kwargs)
@@ -52,7 +66,7 @@ class NewIssuesView(DayArchiveView):
     ordering = ("volume__publisher", "volume", "numerical_number", "number")
     date_field = "created_dt"
     allow_future = True
-    template_name = "pages/new_issues.html"
+    template_name = "core/new_issues.html"
     context_object_name = "new_issues"
     month_format = "%m"
 
