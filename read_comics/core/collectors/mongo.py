@@ -26,28 +26,20 @@ class MongoCollector(BaseCollector):
 
     def collect(self):
         self._register_metric("read_comics_mongo_count", help_string="Number of documents in mongo collection")
-        self._register_metric(
-            "read_comics_mongo_list_count",
-            help_string="Number of documents in mongo collection crawled from list endpoint",
-        )
-        self._register_metric(
-            "read_comics_mongo_detail_count",
-            help_string="Number of documents in mongo collection crawled from detail endpoint",
-        )
 
-        self._set_metric("read_comics_mongo_count", {"collection": "total"}, 0)
-        self._set_metric("read_comics_mongo_list_count", {"collection": "total"}, 0)
-        self._set_metric("read_comics_mongo_detail_count", {"collection": "total"}, 0)
+        self._set_metric("read_comics_mongo_count", {"collection": "total", "source": "all"}, 0)
+        self._set_metric("read_comics_mongo_count", {"collection": "total", "source": "list"}, 0)
+        self._set_metric("read_comics_mongo_count", {"collection": "total", "source": "detail"}, 0)
 
         for k, v in self.COLLECTIONS.items():
             count = self.db[v].count_documents({})
             list_count = self.db[v].count_documents({"crawl_source": "list"})
             detail_count = self.db[v].count_documents({"crawl_source": "detail"})
 
-            self._set_metric("read_comics_mongo_count", {"collection": k}, count)
-            self._set_metric("read_comics_mongo_list_count", {"collection": k}, list_count)
-            self._set_metric("read_comics_mongo_detail_count", {"collection": k}, detail_count)
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "all"}, count)
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "list"}, list_count)
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "detail"}, detail_count)
 
-            self._increment_metric("read_comics_mongo_count", {"collection": "total"}, count)
-            self._increment_metric("read_comics_mongo_list_count", {"collection": "total"}, list_count)
-            self._increment_metric("read_comics_mongo_detail_count", {"collection": "total"}, detail_count)
+            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "all"}, count)
+            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "list"}, list_count)
+            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "detail"}, detail_count)
