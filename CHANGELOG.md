@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.2](https://github.com/NoNameItem/read-comics/compare/1.18.1...1.18.2) (2025-02-07)
+
+
+### Bug Fixes
+
+* **core:** Consolidate all db metrics ([8b898fb](https://github.com/NoNameItem/read-comics/commit/8b898fb5337706474a7692f9ebdd8a90d9500968))
+
 ## [1.18.1](https://github.com/NoNameItem/read-comics/compare/1.18.0...1.18.1) (2025-02-07)
 
 
