@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/NoNameItem/read-comics/compare/1.18.0...1.18.1) (2025-02-07)
+
+
+### Bug Fixes
+
+* **core:** Consolidate all mongo metrics ([ad80e54](https://github.com/NoNameItem/read-comics/commit/ad80e548b3318776cf56ec4487b8f10e88718b8b))
+
 ## [1.18.0](https://github.com/NoNameItem/read-comics/compare/1.17.4...1.18.0) (2025-02-07)
 
 
