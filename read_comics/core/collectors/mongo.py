@@ -32,14 +32,20 @@ class MongoCollector(BaseCollector):
         self._set_metric("read_comics_mongo_count", {"collection": "total", "source": "detail"}, 0)
 
         for k, v in self.COLLECTIONS.items():
-            count = self.db[v].count_documents({})
-            list_count = self.db[v].count_documents({"crawl_source": "list"})
-            detail_count = self.db[v].count_documents({"crawl_source": "detail"})
+            counts_query = self.db[v].aggregate([{"$group": {"_id": "$crawl_source", "count": {"$sum": 1}}}])
 
-            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "all"}, count)
-            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "list"}, list_count)
-            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "detail"}, detail_count)
+            counts = dict([i.values() for i in counts_query])
 
-            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "all"}, count)
-            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "list"}, list_count)
-            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "detail"}, detail_count)
+            total_count = sum(counts.values())
+
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "all"}, total_count)
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "list"}, counts.get("list", 0))
+            self._set_metric("read_comics_mongo_count", {"collection": k, "source": "detail"}, counts.get("detail", 0))
+
+            self._increment_metric("read_comics_mongo_count", {"collection": "total", "source": "all"}, total_count)
+            self._increment_metric(
+                "read_comics_mongo_count", {"collection": "total", "source": "list"}, counts.get("list", 0)
+            )
+            self._increment_metric(
+                "read_comics_mongo_count", {"collection": "total", "source": "detail"}, counts.get("detail", 0)
+            )
