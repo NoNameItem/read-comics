@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.3](https://github.com/NoNameItem/read-comics/compare/1.18.2...1.18.3) (2025-02-12)
+
+
+### Performance Improvements
+
+* **core:** Optimize db metrics collection ([6925d1d](https://github.com/NoNameItem/read-comics/commit/6925d1d7fb51716bf2fa241f76d321ba4c873ee0))
+* **core:** Optimize mongo metrics collection ([b31c238](https://github.com/NoNameItem/read-comics/commit/b31c238ea6938ba8b185df706954d9fa68590aac))
+
 ## [1.18.2](https://github.com/NoNameItem/read-comics/compare/1.18.1...1.18.2) (2025-02-07)
 
 
