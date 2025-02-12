@@ -1,3 +1,5 @@
+from django.db.models import Count
+
 from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
 from read_comics.issues.models import Issue
@@ -37,19 +39,29 @@ class DBCollector(BaseCollector):
         self._set_metric("read_comics_db_count", {"table": "total", "status": "queued"}, 0)
 
         for k, v in self.MODELS.items():
-            count = v.objects.all().count()
-            matched_count = v.objects.matched().count()
-            not_matched_count = v.objects.not_matched().count()
-            queued_count = v.objects.queued().count()
-
-            self._set_metric("read_comics_db_count", {"table": k, "status": "all"}, count)
-            self._set_metric("read_comics_db_count", {"table": k, "status": "matched"}, matched_count)
-            self._set_metric("read_comics_db_count", {"table": k, "status": "not_matched"}, not_matched_count)
-            self._set_metric("read_comics_db_count", {"table": k, "status": "queued"}, queued_count)
-
-            self._increment_metric("read_comics_db_count", {"table": "total", "status": "all"}, count)
-            self._increment_metric("read_comics_db_count", {"table": "total", "status": "matched"}, matched_count)
-            self._increment_metric(
-                "read_comics_db_count", {"table": "total", "status": "not_matched"}, not_matched_count
+            counts = dict(
+                v.objects.values("comicvine_status")
+                .annotate(count=Count("id"))
+                .order_by()
+                .values_list("comicvine_status", "count")
             )
-            self._increment_metric("read_comics_db_count", {"table": "total", "status": "queued"}, queued_count)
+
+            total = sum(counts.values())
+
+            self._set_metric("read_comics_db_count", {"table": k, "status": "all"}, total)
+            self._set_metric("read_comics_db_count", {"table": k, "status": "matched"}, counts.get("MATCHED", 0))
+            self._set_metric(
+                "read_comics_db_count", {"table": k, "status": "not_matched"}, counts.get("NOT_MATCHED", 0)
+            )
+            self._set_metric("read_comics_db_count", {"table": k, "status": "queued"}, counts.get("QUEUED", 0))
+
+            self._increment_metric("read_comics_db_count", {"table": "total", "status": "all"}, total)
+            self._increment_metric(
+                "read_comics_db_count", {"table": "total", "status": "matched"}, counts.get("MATCHED", 0)
+            )
+            self._increment_metric(
+                "read_comics_db_count", {"table": "total", "status": "not_matched"}, counts.get("NOT_MATCHED", 0)
+            )
+            self._increment_metric(
+                "read_comics_db_count", {"table": "total", "status": "queued"}, counts.get("QUEUED", 0)
+            )
