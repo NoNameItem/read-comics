@@ -16,21 +16,27 @@ class BaseStatsViewSet(viewsets.ViewSet):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.mongo_collection]
-        return Response(data={"count": collection.count_documents({})})
+        data = {"count": collection.count_documents({})}
+        client.close()
+        return Response(data=data)
 
     @action(detail=False, methods=["GET"])
     def mongo_list_count(self, request):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.mongo_collection]
-        return Response(data={"count": collection.count_documents({"crawl_source": "list"})})
+        data = {"count": collection.count_documents({"crawl_source": "list"})}
+        client.close()
+        return Response(data=data)
 
     @action(detail=False, methods=["GET"])
     def mongo_detail_count(self, request):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.mongo_collection]
-        return Response(data={"count": collection.count_documents({"crawl_source": "detail"})})
+        data = {"count": collection.count_documents({"crawl_source": "detail"})}
+        client.close()
+        return Response(data=data)
 
     @action(detail=False, methods=["GET"])
     def db_count(self, request):

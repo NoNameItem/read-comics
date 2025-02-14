@@ -49,3 +49,4 @@ class MongoCollector(BaseCollector):
             self._increment_metric(
                 "read_comics_mongo_count", {"collection": "total", "source": "detail"}, counts.get("detail", 0)
             )
+        self.client.close()

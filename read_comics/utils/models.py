@@ -97,6 +97,7 @@ class ComicvineSyncModel(models.Model):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
+        client.close()
         return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -129,7 +130,9 @@ class ComicvineSyncModel(models.Model):
                 d["crawl_source"] = "detail"
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
-                return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
+                document = collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
+                client.close()
+                return document  # noqa R504
             else:
                 return None
         except (JSONDecodeError, RequestException, HTTPError):
@@ -239,7 +242,9 @@ class ComicvineSyncModel(models.Model):
                         f"{volume_doc['name']} ({volume_doc['start_year']}) "
                         f"#{issue_doc['issue_number']} {issue_name}"
                     )
+                    client.close()
                     return name.strip(" ")
+            client.close()
             return ""
         except KeyError:
             return ""

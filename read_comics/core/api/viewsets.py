@@ -64,21 +64,27 @@ class CoreStatsViewSet(viewsets.ViewSet):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[collection]
-        return collection.count_documents({})
+        count = collection.count_documents({})
+        client.close()
+        return count  # noqa R504
 
     @staticmethod
     def _mongo_list_count(collection: str) -> int:
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[collection]
-        return collection.count_documents({"crawl_source": "list"})
+        count = collection.count_documents({"crawl_source": "list"})
+        client.close()
+        return count  # noqa R504
 
     @staticmethod
     def _mongo_detail_count(collection: str) -> int:
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[collection]
-        return collection.count_documents({"crawl_source": "detail"})
+        count = collection.count_documents({"crawl_source": "detail"})
+        client.close()
+        return count  # noqa R504
 
     @staticmethod
     def _db_count(model: Type[ComicvineSyncModel]) -> int:

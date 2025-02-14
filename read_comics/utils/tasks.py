@@ -166,6 +166,7 @@ class BaseRefreshTask(Task):
         db = client.get_default_database()
         collection = db[model.MONGO_COLLECTION]
         comicvine_objects = list(collection.find({"id": {"$in": comicvine_ids}}, {"id": 1, "crawl_date": 1}))
+        client.close()
 
         # Starting get data tasks
         for comicvine_object in comicvine_objects:

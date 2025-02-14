@@ -81,7 +81,7 @@ class BaseMissingIssuesTask(Task):
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate(
+        issues = collection.aggregate(
             [
                 {"$match": self.get_match(obj)},
                 {"$lookup": self.LOOKUP},
@@ -97,6 +97,8 @@ class BaseMissingIssuesTask(Task):
                 {"$project": self.PROJECT},
             ]
         )
+        client.close()
+        return issues  # noqa R504
 
     @staticmethod
     def get_or_create_missing_issue(mongo_missing_issue):
@@ -199,6 +201,7 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
 
         volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
         volume_ids = [volume["id"] for volume in volumes]
+        client.close()
 
         return {
             "$and": [
@@ -214,7 +217,7 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate(
+        issues = collection.aggregate(
             [
                 {"$match": self.get_match(obj)},
                 {"$lookup": self.LOOKUP},
@@ -229,6 +232,8 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
                 {"$project": self.PROJECT},
             ]
         )
+        client.close()
+        return issues  # noqa R504
 
     @staticmethod
     def get_existing_issues(obj):
