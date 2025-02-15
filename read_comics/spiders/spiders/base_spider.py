@@ -101,7 +101,7 @@ class BaseSpider(scrapy.Spider):
 
         if offset + number_of_page_results < number_of_total_results:
             next_page = self.construct_list_url(offset + number_of_page_results)
-            yield scrapy.Request(url=next_page, callback=self.parse_list, priority=1)
+            yield scrapy.Request(url=next_page, callback=self.parse_list, priority=5)
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
@@ -115,7 +115,7 @@ class BaseSpider(scrapy.Spider):
                     entry["crawl_source"] = "list"
                     yield entry
                 detail_url = self.construct_detail_url(entry["api_detail_url"])
-                yield scrapy.Request(url=detail_url, callback=self.parse_detail)
+                yield scrapy.Request(url=detail_url, callback=self.parse_detail, priority=1)
             else:
                 self.logger.info(f"Skip existing: {entry['api_detail_url']}")
                 yield {
