@@ -108,6 +108,6 @@ RETRY_PRIORITY_ADJUST = 0
 API_KEYS = env.list("COMICVINE_API_KEYS")
 MONGO_URL = env("MONGO_URL", default="")
 
-DEPTH_PRIORITY = 0
+DEPTH_PRIORITY = 1
 SCHEDULER_DISK_QUEUE = "scrapy.squeues.PickleFifoDiskQueue"
 SCHEDULER_MEMORY_QUEUE = "scrapy.squeues.FifoMemoryQueue"
