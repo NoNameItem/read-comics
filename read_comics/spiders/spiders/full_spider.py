@@ -259,7 +259,7 @@ class FullSpider(scrapy.Spider):
             next_page = self.construct_list_url(
                 endpoint.endpoint, endpoint.list_url_fields, offset + number_of_page_results
             )
-            yield EndpointRequest(url=next_page, endpoint=endpoint, callback=self.parse_list, priority=5)
+            yield EndpointRequest(url=next_page, endpoint=endpoint, callback=self.parse_list, priority=1)
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
@@ -274,7 +274,7 @@ class FullSpider(scrapy.Spider):
                     item = {"_collection": response.request.endpoint.collection, "item": entry}
                     yield item
                 detail_url = self.construct_detail_url(entry["api_detail_url"], endpoint.detail_url_fields)
-                yield EndpointRequest(url=detail_url, endpoint=endpoint, callback=self.parse_detail, priority=1)
+                yield EndpointRequest(url=detail_url, endpoint=endpoint, callback=self.parse_detail)
             else:
                 self.logger.info(f"Skip existing: {entry['api_detail_url']}")
                 yield {
