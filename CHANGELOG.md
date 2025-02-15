@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.18.4](https://github.com/NoNameItem/read-comics/compare/1.18.3...1.18.4) (2025-02-15)
+
+
+### Bug Fixes
+
+* **core:** Close mongo connections ([084032a](https://github.com/NoNameItem/read-comics/commit/084032a4696ac11415a5402cfceb240a3b249a4d))
+* **spiders:** Adjust list/detail priority ([f18ec5f](https://github.com/NoNameItem/read-comics/commit/f18ec5fef849765b7ec98f815902665b6478728b))
+* **spiders:** Adjust list/detail priority in full_spider ([f18ec5f](https://github.com/NoNameItem/read-comics/commit/f18ec5fef849765b7ec98f815902665b6478728b))
+* **spiders:** Disable depth priority adjustment ([f18ec5f](https://github.com/NoNameItem/read-comics/commit/f18ec5fef849765b7ec98f815902665b6478728b))
+
 ## [1.18.3](https://github.com/NoNameItem/read-comics/compare/1.18.2...1.18.3) (2025-02-12)
 
 
