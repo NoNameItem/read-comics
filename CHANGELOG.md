@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.18.5](https://github.com/NoNameItem/read-comics/compare/1.18.4...1.18.5) (2025-02-18)
+
+
+### Bug Fixes
+
+* **core:** Celery task_acks_late = True ([359af80](https://github.com/NoNameItem/read-comics/commit/359af80952b3c4fd655b13bbf3d1b7551d5bc323))
+* **core:** Use app timezone in celery ([a0bd861](https://github.com/NoNameItem/read-comics/commit/a0bd8610ee16774e2baf71c4d8273c68f1ac3836))
+
 ## [1.18.4](https://github.com/NoNameItem/read-comics/compare/1.18.3...1.18.4) (2025-02-15)
 
 
