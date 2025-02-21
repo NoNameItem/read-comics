@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/NoNameItem/read-comics/compare/1.18.5...1.19.0) (2025-02-21)
+
+
+### Features
+
+* **core:** Missing issues metrics ([5f77f96](https://github.com/NoNameItem/read-comics/commit/5f77f96fa762b9730c8635a328b93f531aaa2e80))
+
 ## [1.18.5](https://github.com/NoNameItem/read-comics/compare/1.18.4...1.18.5) (2025-02-18)
 
 
