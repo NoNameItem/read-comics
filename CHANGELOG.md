@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.1](https://github.com/NoNameItem/read-comics/compare/1.19.0...1.19.1) (2025-02-24)
+
+
+### Bug Fixes
+
+* **issues:** Fixed download ([6dc7291](https://github.com/NoNameItem/read-comics/commit/6dc7291eb9bc540f284dec6909e6929dd619d12c))
+
 ## [1.19.0](https://github.com/NoNameItem/read-comics/compare/1.18.5...1.19.0) (2025-02-21)
 
 
