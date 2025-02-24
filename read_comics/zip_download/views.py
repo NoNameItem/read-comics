@@ -6,7 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import StreamingHttpResponse
 from django.shortcuts import get_object_or_404
 from django.views import View
-from zip_download.zip_downloader import ZipDownloader
+
+from .zip_downloader import ZipDownloader
 
 
 class BaseZipDownloadView(LoginRequiredMixin, View):

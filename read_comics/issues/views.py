@@ -6,17 +6,19 @@ from django.apps import apps
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.db import IntegrityError
 from django.db.models import Count, Q
-from django.http import HttpResponseRedirect, JsonResponse
+from django.http import FileResponse, HttpResponseForbidden, JsonResponse
 from django.template.loader import render_to_string
 from django.urls import reverse_lazy
 from django.utils import formats
 from django.views.generic import DetailView, ListView
 from django.views.generic.base import View
 from django.views.generic.detail import SingleObjectMixin
-from utils import logging
-from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, OrderingMixin
 
 from read_comics.issues.models import FinishedIssue, Issue
+from read_comics.utils import logging
+from read_comics.utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, OrderingMixin
+from read_comics.zip_download.views import BaseZipDownloadView
+from read_comics.zip_download.zip_downloader import Downloader
 
 logger = logging.getLogger(__name__)
 
@@ -332,14 +334,25 @@ class IssueDownloadView(SingleObjectMixin, View):
     queryset = Issue.objects.matched()
 
     def get(self, request, *args, **kwargs):
-        # if ((not request.user.is_authenticated or not request.user.unlimited_downloads)
-        #     and request.session.get("last_download", 0) >
-        #         datetime.datetime.now().timestamp() - settings.DOWNLOAD_TIMEOUT):
-        #     sleep(settings.DOWNLOAD_TIMEOUT)
-        #
-        # request.session["last_download"] = datetime.datetime.now().timestamp()
+        if not request.user.is_authenticated:
+            return HttpResponseForbidden()
         issue = self.get_object()
-        return HttpResponseRedirect(issue.download_link)
+        link = (
+            BaseZipDownloadView.escape_file_name(
+                f"{issue.volume.name} ({issue.volume.start_year}) #{issue.number} {issue.name or ''}".rstrip(" ")
+                + issue.space_key[-4:]
+            ),
+            issue.download_link,
+        )
+
+        d = Downloader([link])
+        files = list(d)
+
+        content_type = (
+            "application/vnd.comicbook+zip" if issue.space_key[-4:] == ".zip" else "application/vnd.comicbook-rar"
+        )
+
+        return FileResponse(files[0][1], as_attachment=True, content_type=content_type, filename=files[0][0])
 
 
 issue_download_view = IssueDownloadView.as_view()
