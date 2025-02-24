@@ -3,10 +3,10 @@ from django.db import models
 from django.db.models import Count, F, Max, Q
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from utils import logging
-from utils.fields import ThumbnailImageField
 
 from read_comics.story_arcs.models import StoryArc
+from read_comics.utils import logging
+from read_comics.utils.fields import ThumbnailImageField
 from read_comics.volumes.models import Volume
 
 logger = logging.getLogger(__name__)

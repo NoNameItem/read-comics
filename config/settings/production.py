@@ -85,6 +85,7 @@ STATICFILES_STORAGE = "whitenoise.storage.CompressedStaticFilesStorage"
 # region http://stackoverflow.com/questions/10390244/
 # Full-fledge class: https://stackoverflow.com/a/18046120/104731
 AWS_S3_ENDPOINT_URL = DO_SPACE_DATA_ENDPOINT_URL  # noqa F405
+AWS_S3_CUSTOM_DOMAIN = env("DJANGO_AWS_S3_CUSTOM_DOMAIN", default=None)
 
 from storages.backends.s3boto3 import S3Boto3Storage  # noqa E402
 
