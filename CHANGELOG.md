@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.2](https://github.com/NoNameItem/read-comics/compare/1.19.1...1.19.2) (2025-02-24)
+
+
+### Bug Fixes
+
+* **core:** Media files ([5820a5e](https://github.com/NoNameItem/read-comics/commit/5820a5ec82125f42887496f6cc9340acc691c703))
+
 ## [1.19.1](https://github.com/NoNameItem/read-comics/compare/1.19.0...1.19.1) (2025-02-24)
 
 
