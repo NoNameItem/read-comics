@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.1](https://github.com/NoNameItem/read-comics/compare/1.20.0...1.20.1) (2025-02-26)
+
+
+### Bug Fixes
+
+* Missing migrations ([be03740](https://github.com/NoNameItem/read-comics/commit/be037404d7208a23a68a8c35765cc218c740958e))
+
 ## [1.20.0](https://github.com/NoNameItem/read-comics/compare/1.19.2...1.20.0) (2025-02-26)
 
 
