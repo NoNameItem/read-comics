@@ -8,9 +8,6 @@ from django.utils.encoding import escape_uri_path
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 from slugify import slugify
-from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
-from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
@@ -20,6 +17,9 @@ from read_comics.missing_issues.models import IgnoredIssue, MissingIssue
 from read_comics.objects.models import Object
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
+from read_comics.utils.logging import getLogger, methods_logged
+from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
 from read_comics.volumes.models import Volume
 
 logger = getLogger(__name__ + ".Issue")
@@ -80,7 +80,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
         "issue_number,cover_date,store_date,character_credits,character_died_in,concept_credits,"
         "location_credits,object_credits,person_credits,story_arc_credits,team_credits,"
-        "team_disbanded_in,volume&"
+        "team_disbanded_in,volume,associated_images&"
         "api_key={api_key}"
     )
     COMICVINE_FORCE_DETAIL_INFO = True
