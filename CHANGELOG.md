@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.20.0](https://github.com/NoNameItem/read-comics/compare/1.19.2...1.20.0) (2025-02-26)
+
+
+### Features
+
+* **core:** Allow to pass all kwargs in delayed fill_from_comicvine ([4c052a5](https://github.com/NoNameItem/read-comics/commit/4c052a58fafb69e52451594d87e01f3212211108))
+* **issues:** Display variant covers ([707e1d0](https://github.com/NoNameItem/read-comics/commit/707e1d0a2184244fda5b7b588eb1d4342a3a337b))
+* **issues:** Save associated_images in issue fetch from comicvine API ([1843a83](https://github.com/NoNameItem/read-comics/commit/1843a831b22c0d12120addde1a57d8eb641e7e1b))
+* **spiders:** Save associated_images for issues ([0f6b90a](https://github.com/NoNameItem/read-comics/commit/0f6b90a3a261a014ae3c17707603c549674cc7fb))
+
 ## [1.19.2](https://github.com/NoNameItem/read-comics/compare/1.19.1...1.19.2) (2025-02-24)
 
 
