@@ -126,10 +126,10 @@ class BaseComicvineInfoTask(Task):
 
     def run(self, *args, **kwargs):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
-        pk = kwargs["pk"]
+        pk = kwargs.pop("pk")
         obj = model.objects.get(pk=pk)
         if not obj.comicvine_actual:
-            obj.fill_from_comicvine(kwargs["follow_m2m"])
+            obj.fill_from_comicvine(**kwargs)
             obj.save()
             if self.MISSING_ISSUES_TASK and (obj.issues.count() > 0 or obj.watchers.count() > 0):
                 task = signature(self.MISSING_ISSUES_TASK, kwargs={"pk": obj.pk})
