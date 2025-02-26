@@ -318,6 +318,10 @@
             </div>
             <img src="{{ issue.full_size_url }}" alt="cover" class="mt-1 d-none d-md-block image-full-size"
                  width="100%">
+            {% for image in issue.variant_covers %}
+              <img src="{{ image }}" alt="variant cover" class="mt-1 d-none d-md-block image-full-size"
+                 width="100%">
+            {% endfor %}
           </div>
           <div class="detail-full-description col-12 col-md-6 col-lg-7 col-xxl-8 col-4k-10">
             {{ issue.description|default:"<p>No description</p>"|safe }}
