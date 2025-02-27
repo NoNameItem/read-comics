@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.5](https://github.com/NoNameItem/read-comics/compare/1.20.4...1.20.5) (2025-02-27)
+
+
+### Bug Fixes
+
+* Wrong attribute in celery run command ([c476c2f](https://github.com/NoNameItem/read-comics/commit/c476c2fe789b5712f7e759a700e0ca8db2e108a4))
+
 ## [1.20.4](https://github.com/NoNameItem/read-comics/compare/1.20.3...1.20.4) (2025-02-27)
 
 
