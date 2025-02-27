@@ -5,4 +5,4 @@
 #set -o nounset
 
 
-celery -A config.celery_app worker -l INFO --autoscale=10,0
+celery -A config.celery_app worker -l INFO --autoscale=8,0

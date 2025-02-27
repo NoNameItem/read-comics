@@ -87,7 +87,7 @@ class ComicvineSyncModel(models.Model):
             crawl_date = document["crawl_date"]
             return self.comicvine_last_match > pytz.UTC.localize(crawl_date)
         else:
-            self.logger.error(
+            self.logger.warning(
                 f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
             return True
