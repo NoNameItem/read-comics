@@ -172,14 +172,20 @@ class ComicvineSyncModel(models.Model):
                 self.logger.info(
                     f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
                 )
+
+            with transaction.atomic():
+                task_queue = APIQueue(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+                task_queue.save()
+                sleep(3)
+
+            task_queue = APIQueue.objects.get(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
             queue_try_count = 1
             queue_wait_start_dttm = timezone.now()
-            with transaction.atomic():
-                task_queue = APIQueue.objects.create(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
             while True:
                 with transaction.atomic():
                     queue_position = APIQueue.objects.filter(
-                        id__lt=task_queue.id, endpoint=self.MONGO_COLLECTION
+                        added_in_queue__lt=task_queue.added_in_queue,
+                        endpoint=self.MONGO_COLLECTION,
                     ).count()
                     if queue_position > 0:
                         self.logger.info(
