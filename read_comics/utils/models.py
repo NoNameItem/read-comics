@@ -172,42 +172,55 @@ class ComicvineSyncModel(models.Model):
                 self.logger.info(
                     f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
                 )
-            try_count = 1
-            wait_start_dttm = timezone.now()
-            APIQueue.objects.create(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+            queue_try_count = 1
+            queue_wait_start_dttm = timezone.now()
+            task_queue = APIQueue.objects.create(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
             while True:
                 with transaction.atomic():
-                    first_in_queue = APIQueue.objects.filter(endpoint=self.MONGO_COLLECTION).order_by("id").first()
-                    if first_in_queue and first_in_queue.comicvine_id != self.comicvine_id:
+                    queue_position = APIQueue.objects.filter(
+                        id__lt=task_queue.id, endpoint=self.MONGO_COLLECTION
+                    ).count()
+                    if queue_position > 0:
                         self.logger.info(
                             f"Waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
-                            f"(Try: {try_count} "
-                            f"waiting for {timezone.now() - wait_start_dttm})"
+                            f"(Try: {queue_try_count} "
+                            f"waiting for {timezone.now() - queue_wait_start_dttm})"
                         )
-                        try_count += 1
-                        sleep(10)
+                        queue_try_count += 1
+                        sleep(settings.COMICVINE_API_DELAY * queue_position)
                         continue
+                    else:
+                        self.logger.info(
+                            f"Finished waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
+                            f"(Try: {queue_try_count} "
+                            f"waited for {timezone.now() - queue_wait_start_dttm})"
+                        )
+                        break
 
+            api_try_count = 1
+            api_wait_start_dttm = timezone.now()
+            while True:
+                with transaction.atomic():
                     now = timezone.now()
                     lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
                     if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
                         self.logger.info(
                             f"Finished waiting API for `{self.comicvine_id}` in"
-                            f" `{self.MONGO_COLLECTION}` (Try: {try_count}, "
-                            f"waited for {timezone.now() - wait_start_dttm})"
+                            f" `{self.MONGO_COLLECTION}` (Try: {api_try_count}, "
+                            f"waited for {timezone.now() - api_wait_start_dttm})"
                         )
                         document = self.get_document_from_api()
                         lock.dttm = timezone.now()
                         lock.save()
-                        first_in_queue.delete()
+                        task_queue.delete()
                         break
                     else:
                         self.logger.info(
-                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {try_count} "
-                            f"waiting for {timezone.now() - wait_start_dttm})"
+                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {api_try_count} "
+                            f"waiting for {timezone.now() - api_wait_start_dttm})"
                         )
-                        try_count += 1
-                        sleep(10)
+                        api_try_count += 1
+                        sleep(1)
 
             if document:
                 self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
