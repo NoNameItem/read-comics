@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.2](https://github.com/NoNameItem/read-comics/compare/1.20.1...1.20.2) (2025-02-27)
+
+
+### Bug Fixes
+
+* **core:** Separate log for forced API refresh ([eb82256](https://github.com/NoNameItem/read-comics/commit/eb8225644f37baaedc34c231e29a4ad6b1d3008b))
+
 ## [1.20.1](https://github.com/NoNameItem/read-comics/compare/1.20.0...1.20.1) (2025-02-26)
 
 
