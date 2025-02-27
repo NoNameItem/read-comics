@@ -176,8 +176,8 @@ class ComicvineSyncModel(models.Model):
             with transaction.atomic():
                 task_queue = APIQueue(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
                 task_queue.save()
-                sleep(3)
 
+            sleep(1)
             task_queue = APIQueue.objects.get(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
             queue_try_count = 1
             queue_wait_start_dttm = timezone.now()
