@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.7](https://github.com/NoNameItem/read-comics/compare/1.20.6...1.20.7) (2025-02-27)
+
+
+### Bug Fixes
+
+* **core:** Race condition in getting info from comicvine API ([a0c5603](https://github.com/NoNameItem/read-comics/commit/a0c5603fd0a17484d539188a2984d82e3a361446))
+
 ## [1.20.6](https://github.com/NoNameItem/read-comics/compare/1.20.5...1.20.6) (2025-02-27)
 
 
