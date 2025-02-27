@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.8](https://github.com/NoNameItem/read-comics/compare/1.20.7...1.20.8) (2025-02-27)
+
+
+### Bug Fixes
+
+* **core:** Logging ([6f0789d](https://github.com/NoNameItem/read-comics/commit/6f0789d421e5af231a0ff97ea698a76467a054f7))
+
 ## [1.20.7](https://github.com/NoNameItem/read-comics/compare/1.20.6...1.20.7) (2025-02-27)
 
 
