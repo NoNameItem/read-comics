@@ -6,6 +6,7 @@ from time import sleep
 
 import pytz
 import requests
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db import models, transaction
@@ -18,11 +19,10 @@ from urllib3 import Retry
 
 from read_comics.missing_issues.models import APIQueue, Locks
 
-from . import logging
 from .logging import Logger
 from .model_managers import ComicvineSyncManager
 
-default_logger = logging.getLogger(__name__ + ".ComicvineSyncModel")
+default_logger = get_task_logger("comicvine-sync")
 
 
 def slugify_function(content):
@@ -56,7 +56,7 @@ class ComicvineSyncModel(models.Model):
         QUEUED = "QUEUED", "Waiting in queue"
         MATCHED = "MATCHED", "Matched"
 
-    logger: Logger
+    logger: Logger = default_logger
 
     comicvine_id = models.IntegerField(unique=True)
     comicvine_url = models.URLField(max_length=1000, null=True)

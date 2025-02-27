@@ -1,31 +1,17 @@
 from datetime import datetime
 
-from characters.tasks import character_comicvine_info_task
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
-from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
-from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
+from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
-logger = getLogger(__name__ + ".Character")
+from .tasks import character_comicvine_info_task
 
 
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Character(ImageMixin, ComicvineSyncModel):
     class Gender(models.IntegerChoices):
         OTHER = 0, "Other"
@@ -66,8 +52,6 @@ class Character(ImageMixin, ComicvineSyncModel):
         "first_appeared_in_issue,real_name,gender,birth,origin,character_friends,character_enemies,"
         "teams,team_enemies,team_friends,publisher,creators,powers"
     )
-
-    logger = logger
 
     name = models.TextField(null=True)
     real_name = models.TextField(null=True)

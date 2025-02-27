@@ -1,11 +1,10 @@
 from time import sleep
 
+from celery.utils.log import get_task_logger
 from django.db import IntegrityError, models
 from django.db.models.manager import BaseManager
 
-from . import logging
-
-logger = logging.getLogger(__name__)
+logger = get_task_logger("ComicvineSyncManager")
 
 
 class ComicvineSyncQuerySet(models.QuerySet):

@@ -72,7 +72,7 @@ class BaseSpider(scrapy.Spider):
         )
         filter_str = ",".join([f"{k}:{v}" for k, v in self.filters.items()])
         url += "&filter=" + filter_str
-        self.logger.info("List url: " + url)
+        self.logger.debug("List url: " + url)
         return url
 
     def construct_detail_url(self, url):
@@ -80,7 +80,7 @@ class BaseSpider(scrapy.Spider):
         url += "&format=json"
         if self.DETAIL_FIELD_LIST:
             url += "&field_list=" + self.DETAIL_FIELD_LIST
-        self.logger.info("Detail url: " + url)
+        self.logger.debug("Detail url: " + url)
         return url
 
     def parse(self, response):

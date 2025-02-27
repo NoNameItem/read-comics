@@ -18,26 +18,11 @@ from read_comics.missing_issues.models import IgnoredIssue, MissingIssue
 from read_comics.objects.models import Object
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
-from read_comics.utils.logging import getLogger, methods_logged
 from read_comics.utils.model_mixins import ImageMixin
 from read_comics.utils.models import ComicvineSyncModel, slugify_function
 from read_comics.volumes.models import Volume
 
-logger = getLogger(__name__ + ".Issue")
 
-
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Issue(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_issues"
     MONGO_PROJECTION = {
@@ -86,8 +71,6 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "api_key={api_key}"
     )
     COMICVINE_FORCE_DETAIL_INFO = True
-
-    logger = logger
 
     name = models.TextField(null=True)
     aliases = models.TextField(null=True)

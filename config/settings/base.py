@@ -275,10 +275,13 @@ MANAGERS = ADMINS
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s " "%(process)d %(thread)d %(message)s"}},
+    "formatters": {
+        "verbose": {"format": "[%(asctime)s %(levelname)s %(name)s]  %(message)s [%(pathname)s:%(lineno)d]"}
+    },
     "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "django": {"level": "INFO", "handlers": ["console"]},
+    # "celery": {"level": "INFO", "handlers": ["console"]},
     "read_comics": {"level": "DEBUG", "handlers": ["console"]},
 }
 
@@ -309,6 +312,10 @@ CELERY_RESULT_SERIALIZER = "json"
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#beat-scheduler
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
 CELERY_TASK_ACKS_LATE = True
+CELERY_WORKER_TASK_LOG_FORMAT = (
+    "[%(asctime)s %(levelname)s %(processName)s %(name)s] [%(task_name)s:%(task_id)s]: "
+    "%(message)s [%(pathname)s:%(lineno)d]"
+)
 # django-allauth
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)

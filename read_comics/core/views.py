@@ -1,5 +1,6 @@
 from typing import Any, Dict
 
+from celery.utils.log import get_task_logger
 from django.db.models import Count, DateTimeField, Q
 from django.db.models.functions import Trunc
 from django.http import HttpResponse
@@ -11,6 +12,8 @@ from read_comics.utils.comicvine_stats import get_matched_stats
 
 from .collectors.db import DBCollector
 from .collectors.mongo import MongoCollector
+
+logger = get_task_logger(__name__)
 
 
 def metrics_view(request) -> HttpResponse:
@@ -27,6 +30,7 @@ class HomeView(TemplateView):
     template_name = "core/home.html"
 
     def get_context_data(self, **kwargs: Any) -> Dict[str, Any]:
+        logger.info(f"get_context_data: {kwargs}")
         context = super(HomeView, self).get_context_data(**kwargs)
         context["matched_stats"] = get_matched_stats()
         context["missing_issues_count"] = MissingIssue.objects.filter(skip=False).count()

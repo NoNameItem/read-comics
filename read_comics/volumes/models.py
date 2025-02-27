@@ -2,28 +2,14 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
-from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
-from utils.models import ComicvineSyncModel, slugify_function
-from volumes.tasks import volume_comicvine_info_task
 
 from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, WatchedItem
+from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
-logger = getLogger(__name__ + ".Volume")
+from .tasks import volume_comicvine_info_task
 
 
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Volume(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_volumes"
     MONGO_PROJECTION = {
@@ -58,8 +44,6 @@ class Volume(ImageMixin, ComicvineSyncModel):
         "first_issue,publisher,last_issue,start_year"
     )
     COMICVINE_FORCE_DETAIL_INFO = True
-
-    logger = logger
 
     name = models.TextField()
     aliases = models.TextField(null=True)
