@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.20.3](https://github.com/NoNameItem/read-comics/compare/1.20.2...1.20.3) (2025-02-27)
+
+
+### Bug Fixes
+
+* **core:** Ignore comicvine_actual when force_api_refresh is true ([8128d62](https://github.com/NoNameItem/read-comics/commit/8128d620695c39468b6a34f7b6128e9767d83d1b))
+* **core:** Log in comicvine_actual ([efcb163](https://github.com/NoNameItem/read-comics/commit/efcb163dc8d2feb9841905751ddef076f5a597a9))
+
 ## [1.20.2](https://github.com/NoNameItem/read-comics/compare/1.20.1...1.20.2) (2025-02-27)
 
 
