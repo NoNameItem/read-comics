@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.4](https://github.com/NoNameItem/read-comics/compare/1.20.3...1.20.4) (2025-02-27)
+
+
+### Performance Improvements
+
+* **core:** Changed queue algorithm for fetching info from comicvine API ([9522d39](https://github.com/NoNameItem/read-comics/commit/9522d397a5f4ecd75d77c917a62b98837c2e1202))
+
 ## [1.20.3](https://github.com/NoNameItem/read-comics/compare/1.20.2...1.20.3) (2025-02-27)
 
 
