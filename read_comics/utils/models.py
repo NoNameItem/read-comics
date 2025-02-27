@@ -163,9 +163,15 @@ class ComicvineSyncModel(models.Model):
             self.comicvine_status = self.ComicvineStatus.MATCHED
             self.comicvine_last_match = timezone.now()
         else:
-            self.logger.info(
-                f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
-            )
+            if force_api_refresh:
+                self.logger.info(
+                    f"Forced API refresh for document with id `{self.comicvine_id}` "
+                    f"in collection `{self.MONGO_COLLECTION}`"
+                )
+            else:
+                self.logger.info(
+                    f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
+                )
             try_count = 1
             wait_start_dttm = timezone.now()
             APIQueue.objects.create(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
