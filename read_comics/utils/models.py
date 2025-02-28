@@ -169,7 +169,7 @@ class ComicvineSyncModel(models.Model):
                     f"in collection `{self.MONGO_COLLECTION}`"
                 )
             else:
-                self.logger.info(
+                self.logger.warning(
                     f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
                 )
 
@@ -178,15 +178,22 @@ class ComicvineSyncModel(models.Model):
                 task_queue.save()
 
             sleep(1)
-            task_queue = APIQueue.objects.get(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+            try:
+                task_queue = APIQueue.objects.get(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+            except APIQueue.DoesNotExist:
+                task_queue = None
             queue_try_count = 1
             queue_wait_start_dttm = timezone.now()
             while True:
                 with transaction.atomic():
-                    queue_position = APIQueue.objects.filter(
-                        added_in_queue__lt=task_queue.added_in_queue,
-                        endpoint=self.MONGO_COLLECTION,
-                    ).count()
+                    queue_position = (
+                        APIQueue.objects.filter(
+                            added_in_queue__lt=task_queue.added_in_queue,
+                            endpoint=self.MONGO_COLLECTION,
+                        ).count()
+                        if task_queue
+                        else 0
+                    )
                     if queue_position > 0:
                         self.logger.info(
                             f"Waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
@@ -219,7 +226,8 @@ class ComicvineSyncModel(models.Model):
                         document = self.get_document_from_api()
                         lock.dttm = timezone.now()
                         lock.save()
-                        task_queue.delete()
+                        if task_queue:
+                            task_queue.delete()
                         break
                     else:
                         self.logger.info(
