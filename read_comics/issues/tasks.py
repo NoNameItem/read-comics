@@ -5,12 +5,12 @@ from celery import shared_task
 from django.apps import apps
 from django.conf import settings
 from scrapy.settings import Settings
-from spiders.spiders.issues_spider import IssuesSpider
-from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
 from read_comics.spiders.scrappyscript import Job, Processor
+from read_comics.spiders.spiders.issues_spider import IssuesSpider
+from read_comics.utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 
 class IssueProcessEntryTask(BaseProcessEntryTask):

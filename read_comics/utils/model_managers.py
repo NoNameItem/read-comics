@@ -35,11 +35,13 @@ class ComicvineSyncQuerySet(models.QuerySet):
             sleep(10)
             instance = self.get(comicvine_id=comicvine_id)
             created = False
-        logger.info(f"Found: {not created}")
+        logger.info(
+            f"{type(instance).__name__} with comicvine_id `{comicvine_id}` {'found' if not created else 'created'}"
+        )
         if (created or (force_refresh and not instance.comicvine_actual)) and (
             instance.comicvine_status != instance.ComicvineStatus.QUEUED
         ):
-            logger.info("Refreshing from comicvine")
+            logger.info(f"Refreshing from comicvine {type(instance).__name__} with comicvine_id `{comicvine_id}`")
             instance.fill_from_comicvine(follow_m2m, delay)
             instance.save()
         return instance, created, (instance.comicvine_status == instance.ComicvineStatus.MATCHED)

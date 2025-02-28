@@ -9,10 +9,10 @@ from django.conf import settings
 from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 from scrapy.settings import Settings
-from spiders.spiders.full_spider import FullSpider
 
 import read_comics.spiders.settings as spiders_settings_file
 from read_comics.spiders.scrappyscript import Job, Processor
+from read_comics.spiders.spiders.full_spider import FullSpider
 
 
 class WrongKeyFormatError(Exception):
@@ -27,7 +27,7 @@ class BaseSpaceTask(Task):
         return []
 
     def run(self, *args, **kwargs):
-        self._logger.debug(f"Starting processing prefix {kwargs['prefix']}")
+        self._logger.info(f"Starting processing prefix {kwargs['prefix']}")
         s3objects_collection = self._bucket.objects.filter(Prefix=kwargs["prefix"])
         self.s3result = list(s3objects_collection)
         self.s3objects = [
@@ -44,7 +44,7 @@ class BaseSpaceTask(Task):
                     {"key": s3object[0], "size": s3object[1], "parent_entry_id": kwargs.get("parent_entry_id")},
                     priority=9,
                 )
-        self._logger.debug(f"Ended processing prefix {kwargs['prefix']}")
+        self._logger.info(f"Ended processing prefix {kwargs['prefix']}")
 
     def __init__(self):
         session = boto3.session.Session()
@@ -92,11 +92,12 @@ class BaseProcessEntryTask(Task):
         return int(match.group("id"))
 
     def run(self, *args, **kwargs):
-        self._logger.debug(f"Starting processing key {kwargs['key']}")
+        self._logger.info(f"Starting processing key {kwargs['key']}")
         if not self.check_key_format(kwargs["key"]):
             raise WrongKeyFormatError(kwargs["key"])
         comicvine_id = self.get_comicvine_id(kwargs["key"])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
+        self._logger.info(f"Getting/creating entry by comicvine_id {comicvine_id}")
         instance, created, matched = model.objects.get_or_create_from_comicvine(
             comicvine_id, self.get_defaults(**kwargs), force_refresh=True
         )
@@ -105,10 +106,10 @@ class BaseProcessEntryTask(Task):
             task.delay()
 
         if self.NEXT_LEVEL_TASK is not None:
-            self._logger.debug(f"Creating next level task with prefix {kwargs['key']}")
+            self._logger.info(f"Creating next level task with prefix {kwargs['key']}")
             # self.NEXT_LEVEL_TASK.delay(prefix=kwargs["key"], parent_entry_id=instance.pk)
             self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=9)
-        self._logger.debug(f"Ended processing key {kwargs['key']}")
+        self._logger.info(f"Ended processing key {kwargs['key']}")
 
     def __init__(self):
         self._id_regexp = re.compile(r"^.*\[(?P<id>\d+)\](\/|.cb.)$")
