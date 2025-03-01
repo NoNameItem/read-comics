@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.10](https://github.com/NoNameItem/read-comics/compare/1.20.9...1.20.10) (2025-03-01)
+
+
+### Build System
+
+* Clear API queue on celery launch ([b4e6d28](https://github.com/NoNameItem/read-comics/commit/b4e6d2828e967982b35d69b7cf31ef51bdf24ce9))
+
 ## [1.20.9](https://github.com/NoNameItem/read-comics/compare/1.20.8...1.20.9) (2025-02-28)
 
 
