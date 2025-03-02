@@ -109,7 +109,8 @@ services:
       - mailhog
     ports: []
     environment:
-      QUEUES: read_comics_default,read_comics_spiders,read_comics_characters,read_comics_concepts,read_comics_issues,read_comics_locations,read_comics_objects,read_comics_people,read_comics_powers,read_comics_publishers,read_comics_story_arcs,read_comics_teams,read_comics_volumes
+      AUTOSCALE: 6,0
+      QUEUES: read_comics_default,read_comics_spiders
     command: /start-celeryworker
 
 #  celerybeat:
