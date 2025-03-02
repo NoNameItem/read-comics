@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 
 from celery import Celery
@@ -19,13 +20,53 @@ app = Celery("read_comics")
 #   should have a `CELERY_` prefix.
 app.config_from_object("django.conf:settings", namespace="CELERY")
 
-# app.conf.broker_transport_options = {
-#     "priority_steps": list(range(10)),
-#     "queue_order_strategy": "priority",
-# }
-
 app.conf.task_queue_max_priority = 10
 app.conf.task_default_priority = 5
+
+TASK_REGEX = re.compile(r"^(read_comics\.)?(?P<app>[^.]+)\.tasks\.(?P<task>.*)$")
+CRAWL_TASK_REGEX = re.compile(r"(^[^_]+|story_arcs)_(increment_|skip_existing_)*update$")
+MISSING_ISSUES_QUEUES = {
+    "CharacterMissingIssuesTask": "read_comics_characters",
+    "ConceptMissingIssuesTask": "read_comics_concepts",
+    "LocationMissingIssuesTask": "read_comics_locations",
+    "ObjectMissingIssuesTask": "read_comics_objects",
+    "PersonMissingIssuesTask": "read_comics_people",
+    "PublisherMissingIssuesTask": "read_comics_publishers",
+    "StoryArcMissingIssuesTask": "read_comics_story_arcs",
+    "TeamMissingIssuesTask": "read_comics_teams",
+    "VolumeMissingIssuesTask": "read_comics_volumes",
+}
+
+
+def route_tasks(name, args, kwargs, options, task=None, **kw):
+    match = TASK_REGEX.match(name)
+    if match:
+        if CRAWL_TASK_REGEX.match(match.group("task")):
+            return {"queue": "read_comics_spiders"}
+
+        if match.group("app") == "missing_issues":
+            return {"queue": MISSING_ISSUES_QUEUES[match.group("task")]}
+
+        if match.group("app") in (
+            "characters",
+            "concepts",
+            "issues",
+            "locations",
+            "objects",
+            "people",
+            "powers",
+            "publishers",
+            "story_arcs",
+            "teams",
+            "volumes",
+        ):
+            return {"queue": f'read_comics_{match.group("app")}'}
+    return None
+
+
+app.conf.task_default_queue = "read_comics_default"
+app.conf.task_create_missing_queues = True
+app.conf.task_routes = (route_tasks,)
 
 app.conf.beat_schedule = {
     # Get new comics from Digital Ocean Space every day at 04:00 AM
