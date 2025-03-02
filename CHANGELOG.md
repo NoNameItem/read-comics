@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.21.0](https://github.com/NoNameItem/read-comics/compare/1.20.9...1.21.0) (2025-03-02)
+
+
+### Features
+
+* **core:** Celeryworker --autoscale option parametrized ([d9b0da9](https://github.com/NoNameItem/read-comics/commit/d9b0da9ecf7e21534bee858f5913facad08ba5bd))
+* **core:** Celeryworker -Q option parametrized ([4b5fa4f](https://github.com/NoNameItem/read-comics/commit/4b5fa4f83506849a197d0683275b87ddfc4700b0))
+* **core:** Task routing ([29ac3d6](https://github.com/NoNameItem/read-comics/commit/29ac3d61ba2677af3596f25ebbbf5cf7fdbe48e1))
+
+
+### Build System
+
+* Clear API queue on celery launch ([b4e6d28](https://github.com/NoNameItem/read-comics/commit/b4e6d2828e967982b35d69b7cf31ef51bdf24ce9))
+
 ## [1.20.9](https://github.com/NoNameItem/read-comics/compare/1.20.8...1.20.9) (2025-02-28)
 
 
