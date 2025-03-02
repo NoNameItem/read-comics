@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/NoNameItem/read-comics/compare/1.21.0...1.21.1) (2025-03-02)
+
+
+### Bug Fixes
+
+* **core:** Celeryworker --autoscale option parametrized ([b2b1cbf](https://github.com/NoNameItem/read-comics/commit/b2b1cbf97311a979701b844448f2c76492f64f04))
+
 ## [1.21.0](https://github.com/NoNameItem/read-comics/compare/1.20.9...1.21.0) (2025-03-02)
 
 
