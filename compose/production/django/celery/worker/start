@@ -6,4 +6,4 @@
 
 python /app/manage.py clearqueue
 
-celery -A config.celery_app worker -l INFO --autoscale=8,0 -Q $QUEUES
+celery -A config.celery_app worker -l INFO --autoscale=$AUTOSCALE -Q $QUEUES
