@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/NoNameItem/read-comics/compare/1.21.1...1.22.0) (2025-03-03)
+
+
+### Features
+
+* **core:** Celeryworker -n option parametrized ([944eff5](https://github.com/NoNameItem/read-comics/commit/944eff503c360765b7a1e0e2f4dec40db7bfa359))
+
 ## [1.21.1](https://github.com/NoNameItem/read-comics/compare/1.21.0...1.21.1) (2025-03-02)
 
 
