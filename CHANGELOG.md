@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.2](https://github.com/NoNameItem/read-comics/compare/1.22.1...1.22.2) (2025-03-04)
+
+
+### Bug Fixes
+
+* **core:** Purge offline workers from flower ([c0cf6e9](https://github.com/NoNameItem/read-comics/commit/c0cf6e98a51e83ac000463413153a2d6563aae37))
+
 ## [1.22.1](https://github.com/NoNameItem/read-comics/compare/1.22.0...1.22.1) (2025-03-04)
 
 
