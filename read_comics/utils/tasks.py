@@ -136,13 +136,19 @@ class BaseComicvineInfoTask(Task):
                 task = signature(self.MISSING_ISSUES_TASK, kwargs={"pk": obj.pk})
                 task.delay()
 
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
+    def _set_not_matched(self, kwargs):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         pk = kwargs["pk"]
         obj = model.objects.get(pk=pk)
         if obj.comicvine_status != model.ComicvineStatus.MATCHED:
             obj.comicvine_status = model.ComicvineStatus.NOT_MATCHED
             obj.save()
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        self._set_not_matched(kwargs)
+
+    def on_retry(self, exc, task_id, args, kwargs, einfo):
+        self._set_not_matched(kwargs)
 
 
 class BaseRefreshTask(Task):
