@@ -4,4 +4,6 @@
 #set -o pip0efail
 #set -o nounset
 
+python /app/manage.py clearqueue
+
 celery -A config.celery_app worker -n ${WORKER_NAME:-celery}@%h -l INFO --autoscale=$AUTOSCALE -Q $QUEUES
