@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.0](https://github.com/NoNameItem/read-comics/compare/1.22.3...1.23.0) (2025-03-06)
+
+
+### Features
+
+* **core:** Clear selected queues on celery launch ([8a852c7](https://github.com/NoNameItem/read-comics/commit/8a852c79a31d0c8f84c15a64a00bff87359f6f05))
+
 ## [1.22.3](https://github.com/NoNameItem/read-comics/compare/1.22.2...1.22.3) (2025-03-06)
 
 
