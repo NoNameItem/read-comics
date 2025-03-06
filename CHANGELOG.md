@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.3](https://github.com/NoNameItem/read-comics/compare/1.22.2...1.22.3) (2025-03-06)
+
+
+### Bug Fixes
+
+* **core:** Set comicvine_status = NOT_MATCHED on BaseComicvineInfoTask retry ([3a952e5](https://github.com/NoNameItem/read-comics/commit/3a952e5692c70581120feec0976fd20188d13493))
+
 ## [1.22.2](https://github.com/NoNameItem/read-comics/compare/1.22.1...1.22.2) (2025-03-04)
 
 
