@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.1](https://github.com/NoNameItem/read-comics/compare/1.23.0...1.23.1) (2025-03-07)
+
+
+### Bug Fixes
+
+* **core:** MultipleObjectsReturned in fill_from_comicvine ([66f7a99](https://github.com/NoNameItem/read-comics/commit/66f7a991422b783581c73beb07b82c498f99ff77))
+
 ## [1.23.0](https://github.com/NoNameItem/read-comics/compare/1.22.3...1.23.0) (2025-03-06)
 
 
