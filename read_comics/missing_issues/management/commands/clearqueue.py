@@ -14,5 +14,5 @@ class Command(BaseCommand):
             return
 
         for endpoint in options["endpoints"]:
-            APIQueue.objects.filter(endpoints=endpoint).delete()
+            APIQueue.objects.filter(endpoint=endpoint).delete()
             self.stdout.write(self.style.SUCCESS(f"Cleared {endpoint} queue"))
