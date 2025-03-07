@@ -179,7 +179,7 @@ class ComicvineSyncModel(models.Model):
 
             sleep(1)
             try:
-                task_queue = APIQueue.objects.get(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+                task_queue = APIQueue.objects.get(id=task_queue.id)
             except APIQueue.DoesNotExist:
                 task_queue = None
             queue_try_count = 1
