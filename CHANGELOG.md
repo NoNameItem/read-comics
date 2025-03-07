@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.2](https://github.com/NoNameItem/read-comics/compare/1.23.1...1.23.2) (2025-03-07)
+
+
+### Bug Fixes
+
+* **core:** Management command clearqueue ([ce64d6b](https://github.com/NoNameItem/read-comics/commit/ce64d6b2038b80399221642b553e2d6c85dc22ee))
+
 ## [1.23.1](https://github.com/NoNameItem/read-comics/compare/1.23.0...1.23.1) (2025-03-07)
 
 
