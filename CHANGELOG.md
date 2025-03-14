@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.8](https://github.com/NoNameItem/read-comics/compare/1.23.7...1.23.8) (2025-03-14)
+
+
+### Bug Fixes
+
+* **spiders:** List urls should have bigger priority then detail ([0554870](https://github.com/NoNameItem/read-comics/commit/055487026944004c91e965029c5fd3236edd80f6))
+
 ## [1.23.7](https://github.com/NoNameItem/read-comics/compare/1.23.6...1.23.7) (2025-03-14)
 
 
