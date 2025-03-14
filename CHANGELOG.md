@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.7](https://github.com/NoNameItem/read-comics/compare/1.23.6...1.23.7) (2025-03-14)
+
+
+### Performance Improvements
+
+* **spiders:** Do not generate list urls on every list crawl. Generate only if total results count became more, then it was when urls were generated last ([668b286](https://github.com/NoNameItem/read-comics/commit/668b28653aebb3211eec967940b1aa6da384c152))
+
 ## [1.23.6](https://github.com/NoNameItem/read-comics/compare/1.23.5...1.23.6) (2025-03-14)
 
 
