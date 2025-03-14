@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.4](https://github.com/NoNameItem/read-comics/compare/1.23.3...1.23.4) (2025-03-14)
+
+
+### Bug Fixes
+
+* **missing-issues:** Fixed 1.23.3 ([20964ec](https://github.com/NoNameItem/read-comics/commit/20964ecebda2f15e6246ac00073e1291439f3e5f))
+
 ## [1.23.3](https://github.com/NoNameItem/read-comics/compare/1.23.2...1.23.3) (2025-03-14)
 
 
