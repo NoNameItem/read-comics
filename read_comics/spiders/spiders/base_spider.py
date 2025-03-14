@@ -99,7 +99,7 @@ class BaseSpider(scrapy.Spider):
         while self.max_offset + self.LIMIT < number_of_total_results:
             self.max_offset += self.LIMIT
             url = self.construct_list_url(self.max_offset)
-            yield scrapy.Request(url=url, callback=self.parse_list)
+            yield scrapy.Request(url=url, callback=self.parse_list, priority=5)
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
