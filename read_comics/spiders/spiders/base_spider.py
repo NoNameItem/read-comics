@@ -31,6 +31,7 @@ class BaseSpider(scrapy.Spider):
         self.incremental = incremental
         self.skip_existing = skip_existing
         self.mongo_url = mongo_url
+        self.list_urls = set()
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -63,6 +64,7 @@ class BaseSpider(scrapy.Spider):
 
     def start_requests(self):
         url = self.construct_list_url(0)
+        self.list_urls.add(url)
 
         yield scrapy.Request(url=url, callback=self.parse_list)
 
@@ -95,13 +97,17 @@ class BaseSpider(scrapy.Spider):
         collection = mongo_db[self.name]
 
         # Follow to next list page
-        offset = json_res["offset"]
+        current_offset = json_res["offset"]
         number_of_total_results = json_res["number_of_total_results"]
         number_of_page_results = json_res["number_of_page_results"]
 
-        if offset + number_of_page_results < number_of_total_results:
-            next_page = self.construct_list_url(offset + number_of_page_results)
-            yield scrapy.Request(url=next_page, callback=self.parse_list, priority=5)
+        if current_offset + number_of_page_results < number_of_total_results:  # Not last page
+            offset = current_offset + self.LIMIT
+            while offset < number_of_total_results:
+                url = self.construct_list_url(offset)
+                if url not in self.list_urls:
+                    yield scrapy.Request(url=url, callback=self.parse_list, priority=5)
+                offset += self.LIMIT
 
         # Follow to detail pages
         for entry in json_res.get("results", []):

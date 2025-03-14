@@ -6,7 +6,6 @@ set -o nounset
 
 
 python /app/manage.py migrate --noinput
-python /app/manage.py clearqueue
 python /app/manage.py collectstatic --noinput
 
 echo ---${GUNICORN_CMD_ARGS}---
