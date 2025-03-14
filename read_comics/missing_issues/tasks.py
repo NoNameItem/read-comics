@@ -1,5 +1,6 @@
 from datetime import date, datetime, timedelta
 
+from billiard.exceptions import WorkerLostError
 from celery import Task, signature
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
@@ -22,7 +23,7 @@ from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue
 
 
 class BaseMissingIssuesTask(Task):
-    autoretry_for = (OperationalError,)
+    autoretry_for = (OperationalError, WorkerLostError)
     retry_kwargs = {"max_retries": None}
     retry_backoff = True
     retry_backoff_max = 60
