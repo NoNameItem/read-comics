@@ -31,7 +31,7 @@ class BaseSpider(scrapy.Spider):
         self.incremental = incremental
         self.skip_existing = skip_existing
         self.mongo_url = mongo_url
-        self.list_urls = set()
+        self.max_offset = 0
 
     @classmethod
     def from_crawler(cls, crawler, *args, **kwargs):
@@ -64,8 +64,6 @@ class BaseSpider(scrapy.Spider):
 
     def start_requests(self):
         url = self.construct_list_url(0)
-        self.list_urls.add(url)
-
         yield scrapy.Request(url=url, callback=self.parse_list)
 
     def construct_list_url(self, offset):
@@ -74,7 +72,7 @@ class BaseSpider(scrapy.Spider):
         )
         filter_str = ",".join([f"{k}:{v}" for k, v in self.filters.items()])
         url += "&filter=" + filter_str
-        self.logger.debug("List url: " + url)
+        self.logger.info("Constructed URL: " + url)
         return url
 
     def construct_detail_url(self, url):
@@ -82,7 +80,6 @@ class BaseSpider(scrapy.Spider):
         url += "&format=json"
         if self.DETAIL_FIELD_LIST:
             url += "&field_list=" + self.DETAIL_FIELD_LIST
-        self.logger.debug("Detail url: " + url)
         return url
 
     def parse(self, response):
@@ -96,18 +93,13 @@ class BaseSpider(scrapy.Spider):
         mongo_db = mongo_connection.get_default_database()
         collection = mongo_db[self.name]
 
-        # Follow to next list page
-        current_offset = json_res["offset"]
+        # Follow to next list pages
         number_of_total_results = json_res["number_of_total_results"]
-        number_of_page_results = json_res["number_of_page_results"]
 
-        if current_offset + number_of_page_results < number_of_total_results:  # Not last page
-            offset = current_offset + self.LIMIT
-            while offset < number_of_total_results:
-                url = self.construct_list_url(offset)
-                if url not in self.list_urls:
-                    yield scrapy.Request(url=url, callback=self.parse_list, priority=5)
-                offset += self.LIMIT
+        while self.max_offset + self.LIMIT < number_of_total_results:
+            self.max_offset += self.LIMIT
+            url = self.construct_list_url(self.max_offset)
+            yield scrapy.Request(url=url, callback=self.parse_list)
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
