@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.5](https://github.com/NoNameItem/read-comics/compare/1.23.4...1.23.5) (2025-03-14)
+
+
+### Bug Fixes
+
+* **core:** Freeze kombu version on 5.4.2 ([69623c9](https://github.com/NoNameItem/read-comics/commit/69623c9427b7f272fd20742ce3ab3a54547a6a42))
+* **missing-issues:** Retry missing issues tasks on WorkerLostError ([dbfb678](https://github.com/NoNameItem/read-comics/commit/dbfb678f90a073151e9ea77c43c59260ac5abbc8))
+
 ## [1.23.4](https://github.com/NoNameItem/read-comics/compare/1.23.3...1.23.4) (2025-03-14)
 
 
