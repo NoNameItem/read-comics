@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.3](https://github.com/NoNameItem/read-comics/compare/1.23.2...1.23.3) (2025-03-14)
+
+
+### Bug Fixes
+
+* **missing-issues:** Retry missing issues tasks on WorkerLostError ([c815652](https://github.com/NoNameItem/read-comics/commit/c815652aeecd22e4d96c110bc95643b8421ab7b1))
+
 ## [1.23.2](https://github.com/NoNameItem/read-comics/compare/1.23.1...1.23.2) (2025-03-07)
 
 
