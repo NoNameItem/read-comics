@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.6](https://github.com/NoNameItem/read-comics/compare/1.23.5...1.23.6) (2025-03-14)
+
+
+### Bug Fixes
+
+* **spiders:** Crawl firstly list url then detail ([1985df2](https://github.com/NoNameItem/read-comics/commit/1985df20a9069c639eba81779d1fa4437642b51d))
+
 ## [1.23.5](https://github.com/NoNameItem/read-comics/compare/1.23.4...1.23.5) (2025-03-14)
 
 
