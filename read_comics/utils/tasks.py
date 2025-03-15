@@ -119,7 +119,7 @@ class BaseProcessEntryTask(Task):
 class BaseComicvineInfoTask(Task):
     MODEL_NAME = None
     APP_LABEL = None
-    autoretry_for = (OperationalError,)
+    autoretry_for = (OperationalError, DatabaseError)
     retry_kwargs = {"max_retries": None}
     retry_backoff = True
     retry_backoff_max = 60
