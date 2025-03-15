@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.9](https://github.com/NoNameItem/read-comics/compare/1.23.8...1.23.9) (2025-03-15)
+
+
+### Bug Fixes
+
+* **core:** Retry ComicvineInfoTask on DatabaseError ([41bda4e](https://github.com/NoNameItem/read-comics/commit/41bda4e81fec6583f896ee5b23c54632948f491d))
+
 ## [1.23.8](https://github.com/NoNameItem/read-comics/compare/1.23.7...1.23.8) (2025-03-14)
 
 
