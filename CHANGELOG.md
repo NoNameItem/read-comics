@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.11](https://github.com/NoNameItem/read-comics/compare/1.23.10...1.23.11) (2025-03-17)
+
+
+### Bug Fixes
+
+* **spiders:** Backtrack increment update for 1 hour instead of 1 day ([d712ae8](https://github.com/NoNameItem/read-comics/commit/d712ae8c0e50292064490b07d11078d56c00dc22))
+* **spiders:** Collect all list urls before yielding ([b15ed24](https://github.com/NoNameItem/read-comics/commit/b15ed24f80b01fcb8b1c7e98d1133e6e0dcba609))
+
 ## [1.23.10](https://github.com/NoNameItem/read-comics/compare/1.23.9...1.23.10) (2025-03-17)
 
 
