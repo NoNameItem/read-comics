@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.10](https://github.com/NoNameItem/read-comics/compare/1.23.9...1.23.10) (2025-03-17)
+
+
+### Bug Fixes
+
+* **core:** Commented celerybeat schedule to stop DB rewrites on restart ([bef0845](https://github.com/NoNameItem/read-comics/commit/bef08458bd66ae7b2d9d6b47d9c917b1b62e9672))
+
 ## [1.23.9](https://github.com/NoNameItem/read-comics/compare/1.23.8...1.23.9) (2025-03-15)
 
 
