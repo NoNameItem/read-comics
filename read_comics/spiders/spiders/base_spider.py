@@ -49,8 +49,8 @@ class BaseSpider(scrapy.Spider):
             spider.logger.info("Spider info: " + str(spider_info))
             if spider_info:
                 start_date = str(
-                    spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(days=1))
-                    - datetime.timedelta(days=1)
+                    spider_info.get("last_run_dttm", datetime.datetime.min + datetime.timedelta(hours=1))
+                    - datetime.timedelta(hours=1)
                 )
                 end_date = str(datetime.datetime.max)
                 spider.filters["date_last_updated"] = f"{start_date}|{end_date}"
