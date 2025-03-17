@@ -3,7 +3,6 @@ import re
 import sys
 
 from celery import Celery
-from celery.schedules import crontab
 
 current_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 sys.path.append(os.path.join(current_path, "read_comics"))
@@ -78,83 +77,83 @@ app.conf.beat_schedule = {
     #     "options": {"priority": 0},
     # },
     # Purge comics deleted from Digital Ocean Space every day at 04:00 AM
-    "purge-deleted": {
-        "task": "read_comics.issues.tasks.purge_deleted",
-        "schedule": crontab(minute=0, hour="4"),
-    },
-    # Refresh data from Comicvine API every day at 03:00 AM UTC
-    "refresh-characters": {
-        "task": "read_comics.characters.tasks.CharactersRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-concepts": {
-        "task": "read_comics.concepts.tasks.ConceptsRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-issues": {
-        "task": "read_comics.issues.tasks.IssuesRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-locations": {
-        "task": "read_comics.locations.tasks.LocationsRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-objects": {
-        "task": "read_comics.objects.tasks.ObjectsRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-people": {
-        "task": "read_comics.people.tasks.PeopleRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-powers": {
-        "task": "read_comics.powers.tasks.PowersRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-publishers": {
-        "task": "read_comics.publishers.tasks.PublishersRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-story-arcs": {
-        "task": "read_comics.story_arcs.tasks.StoryArcsRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-teams": {
-        "task": "read_comics.teams.tasks.TeamsRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-volumes": {
-        "task": "read_comics.volumes.tasks.VolumesRefreshTask",
-        "schedule": crontab(minute=0, hour="3"),
-    },
-    "refresh-publishers-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "refresh-volumes-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.VolumeMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "refresh-character-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.CharacterMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "refresh-story-arcs-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.StoryArcMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "refresh-teams-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.TeamMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "refresh-person-missing-issues": {
-        "task": "read_comics.missing_issues.tasks.PersonMissingIssuesTask",
-        "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
-    },
-    "full_increment_update": {
-        "task": "read_comics.utils.tasks.full_increment_update",
-        "schedule": crontab(minute=0, hour="0"),
-    },
+    # "purge-deleted": {
+    #     "task": "read_comics.issues.tasks.purge_deleted",
+    #     "schedule": crontab(minute=0, hour="4"),
+    # },
+    # # Refresh data from Comicvine API every day at 03:00 AM UTC
+    # "refresh-characters": {
+    #     "task": "read_comics.characters.tasks.CharactersRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-concepts": {
+    #     "task": "read_comics.concepts.tasks.ConceptsRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-issues": {
+    #     "task": "read_comics.issues.tasks.IssuesRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-locations": {
+    #     "task": "read_comics.locations.tasks.LocationsRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-objects": {
+    #     "task": "read_comics.objects.tasks.ObjectsRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-people": {
+    #     "task": "read_comics.people.tasks.PeopleRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-powers": {
+    #     "task": "read_comics.powers.tasks.PowersRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-publishers": {
+    #     "task": "read_comics.publishers.tasks.PublishersRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-story-arcs": {
+    #     "task": "read_comics.story_arcs.tasks.StoryArcsRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-teams": {
+    #     "task": "read_comics.teams.tasks.TeamsRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-volumes": {
+    #     "task": "read_comics.volumes.tasks.VolumesRefreshTask",
+    #     "schedule": crontab(minute=0, hour="3"),
+    # },
+    # "refresh-publishers-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.PublisherMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "refresh-volumes-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.VolumeMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "refresh-character-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.CharacterMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "refresh-story-arcs-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.StoryArcMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "refresh-teams-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.TeamMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "refresh-person-missing-issues": {
+    #     "task": "read_comics.missing_issues.tasks.PersonMissingIssuesTask",
+    #     "schedule": crontab(minute=0, hour="7", day_of_week="fri"),
+    # },
+    # "full_increment_update": {
+    #     "task": "read_comics.utils.tasks.full_increment_update",
+    #     "schedule": crontab(minute=0, hour="0"),
+    # },
     # "characters_increment_update": {
     #     "task": "read_comics.characters.tasks.characters_increment_update",
     #     "schedule": crontab(minute=0, hour="0"),
