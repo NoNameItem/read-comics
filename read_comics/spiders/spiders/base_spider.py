@@ -72,7 +72,6 @@ class BaseSpider(scrapy.Spider):
         )
         filter_str = ",".join([f"{k}:{v}" for k, v in self.filters.items()])
         url += "&filter=" + filter_str
-        self.logger.info("Constructed URL: " + url)
         return url
 
     def construct_detail_url(self, url):
@@ -96,9 +95,12 @@ class BaseSpider(scrapy.Spider):
         # Follow to next list pages
         number_of_total_results = json_res["number_of_total_results"]
 
+        list_urls = []
         while self.max_offset + self.LIMIT < number_of_total_results:
             self.max_offset += self.LIMIT
-            url = self.construct_list_url(self.max_offset)
+            list_urls.append(self.construct_list_url(self.max_offset))
+
+        for url in list_urls:
             yield scrapy.Request(url=url, callback=self.parse_list, priority=5)
 
         # Follow to detail pages
