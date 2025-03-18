@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.12](https://github.com/NoNameItem/read-comics/compare/1.23.11...1.23.12) (2025-03-18)
+
+
+### Bug Fixes
+
+* **spiders:** Increse priority on spider request retry ([cc9a5cf](https://github.com/NoNameItem/read-comics/commit/cc9a5cfad42bfcbca2da4ff375e7ee09f21bf595))
+
 ## [1.23.11](https://github.com/NoNameItem/read-comics/compare/1.23.10...1.23.11) (2025-03-17)
 
 
