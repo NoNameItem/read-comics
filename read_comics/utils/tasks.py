@@ -22,6 +22,7 @@ class WrongKeyFormatError(Exception):
 class BaseSpaceTask(Task):
     PROCESS_ENTRY_TASK = None
     LOGGER_NAME = None
+    priority = 4
 
     def get_processed_keys(self):
         return []
@@ -75,6 +76,7 @@ class BaseProcessEntryTask(Task):
     retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
+    priority = 3
 
     def check_key_format(self, key):
         return self._key_regexp.match(key.lower())
