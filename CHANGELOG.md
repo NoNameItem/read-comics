@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.23.13](https://github.com/NoNameItem/read-comics/compare/1.23.12...1.23.13) (2025-03-19)
+
+
+### Bug Fixes
+
+* **core:** Celery reject task on worker lost ([51f5c7d](https://github.com/NoNameItem/read-comics/commit/51f5c7debd7de8a891a5ced9c832e346505e39ae))
+* **missing-issues:** Priority of space and entry tasks ([8d8f368](https://github.com/NoNameItem/read-comics/commit/8d8f368636bd9baef9aa31766de498cd24616620))
+
 ## [1.23.12](https://github.com/NoNameItem/read-comics/compare/1.23.11...1.23.12) (2025-03-18)
 
 
