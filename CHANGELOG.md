@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.14](https://github.com/NoNameItem/read-comics/compare/1.23.13...1.23.14) (2025-03-20)
+
+
+### Bug Fixes
+
+* **missing-issues:** Priority of space and entry tasks ([dbf09e3](https://github.com/NoNameItem/read-comics/commit/dbf09e3f1175458bda1ed817cbe425f0a9bb3c42))
+
 ## [1.23.13](https://github.com/NoNameItem/read-comics/compare/1.23.12...1.23.13) (2025-03-19)
 
 
