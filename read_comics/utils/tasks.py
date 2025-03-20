@@ -22,7 +22,7 @@ class WrongKeyFormatError(Exception):
 class BaseSpaceTask(Task):
     PROCESS_ENTRY_TASK = None
     LOGGER_NAME = None
-    priority = 4
+    priority = 9
 
     def get_processed_keys(self):
         return []
@@ -43,7 +43,7 @@ class BaseSpaceTask(Task):
                 self.PROCESS_ENTRY_TASK.apply_async(
                     (),
                     {"key": s3object[0], "size": s3object[1], "parent_entry_id": kwargs.get("parent_entry_id")},
-                    priority=9,
+                    priority=8,
                 )
         self._logger.info(f"Ended processing prefix {kwargs['prefix']}")
 
@@ -76,7 +76,7 @@ class BaseProcessEntryTask(Task):
     retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
-    priority = 3
+    priority = 8
 
     def check_key_format(self, key):
         return self._key_regexp.match(key.lower())
