@@ -1,6 +1,11 @@
+from scrapy import Request
 from scrapy.downloadermiddlewares.retry import RetryMiddleware
+from scrapy.exceptions import IgnoreRequest
+from scrapy.utils.request import referer_str
 from scrapy.utils.response import response_status_message
 from twisted.internet import defer, reactor
+
+from .mongo_connection import Connect
 
 
 async def async_sleep(delay, return_value=None):
@@ -47,3 +52,26 @@ class TooManyRequestsRetryMiddleware(RetryMiddleware):
             return self._retry(request, reason, spider) or response
 
         return response
+
+
+class SkipExistingRequestsMiddleware:
+    @classmethod
+    def from_crawler(cls, crawler):
+        return cls()
+
+    def process_request(self, request: Request, spider):
+        if getattr(spider, "skip_existing", "N") == "Y":
+            comicvine_id = request.meta.get("check_comicvine_id")
+
+            if comicvine_id:
+                mongo_connection = Connect.get_connection(spider.settings.get("MONGO_URL"))
+                mongo_db = mongo_connection.get_default_database()
+                collection = mongo_db[spider.name]
+
+                detail_exists = collection.count_documents({"id": int(comicvine_id), "crawl_source": "detail"}) != 0
+
+                mongo_connection.close()
+
+                if detail_exists:
+                    spider.logger.info(f"Skipping <{request.method} {request.url}> (referer: {referer_str(request)})")
+                    raise IgnoreRequest

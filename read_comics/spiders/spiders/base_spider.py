@@ -115,7 +115,12 @@ class BaseSpider(scrapy.Spider):
                     entry["crawl_source"] = "list"
                     yield entry
                 detail_url = self.construct_detail_url(entry["api_detail_url"])
-                yield scrapy.Request(url=detail_url, callback=self.parse_detail, priority=1)
+                yield scrapy.Request(
+                    url=detail_url,
+                    callback=self.parse_detail,
+                    priority=1,
+                    meta={"check_comicvine_id": entry["id"]},
+                )
             else:
                 self.logger.info(f"Skip existing: {entry['api_detail_url']}")
                 yield {

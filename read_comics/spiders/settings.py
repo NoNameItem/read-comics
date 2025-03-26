@@ -65,6 +65,7 @@ CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
     "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+    "read_comics.spiders.middlewares.SkipExistingRequestsMiddleware": 1,
     "read_comics.spiders.middlewares.TooManyRequestsRetryMiddleware": 543,
 }
 
