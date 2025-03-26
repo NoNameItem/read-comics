@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.23.14](https://github.com/NoNameItem/read-comics/compare/1.23.13...1.23.14) (2025-03-26)
+
+
+### Bug Fixes
+
+* **missing-issues:** Priority of space and entry tasks ([dbf09e3](https://github.com/NoNameItem/read-comics/commit/dbf09e3f1175458bda1ed817cbe425f0a9bb3c42))
+
+
+### Performance Improvements
+
+* **spiders:** Mongo Pipeline return only parsed item id ([b8a021a](https://github.com/NoNameItem/read-comics/commit/b8a021a37af03dd47c4193252a9b16b02a1e0d59))
+* **spiders:** Mongo Pipeline return only parsed item id ([00e6503](https://github.com/NoNameItem/read-comics/commit/00e6503258f2a72bd6b2966076170630f85141d9))
+
 ## [1.23.13](https://github.com/NoNameItem/read-comics/compare/1.23.12...1.23.13) (2025-03-19)
 
 
