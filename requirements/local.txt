@@ -9,7 +9,7 @@ watchgod==0.7  # https://github.com/samuelcolvin/watchgod
 # ------------------------------------------------------------------------------
 pytest==7.1.2  # https://github.com/pytest-dev/pytest
 pytest-sugar==0.9.4  # https://github.com/Frozenball/pytest-sugar
-pytest-cov==4.1.0  # https://github.com/pytest-dev/pytest-cov
+pytest-cov==6.1.1  # https://github.com/pytest-dev/pytest-cov
 
 
 # Typing
