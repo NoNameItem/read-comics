@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.23.15](https://github.com/NoNameItem/read-comics/compare/1.23.14...1.23.15) (2025-06-28)
+
+
+### Bug Fixes
+
+* **missing-issues:** Retry Missing Issues tasks on CursorNotFound ([e58958b](https://github.com/NoNameItem/read-comics/commit/e58958b3191eb6ec6d53d1557e2525e4ee34c22c))
+
 ## [1.23.14](https://github.com/NoNameItem/read-comics/compare/1.23.13...1.23.14) (2025-03-26)
 
 
