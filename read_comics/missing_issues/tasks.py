@@ -6,6 +6,7 @@ from django.conf import settings
 from django.db import IntegrityError, OperationalError
 from django.db.models import Count, Q
 from pymongo import MongoClient
+from pymongo.errors import CursorNotFound
 
 from config import celery_app
 from read_comics.characters.models import Character
@@ -23,8 +24,8 @@ from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue
 
 
 class BaseMissingIssuesTask(Task):
-    autoretry_for = (OperationalError, WorkerLostError)
-    retry_kwargs = {"max_retries": None}
+    autoretry_for = (OperationalError, WorkerLostError, CursorNotFound)
+    retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
 
