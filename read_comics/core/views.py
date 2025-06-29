@@ -10,6 +10,7 @@ from read_comics.issues.models import Issue
 from read_comics.missing_issues.models import MissingIssue
 from read_comics.utils.comicvine_stats import get_matched_stats
 
+from .collectors.api_queue import ApiQueueCollector
 from .collectors.db import DBCollector
 from .collectors.mongo import MongoCollector
 
@@ -23,7 +24,13 @@ def metrics_view(request) -> HttpResponse:
     mongo_collector.collect()
     db_collector.collect()
 
-    return HttpResponse(mongo_collector.report() + db_collector.report(), content_type="text/plain")
+    api_queue_collector = ApiQueueCollector()
+    api_queue_collector.collect()
+
+    return HttpResponse(
+        mongo_collector.report() + db_collector.report() + api_queue_collector.report(),
+        content_type="text/plain",
+    )
 
 
 class HomeView(TemplateView):
