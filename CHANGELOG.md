@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.24.0](https://github.com/NoNameItem/read-comics/compare/1.23.15...1.24.0) (2025-06-29)
+
+
+### Features
+
+* **core:** Api queue metric ([ecb3adf](https://github.com/NoNameItem/read-comics/commit/ecb3adf32def1fd6c55b1268b775cf5998e6caed))
+
 ## [1.23.15](https://github.com/NoNameItem/read-comics/compare/1.23.14...1.23.15) (2025-06-28)
 
 
