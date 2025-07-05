@@ -7,11 +7,6 @@
   {% for missing_issue in missing_issues %}
     {% ifchanged missing_issue.publisher_comicvine_id %}
       <tr class="publisher-row bg-primary bg-light">
-        <td class="pl-1"><a href="{{ missing_issue.publisher_comicvine_url }}"
-                            target="_blank">{{ missing_issue.publisher_name }}</a></td>
-        <td></td>
-        <td class="pl-1"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
-                               title="Copy">{{ missing_issue.publisher_space_path }}</span></td>
         <td>
           <div class="btn-group" role="group">
             <button data-href="
@@ -25,16 +20,15 @@
                     title="Ignore"><i class="fad fa-times"></i></button>
           </div>
         </td>
+        <td class="pl-1"><a href="{{ missing_issue.publisher_comicvine_url }}"
+                            target="_blank">{{ missing_issue.publisher_name }}</a></td>
+        <td></td>
+        <td class="pl-1"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                               title="Copy">{{ missing_issue.publisher_space_path }}</span></td>
       </tr>
     {% endifchanged %}
     {% ifchanged missing_issue.volume_comicvine_id %}
       <tr class="volume-row bg-secondary bg-light">
-        <td class="pl-3"><a href="{{ missing_issue.volume_comicvine_url }}"
-                            target="_blank">{{ missing_issue.volume_name }} ({{ missing_issue.volume_start_year }})</a>
-        </td>
-        <td></td>
-        <td class="pl-3"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
-                               title="Copy">{{ missing_issue.volume_space_path }}</span></td>
         <td>
           <div class="btn-group" role="group" aria-label="Basic example">
             <button data-href="
@@ -49,13 +43,15 @@
                     title="Ignore"><i class="fad fa-times"></i></button>
           </div>
         </td>
+        <td class="pl-3"><a href="{{ missing_issue.volume_comicvine_url }}"
+                            target="_blank">{{ missing_issue.volume_name }} ({{ missing_issue.volume_start_year }})</a>
+        </td>
+        <td></td>
+        <td class="pl-3"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                               title="Copy">{{ missing_issue.volume_space_path }}</span></td>
       </tr>
     {% endifchanged %}
     <tr class="issue-row">
-      <td class="pl-5"><a href="{{ missing_issue.comicvine_url }}" target="_blank">{{ missing_issue }}</a></td>
-      <td>{{ missing_issue.cover_date }}</td>
-      <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
-                             title="Copy">{{ missing_issue.issue_space_path }}</span></td>
       <td>
         <div class="btn-group" role="group" aria-label="Basic example">
           <button data-href="
@@ -68,6 +64,11 @@
                   title="Ignore"><i class="fad fa-times"></i></button>
         </div>
       </td>
+      <td class="pl-5"><a href="{{ missing_issue.comicvine_url }}" target="_blank">{{ missing_issue }}</a></td>
+      <td>{{ missing_issue.cover_date }}</td>
+      <td class="pl-5"><span class="space-path cursor-pointer" data-toggle="tooltip" data-placement="bottom"
+                             title="Copy">{{ missing_issue.issue_space_path }}</span></td>
+
     </tr>
   {% endfor %}
   </tbody>
