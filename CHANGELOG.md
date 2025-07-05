@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/NoNameItem/read-comics/compare/1.24.0...1.25.0) (2025-07-05)
+
+
+### Features
+
+* **missing-issues:** Move buttons to the start of row ([af331a5](https://github.com/NoNameItem/read-comics/commit/af331a5791121610ae0075037fa4a713e3f093fe))
+
 ## [1.24.0](https://github.com/NoNameItem/read-comics/compare/1.23.15...1.24.0) (2025-06-29)
 
 
