@@ -6,6 +6,7 @@ from celery import Task, shared_task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 from scrapy.settings import Settings
@@ -72,7 +73,7 @@ class BaseProcessEntryTask(Task):
     PARENT_ENTRY_APP_LABEL = None
     PARENT_ENTRY_FIELD = None
     MISSING_ISSUES_TASK = None
-    autoretry_for = (DatabaseError,)
+    autoretry_for = (DatabaseError, ObjectDoesNotExist)
     retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
