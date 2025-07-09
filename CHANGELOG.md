@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.1](https://github.com/NoNameItem/read-comics/compare/1.25.0...1.25.1) (2025-07-09)
+
+
+### Bug Fixes
+
+* **core:** Retry `*ProcessEntryTask` tasks on ObjectDoesNotExists exception ([38171a2](https://github.com/NoNameItem/read-comics/commit/38171a2e96f591cf58d92a5eb7901a4cc9cd8fcc))
+
 ## [1.25.0](https://github.com/NoNameItem/read-comics/compare/1.24.0...1.25.0) (2025-07-05)
 
 
