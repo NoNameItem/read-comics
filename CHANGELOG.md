@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.2](https://github.com/NoNameItem/read-comics/compare/1.25.1...1.25.2) (2025-07-19)
+
+
+### Bug Fixes
+
+* **spiders:** Fixed ScrapyDeprecationWarning ([ecc94c4](https://github.com/NoNameItem/read-comics/commit/ecc94c4a0abd2d2fc8212ec756c32aeba437e66f))
+
 ## [1.25.1](https://github.com/NoNameItem/read-comics/compare/1.25.0...1.25.1) (2025-07-09)
 
 
