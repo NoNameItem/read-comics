@@ -112,3 +112,5 @@ MONGO_URL = env("MONGO_URL", default="")
 DEPTH_PRIORITY = 0
 SCHEDULER_DISK_QUEUE = "scrapy.squeues.PickleFifoDiskQueue"
 SCHEDULER_MEMORY_QUEUE = "scrapy.squeues.FifoMemoryQueue"
+
+REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"
