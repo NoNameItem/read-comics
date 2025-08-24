@@ -40,7 +40,7 @@ requests==2.25.1
 unidecode==1.2.0
 
 urllib3~=1.26.2
-gevent==22.10.2
+gevent==23.9.0
 zipstream-new==1.1.8
 beautifulsoup4==4.9.3
 
