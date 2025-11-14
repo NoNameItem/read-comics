@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.3](https://github.com/NoNameItem/read-comics/compare/1.25.2...1.25.3) (2025-11-14)
+
+
+### Bug Fixes
+
+* **missing-issues:** Decreased row paddings in missing issues table ([7c73a75](https://github.com/NoNameItem/read-comics/commit/7c73a75dcbaada83cf1f39d4f0a503d3a7715fe7))
+
 ## [1.25.2](https://github.com/NoNameItem/read-comics/compare/1.25.1...1.25.2) (2025-07-19)
 
 
