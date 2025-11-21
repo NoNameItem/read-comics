@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.0](https://github.com/NoNameItem/read-comics/compare/1.25.3...1.26.0) (2025-11-21)
+
+
+### Features
+
+* **missing-issues:** Added missing issues count in page title ([88a3dd8](https://github.com/NoNameItem/read-comics/commit/88a3dd8303131a73005620f144e3dedfc07e458f))
+
 ## [1.25.3](https://github.com/NoNameItem/read-comics/compare/1.25.2...1.25.3) (2025-11-14)
 
 
