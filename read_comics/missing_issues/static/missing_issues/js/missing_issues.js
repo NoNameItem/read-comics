@@ -5,6 +5,8 @@ function updateBadges() {
   let watchedCount = $('#watched-missing-count').val();
   let thisCount = $('#this-missing-count').val();
 
+  const $title = $('title');
+
   if (allCount === "0") {
     $('#total-missing-count-badge').remove();
   } else {
@@ -13,8 +15,10 @@ function updateBadges() {
 
   if (thisCount === "0") {
     $('#this-missing-count-badge').remove();
+    $title.text($title.text().replace(/\([0-9,]+\)/, ""));
   } else {
     $('#this-missing-count-badge').text(thisCount);
+    $title.text($title.text().replace(/\([0-9,]+\)/, "(" + thisCount + ")"));
   }
 
   if (watchedCount === "0") {
