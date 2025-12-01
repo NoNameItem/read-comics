@@ -24,6 +24,11 @@ jobs:
           echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
           echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
           echo "COMICVINE_API_KEYS=test" >>  .envs/.local/.django_unsafe
+          echo "MONGO_URL=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
+          echo "CELERY_BROKER_URL=amqp://test:test@rabbitmq:5672/test" >> .envs/.local/.django_unsafe
+          echo "CELERY_RESULT_BACKEND=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
+          echo "FLOWER_MAX_TASKS=999999" >> .envs/.local/.django_unsafe
+          echo "FLOWER_BROKER_API=http://test:test@rabbitmq:15672/api/" >> .envs/.local/.django_unsafe
           touch .envs/.local/.rabbit_unsafe
           echo "RABBITMQ_DEFAULT_USER=test" >> .envs/.local/.rabbit_unsafe
           echo "RABBITMQ_DEFAULT_PASS=test" >> .envs/.local/.rabbit_unsafe
@@ -70,6 +75,11 @@ jobs:
           echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
           echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
           echo "COMICVINE_API_KEYS=test" >>  .envs/.local/.django_unsafe
+          echo "MONGO_URL=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
+          echo "CELERY_BROKER_URL=amqp://test:test@rabbitmq:5672/test" >> .envs/.local/.django_unsafe
+          echo "CELERY_RESULT_BACKEND=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
+          echo "FLOWER_MAX_TASKS=999999" >> .envs/.local/.django_unsafe
+          echo "FLOWER_BROKER_API=http://test:test@rabbitmq:15672/api/" >> .envs/.local/.django_unsafe
           touch .envs/.local/.rabbit_unsafe
           echo "RABBITMQ_DEFAULT_USER=test" >> .envs/.local/.rabbit_unsafe
           echo "RABBITMQ_DEFAULT_PASS=test" >> .envs/.local/.rabbit_unsafe
