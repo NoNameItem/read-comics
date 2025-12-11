@@ -50,7 +50,7 @@ def get_level(prefix=""):
     s3objects = [
         {"name": x[0].removeprefix(prefix), "full_name": x[0], "size": x[1]}
         for x in data
-        if not x[0].removeprefix(prefix).startswith(".")
+        if not x[0].removeprefix(prefix).startswith(".") and not x[0].removeprefix(prefix).startswith("@ea")
     ]
 
     s3objects.sort(key=lambda x: x["name"])

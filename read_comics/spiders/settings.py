@@ -32,15 +32,15 @@ USER_AGENT = "comicvine_crawler read-comics.net"
 ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
-# CONCURRENT_REQUESTS = 32
+CONCURRENT_REQUESTS = 1
 
 # Configure a delay for requests for the same website (default: 0)
 # See https://docs.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+DOWNLOAD_DELAY = env.int("SCRAPPY_DOWNLOAD_DELAY", default=3)
 RANDOMIZE_DOWNLOAD_DELAY = False
 # The download delay setting will honor only one of:
-# CONCURRENT_REQUESTS_PER_DOMAIN = 16
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
 # CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
@@ -64,7 +64,9 @@ RANDOMIZE_DOWNLOAD_DELAY = False
 # Enable or disable downloader middlewares
 # See https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 DOWNLOADER_MIDDLEWARES = {
-    "scrapy.downloadermiddlewares.retry.RetryMiddleware": 543,
+    "scrapy.downloadermiddlewares.retry.RetryMiddleware": None,
+    "read_comics.spiders.middlewares.SkipExistingRequestsMiddleware": 1,
+    "read_comics.spiders.middlewares.TooManyRequestsRetryMiddleware": 543,
 }
 
 # Enable or disable extensions
@@ -101,7 +103,14 @@ ITEM_PIPELINES = {
 # HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
 
 RETRY_HTTP_CODES = [500, 502, 503, 504, 522, 524, 408, 429, 420]
-RETRY_TIMES = 60
+RETRY_TIMES = 400
+RETRY_PRIORITY_ADJUST = 1
 
-API_KEY = env("COMICVINE_API_KEY", default="")
+API_KEYS = env.list("COMICVINE_API_KEYS")
 MONGO_URL = env("MONGO_URL", default="")
+
+DEPTH_PRIORITY = 0
+SCHEDULER_DISK_QUEUE = "scrapy.squeues.PickleFifoDiskQueue"
+SCHEDULER_MEMORY_QUEUE = "scrapy.squeues.FifoMemoryQueue"
+
+REQUEST_FINGERPRINTER_IMPLEMENTATION = "2.7"

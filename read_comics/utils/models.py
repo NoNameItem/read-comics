@@ -1,24 +1,28 @@
 import datetime
+import random
 import re
 from json import JSONDecodeError
+from time import sleep
 
 import pytz
 import requests
+from celery.utils.log import get_task_logger
 from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 from pymongo import MongoClient
-from requests import RequestException
+from requests import HTTPError, RequestException
 from requests.adapters import HTTPAdapter
 from slugify import slugify
 from urllib3 import Retry
 
-from . import logging
+from read_comics.missing_issues.models import APIQueue, Locks
+
 from .logging import Logger
 from .model_managers import ComicvineSyncManager
 
-default_logger = logging.getLogger(__name__ + ".ComicvineSyncModel")
+default_logger = get_task_logger("comicvine-sync")
 
 
 def slugify_function(content):
@@ -44,14 +48,15 @@ class ComicvineSyncModel(models.Model):
         "first_issue_comicvine_id": "first_appeared_in_issue.id",
     }
     COMICVINE_INFO_TASK = None
-    COMICVINE_API_URL: str = ""
+    COMICVINE_API_URL = None
+    COMICVINE_FORCE_DETAIL_INFO = False
 
     class ComicvineStatus(models.TextChoices):
         NOT_MATCHED = "NOT_MATCHED", "Not matched"
         QUEUED = "QUEUED", "Waiting in queue"
         MATCHED = "MATCHED", "Matched"
 
-    logger: Logger
+    logger: Logger = default_logger
 
     comicvine_id = models.IntegerField(unique=True)
     comicvine_url = models.URLField(max_length=1000, null=True)
@@ -77,13 +82,13 @@ class ComicvineSyncModel(models.Model):
             return False
         document = self.comicvine_document
         if document:
-            self.logger.debug("Document found")
+            self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
             crawl_date = document["crawl_date"]
             return self.comicvine_last_match is not None and self.comicvine_last_match > pytz.UTC.localize(crawl_date)
         else:
-            self.logger.error(
-                "Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
+            self.logger.warning(
+                f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
             )
             return True
 
@@ -92,6 +97,7 @@ class ComicvineSyncModel(models.Model):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
+        client.close()
         return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
@@ -107,57 +113,141 @@ class ComicvineSyncModel(models.Model):
         self.post_save()
 
     def get_document_from_api(self):
-        retries = Retry(total=30, backoff_factor=10, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
+        retries = Retry(total=100, backoff_factor=300, status_forcelist=[500, 502, 503, 504, 522, 524, 408, 429, 420])
         adapter = HTTPAdapter(max_retries=retries)
         http = requests.Session()
         http.mount("https://", adapter)
         http.mount("http://", adapter)
-        url = self.COMICVINE_API_URL.format(id=self.comicvine_id, api_key=settings.COMICVINE_API_KEY)
+        url = self.COMICVINE_API_URL.format(id=self.comicvine_id, api_key=random.choice(settings.COMICVINE_API_KEYS))
         headers = {"user-agent": "read-comics.net/1.0.0"}
         try:
             response = http.request("GET", url, headers=headers, timeout=100)
             response.raise_for_status()
             d = response.json().get("results", {})
             if d:
-                d["crawl_date"] = datetime.datetime.now()
                 client = MongoClient(settings.MONGO_URL)
                 db = client.get_default_database()
+                d["crawl_date"] = timezone.now()
+                d["crawl_source"] = "detail"
                 collection = db[self.MONGO_COLLECTION]
                 collection.replace_one({"id": d["id"]}, d, upsert=True)
-                return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
+                document = collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
+                client.close()
+                return document  # noqa R504
             else:
                 return None
-        except (JSONDecodeError, RequestException):
+        except (JSONDecodeError, RequestException, HTTPError):
             return None
 
     def fill_from_comicvine(self, follow_m2m=True, delay=False, force_api_refresh=False):
         if delay:
             if self.COMICVINE_INFO_TASK:
                 # self.COMICVINE_INFO_TASK.delay(pk=self.pk, follow_m2m=follow_m2m)
-                self.COMICVINE_INFO_TASK.apply_async((), {"pk": self.pk, "follow_m2m": follow_m2m}, priority=9)
+                self.COMICVINE_INFO_TASK.apply_async(
+                    (),
+                    {
+                        "pk": self.pk,
+                        "follow_m2m": follow_m2m,
+                        "force_api_refresh": force_api_refresh,
+                    },
+                    priority=1,
+                )
                 self.comicvine_status = self.ComicvineStatus.QUEUED
             return
 
         document = self.comicvine_document
-        if document and not force_api_refresh:
-            self.logger.debug("Document found")
+        document_source = document.get("crawl_source", "list") if document else "list"
+        if document and not force_api_refresh and (document_source == "detail" or not self.COMICVINE_FORCE_DETAIL_INFO):
+            self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
             self.process_document(document, follow_m2m)
             self.comicvine_status = self.ComicvineStatus.MATCHED
             self.comicvine_last_match = timezone.now()
         else:
-            self.logger.debug(
-                f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
-            )
-            document = self.get_document_from_api()
+            if force_api_refresh:
+                self.logger.info(
+                    f"Forced API refresh for document with id `{self.comicvine_id}` "
+                    f"in collection `{self.MONGO_COLLECTION}`"
+                )
+            else:
+                self.logger.warning(
+                    f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
+                )
+
+            with transaction.atomic():
+                task_queue = APIQueue(endpoint=self.MONGO_COLLECTION, comicvine_id=self.comicvine_id)
+                task_queue.save()
+
+            sleep(1)
+            try:
+                task_queue = APIQueue.objects.get(id=task_queue.id)
+            except APIQueue.DoesNotExist:
+                task_queue = None
+            queue_try_count = 1
+            queue_wait_start_dttm = timezone.now()
+            while True:
+                with transaction.atomic():
+                    queue_position = (
+                        APIQueue.objects.filter(
+                            added_in_queue__lt=task_queue.added_in_queue,
+                            endpoint=self.MONGO_COLLECTION,
+                        ).count()
+                        if task_queue
+                        else 0
+                    )
+                    if queue_position > 0:
+                        self.logger.info(
+                            f"Waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
+                            f"(Try: {queue_try_count} "
+                            f"waiting for {timezone.now() - queue_wait_start_dttm})"
+                        )
+                        queue_try_count += 1
+                        sleep(settings.COMICVINE_API_DELAY * queue_position)
+                        continue
+                    else:
+                        self.logger.info(
+                            f"Finished waiting API queue for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` "
+                            f"(Try: {queue_try_count} "
+                            f"waited for {timezone.now() - queue_wait_start_dttm})"
+                        )
+                        break
+
+            api_try_count = 1
+            api_wait_start_dttm = timezone.now()
+            while True:
+                with transaction.atomic():
+                    now = timezone.now()
+                    lock = Locks.objects.select_for_update().filter(code=self.MONGO_COLLECTION)[0]
+                    if lock.dttm is None or now - lock.dttm > datetime.timedelta(seconds=settings.COMICVINE_API_DELAY):
+                        self.logger.info(
+                            f"Finished waiting API for `{self.comicvine_id}` in"
+                            f" `{self.MONGO_COLLECTION}` (Try: {api_try_count}, "
+                            f"waited for {timezone.now() - api_wait_start_dttm})"
+                        )
+                        document = self.get_document_from_api()
+                        lock.dttm = timezone.now()
+                        lock.save()
+                        if task_queue:
+                            task_queue.delete()
+                        break
+                    else:
+                        self.logger.info(
+                            f"Waiting API for `{self.comicvine_id}` in `{self.MONGO_COLLECTION}` (Try: {api_try_count} "
+                            f"waiting for {timezone.now() - api_wait_start_dttm})"
+                        )
+                        api_try_count += 1
+                        sleep(1)
+
             if document:
-                self.logger.debug("Document found in API")
+                self.logger.info(f"Document with id `{self.comicvine_id}` found in API (`{self.MONGO_COLLECTION}`)")
                 self.logger.debug(f"Document: {str(document)}")
                 self.process_document(document, follow_m2m)
                 self.comicvine_status = self.ComicvineStatus.MATCHED
                 self.comicvine_last_match = timezone.now()
             else:
-                self.logger.error(f"Document with id `{self.comicvine_id}` not found in API")
+                self.logger.error(
+                    f"Document with id `{self.comicvine_id}` not found in API (`{self.MONGO_COLLECTION}`)"
+                )
                 self.comicvine_status = self.ComicvineStatus.NOT_MATCHED
 
     def process_document(self, document, follow_m2m):
@@ -195,7 +285,9 @@ class ComicvineSyncModel(models.Model):
                         f"{volume_doc['name']} ({volume_doc['start_year']}) "
                         f"#{issue_doc['issue_number']} {issue_name}"
                     )
+                    client.close()
                     return name.strip(" ")
+            client.close()
             return ""
         except KeyError:
             return ""

@@ -1,6 +1,7 @@
 """
 Base settings to build other settings files upon.
 """
+
 from datetime import timedelta
 from pathlib import Path
 
@@ -25,7 +26,7 @@ DEBUG = env.bool("DJANGO_DEBUG", False)
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # though not all of them may be available with every OS.
 # In Windows, this must be set to your system time zone.
-TIME_ZONE = "UTC"
+TIME_ZONE = env("TZ", default="UTC")
 # https://docs.djangoproject.com/en/dev/ref/settings/#language-code
 LANGUAGE_CODE = "en-us"
 # https://docs.djangoproject.com/en/dev/ref/settings/#site-id
@@ -102,6 +103,7 @@ LOCAL_APPS = [
     "read_comics.utils.apps.UtilsConfig",
     "read_comics.users.apps.UsersConfig",
     # Your stuff: custom apps go here
+    "read_comics.core.apps.CoreConfig",
     "read_comics.characters.apps.CharactersConfig",
     "read_comics.concepts.apps.ConceptsConfig",
     "read_comics.issues.apps.IssuesConfig",
@@ -113,7 +115,6 @@ LOCAL_APPS = [
     "read_comics.story_arcs.apps.StoryArcsConfig",
     "read_comics.teams.apps.TeamsConfig",
     "read_comics.volumes.apps.VolumesConfig",
-    "read_comics.pages.apps.PagesConfig",
     "read_comics.search.apps.SearchConfig",
     "read_comics.missing_issues.apps.MissingIssuesConfig",
 ]
@@ -135,7 +136,7 @@ AUTHENTICATION_BACKENDS = [
 # https://docs.djangoproject.com/en/dev/ref/settings/#auth-user-model
 AUTH_USER_MODEL = "users.User"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-redirect-url
-LOGIN_REDIRECT_URL = "pages:home"
+LOGIN_REDIRECT_URL = "core:home"
 # https://docs.djangoproject.com/en/dev/ref/settings/#login-url
 LOGIN_URL = "account_login"
 
@@ -278,10 +279,13 @@ ADMIN_URL = "admin/"
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
-    "formatters": {"verbose": {"format": "%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s"}},
+    "formatters": {
+        "verbose": {"format": "[%(asctime)s %(levelname)s %(name)s]  %(message)s [%(pathname)s:%(lineno)d]"}
+    },
     "handlers": {"console": {"level": "DEBUG", "class": "logging.StreamHandler", "formatter": "verbose"}},
     "root": {"level": "INFO", "handlers": ["console"]},
     "django": {"level": "INFO", "handlers": ["console"]},
+    # "celery": {"level": "INFO", "handlers": ["console"]},
     "read_comics": {"level": "DEBUG", "handlers": ["console"]},
 }
 
@@ -293,7 +297,12 @@ if USE_TZ:
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-broker_url
 CELERY_BROKER_URL = env("CELERY_BROKER_URL")
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-result_backend
-CELERY_RESULT_BACKEND = CELERY_BROKER_URL
+CELERY_RESULT_BACKEND = env("CELERY_RESULT_BACKEND", default=CELERY_BROKER_URL)
+CELERY_MONGODB_BACKEND_SETTINGS = {
+    "database": "read_comics",
+    "authSource": "read_comics",
+}
+CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-accept_content
 CELERY_ACCEPT_CONTENT = ["json"]
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#std:setting-task_serializer
@@ -306,6 +315,12 @@ CELERY_RESULT_SERIALIZER = "json"
 # CELERY_TASK_SOFT_TIME_LIMIT = 60
 # http://docs.celeryproject.org/en/latest/userguide/configuration.html#beat-scheduler
 CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
+CELERY_TASK_ACKS_LATE = True
+CELERY_TASK_REJECT_ON_WORKER_LOST = True
+CELERY_WORKER_TASK_LOG_FORMAT = (
+    "[%(asctime)s %(levelname)s %(processName)s %(name)s] [%(task_name)s:%(task_id)s]: "
+    "%(message)s [%(pathname)s:%(lineno)d]"
+)
 # django-allauth
 # ------------------------------------------------------------------------------
 ACCOUNT_ALLOW_REGISTRATION = env.bool("DJANGO_ACCOUNT_ALLOW_REGISTRATION", True)
@@ -399,7 +414,8 @@ SILKY_MAX_RESPONSE_BODY_SIZE = 4096
 
 LAST_ACTIVE_TIMEOUT = int(env("LAST_ACTIVE_TIMEOUT", default=300))
 MONGO_URL = env("MONGO_URL")
-COMICVINE_API_KEY = env("COMICVINE_API_KEY")
+COMICVINE_API_KEYS = env.list("COMICVINE_API_KEYS")
+COMICVINE_API_DELAY = env.int("COMICVINE_API_DELAY", default=60)
 
 # Digital Ocean Spaces
 # ------------------------------------------------------------------------------

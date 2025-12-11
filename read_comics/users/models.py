@@ -8,12 +8,12 @@ from django.db.models import Avg, Count, F, Max, Q, QuerySet
 from django.db.models.functions import Trunc
 from django.urls import reverse
 from django.utils.translation import ugettext_lazy as _
-from utils import logging
 from utils.fields import ThumbnailImageField
 from utils.models import ComicvineSyncModel
 
 from read_comics.issues.models import Issue
 from read_comics.story_arcs.models import StoryArc
+from read_comics.utils import logging
 from read_comics.volumes.models import Volume
 
 ModelTypeT = TypeVar("ModelTypeT", bound=ComicvineSyncModel)

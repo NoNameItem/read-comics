@@ -1,10 +1,12 @@
 from datetime import date, datetime, timedelta
 
+from billiard.exceptions import WorkerLostError
 from celery import Task, signature
 from django.conf import settings
 from django.db import IntegrityError, OperationalError
 from django.db.models import Count, Q
 from pymongo import MongoClient
+from pymongo.errors import CursorNotFound
 
 from config import celery_app
 from read_comics.characters.models import Character
@@ -22,8 +24,8 @@ from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue
 
 
 class BaseMissingIssuesTask(Task):
-    autoretry_for = (OperationalError,)
-    retry_kwargs = {"max_retries": None}
+    autoretry_for = (OperationalError, WorkerLostError, CursorNotFound)
+    retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
 
@@ -81,7 +83,7 @@ class BaseMissingIssuesTask(Task):
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate(
+        issues = collection.aggregate(
             [
                 {"$match": self.get_match(obj)},
                 {"$lookup": self.LOOKUP},
@@ -97,6 +99,8 @@ class BaseMissingIssuesTask(Task):
                 {"$project": self.PROJECT},
             ]
         )
+        client.close()
+        return issues  # noqa R504
 
     @staticmethod
     def get_or_create_missing_issue(mongo_missing_issue):
@@ -126,6 +130,7 @@ class BaseMissingIssuesTask(Task):
         else:
             if missing_issue.skip and missing_issue.skip_date < date.today() - timedelta(days=settings.SKIP_DAYS):
                 missing_issue.skip = False
+                missing_issue.skip_date = None
             missing_issue.set_numerical_number()
             missing_issue.save()
             return missing_issue
@@ -136,9 +141,16 @@ class BaseMissingIssuesTask(Task):
 
     def process_mongo_issues(self, obj, mongo_missing_issues):
         for mongo_missing_issue in mongo_missing_issues:
-            missing_issue = self.get_or_create_missing_issue(mongo_missing_issue)
-            if missing_issue:
-                self.add_missing_issue(obj, missing_issue)
+            # Check ignored on insert. Issue/volume/publisher can be marked as ignored between mongo query
+            # start and missing issue processing
+            if (
+                mongo_missing_issue.get("comicvine_id") not in self.get_ignored_issues()
+                and mongo_missing_issue.get("volume_comicvine_id") not in self.get_ignored_volumes()
+                and mongo_missing_issue.get("publisher_comicvine_id") not in self.get_ignored_publishers()
+            ):
+                missing_issue = self.get_or_create_missing_issue(mongo_missing_issue)
+                if missing_issue:
+                    self.add_missing_issue(obj, missing_issue)
 
     def get_objects(self):
         return self.MODEL.objects.annotate(
@@ -175,23 +187,42 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
     MODEL = Publisher
 
     def get_objects(self):
-        return self.MODEL.objects.annotate(
-            issue_count=Count("volumes__issues", distinct=True), watchers_count=Count("watchers", distinct=True)
-        ).filter(Q(issue_count__gt=0) | Q(watchers_count__gt=0))
+        ignored_publishers = list(IgnoredPublisher.objects.values_list("comicvine_id", flat=True))
+
+        return self.MODEL.objects.exclude(comicvine_id__in=ignored_publishers)
 
     @staticmethod
     def check_object(obj):
-        return Issue.objects.filter(volume__publisher=obj).count() > 0 or obj.watchers.count() > 0
+        # True if publisher not ignored
+        return not IgnoredPublisher.objects.filter(comicvine_id=obj.comicvine_id).exists()
+
+    def get_match(self, obj):
+        client = MongoClient(settings.MONGO_URL)
+        db = client.get_default_database()
+        collection = db["comicvine_volumes"]
+
+        volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
+        volume_ids = [volume["id"] for volume in volumes]
+        client.close()
+
+        return {
+            "$and": [
+                {"volume.id": {"$in": volume_ids}},
+                {"id": {"$not": {"$in": self.get_existing_issues(obj)}}},
+                {"id": {"$not": {"$in": self.get_ignored_issues()}}},
+                {"volume.id": {"$not": {"$in": self.get_ignored_volumes()}}},
+            ]
+        }
 
     def get_issues_from_mongo(self, obj):
         client = MongoClient(settings.MONGO_URL)
         db = client.get_default_database()
         collection = db[self.MONGO_COLLECTION]
 
-        return collection.aggregate(
+        issues = collection.aggregate(
             [
-                {"$lookup": self.LOOKUP},
                 {"$match": self.get_match(obj)},
+                {"$lookup": self.LOOKUP},
                 {
                     "$lookup": {
                         "from": "comicvine_publishers",
@@ -203,6 +234,8 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
                 {"$project": self.PROJECT},
             ]
         )
+        client.close()
+        return issues  # noqa R504
 
     @staticmethod
     def get_existing_issues(obj):

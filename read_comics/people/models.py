@@ -4,28 +4,14 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
-from people.tasks import person_comicvine_info_task
-from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
-from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.missing_issues.models import WatchedItem
+from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
-logger = getLogger(__name__ + ".Person")
+from .tasks import person_comicvine_info_task
 
 
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Person(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_people"
     MONGO_PROJECTION = {
@@ -52,8 +38,6 @@ class Person(ImageMixin, ComicvineSyncModel):
         "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,"
         "image,birth,country,death,hometown"
     )
-
-    logger = logger
 
     name = models.TextField(null=True)
     aliases = models.TextField(null=True)

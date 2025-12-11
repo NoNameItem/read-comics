@@ -338,3 +338,6 @@ certs/*
 /.envs/.local/.django_unsafe
 /frontend/eslint-report.json
 /staticfiles/
+/deploy/
+/.envs/.local/.rabbit_unsafe
+/.idea/

@@ -6,7 +6,7 @@ class LocationsSpider(BaseSpider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/locations/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,image,first_appeared_in_issue,start_year&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"
@@ -14,5 +14,5 @@ class LocationsSpider(BaseSpider):
     )
     name = "comicvine_locations"
     DETAIL_FIELD_LIST = (
-        "id,api_detail_url,site_detail_url,name,aliases,deck,description,image," "first_appeared_in_issue,start_year"
+        "id,api_detail_url,site_detail_url,name,aliases,deck,description,image,first_appeared_in_issue,start_year"
     )

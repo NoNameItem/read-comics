@@ -1,11 +1,11 @@
 from celery import shared_task
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
 from spiders.spiders.concepts_spider import ConceptsSpider
 from utils.tasks import BaseComicvineInfoTask, BaseRefreshTask
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
+from read_comics.spiders.scrappyscript import Job, Processor
 
 
 class ConceptComicvineInfoTask(BaseComicvineInfoTask):
@@ -29,5 +29,29 @@ concepts_refresh_task = celery_app.register_task(ConceptsRefreshTask())
 def concepts_increment_update() -> None:
     spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
     p = Processor(settings=spider_settings)
-    j = Job(ConceptsSpider, incremental="Y")
+    j = Job(ConceptsSpider, incremental="Y", skip_existing="N")
+    p.run(j)
+
+
+@shared_task
+def concepts_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(ConceptsSpider, incremental="Y", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def concepts_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(ConceptsSpider, incremental="N", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def concepts_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(ConceptsSpider, incremental="N", skip_existing="N")
     p.run(j)

@@ -4,6 +4,7 @@
 {% load static %}
 
 {% block title %}
+  ({{ paginator.object_list.count|intcomma }})
   {% if obj %}
     {{ obj }} missing issues
   {% else %}

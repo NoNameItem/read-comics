@@ -1,8 +1,8 @@
-import datetime
 import json
 from typing import Callable, List, Optional, Tuple, Union
 
 import scrapy
+from django.utils import timezone
 
 
 class ResourceRequest(scrapy.Request):
@@ -124,7 +124,7 @@ class ImageSpider(scrapy.Spider):
 
         # Follow to detail pages
         for entry in json_res.get("results", []):
-            entry["crawl_date"] = datetime.datetime.now()
+            entry["crawl_date"] = timezone.now()
             item = {"_collection": collection_name, "item": entry}
             yield item
 

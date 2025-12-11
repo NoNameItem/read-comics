@@ -3,15 +3,13 @@ from datetime import datetime
 
 import boto3
 from django.conf import settings
+from django.contrib.postgres.fields import ArrayField
 from django.db import models
 from django.template.defaultfilters import filesizeformat
 from django.utils.encoding import escape_uri_path
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 from slugify import slugify
-from utils.logging import getLogger, methods_logged
-from utils.model_mixins import ImageMixin
-from utils.models import ComicvineSyncModel, slugify_function
 
 from read_comics.characters.models import Character
 from read_comics.concepts.models import Concept
@@ -21,23 +19,11 @@ from read_comics.missing_issues.models import IgnoredIssue, MissingIssue
 from read_comics.objects.models import Object
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
+from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
 from read_comics.volumes.models import Volume
 
-logger = getLogger(__name__ + ".Issue")
 
-
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Issue(ImageMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_issues"
     MONGO_PROJECTION = {
@@ -67,6 +53,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "teams": {"path": "team_credits", "method": "get_team"},
         "disbanded_teams": {"path": "team_disbanded_in", "method": "get_team"},
         "volume": {"path": "volume", "method": "get_volume"},
+        "variant_covers": {"path": "associated_images", "method": "get_variant_covers"},
     }
     COMICVINE_INFO_TASK = issue_comicvine_info_task
     COMICVINE_API_URL = (
@@ -75,11 +62,10 @@ class Issue(ImageMixin, ComicvineSyncModel):
         "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,description,image,"
         "issue_number,cover_date,store_date,character_credits,character_died_in,concept_credits,"
         "location_credits,object_credits,person_credits,story_arc_credits,team_credits,"
-        "team_disbanded_in,volume&"
+        "team_disbanded_in,volume,associated_images&"
         "api_key={api_key}"
     )
-
-    logger = logger
+    COMICVINE_FORCE_DETAIL_INFO = True
 
     name = models.TextField(null=True)
     aliases = models.TextField(null=True)
@@ -93,6 +79,8 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     thumb_url = models.URLField(max_length=1000, null=True)
     image_url = models.URLField(max_length=1000, null=True)
+
+    variant_covers = ArrayField(models.URLField(max_length=1000, null=True), default=list)
 
     characters = models.ManyToManyField("characters.Character", related_name="issues")
     characters_died = models.ManyToManyField("characters.Character", related_name="died_in_issues")
@@ -211,30 +199,31 @@ class Issue(ImageMixin, ComicvineSyncModel):
             return f"{volume_name or self.volume.name} ({volume_start_year or self.volume.start_year}) #{self.number}"
 
     def update_do_metadata(self, volume_name=None, volume_start_year=None):
-        filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}"
-        filename_cleaned = slugify(
-            filename,
-            separator=" ",
-            lowercase=False,
-            hexadecimal=False,
-            regex_pattern=r"[^-a-zA-Z0-9.#*,;]+",
-            replacements=(("/", "*"), (":", "*"), ("½", ".5")),
-        )
-        s3_client = boto3.client(
-            "s3",
-            aws_access_key_id=settings.DO_SPACE_DATA_KEY,
-            aws_secret_access_key=settings.DO_SPACE_DATA_SECRET,
-            region_name=settings.DO_SPACE_DATA_REGION,
-            endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
-        )
-        s3_client.copy_object(
-            Bucket=settings.DO_SPACE_DATA_BUCKET,
-            Key=self.space_key,
-            CopySource={"Bucket": settings.DO_SPACE_DATA_BUCKET, "Key": self.space_key},
-            ContentDisposition='attachment; filename="' + filename_cleaned + '"',
-            MetadataDirective="REPLACE",
-            ACL="public-read",
-        )
+        if self.space_key:
+            filename = f"{self.get_full_name(volume_name, volume_start_year)}.{self.space_key[-3:]}"
+            filename_cleaned = slugify(
+                filename,
+                separator=" ",
+                lowercase=False,
+                hexadecimal=False,
+                regex_pattern=re.compile(r"[^-a-zA-Z0-9.#*,;]+"),
+                replacements=(("/", "*"), (":", "*"), ("½", ".5")),
+            )
+            s3_client = boto3.client(
+                "s3",
+                aws_access_key_id=settings.DO_SPACE_DATA_KEY,
+                aws_secret_access_key=settings.DO_SPACE_DATA_SECRET,
+                region_name=settings.DO_SPACE_DATA_REGION,
+                endpoint_url=settings.DO_SPACE_DATA_ENDPOINT_URL,
+            )
+            s3_client.copy_object(
+                Bucket=settings.DO_SPACE_DATA_BUCKET,
+                Key=self.space_key,
+                CopySource={"Bucket": settings.DO_SPACE_DATA_BUCKET, "Key": self.space_key},
+                ContentDisposition='attachment; filename="' + filename_cleaned + '"',
+                MetadataDirective="REPLACE",
+                ACL="public-read",
+            )
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.comicvine_status == self.ComicvineStatus.MATCHED:
@@ -272,6 +261,13 @@ class Issue(ImageMixin, ComicvineSyncModel):
     @property
     def display_name(self) -> str:
         return self.get_full_name()
+
+    @staticmethod
+    def get_variant_covers(value):
+        if value is None:
+            return []
+
+        return [item["original_url"] for item in value if item.get("original_url")]
 
     @property
     def volume_last_number(self) -> str:

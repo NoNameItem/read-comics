@@ -14,8 +14,7 @@ from read_comics.users.models import User
 
 
 class HasGetIssuesQuerySetProtocol(Protocol):
-    def get_issues_queryset(self, obj: Model, user: User | None = None) -> QuerySet[Issue]:
-        ...
+    def get_issues_queryset(self, obj: Model, user: User | None = None) -> QuerySet[Issue]: ...
 
 
 ModelT = TypeVar("ModelT", bound=Model)

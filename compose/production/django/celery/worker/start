@@ -4,5 +4,4 @@
 #set -o pip0efail
 #set -o nounset
 
-
-celery -A config.celery_app worker -l INFO
+celery -A config.celery_app worker -n ${WORKER_NAME:-celery}@%h -l INFO --autoscale=$AUTOSCALE -Q $QUEUES

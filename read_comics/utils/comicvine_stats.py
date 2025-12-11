@@ -108,6 +108,7 @@ def get_not_comicvine_actual_count(model):
     db = client.get_default_database()
     collection = db[model.MONGO_COLLECTION]
     comicvine_objects = list(collection.find({"id": {"$in": comicvine_ids}}, {"id": 1, "crawl_date": 1}))
+    client.close()
 
     # Counting
     count = 0

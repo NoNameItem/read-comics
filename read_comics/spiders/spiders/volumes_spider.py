@@ -6,7 +6,8 @@ class VolumesSpider(BaseSpider):
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/volumes/?"
         "format=json&"
-        "field_list=api_detail_url,id&"
+        "field_list=id,api_detail_url,site_detail_url,name,aliases,deck,image,first_issue,publisher,last_issue,"
+        "start_year&"
         "sort=id:asc&"
         "offset={offset}&"
         "limit={limit}&"

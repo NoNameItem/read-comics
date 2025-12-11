@@ -5,12 +5,12 @@ from celery import shared_task
 from django.apps import apps
 from django.conf import settings
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
-from spiders.spiders.issues_spider import IssuesSpider
-from utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 import read_comics.spiders.settings as spiders_settings_file
 from config import celery_app
+from read_comics.spiders.scrappyscript import Job, Processor
+from read_comics.spiders.spiders.issues_spider import IssuesSpider
+from read_comics.utils.tasks import BaseComicvineInfoTask, BaseProcessEntryTask, BaseRefreshTask, BaseSpaceTask
 
 
 class IssueProcessEntryTask(BaseProcessEntryTask):
@@ -29,7 +29,7 @@ class IssueProcessEntryTask(BaseProcessEntryTask):
 
     def __init__(self):
         super().__init__()
-        self._key_regexp = re.compile(r"^.* #[^ \[\]]+ \[\d+\]\.cb.$")
+        self._key_regexp = re.compile(r"^.* #[^ \[\]]+ +\[\d+\]\.cb.$")
 
 
 issue_entry_task = celery_app.register_task(IssueProcessEntryTask())
@@ -83,5 +83,29 @@ def purge_deleted():
 def issues_increment_update() -> None:
     spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
     p = Processor(settings=spider_settings)
-    j = Job(IssuesSpider, incremental="Y")
+    j = Job(IssuesSpider, incremental="Y", skip_existing="N")
+    p.run(j)
+
+
+@shared_task
+def issues_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="Y", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def issues_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="N", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def issues_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(IssuesSpider, incremental="N", skip_existing="N")
     p.run(j)

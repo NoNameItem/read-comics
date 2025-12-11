@@ -7,7 +7,7 @@ from django.views import defaults as default_views
 from read_comics.users.api.views import ChangeEmailView, FinishedIssuesStatsView, ProfileView
 
 urlpatterns = [
-    path("", include("read_comics.pages.urls", namespace="pages")),
+    path("", include("read_comics.core.urls", namespace="core")),
     # Django Admin, use {% url 'admin:index' %}
     path(settings.ADMIN_URL, admin.site.urls),
     path("api/auth/", include("dj_rest_auth.urls")),
@@ -43,8 +43,8 @@ if "silk" in settings.INSTALLED_APPS:
     urlpatterns += [path("silk/", include("silk.urls", namespace="silk"))]
 
 if settings.DEBUG:
-    # This allows the error pages to be debugged during development, just visit
-    # these url in browser to see how these error pages look like.
+    # This allows the error core to be debugged during development, just visit
+    # these url in browser to see how these error core look like.
     urlpatterns += [
         path("400/", default_views.bad_request, kwargs={"exception": Exception("Bad Request!")}),
         path("403/", default_views.permission_denied, kwargs={"exception": Exception("Permission Denied")}),

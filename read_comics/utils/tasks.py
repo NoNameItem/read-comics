@@ -6,13 +6,14 @@ from celery import Task, shared_task, signature
 from celery.utils.log import get_task_logger
 from django.apps import apps
 from django.conf import settings
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import DatabaseError, OperationalError
 from pymongo import MongoClient
 from scrapy.settings import Settings
-from scrapyscript import Job, Processor
-from spiders.spiders.full_spider import FullSpider
 
 import read_comics.spiders.settings as spiders_settings_file
+from read_comics.spiders.scrappyscript import Job, Processor
+from read_comics.spiders.spiders.full_spider import FullSpider
 
 
 class WrongKeyFormatError(Exception):
@@ -22,12 +23,13 @@ class WrongKeyFormatError(Exception):
 class BaseSpaceTask(Task):
     PROCESS_ENTRY_TASK = None
     LOGGER_NAME = None
+    priority = 9
 
     def get_processed_keys(self):
         return []
 
     def run(self, *args, **kwargs):
-        self._logger.debug(f"Starting processing prefix {kwargs['prefix']}")
+        self._logger.info(f"Starting processing prefix {kwargs['prefix']}")
         s3objects_collection = self._bucket.objects.filter(Prefix=kwargs["prefix"])
         self.s3result = list(s3objects_collection)
         self.s3objects = [
@@ -42,9 +44,9 @@ class BaseSpaceTask(Task):
                 self.PROCESS_ENTRY_TASK.apply_async(
                     (),
                     {"key": s3object[0], "size": s3object[1], "parent_entry_id": kwargs.get("parent_entry_id")},
-                    priority=0,
+                    priority=8,
                 )
-        self._logger.debug(f"Ended processing prefix {kwargs['prefix']}")
+        self._logger.info(f"Ended processing prefix {kwargs['prefix']}")
 
     def __init__(self):
         session = boto3.session.Session()
@@ -71,10 +73,11 @@ class BaseProcessEntryTask(Task):
     PARENT_ENTRY_APP_LABEL = None
     PARENT_ENTRY_FIELD = None
     MISSING_ISSUES_TASK = None
-    autoretry_for = (DatabaseError,)
+    autoretry_for = (DatabaseError, ObjectDoesNotExist)
     retry_kwargs = {"max_retries": 10}
     retry_backoff = True
     retry_backoff_max = 60
+    priority = 8
 
     def check_key_format(self, key):
         return self._key_regexp.match(key.lower())
@@ -92,11 +95,12 @@ class BaseProcessEntryTask(Task):
         return int(match.group("id"))
 
     def run(self, *args, **kwargs):
-        self._logger.debug(f"Starting processing key {kwargs['key']}")
+        self._logger.info(f"Starting processing key {kwargs['key']}")
         if not self.check_key_format(kwargs["key"]):
             raise WrongKeyFormatError(kwargs["key"])
         comicvine_id = self.get_comicvine_id(kwargs["key"])
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
+        self._logger.info(f"Getting/creating entry by comicvine_id {comicvine_id}")
         instance, created, matched = model.objects.get_or_create_from_comicvine(
             comicvine_id, self.get_defaults(**kwargs), force_refresh=True
         )
@@ -105,10 +109,10 @@ class BaseProcessEntryTask(Task):
             task.delay()
 
         if self.NEXT_LEVEL_TASK is not None:
-            self._logger.debug(f"Creating next level task with prefix {kwargs['key']}")
+            self._logger.info(f"Creating next level task with prefix {kwargs['key']}")
             # self.NEXT_LEVEL_TASK.delay(prefix=kwargs["key"], parent_entry_id=instance.pk)
-            self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=0)
-        self._logger.debug(f"Ended processing key {kwargs['key']}")
+            self.NEXT_LEVEL_TASK.apply_async((), {"prefix": kwargs["key"], "parent_entry_id": instance.pk}, priority=9)
+        self._logger.info(f"Ended processing key {kwargs['key']}")
 
     def __init__(self):
         self._id_regexp = re.compile(r"^.*\[(?P<id>\d+)\](\/|.cb.)$")
@@ -118,7 +122,7 @@ class BaseProcessEntryTask(Task):
 class BaseComicvineInfoTask(Task):
     MODEL_NAME = None
     APP_LABEL = None
-    autoretry_for = (OperationalError,)
+    autoretry_for = (OperationalError, DatabaseError)
     retry_kwargs = {"max_retries": None}
     retry_backoff = True
     retry_backoff_max = 60
@@ -126,22 +130,28 @@ class BaseComicvineInfoTask(Task):
 
     def run(self, *args, **kwargs):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
-        pk = kwargs["pk"]
+        pk = kwargs.pop("pk")
         obj = model.objects.get(pk=pk)
-        if not obj.comicvine_actual:
-            obj.fill_from_comicvine(kwargs["follow_m2m"])
+        if kwargs.get("force_api_refresh") or not obj.comicvine_actual:
+            obj.fill_from_comicvine(**kwargs)
             obj.save()
             if self.MISSING_ISSUES_TASK and (obj.issues.count() > 0 or obj.watchers.count() > 0):
                 task = signature(self.MISSING_ISSUES_TASK, kwargs={"pk": obj.pk})
                 task.delay()
 
-    def on_failure(self, exc, task_id, args, kwargs, einfo):
+    def _set_not_matched(self, kwargs):
         model = apps.get_model(self.APP_LABEL, self.MODEL_NAME)
         pk = kwargs["pk"]
         obj = model.objects.get(pk=pk)
         if obj.comicvine_status != model.ComicvineStatus.MATCHED:
             obj.comicvine_status = model.ComicvineStatus.NOT_MATCHED
             obj.save()
+
+    def on_failure(self, exc, task_id, args, kwargs, einfo):
+        self._set_not_matched(kwargs)
+
+    def on_retry(self, exc, task_id, args, kwargs, einfo):
+        self._set_not_matched(kwargs)
 
 
 class BaseRefreshTask(Task):
@@ -166,6 +176,7 @@ class BaseRefreshTask(Task):
         db = client.get_default_database()
         collection = db[model.MONGO_COLLECTION]
         comicvine_objects = list(collection.find({"id": {"$in": comicvine_ids}}, {"id": 1, "crawl_date": 1}))
+        client.close()
 
         # Starting get data tasks
         for comicvine_object in comicvine_objects:
@@ -184,4 +195,28 @@ def full_increment_update() -> None:
     spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
     p = Processor(settings=spider_settings)
     j = Job(FullSpider, incremental="Y")
+    p.run(j)
+
+
+@shared_task
+def full_skip_existing_increment_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="Y", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def full_skip_existing_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="N", skip_existing="Y")
+    p.run(j)
+
+
+@shared_task
+def full_update() -> None:
+    spider_settings = Settings(values=dict(list(spiders_settings_file.__dict__.items())[11:]))
+    p = Processor(settings=spider_settings)
+    j = Job(FullSpider, incremental="N", skip_existing="N")
     p.run(j)

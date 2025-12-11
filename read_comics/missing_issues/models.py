@@ -6,6 +6,17 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 
 
+class Locks(models.Model):
+    code = models.CharField(max_length=100, unique=True)
+    dttm = models.DateTimeField(null=True)
+
+
+class APIQueue(models.Model):
+    endpoint = models.TextField()
+    comicvine_id = models.IntegerField()
+    added_in_queue = models.DateTimeField(auto_now_add=True)
+
+
 # Create your models here.
 class IgnoredPublisher(models.Model):
     comicvine_id = models.IntegerField(unique=True)

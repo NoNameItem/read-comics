@@ -1,9 +1,10 @@
+from time import sleep
+
+from celery.utils.log import get_task_logger
 from django.db import IntegrityError, models
 from django.db.models.manager import BaseManager
 
-from . import logging
-
-logger = logging.getLogger(__name__)
+logger = get_task_logger("ComicvineSyncManager")
 
 
 class ComicvineSyncQuerySet(models.QuerySet):
@@ -31,13 +32,16 @@ class ComicvineSyncQuerySet(models.QuerySet):
         try:
             instance, created = self.get_or_create(comicvine_id=comicvine_id, defaults=defaults)
         except IntegrityError:
+            sleep(10)
             instance = self.get(comicvine_id=comicvine_id)
             created = False
-        logger.debug(f"Found: {not created}")
+        logger.info(
+            f"{type(instance).__name__} with comicvine_id `{comicvine_id}` {'found' if not created else 'created'}"
+        )
         if (created or (force_refresh and not instance.comicvine_actual)) and (
             instance.comicvine_status != instance.ComicvineStatus.QUEUED
         ):
-            logger.debug("Refreshing from comicvine")
+            logger.info(f"Refreshing from comicvine {type(instance).__name__} with comicvine_id `{comicvine_id}`")
             instance.fill_from_comicvine(follow_m2m, delay)
             instance.save()
         return instance, created, (instance.comicvine_status == instance.ComicvineStatus.MATCHED)

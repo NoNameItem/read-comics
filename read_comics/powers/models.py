@@ -1,25 +1,12 @@
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
-from powers.tasks import power_comicvine_info_task
-from utils.logging import getLogger, methods_logged
-from utils.models import ComicvineSyncModel, slugify_function
 
-logger = getLogger(__name__ + ".Power")
+from read_comics.utils.models import ComicvineSyncModel, slugify_function
+
+from .tasks import power_comicvine_info_task
 
 
-@methods_logged(
-    logger,
-    methods=[
-        "fill_from_comicvine",
-        "process_document",
-        "get_field_mapping",
-        "_fill_field_from_document",
-        "_set_non_m2m_from_document",
-        "_get_value_by_path",
-        "_set_m2m_from_document",
-    ],
-)
 class Power(ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_powers"
     MONGO_PROJECTION = {
@@ -34,8 +21,6 @@ class Power(ComicvineSyncModel):
         "api_key={api_key}&"
         "format=json&field_list=id,api_detail_url,site_detail_url,name,aliases,description"
     )
-
-    logger = logger
 
     name = models.TextField()
     aliases = models.TextField(null=True)

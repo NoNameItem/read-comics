@@ -36,11 +36,11 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Build container image
-        run: docker build --build-arg FONTAWESOME_AUTH_TOKEN=${{ secrets.FONTAWESOME_NPM_AUTH_TOKEN }} -f ${{ inputs.dockerfile }} -t cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} ${{ inputs.context }}
+        run: docker build -f ${{ inputs.dockerfile }} -t cr.yandex/crp2m71jbo1s20lvf839/${{ inputs.image_name }}:${{ inputs.release }} .
 
       - name: Tag as latest
         if: inputs.tag_latest
-        run: docker tag cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:${{ inputs.release }} cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}:latest
+        run: docker tag cr.yandex/crp2m71jbo1s20lvf839/${{ inputs.image_name }}:${{ inputs.release }} cr.yandex/crp2m71jbo1s20lvf839/${{ inputs.image_name }}:latest
 
       - name: Yandex Cloud CR "Login" Action for GitHub Actions
         uses: yc-actions/yc-cr-login@v1
@@ -48,4 +48,4 @@ jobs:
           yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
       - name: Push image to Yandex Cloud Container Registry
-        run: docker push -a cr.yandex/crpkef6i6mmeq12lo3i7/${{ inputs.image_name }}
+        run: docker push -a cr.yandex/crp2m71jbo1s20lvf839/${{ inputs.image_name }}

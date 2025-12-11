@@ -22,12 +22,6 @@ class MongoPipeline:
         if not item.get("skip"):
             self._mongo_collection.update_one({"id": item["id"]}, {"$set": dict(item)}, upsert=True)
             self._mongo_client.close()
-            return {
-                "id": item["id"],
-                "api_detail_url": item["api_detail_url"],
-                "crawl_date": item["crawl_date"],
-                "name": item.get("name"),
-            }
         else:
             self._mongo_client.close()
-            return item
+        return {"id": item["id"]}

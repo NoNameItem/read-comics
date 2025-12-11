@@ -6,7 +6,7 @@
   "packages": {
     ".": {
       "release-type": "python",
-      "exclude-paths": ["docs", "compose",".envs" ]
+      "exclude-paths": ["docs",".envs" ]
     }
   },
   "extra-files": [
