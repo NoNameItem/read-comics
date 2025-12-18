@@ -7,7 +7,7 @@ volumes:
 
 
 services:
-  django: &django
+  backend: &backend
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
@@ -108,7 +108,7 @@ services:
       - "5672:5672"   # Default RabbitMQ Port
 
   celeryworker:
-    <<: *django
+    <<: *backend
     image: read_comics_local_celeryworker
     container_name: celeryworker
     depends_on:
@@ -134,7 +134,7 @@ services:
   #    command: /start-celerybeat
 
   flower:
-    <<: *django
+    <<: *backend
     image: read_comics_local_flower
     container_name: flower
     ports:
