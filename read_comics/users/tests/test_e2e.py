@@ -3,9 +3,9 @@ from datetime import timedelta
 import pytest
 from allauth.account.models import EmailAddress
 from django.utils import timezone
-from factory import Iterator
 from rest_framework.test import APIClient
 
+from read_comics.issues.models import FinishedIssue
 from read_comics.issues.tests.factories import FinishedIssueFactory
 from read_comics.users.models import User
 from read_comics.users.tests.factories import UserFactory
@@ -91,7 +91,9 @@ class TestFinishedIssuesStatsView:
     @staticmethod
     def test_returns_stats(authenticated_api_client: APIClient, user: User) -> None:
         today = timezone.now()
-        FinishedIssueFactory.create_batch(2, user=user, finish_date=Iterator([today, today - timedelta(days=1)]))
+        finished = FinishedIssueFactory.create_batch(2, user=user)
+        FinishedIssue.objects.filter(id=finished[0].id).update(finish_date=today)
+        FinishedIssue.objects.filter(id=finished[1].id).update(finish_date=today - timedelta(days=1))
 
         response = authenticated_api_client.get("/api/profile/finished-stats/")
 

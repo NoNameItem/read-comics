@@ -1,6 +1,7 @@
 import sys
 
 import pytest
+from django.utils import timezone
 from rest_framework.test import APIClient
 from utils.utils import flatten_dict
 
@@ -360,6 +361,6 @@ class TestIssueTechnicalInfo:
         assert response.data["id"] == issue.id
         assert response.data["comicvine_id"] == issue.comicvine_id
         assert response.data["comicvine_status"] == issue.get_comicvine_status_display()
-        assert response.data["comicvine_last_match"] == issue.comicvine_last_match.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        assert response.data["created_dt"] == issue.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        assert response.data["modified_dt"] == issue.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["comicvine_last_match"] == timezone.localtime(issue.comicvine_last_match).isoformat()
+        assert response.data["created_dt"] == timezone.localtime(issue.created_dt).isoformat()
+        assert response.data["modified_dt"] == timezone.localtime(issue.modified_dt).isoformat()

@@ -3,6 +3,7 @@ from datetime import date
 
 import pytest
 from django.db.models import Count
+from django.utils import timezone
 from rest_framework.test import APIClient
 from utils.utils import flatten_dict
 
@@ -236,11 +237,12 @@ class TestCharacterTechnicalInfo:
         assert response.data["id"] == character_no_issues.id
         assert response.data["comicvine_id"] == character_no_issues.comicvine_id
         assert response.data["comicvine_status"] == character_no_issues.get_comicvine_status_display()
-        assert response.data["comicvine_last_match"] == character_no_issues.comicvine_last_match.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f%:z"
+        assert (
+            response.data["comicvine_last_match"]
+            == timezone.localtime(character_no_issues.comicvine_last_match).isoformat()
         )
-        assert response.data["created_dt"] == character_no_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%:z")
-        assert response.data["modified_dt"] == character_no_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%:z")
+        assert response.data["created_dt"] == timezone.localtime(character_no_issues.created_dt).isoformat()
+        assert response.data["modified_dt"] == timezone.localtime(character_no_issues.modified_dt).isoformat()
 
     @staticmethod
     def test_ordering_by_volumes_count_descending(

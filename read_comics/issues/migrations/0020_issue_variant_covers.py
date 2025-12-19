@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('issues', '0020_alter_issueperson_role'),
+        ('issues', '0019_alter_finishedissue_finish_date'),
     ]
 
     operations = [

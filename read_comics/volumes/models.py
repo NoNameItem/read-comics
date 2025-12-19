@@ -121,6 +121,8 @@ class Volume(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel
         IgnoredIssue.objects.filter(volume_comicvine_id=self.comicvine_id).delete()
 
     def update_issues_do_metadata(self):
+        if not self._is_pk_set():
+            return
         for issue in self.issues.all():
             issue.update_do_metadata(self.name, self.start_year)
 

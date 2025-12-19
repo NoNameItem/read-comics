@@ -2,6 +2,7 @@ import sys
 
 import pytest
 from django.db.models import Count
+from django.utils import timezone
 from rest_framework.test import APIClient
 
 from read_comics.concepts.models import Concept
@@ -217,8 +218,9 @@ class TestConceptTechnicalInfo:
         assert response.data["id"] == concept_no_issues.id
         assert response.data["comicvine_id"] == concept_no_issues.comicvine_id
         assert response.data["comicvine_status"] == concept_no_issues.get_comicvine_status_display()
-        assert response.data["comicvine_last_match"] == concept_no_issues.comicvine_last_match.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f%z"
+        assert (
+            response.data["comicvine_last_match"]
+            == timezone.localtime(concept_no_issues.comicvine_last_match).isoformat()
         )
-        assert response.data["created_dt"] == concept_no_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        assert response.data["modified_dt"] == concept_no_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["created_dt"] == timezone.localtime(concept_no_issues.created_dt).isoformat()
+        assert response.data["modified_dt"] == timezone.localtime(concept_no_issues.modified_dt).isoformat()

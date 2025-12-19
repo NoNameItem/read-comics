@@ -2,6 +2,7 @@ import sys
 
 import pytest
 from django.db.models import Count
+from django.utils import timezone
 from rest_framework.test import APIClient
 from utils.utils import flatten_dict
 
@@ -217,8 +218,9 @@ class TestLocationTechnicalInfo:
         assert response.data["id"] == location_with_issues.id
         assert response.data["comicvine_id"] == location_with_issues.comicvine_id
         assert response.data["comicvine_status"] == location_with_issues.get_comicvine_status_display()
-        assert response.data["comicvine_last_match"] == location_with_issues.comicvine_last_match.strftime(
-            "%Y-%m-%dT%H:%M:%S.%f%z"
+        assert (
+            response.data["comicvine_last_match"]
+            == timezone.localtime(location_with_issues.comicvine_last_match).isoformat()
         )
-        assert response.data["created_dt"] == location_with_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
-        assert response.data["modified_dt"] == location_with_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["created_dt"] == timezone.localtime(location_with_issues.created_dt).isoformat()
+        assert response.data["modified_dt"] == timezone.localtime(location_with_issues.modified_dt).isoformat()

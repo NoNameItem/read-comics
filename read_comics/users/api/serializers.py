@@ -66,6 +66,12 @@ class ProfileSerializer(serializers.ModelSerializer):
     images = ThumbnailImageField(source="_user_image", allow_null=True)
     gender = NestedChoiceField(User.Gender.choices)
 
+    def to_internal_value(self, data: Any) -> dict:
+        unknown = set(data.keys()) - set(self.fields.keys())
+        if unknown:
+            raise serializers.ValidationError({field: ["Unknown field."] for field in unknown})
+        return super().to_internal_value(data)
+
     class Meta:
         model = User
         fields = [
@@ -93,10 +99,11 @@ class ChangeEmailSerializer(serializers.ModelSerializer):
                 validator.message = "User with this e-mail address already exists."
 
     def update(self, instance: EmailAddress, validated_data: Any) -> EmailAddress:
-        request = self.context["request"]
         email = validated_data["email"]
         if instance.email != email:
-            instance.change(request, email)
+            instance.email = email
+            instance.verified = False
+            instance.save(update_fields=["email", "verified"])
         return instance
 
     class Meta:

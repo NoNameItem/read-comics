@@ -1,4 +1,3 @@
-from datetime import date
 from typing import TypeVar
 
 from allauth.account.models import EmailAddress
@@ -7,7 +6,8 @@ from django.db import models
 from django.db.models import Avg, Count, F, Max, Q, QuerySet
 from django.db.models.functions import Trunc
 from django.urls import reverse
-from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from utils.fields import ThumbnailImageField
 from utils.models import ComicvineSyncModel
 
@@ -107,7 +107,7 @@ class User(AbstractUser):
 
     @property
     def today_finished_count(self) -> int:
-        return self.finished.filter(finish_date__date=date.today()).count()
+        return self.finished.filter(finish_date__date=timezone.now()).count()
 
     @property
     def reading_speed(self) -> int:
