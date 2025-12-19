@@ -4,13 +4,13 @@ from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 
 from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, WatchedItem
-from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.model_mixins import AliasesListMixin, DownloadSizeMixin, ImageMixin
 from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
 from .tasks import volume_comicvine_info_task
 
 
-class Volume(ImageMixin, ComicvineSyncModel):
+class Volume(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_volumes"
     MONGO_PROJECTION = {
         "characters": 0,

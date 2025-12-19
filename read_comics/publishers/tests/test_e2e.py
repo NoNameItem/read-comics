@@ -29,6 +29,12 @@ class TestPublishersCount:
         assert response.status_code == 200
         assert response.data["count"] == len(publishers_with_volumes) + len(publishers_no_volumes)
 
+    @staticmethod
+    def test_empty_database(api_client: APIClient) -> None:
+        response = api_client.get("/api/publishers/count/")
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+
 
 class TestPublishersList:
     list_keys = {"slug", "image", "name", "short_description", "issues_count", "volumes_count"}
@@ -73,3 +79,90 @@ class TestPublishersList:
             == Issue.objects.filter(volume__in=publisher_with_volumes.volumes.all()).count()
         )
         assert response_data["volumes_count"] == publisher_with_volumes.volumes.count()
+
+    @staticmethod
+    def test_empty_database(api_client: APIClient) -> None:
+        response = api_client.get("/api/publishers/")
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+        assert response.data["results"] == []
+
+    @staticmethod
+    def test_default_ordering_by_name(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        response = api_client.get("/api/publishers/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(publishers_with_volumes)
+
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_ascending(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        response = api_client.get("/api/publishers/?ordering=name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_descending(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        response = api_client.get("/api/publishers/?ordering=-name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_issues_count_ascending(
+        api_client: APIClient, publishers_with_volumes: list[Publisher]
+    ) -> None:
+        response = api_client.get("/api/publishers/?ordering=issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts)
+
+    @staticmethod
+    def test_ordering_by_issues_count_descending(
+        api_client: APIClient, publishers_with_volumes: list[Publisher]
+    ) -> None:
+        response = api_client.get("/api/publishers/?ordering=-issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_ascending(
+        api_client: APIClient, publishers_with_volumes: list[Publisher]
+    ) -> None:
+        response = api_client.get("/api/publishers/?ordering=volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_descending(
+        api_client: APIClient, publishers_with_volumes: list[Publisher]
+    ) -> None:
+        response = api_client.get("/api/publishers/?ordering=-volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts, reverse=True)
+
+    @staticmethod
+    def test_invalid_ordering_field(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        response = api_client.get("/api/publishers/?ordering=invalid_field")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_pagination_invalid_page(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        response = api_client.get("/api/publishers/?page=999")
+
+        assert response.status_code == 404

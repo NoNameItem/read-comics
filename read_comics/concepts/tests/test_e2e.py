@@ -1,9 +1,11 @@
+import sys
+
 import pytest
 from django.db.models import Count
 from rest_framework.test import APIClient
-from utils.utils import flatten_dict
 
 from read_comics.concepts.models import Concept
+from read_comics.utils.utils import flatten_dict
 
 pytestmark = pytest.mark.django_db
 
@@ -73,6 +75,78 @@ class TestConceptsList:
             == concept_with_issues.issues.aggregate(v=Count("volume", distinct=True))["v"]
         )
 
+    @staticmethod
+    def test_default_ordering_by_name(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(concepts_with_issues)
+
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_ascending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_descending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=-name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_issues_count_ascending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts)
+
+    @staticmethod
+    def test_ordering_by_issues_count_descending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=-issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_ascending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_descending(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=-volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts, reverse=True)
+
+    @staticmethod
+    def test_invalid_ordering_field(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?ordering=invalid_field")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_pagination_invalid_page(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?page=999")
+
+        assert response.status_code == 404
+
 
 class TestConceptDetail:
     @staticmethod
@@ -107,6 +181,12 @@ class TestConceptDetail:
         assert response.data["first_issue_slug"] is None
         assert response.data["download_size"] == "0\xa0bytes"
 
+    @staticmethod
+    def test_not_found(api_client: APIClient) -> None:
+        response = api_client.get("/api/concepts/does-not-exist/")
+
+        assert response.status_code == 404
+
 
 class TestConceptTechnicalInfo:
     @staticmethod
@@ -128,6 +208,7 @@ class TestConceptTechnicalInfo:
         assert response.status_code == 200
 
     @staticmethod
+    @pytest.mark.skipif(sys.version_info < (3, 12), reason="requires Python 3.12 or later")
     def test_superuser(superuser_api_client: APIClient, concept_no_issues: Concept) -> None:
         response = superuser_api_client.get(f"/api/concepts/{concept_no_issues.slug}/technical-info/")
 
@@ -137,7 +218,7 @@ class TestConceptTechnicalInfo:
         assert response.data["comicvine_id"] == concept_no_issues.comicvine_id
         assert response.data["comicvine_status"] == concept_no_issues.get_comicvine_status_display()
         assert response.data["comicvine_last_match"] == concept_no_issues.comicvine_last_match.strftime(
-            "%Y-%m-%dT%H:%M:%SZ"
+            "%Y-%m-%dT%H:%M:%S.%f%z"
         )
-        assert response.data["created_dt"] == concept_no_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        assert response.data["modified_dt"] == concept_no_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        assert response.data["created_dt"] == concept_no_issues.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["modified_dt"] == concept_no_issues.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")

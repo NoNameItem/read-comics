@@ -11,6 +11,7 @@ Welcome to ReadComics.net's documentation!
    :caption: Contents:
 
    howto
+   architecture
    pycharm/configuration
    users
 

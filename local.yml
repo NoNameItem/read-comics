@@ -31,30 +31,30 @@ services:
     command: /start
 
   postgres:
-    image: postgres:15.2
+    image: postgres:18.1
     container_name: postgres
     volumes:
-      - local_postgres_data:/var/lib/postgresql/data:Z
+      - local_postgres_data:/var/lib/postgresql:Z
     env_file:
       - ./.envs/.local/.postgres
     ports:
       - "5432:5432"
 
-  #  docs:
-  #    image: read_comics_local_docs
-  #    container_name: docs
-  #    build:
-  #      context: .
-  #      dockerfile: ./compose/local/docs/Dockerfile
-  #    env_file:
-  #      - ./.envs/.local/.django
-  #    volumes:
-  #      - ./docs:/docs:z
-  #      - ./config:/app/config:z
-  #      - ./read_comics:/app/read_comics:z
-  #    ports:
-  #      - "7001:7001"
-  #    command: /start-docs
+  docs:
+    image: read_comics_local_docs
+    container_name: docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/.local/.django
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./read_comics:/app/read_comics:z
+    ports:
+      - "7001:7001"
+    command: /start-docs
   mongodb:
     image: mongo:8.0.4
     container_name: mongodb

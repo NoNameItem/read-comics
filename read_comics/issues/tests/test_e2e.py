@@ -1,3 +1,5 @@
+import sys
+
 import pytest
 from rest_framework.test import APIClient
 from utils.utils import flatten_dict
@@ -77,6 +79,15 @@ class TestIssuesList:
             assert response_issue["is_finished"] is None
 
     @staticmethod
+    def test_hide_finished_anonymous_includes_all(
+        api_client: APIClient, issues: list[Issue], finished_issues: list[Issue]
+    ) -> None:
+        response = api_client.get("/api/issues/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(issues) + len(finished_issues)
+
+    @staticmethod
     def test_data(api_client: APIClient, issue: Issue) -> None:
         response = api_client.get("/api/issues/")
 
@@ -95,6 +106,19 @@ class TestIssuesList:
         assert response_data["volume"]["name"] == (issue.volume.name if issue.volume else None)
         assert response_data["volume"]["slug"] == (issue.volume.slug if issue.volume else None)
         assert response_data["volume"]["start_year"] == (issue.volume.start_year if issue.volume else None)
+
+    @staticmethod
+    def test_invalid_ordering_field_falls_back(api_client: APIClient, issues: list[Issue]) -> None:
+        response = api_client.get("/api/issues/?ordering=invalid_field")
+
+        assert response.status_code == 200
+        expected_slugs = list(
+            Issue.objects.was_matched()
+            .order_by("cover_date", "volume__name", "volume__start_year", "numerical_number", "number")
+            .values_list("slug", flat=True)
+        )
+        response_slugs = [item["slug"] for item in response.data["results"]]
+        assert response_slugs == expected_slugs[: len(response_slugs)]
 
 
 class TestIssueDetail:
@@ -117,6 +141,50 @@ class TestIssueDetail:
         assert response.data["number"] == issue.number
         assert response.data["download_link"] == issue.download_link
         assert response.data["download_size"] == issue.download_size
+
+    @staticmethod
+    def test_number_in_sublist_and_total(api_client: APIClient, issues: list[Issue]) -> None:
+        ordered_issues = Issue.objects.was_matched().order_by(
+            "cover_date", "volume__name", "volume__start_year", "numerical_number", "number"
+        )
+        target_issue = ordered_issues[1]
+
+        response = api_client.get(
+            f"/api/issues/{target_issue.slug}/"
+            f"?ordering=cover_date,volume__name,volume__start_year,numerical_number,number"
+        )
+
+        assert response.status_code == 200
+        assert response.data["number_in_sublist"] == 2
+        assert response.data["total_in_sublist"] == ordered_issues.count()
+
+    @staticmethod
+    def test_prev_next_slug_bounds(api_client: APIClient, issues: list[Issue]) -> None:
+        ordered_issues = Issue.objects.was_matched().order_by(
+            "cover_date", "volume__name", "volume__start_year", "numerical_number", "number"
+        )
+        first_issue = ordered_issues[0]
+        last_issue = ordered_issues[ordered_issues.count() - 1]
+
+        response_first = api_client.get(
+            f"/api/issues/{first_issue.slug}/"
+            f"?ordering=cover_date,volume__name,volume__start_year,numerical_number,number"
+        )
+        response_last = api_client.get(
+            f"/api/issues/{last_issue.slug}/"
+            f"?ordering=cover_date,volume__name,volume__start_year,numerical_number,number"
+        )
+
+        assert response_first.status_code == 200
+        assert response_last.status_code == 200
+        assert response_first.data["prev_issue_slug"] is None
+        assert response_last.data["next_issue_slug"] is None
+
+    @staticmethod
+    def test_not_found(api_client: APIClient) -> None:
+        response = api_client.get("/api/issues/does-not-exist/")
+
+        assert response.status_code == 404
 
     @staticmethod
     def test_anonymous_finished_flg_not_finished(api_client: APIClient, issue: Issue) -> None:
@@ -283,6 +351,7 @@ class TestIssueTechnicalInfo:
         assert response.status_code == 200
 
     @staticmethod
+    @pytest.mark.skipif(sys.version_info < (3, 12), reason="requires Python 3.12 or later")
     def test_superuser(superuser_api_client: APIClient, issue: Issue) -> None:
         response = superuser_api_client.get(f"/api/issues/{issue.slug}/technical-info/")
 
@@ -291,6 +360,6 @@ class TestIssueTechnicalInfo:
         assert response.data["id"] == issue.id
         assert response.data["comicvine_id"] == issue.comicvine_id
         assert response.data["comicvine_status"] == issue.get_comicvine_status_display()
-        assert response.data["comicvine_last_match"] == issue.comicvine_last_match.strftime("%Y-%m-%dT%H:%M:%SZ")
-        assert response.data["created_dt"] == issue.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
-        assert response.data["modified_dt"] == issue.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%fZ")
+        assert response.data["comicvine_last_match"] == issue.comicvine_last_match.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["created_dt"] == issue.created_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")
+        assert response.data["modified_dt"] == issue.modified_dt.strftime("%Y-%m-%dT%H:%M:%S.%f%z")

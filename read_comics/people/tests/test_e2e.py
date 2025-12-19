@@ -24,6 +24,12 @@ class TestPeopleCount:
         assert response.status_code == 200
         assert response.data["count"] == len(people_with_issues) + len(people_no_issues)
 
+    @staticmethod
+    def test_empty_database(api_client: APIClient) -> None:
+        response = api_client.get("/api/people/count/")
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+
 
 class TestPeopleList:
     list_keys = {"slug", "image", "name", "short_description", "issues_count", "volumes_count"}
@@ -67,3 +73,82 @@ class TestPeopleList:
         assert (
             response_data["volumes_count"] == person_with_issues.issues.aggregate(v=Count("volume", distinct=True))["v"]
         )
+
+    @staticmethod
+    def test_empty_database(api_client: APIClient) -> None:
+        response = api_client.get("/api/people/")
+        assert response.status_code == 200
+        assert response.data["count"] == 0
+        assert response.data["results"] == []
+
+    @staticmethod
+    def test_default_ordering_by_name(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/")
+
+        assert response.status_code == 200
+        assert response.data["count"] == len(people_with_issues)
+
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_ascending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_ordering_by_name_descending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=-name")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_issues_count_ascending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts)
+
+    @staticmethod
+    def test_ordering_by_issues_count_descending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=-issues_count")
+
+        assert response.status_code == 200
+        issues_counts = [item["issues_count"] for item in response.data["results"]]
+        assert issues_counts == sorted(issues_counts, reverse=True)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_ascending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts)
+
+    @staticmethod
+    def test_ordering_by_volumes_count_descending(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=-volumes_count")
+
+        assert response.status_code == 200
+        volumes_counts = [item["volumes_count"] for item in response.data["results"]]
+        assert volumes_counts == sorted(volumes_counts, reverse=True)
+
+    @staticmethod
+    def test_invalid_ordering_field(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?ordering=invalid_field")
+
+        assert response.status_code == 200
+        names = [item["name"] for item in response.data["results"]]
+        assert names == sorted(names)
+
+    @staticmethod
+    def test_pagination_invalid_page(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        response = api_client.get("/api/people/?page=999")
+
+        assert response.status_code == 404
