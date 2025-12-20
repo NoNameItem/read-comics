@@ -1,4 +1,4 @@
-exclude: "^docs/|/migrations/|.idea/"
+exclude: "^docs/|/migrations/|.idea/frontend/frontend_old"
 default_stages: [commit]
 
 repos:
