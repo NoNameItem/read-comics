@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/api/serializer_fields.md]]
 from typing import OrderedDict
 
 from django.forms import ImageField as DjangoImageField

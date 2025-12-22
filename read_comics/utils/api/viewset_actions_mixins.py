@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/api/viewset_actions_mixins.md]]
 import typing
 
 from django.core.exceptions import ImproperlyConfigured
