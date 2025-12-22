@@ -50,3 +50,6 @@
 ## AI Assistant Settings
 - Model: Codex (GPT-5 based).
 - Approval mode: on-request.
+
+## Documentation Style
+- Follow the doc-style described in `docs/doc-style.md`.

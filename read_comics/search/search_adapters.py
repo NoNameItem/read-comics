@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/search/search_adapters.md]]
 from watson.search import SearchAdapter
 
 

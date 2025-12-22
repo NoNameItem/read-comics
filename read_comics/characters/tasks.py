@@ -1,3 +1,4 @@
+# Docs: [[tasks.md]]
 from celery import shared_task
 from scrapy.settings import Settings
 from utils.tasks import BaseComicvineInfoTask, BaseRefreshTask

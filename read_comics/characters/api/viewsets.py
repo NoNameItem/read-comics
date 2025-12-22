@@ -1,5 +1,6 @@
 # Docs: [[docs/backend/api-endpoints.md]]
-# Docs: [[docs/backend/characters/endpoints.md]]
+# Docs: [[docs/backend/characters/api/endpoints.md]]
+# Docs: [[docs/backend/characters/api/viewsets.md]]
 from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import DetailSerializerMixin
