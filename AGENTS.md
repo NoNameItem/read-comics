@@ -4,7 +4,6 @@
 - `read_comics/` contains Django apps (e.g., `issues/`, `spiders/`, `users/`) plus shared utilities and templates.
 - `config/` holds Django settings, URLs, WSGI, and Celery app wiring.
 - `frontend/` is the Nuxt 3 client with pages, components, stores, and assets.
-- `docs/` contains Sphinx documentation sources; `compose/` and `local.yml` support Docker workflows.
 - `requirements/` and `pyproject.toml` define Python dependencies and tooling; `staticfiles/` stores collected static assets.
 
 ## Build, Test, and Development Commands
@@ -20,7 +19,6 @@
   - `pnpm dev` starts the Nuxt dev server.
   - `pnpm build` builds for production; `pnpm preview` serves the build.
   - `pnpm lint`/`pnpm lint:check` run ESLint.
-- Docs: `docker-compose -f local.yml up docs` builds and serves Sphinx docs; `docker run --rm docs make apidocs` regenerates API docs.
 
 ## Coding Style & Naming Conventions
 - Python: Black with 120-char lines, flake8 and isort configured in `setup.cfg`; prefer double quotes.
@@ -38,3 +36,17 @@
 
 ## Configuration Notes
 - Django settings live in `config/settings/`; environment-driven values (Celery, email, etc.) are expected for local and production runs.
+
+## Project Tracking
+- Jira project key: `RC`.
+- Jira base URL: https://nonameitem.atlassian.net.
+
+## DRF Migration
+- See `DRF_MIGRATION_URL_MAP.md` for the current Django → DRF URL map and status.
+
+## Django Pages
+- See `DJANGO_PAGES_MAP.md` for the current Django-rendered pages and page blocks.
+
+## AI Assistant Settings
+- Model: Codex (GPT-5 based).
+- Approval mode: on-request.

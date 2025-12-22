@@ -1,52 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module type="PYTHON_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="django" name="Django">
-      <configuration>
-        <option name="rootFolder" value="$MODULE_DIR$" />
-        <option name="settingsModule" value="config/settings/local.py" />
-        <option name="manageScript" value="$MODULE_DIR$/manage.py" />
-        <option name="environment" value="&lt;map/&gt;" />
-        <option name="doNotUseTestRunner" value="false" />
-        <option name="trackFilePattern" value="migrations" />
-      </configuration>
-    </facet>
-  </component>
-  <component name="NewModuleRootManager">
-    <content url="file://$MODULE_DIR$">
-      <sourceFolder url="file://$MODULE_DIR$/read_comics" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/frontend_old" isTestSource="false" />
-    </content>
-    <orderEntry type="jdk" jdkName="Remote Python 3.10.13 Docker Compose (django at [/Users/artem.vasin/Coding/python/read_comics/local.yml])" jdkType="Python SDK" />
-    <orderEntry type="sourceFolder" forTests="false" />
-  </component>
+<module version="4">
   <component name="PyDocumentationSettings">
     <option name="format" value="PLAIN" />
     <option name="myDocStringFormat" value="Plain" />
-  </component>
-  <component name="SonarLintModuleSettings">
-    <option name="uniqueId" value="8c5a9453-721f-42a3-9889-a39f1e3425d9" />
   </component>
   <component name="TemplatesService">
     <option name="TEMPLATE_CONFIGURATION" value="Django" />
     <option name="TEMPLATE_FOLDERS">
       <list>
-        <option value="$MODULE_DIR$/read_comics/templates" />
-        <option value="$MODULE_DIR$/read_comics/characters/templates" />
-        <option value="$MODULE_DIR$/read_comics/volumes/templates" />
-        <option value="$MODULE_DIR$/read_comics/users/templates" />
-        <option value="$MODULE_DIR$/read_comics/teams/templates" />
-        <option value="$MODULE_DIR$/read_comics/story_arcs/templates" />
-        <option value="$MODULE_DIR$/read_comics/publishers/templates" />
-        <option value="$MODULE_DIR$/read_comics/powers/templates" />
-        <option value="$MODULE_DIR$/read_comics/people/templates" />
-        <option value="$MODULE_DIR$/read_comics/objects/templates" />
-        <option value="$MODULE_DIR$/read_comics/locations/templates" />
-        <option value="$MODULE_DIR$/read_comics/issues/templates" />
-        <option value="$MODULE_DIR$/read_comics/concepts/templates" />
-        <option value="$MODULE_DIR$/read_comics/pages/templates" />
-        <option value="$MODULE_DIR$/read_comics/search/templates" />
-        <option value="$MODULE_DIR$/read_comics/missing_issues/templates" />
+        <option value="$MODULE_DIR$/read_comics/core/templates" />
       </list>
     </option>
   </component>
