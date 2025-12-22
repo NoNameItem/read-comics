@@ -1,3 +1,5 @@
+# Docs: [[docs/backend/api-endpoints.md]]
+# Docs: [[docs/backend/missing_issues/endpoints.md]]
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from utils.api.viewset_actions_mixins import CountActionMixin
 

@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/model_managers.md]]
 from time import sleep
 
 from celery.utils.log import get_task_logger

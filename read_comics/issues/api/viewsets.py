@@ -1,3 +1,5 @@
+# Docs: [[docs/backend/api-endpoints.md]]
+# Docs: [[docs/backend/issues/endpoints.md]]
 from collections.abc import Sequence
 from typing import Any
 

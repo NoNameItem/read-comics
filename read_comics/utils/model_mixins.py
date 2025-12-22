@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/model_mixins.md]]
 from typing import Protocol
 
 from django.db.models import QuerySet, Sum

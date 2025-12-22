@@ -1,8 +1,10 @@
+# Docs: [[docs/backend/api-endpoints.md]]
+# Docs: [[docs/backend/characters/endpoints.md]]
 from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework_extensions.mixins import DetailSerializerMixin
-from utils.api.filters import UniqueOrderingFilter
-from utils.api.viewset_queryset_mixins import (
+from read_comics.utils.api.filters import UniqueOrderingFilter
+from read_comics.utils.api.viewset_queryset_mixins import (
     IssuesCountQuerySetMixin,
     ListOnlyQuerySetMixin,
     OnlyWithIssuesQuerySetMixin,
