@@ -54,6 +54,7 @@ Link viewset, serializer, and model documentation using relative paths (e.g., `[
 - Prefer inline code formatting (`code`) for identifiers, types, routes, and settings, and link to related docs with relative hyperlinks.
 - When documenting invocation, show imports and calls inside fenced ` ```python` blocks with realistic parameters.
 - Under each subheading note explicit behavior details such as retry policies, database interactions, routing, and side effects.
+- **Do NOT include full function/method implementations** — Document purpose, parameters, return values, side effects, and behavior instead. Show config snippets or small call examples only when essential for understanding.
 
 ## Anchors & linking
 - Every summary bullet must point to an existing anchor (e.g., `- [`MyClass`](#myclass)` paired with `### MyClass`).
@@ -91,5 +92,11 @@ Whenever writing or updating documentation under `docs/backend/`:
    - Read this doc-style.md file to ensure compliance
    - Check adjacent docs for terminology consistency
    - Use relative links for cross-references
+
+6. **Do NOT include full function implementations in documentation:**
+   - Document method signatures, parameters, return values, and behavior
+   - DO NOT paste entire function code
+   - Show only small config snippets (1-3 lines) or brief call examples when needed
+   - Focus on WHAT a function does, not HOW it's implemented in detail
 
 **This rule applies across all sessions. Do not skip or abbreviate these requirements.**

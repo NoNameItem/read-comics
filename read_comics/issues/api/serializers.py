@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/issues/api/serializers.md]]
 from rest_framework import serializers
 
 from read_comics.issues.models import Issue
