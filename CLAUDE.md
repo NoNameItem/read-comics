@@ -224,11 +224,30 @@ Examples:
 - MongoDB pipelines: `read_comics/spiders/pipelines.py`
 
 ## Documentation References
-
-- Backend utilities documentation available in `docs/backend/utils/`
 - Django + DRF migration mapping: `DRF_MIGRATION_URL_MAP.md`
 - Django pages map: `DJANGO_PAGES_MAP.md` and `DJANGO_PAGES_DRF_MAP.md`
 - Refactoring plan: `REFACTORING_PLAN.md`
+
+## Documentation Guidelines
+
+**CRITICAL: Always follow `docs/doc-style.md` when writing documentation**
+
+All documentation under `docs/backend/` must follow these rules:
+
+1. **Structure**: Use `# Title` → `## Summary` → `## Reference` → `### Class/Function` → `#### Details`
+2. **Summary section**: Include one-line bullets for each major entity with anchor links
+3. **Endpoint docs**: ONLY in `endpoints.md` (NOT in viewsets.md)
+   - Endpoints.md: endpoint descriptions, examples, request/response
+   - Viewsets.md: ViewSet configuration, mixins, serializers, queryset only
+4. **Docs comments**: Every Python module with docs must have `# Docs: [[docs/path/to_file.md]]` comment
+5. **Links**: Use relative links (e.g., `[viewsets.md#classname]`, `../models.md#field`)
+6. **English only**: All documentation in English
+
+Before writing or updating documentation:
+- Read `docs/doc-style.md` to ensure compliance
+- Check adjacent docs for consistency
+- Use Summary + Reference pattern
+- Add Docs comment to Python module
 
 ## Project Management
 

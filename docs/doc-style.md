@@ -26,6 +26,13 @@ This single reference merges every existing checklist so all contributors docume
 8. Document every top-level class or function defined in the module. Private helpers (names starting with `_`) belong in the detailed descriptions but are excluded from the summary listing.
 9. When referencing other documented concepts (models, mixins, commands, workflows), use relative links rather than repeating explanations.
 10. Add a `# Docs: [[docs/path/to_page.md]]` comment at the top of the associated Python module so code and documentation remain explicitly linked across sessions.
+    - **Multiple docs rule**: If a Python file has multiple documentation files, use **separate comments for each link**, one per line:
+      ```python
+      # Docs: [[docs/backend/app/models.md]]
+      # Docs: [[docs/backend/app/tasks.md]]
+      # Docs: [[docs/backend/app/search_adapters.md]]
+      ```
+    - Do NOT combine multiple links in a single comment: `# Docs: [[...]], [[...]]` ❌
 11. Write all documentation content in English and audit any existing non-English pages before adding new content.
 12. For DRF endpoints, create `docs/backend/<app>/endpoints.md` that captures the request/response schema, URL, viewset/action, query/request parameters, and concrete examples; mention that doc in the `# Docs: [[...]]` comment on the corresponding views/viewsets file.
 
@@ -57,3 +64,32 @@ Link viewset, serializer, and model documentation using relative paths (e.g., `[
 - This template governs models, tasks, utilities, views, commands, endpoints, and any other public callable documented under `docs/`.
 - Review adjacent docs before adding new entries to reuse consistent structure and terminology.
 - Reference this guide whenever you add or update documentation so the format stays stable between sessions.
+
+## For Claude Code / AI Assistant
+
+**CRITICAL INSTRUCTION (for every documentation session):**
+
+Whenever writing or updating documentation under `docs/backend/`:
+
+1. **ALWAYS follow this doc-style.md guide** — Apply all rules in Sections "Standard structure", "Detailed checklist", "Endpoint documentation", "Content guidelines", and "Anchors & linking" without exception.
+
+2. **Structure requirement:**
+   - Use `# Title` → `## Summary` → `## Reference` (or `## <Section>`) → `### Class/Function` → `#### Details`
+   - Always include Summary section with one-line bullets
+   - Always include Reference section with detailed information
+
+3. **Endpoint documentation ONLY in endpoints.md:**
+   - DO NOT describe endpoints in viewsets.md — that's reserved for viewset configuration only
+   - Endpoint examples, request/response, URL patterns → endpoints.md ONLY
+   - Viewsets.md → configuration, mixins, serializers, queryset only
+
+4. **Always add Docs comments:**
+   - Every Python module with documentation must have `# Docs: [[docs/path/to_file.md]]` at the top
+   - Update module comment if documentation file path changes
+
+5. **Before starting documentation:**
+   - Read this doc-style.md file to ensure compliance
+   - Check adjacent docs for terminology consistency
+   - Use relative links for cross-references
+
+**This rule applies across all sessions. Do not skip or abbreviate these requirements.**

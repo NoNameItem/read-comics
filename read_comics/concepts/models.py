@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/concepts/models.md]]
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
