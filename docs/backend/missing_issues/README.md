@@ -1,9 +1,28 @@
 # Missing Issues
 
-Tracks recently published or missing issues, supporting upload flows and notifications.
+Tracks recently published or missing comic issues from ComicVine, supporting user notifications and collection management.
 
-## Key modules
-- `models.py` and `queries.py` define missing issue records and custom query helpers.
-- `management/` and `tasks.py` expose import commands and scheduled jobs.
-- `do_spaces.py` integrates with DigitalOcean Spaces for asset storage.
-- `templates/`, `views.py`, and `api/` surface reporting forms and REST endpoints.
+## Documentation
+
+### Core Models
+- [`models.md`](models.md) — 7 models: MissingIssue, IgnoredIssue/Volume/Publisher, APIQueue, WatchedItem, Locks
+
+### API Layer
+- [`api/endpoints.md`](api/endpoints.md) — REST endpoint specifications
+- [`api/viewsets.md`](api/viewsets.md) — MissingIssueViewSet with count endpoint
+
+### Tasks & Management
+- [`tasks.md`](tasks.md) — Base missing issues task with 8 entity-specific implementations (Volume, Publisher, Character, etc.)
+- [`management_commands.md`](management_commands.md) — `clearqueue` command for API queue management
+
+### Infrastructure
+- [`do_spaces.md`](do_spaces.md) — DigitalOcean Spaces integration for asset storage and browsing
+
+## Key Features
+- **Missing Issue Detection** — Identifies ComicVine issues not yet in PostgreSQL
+- **Entity-Specific Tasks** — Separate Celery tasks for Volume, Character, Person, Team, etc.
+- **Ignore Management** — Users can ignore specific issues, volumes, or publishers
+- **Skip Logic** — Temporary skip with auto-reset after configured days
+- **User Notifications** — WatchedItem integration for user tracking
+- **Asset Storage** — DigitalOcean Spaces integration for missing issue metadata
+- **API Queue** — Tracks entities pending synchronization

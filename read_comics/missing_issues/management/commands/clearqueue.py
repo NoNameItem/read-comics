@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/missing_issues/management_commands.md]]
 from django.core.management.base import BaseCommand
 
 from ...models import APIQueue
