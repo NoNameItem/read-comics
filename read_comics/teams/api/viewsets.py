@@ -1,5 +1,4 @@
-# Docs: [[docs/backend/api-endpoints.md]]
-# Docs: [[docs/backend/teams/endpoints.md]]
+# Docs: [[docs/backend/teams/api/viewsets.md]]
 from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from utils.api.filters import UniqueOrderingFilter
