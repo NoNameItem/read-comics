@@ -1,5 +1,4 @@
-# Docs: [[docs/backend/api-endpoints.md]]
-# Docs: [[docs/backend/volumes/endpoints.md]]
+# Docs: [[docs/backend/volumes/api/viewsets.md]]
 from django.db.models import Manager, QuerySet
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from read_comics.utils.api.filters import UniqueOrderingFilter
