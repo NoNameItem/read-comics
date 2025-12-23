@@ -2,7 +2,7 @@
 from .base_spider import BaseSpider
 
 
-class лCharactersSpider(BaseSpider):
+class CharactersSpider(BaseSpider):
     # LIST_URL_PATTERN should contain 3 placeholders: limit, offset and api_key and should not contain filter parameter
     LIST_URL_PATTERN = (
         "https://comicvine.gamespot.com/api/characters/?"
