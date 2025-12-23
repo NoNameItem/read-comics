@@ -8,9 +8,25 @@
 
 ### `Location`
 
-Represents a geographic location appearing in comic issues. Inherits from `ImageMixin`, `DownloadSizeMixin`, `AliasesListMixin`, and `ComicvineSyncModel` for image handling, file management, aliases parsing, and ComicVine synchronization.
+Represents a geographic location appearing in comic issues. Inherits from `ImageMixin`, `DownloadSizeMixin`, `AliasesListMixin`, and `ComicvineSyncModel`.
 
-**Key Fields:**
+Extends: `ImageMixin`, `DownloadSizeMixin`, `AliasesListMixin`, `ComicvineSyncModel`
+
+**Inherited Fields from ComicvineSyncModel:**
+
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | Integer (PK) | Django primary key |
+| `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
+
+**Custom Fields (defined in Location model):**
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -25,6 +41,8 @@ Represents a geographic location appearing in comic issues. Inherits from `Image
 | `thumb_url` | URLField | Thumbnail image URL |
 | `image_url` | URLField | Full size image URL |
 | `slug` | AutoSlugField | Unique slug (auto-generated from name) |
+| `watchers` | GenericRelation → WatchedItem | Users watching this location |
+| `tracker` | FieldTracker | Tracks field changes for synchronization |
 
 **Relationships:**
 

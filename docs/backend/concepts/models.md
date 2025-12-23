@@ -1,29 +1,24 @@
 # Concept Model
 
-The `Concept` model represents comic book concepts, themes, and abstract ideas that appear in issues. It inherits from multiple mixins and the `ComicvineSyncModel` base class.
+The `Concept` model represents comic book concepts, themes, and abstract ideas that appear in issues.
 
-## Model Definition
+Extends: `ImageMixin`, `DownloadSizeMixin`, `AliasesListMixin`, `ComicvineSyncModel`
 
-```python
-class Concept(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
-```
+**Inherited Fields from ComicvineSyncModel:**
 
-## Inheritance
+| Field | Type | Purpose |
+|---|---|---|
+| `id` | Integer (PK) | Django primary key |
+| `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
 
-- **ImageMixin** — Provides image URL handling with `square_medium` and `full_size_url` properties
-- **DownloadSizeMixin** — Provides `download_size` property and download link functionality
-- **AliasesListMixin** — Provides `get_aliases_list()` method for parsing alias strings
-- **ComicvineSyncModel** — Base model for ComicVine API synchronization with fields: `comicvine_id`, `comicvine_status`, `comicvine_last_match`, `created_dt`, `modified_dt`
-
-## ComicVine API Configuration
-
-- **MONGO_COLLECTION**: `"comicvine_concepts"` — MongoDB collection for synced data
-- **MONGO_PROJECTION**: Excludes heavy fields (`count_of_issue_appearances`, `date_added`, `issue_credits`, etc.)
-- **FIELD_MAPPING**: Maps `start_year` field from ComicVine
-- **COMICVINE_API_URL**: API endpoint template for fetching concept data
-- **COMICVINE_INFO_TASK**: Links to `concept_comicvine_info_task` for background syncing
-
-## Fields
+**Custom Fields (defined in Concept model):**
 
 | Field | Type | Description |
 |-------|------|-------------|

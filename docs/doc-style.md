@@ -36,6 +36,40 @@ This single reference merges every existing checklist so all contributors docume
 11. Write all documentation content in English and audit any existing non-English pages before adding new content.
 12. For DRF endpoints, create `docs/backend/<app>/endpoints.md` that captures the request/response schema, URL, viewset/action, query/request parameters, and concrete examples; mention that doc in the `# Docs: [[...]]` comment on the corresponding views/viewsets file.
 
+## Django Model Documentation
+
+When documenting Django models in `models.md` files:
+
+1. **Field separation is MANDATORY** — Models must explicitly separate inherited fields from custom fields:
+   - Create a section **"Inherited Fields from [ParentClass]"** listing all fields inherited from parent classes (e.g., `AbstractUser`, `ComicvineSyncModel`, etc.)
+   - Create a section **"Custom Fields (defined in [ModelName] model)"** listing only fields defined directly in the documented model
+   - If a model extends multiple base classes with fields, create separate subsections for each parent class
+   - Use a table format with `Field Name | Type | Null | Blank | Default | Purpose` columns for clarity
+
+2. **Parent class acknowledgement:**
+   - Always mention the parent class at the top of the model section (e.g., `Extends: AbstractUser`, `Extends: ComicvineSyncModel`)
+   - Document special behaviors inherited from parent (e.g., auto_now, auto_now_add, signal handlers)
+
+3. **Example structure:**
+   ```markdown
+   ### ModelName
+
+   Extends: [`ParentClassName`](../path/to/parent.md#parentclassname)
+
+   **Inherited Fields from ParentClassName:**
+   | Field | Type | Purpose |
+   |---|---|---|
+   | field1 | ... | ... |
+
+   **Custom Fields (defined in ModelName model):**
+   | Field | Type | Purpose |
+   |---|---|---|
+   | field2 | ... | ... |
+
+   **Methods:**
+   - method_name(...)
+   ```
+
 ## Endpoint documentation
 
 When documenting DRF REST endpoints in `docs/backend/<app>/endpoints.md`, follow this structure for each endpoint section:

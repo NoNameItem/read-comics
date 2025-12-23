@@ -10,9 +10,23 @@
 
 Creator, artist, and industry contributor model with biographical information and ComicVine integration.
 
-**Inheritance**: `ImageMixin`, `ComicvineSyncModel`
+Extends: `ImageMixin`, `ComicvineSyncModel`
 
-#### Fields
+**Inherited Fields from ComicvineSyncModel:**
+
+| Field | Type | Purpose |
+|-------|------|---------|
+| `id` | Integer (PK) | Django primary key |
+| `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
+
+**Custom Fields (defined in Person model):**
 
 | Field | Type | Purpose |
 |-------|------|---------|
@@ -25,9 +39,10 @@ Creator, artist, and industry contributor model with biographical information an
 | `hometown` | TextField | Hometown/residence |
 | `country` | TextField | Country of origin |
 | `thumb_url` | URLField | Thumbnail image URL |
-| `image_url` | URLField | Full-size image URL (from ImageMixin) |
+| `image_url` | URLField | Full-size image URL |
 | `slug` | AutoSlugField | URL-safe identifier, auto-generated from name |
-| `watchers` | GenericRelation | Users watching this person for missing issues |
+| `watchers` | GenericRelation → WatchedItem | Users watching this person |
+| `tracker` | FieldTracker | Tracks field changes for synchronization |
 
 #### ComicVine Sync Configuration
 
