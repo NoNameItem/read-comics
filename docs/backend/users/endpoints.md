@@ -1,11 +1,15 @@
 # Users API endpoints
 
-The `read_comics.users.api.views` module exposes three authenticated profile-related endpoints under `/api/profile/` plus `change-email` and `finished-stats` helpers.
+User endpoints are powered by custom API views (not viewsets) in `read_comics.users.api.views`. These include profile management, email changes, and authentication flows (via dj-rest-auth).
 
-## `GET /api/profile/` (ProfileView)
+## Profile: `GET /api/profile/`
+
+Retrieves the authenticated user's profile information including statistics and preferences.
+
+- **View**: [`ProfileView`](views.md#profileview) (extends `RetrieveUpdateAPIView`)
 - **Action**: `retrieve`
-- **Permissions**: authenticated only.
-- **Serializer**: `ProfileSerializer`.
+- **Serializer**: [`ProfileSerializer`](serializers.md#profileserializer)
+- **Permissions**: `IsAuthenticated` only
 - **Response fields**:
   ```json
   {
@@ -23,11 +27,17 @@ The `read_comics.users.api.views` module exposes three authenticated profile-rel
   }
   ```
 
-## `PATCH/PUT /api/profile/`
+## Update Profile: `PATCH/PUT /api/profile/`
+
+Updates the authenticated user's profile information. Supports partial updates via PATCH and full updates via PUT.
+
+- **View**: [`ProfileView`](views.md#profileview) (extends `RetrieveUpdateAPIView`)
 - **Action**: `partial_update` / `update`
-- **Allowed writable fields**: `name`, `images` (file upload or base64), `gender`, `bio`, `birth_date`.
-- **Validation**: unknown fields trigger a validation error.
-- **Example request**:
+- **Serializer**: [`ProfileSerializer`](serializers.md#profileserializer)
+- **Permissions**: `IsAuthenticated` only
+- **Writable fields**: `name`, `images` (file upload or base64), `gender`, `bio`, `birth_date`
+- **Read-only fields**: `username`, `date_joined`, `email`, `email_verified`, `finished_count`, `reading_speed`
+- **Request example**:
   ```json
   {
     "name": "Reader One Jr.",
@@ -35,11 +45,17 @@ The `read_comics.users.api.views` module exposes three authenticated profile-rel
     "gender": {"value": "M"}
   }
   ```
-- **Response**: same shape as `GET /api/profile/` with updated values.
+- **Response**: Same shape as `GET /api/profile/` with updated values
+- **Validation**: Unknown fields trigger a validation error
 
-## `GET /api/profile/finished-stats/` (FinishedIssuesStatsView)
+## Finished Stats: `GET /api/profile/finished-stats/`
+
+Returns reading statistics for the authenticated user, including total finished issues and reading speed.
+
+- **View**: [`FinishedIssuesStatsView`](views.md#finishedissuesstatsview) (extends `APIView`)
 - **Action**: `get`
-- **Permissions**: authenticated only.
+- **Serializer**: None (returns plain JSON object)
+- **Permissions**: `IsAuthenticated` only
 - **Response**:
   ```json
   {
@@ -49,9 +65,15 @@ The `read_comics.users.api.views` module exposes three authenticated profile-rel
   }
   ```
 
-## `PUT/PATCH /api/profile/change-email/` (ChangeEmailView)
-- **Serializer**: `ChangeEmailSerializer`.
-- **Payload**:
+## Change Email: `PUT/PATCH /api/profile/change-email/`
+
+Updates the authenticated user's email address and resets email verification status.
+
+- **View**: [`ChangeEmailView`](views.md#changeemailview) (extends `UpdateAPIView`)
+- **Action**: `update` / `partial_update`
+- **Serializer**: [`ChangeEmailSerializer`](serializers.md#changeemailserializer)
+- **Permissions**: `IsAuthenticated` only
+- **Request payload**:
   ```json
   {
     "email": "new@example.com"
@@ -64,16 +86,19 @@ The `read_comics.users.api.views` module exposes three authenticated profile-rel
     "verified": false
   }
   ```
-- **Notes**: `verified` is read-only, and changing the address resets verification.
+- **Note**: Changing the email address automatically resets `verified` to `false`, requiring re-confirmation
 
-## Input payloads
-All endpoints above require authentication and only allow the fields documented above; there are no anonymous write operations.
+## Authentication endpoints (dj-rest-auth)
 
-## `api/auth/` (dj-rest-auth)
-The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose login, logout, password reset, and session/token management. These endpoints do not require the `ProfileView` serializer and are largely handled by the third-party package.
+The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose login, logout, password reset, and session/token management. These endpoints are provided by the third-party package and configured via `config/settings/base.py`.
 
-### `POST /api/auth/login/`
-- **Payload**:
+### Login: `POST /api/auth/login/`
+
+Authenticates a user and returns JWT tokens.
+
+- **Serializer**: Provided by dj-rest-auth (default login serializer)
+- **Permissions**: Anonymous allowed
+- **Request payload**:
   ```json
   {
     "email": "reader1@example.com",
@@ -87,12 +112,16 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
     "refresh": "eyJ0eXAiOiJKV1QiLCJhb..."
   }
   ```
-- Returns `400` if credentials are invalid.
-- The endpoint accepts whichever identifier `ACCOUNT_AUTHENTICATION_METHOD` allows (currently `"username"`), but the frontend may pass email if your Allauth adapter accepts it.
+- Returns `400` if credentials are invalid
+- Accepts whichever identifier `ACCOUNT_AUTHENTICATION_METHOD` allows (currently `"username"`)
 
-### `POST /api/auth/logout/`
-- **Action**: invalidates the current auth token/session.
-- **Payload**: none.
+### Logout: `POST /api/auth/logout/`
+
+Invalidates the current authentication token/session.
+
+- **Serializer**: Provided by dj-rest-auth
+- **Permissions**: `IsAuthenticated` only
+- **Request payload**: None
 - **Response**:
   ```json
   {
@@ -100,18 +129,33 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
   }
   ```
 
-### `POST /api/auth/password/reset/`
-- **Payload**:
+### Password Reset Request: `POST /api/auth/password/reset/`
+
+Sends a password reset link to the user's email address.
+
+- **Serializer**: [`ResetPasswordSerializer`](serializers.md#resetpasswordserializer) (custom, delegates to dj-rest-auth)
+- **Permissions**: Anonymous allowed
+- **Request payload**:
   ```json
   {
     "email": "reader1@example.com"
   }
   ```
-- Sends a password reset link to the email and returns `{"detail": "Password reset e-mail has been sent."}`.
-- Uses `users.api.serializers.ResetPasswordSerializer` (`REST_AUTH["PASSWORD_RESET_SERIALIZER"]`), which simply delegates to dj-rest-auth; the serializer prevents creation/update operations since this flow only triggers email delivery.
+- **Response**:
+  ```json
+  {
+    "detail": "Password reset e-mail has been sent."
+  }
+  ```
+- Uses custom URL generator to direct users to frontend password reset page
 
-### `POST /api/auth/password/reset/confirm/`
-- **Payload** (from email link):
+### Password Reset Confirm: `POST /api/auth/password/reset/confirm/`
+
+Completes the password reset process using the token from the email link.
+
+- **Serializer**: Provided by dj-rest-auth
+- **Permissions**: Anonymous allowed
+- **Request payload** (from email link):
   ```json
   {
     "uid": "<uidb64>",
@@ -120,11 +164,16 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
     "new_password2": "newpass"
   }
   ```
-- Returns `200` on success, `400` for invalid token/data.
-- Because `ACCOUNT_LOGIN_ON_PASSWORD_RESET` is `True`, dj-rest-auth may automatically authenticate the user after a successful password reset.
+- Returns `200` on success, `400` for invalid token/data
+- Because `ACCOUNT_LOGIN_ON_PASSWORD_RESET` is `True`, may automatically authenticate the user after successful reset
 
-### `POST /api/auth/token/refresh/`
-- **Payload**:
+### Token Refresh: `POST /api/auth/token/refresh/`
+
+Refreshes an access token using a valid refresh token.
+
+- **Serializer**: Provided by `rest_framework_simplejwt`
+- **Permissions**: Anonymous allowed (requires valid refresh token)
+- **Request payload**:
   ```json
   {
     "refresh": "eyJ0eXAiOiJKV1Q..."
@@ -136,14 +185,20 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
     "access": "eyJ0eXAiOiJKV1QiLCJh..."
   }
   ```
-- Returns `401` if the refresh token is expired/invalid.
-- The endpoint matches `rest_framework_simplejwt`’s refresh view, so the `SIMPLE_JWT` lifetimes in `config/settings/base.py` (`ACCESS_TOKEN_LIFETIME`, `REFRESH_TOKEN_LIFETIME` and related rotation/blacklist flags) directly influence how often clients must rotate tokens.
+- Returns `401` if the refresh token is expired/invalid
+- Token lifetimes configured via `SIMPLE_JWT` settings (`ACCESS_TOKEN_LIFETIME`, `REFRESH_TOKEN_LIFETIME`)
 
-## `api/auth/registration/`
-`dj-rest-auth.registration` exposes registration-related flows.
+## Registration endpoints (dj-rest-auth.registration)
 
-### `POST /api/auth/registration/`
-- **Payload**:
+The `api/auth/registration/` namespace exposes registration-related flows via dj-rest-auth.
+
+### Register: `POST /api/auth/registration/`
+
+Creates a new user account.
+
+- **Serializer**: Provided by dj-rest-auth
+- **Permissions**: Anonymous allowed (if `ACCOUNT_ALLOW_REGISTRATION` is `True`)
+- **Request payload**:
   ```json
   {
     "username": "reader1",
@@ -152,18 +207,28 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
     "password2": "securepass"
   }
   ```
-- **Response**: newly created user representation from `dj-rest-auth` (including `key` if REST auth returns it) or serialized user data.
-- Requires email confirmation if `ACCOUNT_EMAIL_VERIFICATION` is `mandatory`.
-- Because `ACCOUNT_EMAIL_VERIFICATION` is set to `"optional"` in `config/settings/base.py`, new accounts receive a confirmation email but are allowed to log in before confirmation unless you override that variable.
-- Registration availability follows `ACCOUNT_ALLOW_REGISTRATION` (from `DJANGO_ACCOUNT_ALLOW_REGISTRATION`); if that flag is `False`, `POST /api/auth/registration/` will return `403` even if the payload is valid.
+- **Response**: Newly created user representation from dj-rest-auth (including auth tokens if configured)
+- Requires email confirmation if `ACCOUNT_EMAIL_VERIFICATION` is `mandatory`
+- Because `ACCOUNT_EMAIL_VERIFICATION` is set to `"optional"`, new accounts receive a confirmation email but can log in before confirmation
+- Returns `403` if `ACCOUNT_ALLOW_REGISTRATION` is `False`
 
-### `GET /api/auth/registration/account-confirm-email/{key}/`
-- **Description**: triggered by the confirmation link sent to the user; no JSON payload required.
-- **Response**: HTML view or redirect handled by dj-rest-auth/Allauth; use frontend-confirmation flow.
-- The redirect targets honor `ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL` / `ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL` from `config/settings/base.py`.
+### Confirm Email: `GET /api/auth/registration/account-confirm-email/{key}/`
 
-### `POST /api/auth/registration/resend-confirmation/`
-- **Payload**:
+Confirms a user's email address via the link sent during registration.
+
+- **Serializer**: Provided by dj-rest-auth/Allauth
+- **Permissions**: Anonymous allowed
+- **Path parameter**: `{key}` (confirmation key from email)
+- **Response**: HTML view or redirect handled by dj-rest-auth/Allauth
+- Redirect targets honor `ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL` / `ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL`
+
+### Resend Confirmation: `POST /api/auth/registration/resend-confirmation/`
+
+Resends the email confirmation link to a user.
+
+- **Serializer**: Provided by dj-rest-auth
+- **Permissions**: Anonymous allowed
+- **Request payload**:
   ```json
   {
     "email": "reader1@example.com"
@@ -176,4 +241,9 @@ The `api/auth/` namespace uses the defaults provided by `dj-rest-auth` to expose
   }
   ```
 
-The `api/auth/` and `api/auth/registration/` endpoints are provided directly by dj-rest-auth/Allauth; their exact behavior (email verification rules, required fields, social providers) is driven by the relevant toggles in `config/settings/base.py` (e.g., `ACCOUNT_EMAIL_VERIFICATION`, `ACCOUNT_AUTHENTICATION_METHOD`, `REST_AUTH_SERIALIZERS`). Refer to that settings file whenever you need to adjust how dj-rest-auth behaves.
+## Notes
+
+- All profile endpoints require authentication and only allow the fields documented above
+- The `api/auth/` and `api/auth/registration/` endpoints are provided by dj-rest-auth/Allauth
+- Exact behavior (email verification rules, required fields, social providers) is driven by settings in `config/settings/base.py`
+- See `ACCOUNT_EMAIL_VERIFICATION`, `ACCOUNT_AUTHENTICATION_METHOD`, `REST_AUTH_SERIALIZERS`, and `SIMPLE_JWT` settings for configuration details
