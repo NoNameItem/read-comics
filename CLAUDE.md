@@ -249,6 +249,38 @@ Before writing or updating documentation:
 - Use Summary + Reference pattern
 - Add Docs comment to Python module
 
+## Using Documentation to Save Token Usage
+
+**Strategy**: Use documentation as primary source instead of reading full source code.
+
+### When Understanding a Module
+1. **First**: Read `docs/backend/<app>/README.md` for overview
+2. **Then**: Read relevant documentation files:
+   - `models.md` for database schema and relationships
+   - `api/serializers.md` for API response structures
+   - `api/viewsets.md` for API configuration
+   - `tasks.md` for background job definitions
+   - `search_adapters.md` for search integration
+3. **Finally**: Read source code only if:
+   - Need specific implementation details
+   - Debugging issues
+   - Refactoring code
+   - Documentation is incomplete/outdated
+
+### Token Savings
+- **models.md** (~3-4 KB) replaces **models.py** (~10+ KB) — 60-70% savings
+- **serializers.md** (~3-4 KB) replaces **serializers.py** (~5-8 KB) — 50-60% savings
+- **viewsets.md** (~2-3 KB) replaces **viewsets.py** (~8-15 KB) — 70-80% savings
+
+### For New Modules
+When writing documentation for new modules:
+- Make it comprehensive enough to replace 80% of source code reading
+- Include all field names, types, and relationships
+- Document method signatures and behavior (not implementation)
+- Add configuration details and mixins
+
+**This approach enables efficient work within token budgets across sessions.**
+
 ## Project Management
 
 - **Jira Project**: RC

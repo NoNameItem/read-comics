@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/objects/api/serializers.md]]
 from rest_framework import serializers
 
 from ..models import Object
