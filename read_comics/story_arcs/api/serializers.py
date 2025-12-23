@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/story_arcs/api/serializers.md]]
 from rest_framework import serializers
 
 from read_comics.publishers.api.serializers import NestedPublisherSerializer

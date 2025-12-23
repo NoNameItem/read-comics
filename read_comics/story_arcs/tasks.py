@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/story_arcs/tasks.md]]
 from celery import shared_task
 from scrapy.settings import Settings
 from spiders.spiders.story_arcs_spider import StoryArcsSpider
