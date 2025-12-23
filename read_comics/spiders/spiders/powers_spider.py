@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/powers_spider.md]]
 from .base_spider import BaseSpider
 
 

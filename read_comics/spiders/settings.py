@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/infrastructure.md#settingspy]]
 import environ
 
 ROOT_DIR = environ.Path(__file__) - 1

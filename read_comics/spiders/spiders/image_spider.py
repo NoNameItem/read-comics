@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/image_spider.md]]
 import json
 from typing import Callable, List, Optional, Tuple, Union
 
