@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/locations/api/serializers.md]]
 from rest_framework import serializers
 
 from ..models import Location

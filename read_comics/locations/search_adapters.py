@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/locations/search_adapters.md]]
 from search.search_adapters import BaseSearchAdapter
 
 

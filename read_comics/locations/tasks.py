@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/locations/tasks.md]]
 from celery import shared_task
 from scrapy.settings import Settings
 from spiders.spiders.locations_spider import LocationsSpider
