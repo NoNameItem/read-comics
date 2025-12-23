@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/core/collectors/base.md]]
 from enum import Enum
 from math import floor
 

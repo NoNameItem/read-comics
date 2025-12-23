@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/core/collectors/mongo.md]]
 from django.conf import settings
 from pymongo import MongoClient
 

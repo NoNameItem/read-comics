@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/core/collectors/db.md]]
 from django.db.models import Count
 
 from read_comics.characters.models import Character

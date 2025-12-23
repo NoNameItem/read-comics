@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/core/collectors/api_queue.md]]
 from django.db.models import Count
 
 from read_comics.core.collectors.base import BaseCollector

@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/core/views.md]]
 from typing import Any, Dict
 
 from celery.utils.log import get_task_logger
