@@ -224,3 +224,97 @@ class TestConceptTechnicalInfo:
         )
         assert response.data["created_dt"] == timezone.localtime(concept_no_issues.created_dt).isoformat()
         assert response.data["modified_dt"] == timezone.localtime(concept_no_issues.modified_dt).isoformat()
+
+
+# ============================================================================
+# PARAMETRIZED, EDGE CASE, CONSISTENCY, HTTP METHOD & INTEGRATION TESTS
+# ============================================================================
+
+
+class TestConceptsParametrized:
+    """Parametrized tests for sorting."""
+
+    @pytest.mark.parametrize(
+        "ordering,is_reverse",
+        [
+            ("name", False),
+            ("-name", True),
+            ("issues_count", False),
+            ("-issues_count", True),
+            ("volumes_count", False),
+            ("-volumes_count", True),
+        ],
+    )
+    def test_ordering_parametrized(
+        self, api_client: APIClient, concepts_with_issues: list[Concept], ordering: str, is_reverse: bool
+    ) -> None:
+        response = api_client.get(f"/api/concepts/?ordering={ordering}")
+        assert response.status_code == 200
+        field = ordering.lstrip("-")
+        values = [item[field] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestConceptsEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_first_page(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?page=1")
+        assert response.status_code == 200
+        assert "results" in response.data
+
+    @staticmethod
+    def test_pagination_boundary_zero_page(api_client: APIClient) -> None:
+        response = api_client.get("/api/concepts/?page=0")
+        assert response.status_code == 404
+
+    @staticmethod
+    def test_pagination_boundary_negative_page(api_client: APIClient) -> None:
+        response = api_client.get("/api/concepts/?page=-1")
+        assert response.status_code == 404
+
+    @staticmethod
+    def test_list_with_large_page_size(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        response = api_client.get("/api/concepts/?page_size=10000")
+        assert response.status_code == 200
+        assert response.data["count"] == len(concepts_with_issues)
+
+    @staticmethod
+    def test_response_structure_includes_all_pagination_fields(
+        api_client: APIClient, concept_with_issues: Concept
+    ) -> None:
+        response = api_client.get("/api/concepts/")
+        assert response.status_code == 200
+        assert all(k in response.data for k in ["count", "next", "previous", "results"])
+
+
+class TestConceptsConsistency:
+    @staticmethod
+    def test_list_detail_field_consistency(api_client: APIClient, concept_with_issues: Concept) -> None:
+        list_response = api_client.get("/api/concepts/")
+        detail_response = api_client.get(f"/api/concepts/{concept_with_issues.slug}/")
+        assert list_response.status_code == 200 and detail_response.status_code == 200
+        for key in list_response.data["results"][0].keys():
+            assert key in detail_response.data
+
+    @staticmethod
+    def test_count_vs_list_count_consistency(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
+        list_response = api_client.get("/api/concepts/")
+        count_response = api_client.get("/api/concepts/count/")
+        assert list_response.data["count"] == count_response.data["count"]
+
+
+class TestConceptsHTTPMethods:
+    @staticmethod
+    def test_list_endpoint_rejects_post(api_client: APIClient) -> None:
+        response = api_client.post("/api/concepts/", {"name": "New"})
+        assert response.status_code in [405, 403, 400]
+
+    @staticmethod
+    def test_detail_endpoint_rejects_put(api_client: APIClient, concept_with_issues: Concept) -> None:
+        response = api_client.put(f"/api/concepts/{concept_with_issues.slug}/", {"name": "Updated"})
+        assert response.status_code in [405, 403, 400]
+
+    @staticmethod
+    def test_response_content_type_is_json(api_client: APIClient) -> None:
+        response = api_client.get("/api/concepts/")
+        assert "application/json" in response.get("Content-Type", "")

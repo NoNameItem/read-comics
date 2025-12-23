@@ -152,3 +152,32 @@ class TestPeopleList:
         response = api_client.get("/api/people/?page=999")
 
         assert response.status_code == 404
+
+
+class TestPeopleParametrized:
+    @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True)])
+    def test_ordering_parametrized(self, api_client: APIClient, people_with_issues: list[Person], ordering: str, is_reverse: bool) -> None:
+        response = api_client.get(f"/api/people/?ordering={ordering}")
+        assert response.status_code == 200
+        values = [item[ordering.lstrip("-")] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestPeopleEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_zero_page(api_client: APIClient) -> None:
+        response = api_client.get("/api/people/?page=0")
+        assert response.status_code == 404
+
+
+class TestPeopleConsistency:
+    @staticmethod
+    def test_count_vs_list_consistency(api_client: APIClient, people_with_issues: list[Person]) -> None:
+        assert api_client.get("/api/people/").data["count"] == api_client.get("/api/people/count/").data["count"]
+
+
+class TestPeopleHTTPMethods:
+    @staticmethod
+    def test_list_endpoint_rejects_put(api_client: APIClient) -> None:
+        response = api_client.put("/api/people/", {})
+        assert response.status_code in [405, 403, 400]

@@ -154,3 +154,35 @@ class TestObjectsList:
         response = api_client.get("/api/objects/?page=999")
 
         assert response.status_code == 404
+
+
+class TestObjectsParametrized:
+    @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True)])
+    def test_ordering_parametrized(self, api_client: APIClient, objects_with_issues: list[Object], ordering: str, is_reverse: bool) -> None:
+        response = api_client.get(f"/api/objects/?ordering={ordering}")
+        assert response.status_code == 200
+        field = ordering.lstrip("-")
+        values = [item[field] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestObjectsEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_first_page(api_client: APIClient, objects_with_issues: list[Object]) -> None:
+        response = api_client.get("/api/objects/?page=1")
+        assert response.status_code == 200
+
+
+class TestObjectsConsistency:
+    @staticmethod
+    def test_count_vs_list_count_consistency(api_client: APIClient, objects_with_issues: list[Object]) -> None:
+        list_response = api_client.get("/api/objects/")
+        count_response = api_client.get("/api/objects/count/")
+        assert list_response.data["count"] == count_response.data["count"]
+
+
+class TestObjectsHTTPMethods:
+    @staticmethod
+    def test_list_endpoint_rejects_post(api_client: APIClient) -> None:
+        response = api_client.post("/api/objects/", {"name": "New"})
+        assert response.status_code in [405, 403, 400]

@@ -214,3 +214,49 @@ class TestTeamsList:
 
         names = [item["name"] for item in response.data["results"]]
         assert names == sorted(names, reverse=True)
+
+
+class TestTeamsParametrized:
+    @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True), ("issues_count", False)])
+    def test_ordering_parametrized(self, api_client: APIClient, teams_with_issues: list[Team], ordering: str, is_reverse: bool) -> None:
+        response = api_client.get(f"/api/teams/?ordering={ordering}")
+        assert response.status_code == 200
+        field = ordering.lstrip("-")
+        values = [item[field] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestTeamsEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_first_page(api_client: APIClient, teams_with_issues: list[Team]) -> None:
+        response = api_client.get("/api/teams/?page=1")
+        assert response.status_code == 200
+
+    @staticmethod
+    def test_list_with_large_page_size(api_client: APIClient, teams_with_issues: list[Team]) -> None:
+        response = api_client.get("/api/teams/?page_size=10000")
+        assert response.status_code == 200
+
+
+class TestTeamsConsistency:
+    @staticmethod
+    def test_count_vs_list_consistency(api_client: APIClient, teams_with_issues: list[Team]) -> None:
+        assert api_client.get("/api/teams/").data["count"] == api_client.get("/api/teams/count/").data["count"]
+
+    @staticmethod
+    def test_count_with_show_all_consistency(api_client: APIClient, teams_with_issues: list[Team], teams_no_issues: list[Team]) -> None:
+        list_resp = api_client.get("/api/teams/?show-all=yes")
+        count_resp = api_client.get("/api/teams/count/?show-all=yes")
+        assert list_resp.data["count"] == count_resp.data["count"]
+
+
+class TestTeamsHTTPMethods:
+    @staticmethod
+    def test_list_endpoint_rejects_post(api_client: APIClient) -> None:
+        response = api_client.post("/api/teams/", {"name": "New"})
+        assert response.status_code in [405, 403, 400]
+
+    @staticmethod
+    def test_detail_endpoint_rejects_patch(api_client: APIClient, team_with_issues: Team) -> None:
+        response = api_client.patch(f"/api/teams/{team_with_issues.slug}/", {"name": "Updated"})
+        assert response.status_code in [405, 403, 400]

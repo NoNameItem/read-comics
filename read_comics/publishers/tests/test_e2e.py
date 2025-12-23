@@ -166,3 +166,32 @@ class TestPublishersList:
         response = api_client.get("/api/publishers/?page=999")
 
         assert response.status_code == 404
+
+
+class TestPublishersParametrized:
+    @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True)])
+    def test_ordering_parametrized(self, api_client: APIClient, publishers_with_volumes: list[Publisher], ordering: str, is_reverse: bool) -> None:
+        response = api_client.get(f"/api/publishers/?ordering={ordering}")
+        assert response.status_code == 200
+        values = [item[ordering.lstrip("-")] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestPublishersEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_negative_page(api_client: APIClient) -> None:
+        response = api_client.get("/api/publishers/?page=-1")
+        assert response.status_code == 404
+
+
+class TestPublishersConsistency:
+    @staticmethod
+    def test_count_vs_list_consistency(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
+        assert api_client.get("/api/publishers/").data["count"] == api_client.get("/api/publishers/count/").data["count"]
+
+
+class TestPublishersHTTPMethods:
+    @staticmethod
+    def test_detail_endpoint_rejects_delete(api_client: APIClient, publisher_with_volumes: Publisher) -> None:
+        response = api_client.delete(f"/api/publishers/{publisher_with_volumes.slug}/")
+        assert response.status_code in [405, 403, 400]

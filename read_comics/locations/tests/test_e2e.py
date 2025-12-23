@@ -224,3 +224,46 @@ class TestLocationTechnicalInfo:
         )
         assert response.data["created_dt"] == timezone.localtime(location_with_issues.created_dt).isoformat()
         assert response.data["modified_dt"] == timezone.localtime(location_with_issues.modified_dt).isoformat()
+
+
+class TestLocationsParametrized:
+    @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True), ("issues_count", False), ("-issues_count", True)])
+    def test_ordering_parametrized(self, api_client: APIClient, locations_with_issues: list[Location], ordering: str, is_reverse: bool) -> None:
+        response = api_client.get(f"/api/locations/?ordering={ordering}")
+        assert response.status_code == 200
+        field = ordering.lstrip("-")
+        values = [item[field] for item in response.data["results"]]
+        assert values == sorted(values, reverse=is_reverse)
+
+
+class TestLocationsEdgeCases:
+    @staticmethod
+    def test_pagination_boundary_first_page(api_client: APIClient, locations_with_issues: list[Location]) -> None:
+        response = api_client.get("/api/locations/?page=1")
+        assert response.status_code == 200
+        assert "results" in response.data
+
+    @staticmethod
+    def test_pagination_boundary_zero_page(api_client: APIClient) -> None:
+        response = api_client.get("/api/locations/?page=0")
+        assert response.status_code == 404
+
+
+class TestLocationsConsistency:
+    @staticmethod
+    def test_count_vs_list_count_consistency(api_client: APIClient, locations_with_issues: list[Location]) -> None:
+        list_response = api_client.get("/api/locations/")
+        count_response = api_client.get("/api/locations/count/")
+        assert list_response.data["count"] == count_response.data["count"]
+
+
+class TestLocationsHTTPMethods:
+    @staticmethod
+    def test_list_endpoint_rejects_post(api_client: APIClient) -> None:
+        response = api_client.post("/api/locations/", {"name": "New"})
+        assert response.status_code in [405, 403, 400]
+
+    @staticmethod
+    def test_response_content_type_is_json(api_client: APIClient) -> None:
+        response = api_client.get("/api/locations/")
+        assert "application/json" in response.get("Content-Type", "")
