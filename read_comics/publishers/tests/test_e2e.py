@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/publishers/testing/test_e2e.md]]
 import pytest
 from rest_framework.test import APIClient
 from utils.utils import flatten_dict

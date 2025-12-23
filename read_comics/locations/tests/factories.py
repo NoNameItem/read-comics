@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/locations/testing/factories.md]]
 import random
 
 import factory

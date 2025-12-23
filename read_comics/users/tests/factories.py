@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/users/testing/factories.md]]
 from collections.abc import Sequence
 from typing import Any
 

@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/characters/testing/fixtures.md]]
 from random import randrange
 
 import pytest

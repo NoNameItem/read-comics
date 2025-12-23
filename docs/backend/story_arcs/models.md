@@ -10,12 +10,24 @@
 
 Represents a comic book story arc or multi-issue storyline (e.g., "The Dark Phoenix Saga", "Infinity Gauntlet"). Story arcs group related issues across volumes and track user progress through multi-issue stories.
 
-#### Database Fields
+**Inherited Fields from ComicvineSyncModel:**
 
 | Field Name | Type | Description |
 |---|---|---|
 | `id` | Integer (PK) | Django primary key |
 | `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
+
+**Custom Fields (defined in StoryArc model):**
+
+| Field Name | Type | Description |
+|---|---|---|
 | `name` | TextField | Story arc title/name |
 | `aliases` | TextField | Pipe-separated alternative names |
 | `short_description` | TextField | Short summary/deck text from ComicVine |
@@ -27,9 +39,8 @@ Represents a comic book story arc or multi-issue storyline (e.g., "The Dark Phoe
 | `first_issue` | FK → Issue | First issue in the arc (nullable, SET_NULL on delete) |
 | `first_issue_comicvine_id` | Integer | ComicVine ID for first issue (used for lookup) |
 | `slug` | AutoSlugField | URL-safe slug (unique, 1000 chars) — generated from publisher name and story arc name |
-| `api_detail_url` | URLField | ComicVine API endpoint URL |
-| `site_detail_url` | URLField | ComicVine website URL |
-| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `watchers` | GenericRelation → WatchedItem | Users watching this story arc |
+| `tracker` | FieldTracker | Tracks field changes for synchronization |
 
 #### ComicVine Sync Configuration
 

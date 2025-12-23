@@ -10,9 +10,25 @@
 
 ### `Issue`
 
-Main entity representing a comic book issue. Inherits from `ImageMixin` and `ComicvineSyncModel` for image handling and ComicVine API synchronization.
+Main entity representing a comic book issue.
 
-**Key Fields:**
+Extends: `ImageMixin`, `ComicvineSyncModel`
+
+**Inherited Fields from ComicvineSyncModel:**
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `id` | Integer (PK) | Django primary key |
+| `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
+
+**Custom Fields (defined in Issue model):**
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -30,6 +46,9 @@ Main entity representing a comic book issue. Inherits from `ImageMixin` and `Com
 | `space_key` | CharField | DigitalOcean Space file key |
 | `size` | IntegerField | File size in bytes |
 | `slug` | AutoSlugField | Unique slug (auto-generated from publisher/volume/number/name) |
+| `volume` | ForeignKey → Volume | Parent Volume (CASCADE delete) |
+| `watchers` | GenericRelation → WatchedItem | Users watching this issue |
+| `tracker` | FieldTracker | Tracks field changes for synchronization |
 
 **Relationships:**
 

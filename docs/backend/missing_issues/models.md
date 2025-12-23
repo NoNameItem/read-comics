@@ -16,6 +16,8 @@
 
 Simple distributed lock model for task synchronization.
 
+Extends: Django `models.Model` (no parent classes with custom fields)
+
 | Field | Type | Purpose |
 |-------|------|---------|
 | `code` | CharField(100, unique) | Unique lock identifier |

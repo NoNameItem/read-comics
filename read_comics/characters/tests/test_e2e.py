@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/characters/testing/test_e2e.md]]
 import sys
 from datetime import date
 

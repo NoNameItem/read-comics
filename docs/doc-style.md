@@ -83,6 +83,103 @@ When documenting DRF REST endpoints in `docs/backend/<app>/endpoints.md`, follow
 
 Link viewset, serializer, and model documentation using relative paths (e.g., `[viewsets.md#classname]`, `[serializers.md#classname]`, `[models.md#classname]`).
 
+## Testing Documentation
+
+When documenting tests, factories, and fixtures in `docs/backend/testing/` (global) and `docs/<app>/testing/` (app-specific), follow this structure:
+
+### Organization
+
+1. **Global testing documentation** (`/docs/backend/testing/`):
+   - `README.md` — Overview of testing architecture, test types, running tests, common patterns
+   - `factories.md` — Global factories (e.g., `ComicvineSyncModelFactory`, `UserFactory`) with parameters and usage
+   - `fixtures.md` — Global fixtures (e.g., `api_client`, `authenticated_api_client`, `user`) with scope and dependencies
+
+2. **App-specific testing documentation** (`/docs/<app>/testing/`):
+   - `README.md` — Links to app-specific factory, fixture, and test documentation
+   - `factories.md` — App factories (e.g., `VolumeFactory`, `IssueFactory`) with parameters, post-generation hooks, and usage
+   - `fixtures.md` — App fixtures (e.g., `volume_with_issues`, `finished_volumes`) with scope, dependencies, and usage patterns
+   - `test_<module>.md` — Documentation for each test file (e.g., `test_drf_urls.md` for `test_drf_urls.py`, `test_e2e.md` for `test_e2e.py`)
+
+3. **File-to-documentation mapping:**
+   - Each test file has a corresponding documentation file with the same name but `.md` extension
+   - `tests/test_drf_urls.py` → `testing/test_drf_urls.md`
+   - `tests/test_e2e.py` → `testing/test_e2e.md`
+   - `tests/factories.py` → `testing/factories.md`
+   - `tests/conftest.py` fixtures → `testing/fixtures.md`
+
+### Factory Documentation
+
+When documenting factory classes:
+
+1. **Header**: Name the factory class and location (e.g., `## VolumeFactory in read_comics/volumes/tests/factories.py`)
+2. **Inheritance**: Note the parent factory class and what it provides (e.g., `Extends: ComicvineSyncModelFactory`)
+3. **Parameters table**: List all parameters with columns: `Field | Type | Generator | Purpose`
+   - Include post-generation hooks (e.g., `add_issues`)
+   - Document Faker generators used (e.g., `Faker("word")`)
+   - Note LazyAttribute usage for dynamic values
+4. **Batch creation**: Document `create_batch()` usage and parameter passing
+5. **Post-generation hooks**: Explain what each hook does and which parameters trigger it
+6. **Usage examples**: Concise examples showing common factory patterns (not full code, just parameter calls)
+   - Example: `volume = VolumeFactory(name="Amazing Spider-Man", start_year=1963, add_issues=5)`
+7. **Database behavior**: Document `django_get_or_create` deduplication if applicable
+8. **No source code**: Do NOT include factory method implementation code
+
+### Fixture Documentation
+
+When documenting fixture functions:
+
+1. **Header**: Name the fixture with function signature (e.g., `## volume_with_issues()`)
+2. **Type/Returns**: What object type is returned (e.g., "Volume model instance" or "List of Volume instances")
+3. **Scope**: Pytest scope if non-default (e.g., `function`, `session`)
+4. **Dependencies**: List fixtures or other fixtures this depends on (e.g., `user` fixture)
+5. **Parameters table**: For fixtures with parameters, list columns: `Parameter | Type | Purpose`
+6. **Behavior**: What data it creates or modifies (2-3 sentences)
+7. **When to use**: Describe common test scenarios where this fixture is appropriate
+8. **Usage examples**: Concise examples showing how to use the fixture in tests
+   - Include fixture combinations for complex scenarios
+   - Example: `def test_hide_finished(volumes_with_issues, finished_volumes, authenticated_api_client):`
+9. **No source code**: Do NOT include fixture implementation or setup code
+
+### Test Documentation
+
+When documenting test files and test classes:
+
+1. **File header**: Name and location (e.g., `# Volumes E2E Tests in read_comics/volumes/tests/test_e2e.py`)
+2. **Summary**: One-sentence description of test scope (e.g., "End-to-end API tests verifying complete workflows")
+3. **Marks/decorators**: Note pytest marks used globally (e.g., `pytestmark = pytest.mark.django_db`)
+4. **Test classes**: Document each test class with purpose
+5. **Test methods**: For each test method, document:
+   - **Endpoint**: HTTP method and URL being tested (e.g., `GET /api/volumes/`)
+   - **Fixtures used**: List all fixtures injected into the test
+   - **Assertions**: List what the test verifies (not how, just what)
+   - **Purpose**: One-sentence statement of what behavior is being tested
+   - **Business logic verified**: Bullet list of application behaviors confirmed
+   - **Related components**: Link to ViewSet, Serializer, Mixin, or Model being tested (e.g., `[viewsets.md#volumesviewset]`)
+6. **Test execution**: Include commands to run the test file and specific tests
+7. **No source code**: Do NOT include test implementation code, assertions code, or HTTP request details
+   - Exception: Query parameter format (e.g., `?hide-finished=no`) can be shown inline
+
+### Common Testing Documentation Patterns
+
+1. **Response structure**: For API tests, document expected response fields in a table:
+   ```markdown
+   | Field | Type | Purpose |
+   |---|---|---|
+   | count | Integer | Total count of items |
+   | results | Array | List of serialized objects |
+   ```
+
+2. **Fixture combinations**: Show how to use multiple fixtures together:
+   ```markdown
+   def test_hide_finished(volumes_with_issues, finished_volumes, authenticated_api_client):
+       # volumes_with_issues: Data that SHOULD appear
+       # finished_volumes: Data that should be EXCLUDED
+   ```
+
+3. **Test patterns**: Document reusable patterns (e.g., filtering tests, authorization tests, data validation tests)
+
+4. **Edge cases**: Document test scenarios for boundary conditions and special cases
+
 ## Content guidelines
 - Use concise bullet lists; avoid speculation and keep prose factual.
 - Prefer inline code formatting (`code`) for identifiers, types, routes, and settings, and link to related docs with relative hyperlinks.
@@ -106,7 +203,7 @@ Link viewset, serializer, and model documentation using relative paths (e.g., `[
 
 Whenever writing or updating documentation under `docs/backend/`:
 
-1. **ALWAYS follow this doc-style.md guide** — Apply all rules in Sections "Standard structure", "Detailed checklist", "Endpoint documentation", "Content guidelines", and "Anchors & linking" without exception.
+1. **ALWAYS follow this doc-style.md guide** — Apply all rules in Sections "Standard structure", "Detailed checklist", "Endpoint documentation", "Testing Documentation", "Content guidelines", and "Anchors & linking" without exception.
 
 2. **Structure requirement:**
    - Use `# Title` → `## Summary` → `## Reference` (or `## <Section>`) → `### Class/Function` → `#### Details`
@@ -118,19 +215,28 @@ Whenever writing or updating documentation under `docs/backend/`:
    - Endpoint examples, request/response, URL patterns → endpoints.md ONLY
    - Viewsets.md → configuration, mixins, serializers, queryset only
 
-4. **Always add Docs comments:**
+4. **Testing documentation structure:**
+   - Global testing docs in `/docs/backend/testing/` (README.md, factories.md, fixtures.md)
+   - App-specific testing docs in `/docs/<app>/testing/` (README.md, factories.md, fixtures.md)
+   - Each test file gets corresponding documentation: `test_drf_urls.py` → `test_drf_urls.md`, `test_e2e.py` → `test_e2e.md`
+   - Document parameters, behavior, and usage examples — NO source code implementations
+   - Include tables for parameters/fields and separate sections for each test class/method
+
+5. **Always add Docs comments:**
    - Every Python module with documentation must have `# Docs: [[docs/path/to_file.md]]` at the top
    - Update module comment if documentation file path changes
+   - For test files with multiple docs, use separate comments: `# Docs: [[...]]` then `# Docs: [[...]]` (one per line)
 
-5. **Before starting documentation:**
+6. **Before starting documentation:**
    - Read this doc-style.md file to ensure compliance
    - Check adjacent docs for terminology consistency
    - Use relative links for cross-references
 
-6. **Do NOT include full function implementations in documentation:**
+7. **Do NOT include full function implementations in documentation:**
    - Document method signatures, parameters, return values, and behavior
    - DO NOT paste entire function code
    - Show only small config snippets (1-3 lines) or brief call examples when needed
    - Focus on WHAT a function does, not HOW it's implemented in detail
+   - For tests: show fixtures used and what's verified, NOT assertion code
 
 **This rule applies across all sessions. Do not skip or abbreviate these requirements.**

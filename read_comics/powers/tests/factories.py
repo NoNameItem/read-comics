@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/powers/testing/factories.md]]
 from factory import Faker
 from utils.test_utils.factories import ComicvineSyncModelFactory
 

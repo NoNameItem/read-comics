@@ -10,12 +10,24 @@
 
 Represents a comic book team or group of superheroes (e.g., "Avengers", "X-Men", "Fantastic Four"). Teams track member relationships and first appearances.
 
-#### Database Fields
+**Inherited Fields from ComicvineSyncModel:**
 
 | Field Name | Type | Description |
 |---|---|---|
 | `id` | Integer (PK) | Django primary key |
 | `comicvine_id` | Integer (unique) | ComicVine API identifier |
+| `api_detail_url` | URLField | ComicVine API endpoint URL |
+| `site_detail_url` | URLField | ComicVine website URL |
+| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `comicvine_status` | CharField | Status: Not Matched, Queued, or Matched |
+| `comicvine_last_match` | DateTimeField | Timestamp of last successful sync |
+| `created_dt` | DateTimeField | Record creation timestamp (auto-set) |
+| `modified_dt` | DateTimeField | Last modification timestamp (auto-updated) |
+
+**Custom Fields (defined in Team model):**
+
+| Field Name | Type | Description |
+|---|---|---|
 | `name` | TextField | Team name |
 | `aliases` | TextField | Pipe-separated alternative names |
 | `short_description` | TextField | Short summary/deck text from ComicVine |
@@ -27,9 +39,8 @@ Represents a comic book team or group of superheroes (e.g., "Avengers", "X-Men",
 | `first_issue_comicvine_id` | Integer | ComicVine ID for first issue (used for lookup) |
 | `publisher` | FK → Publisher | Team's primary publisher (nullable, CASCADE delete) |
 | `slug` | AutoSlugField | URL-safe slug (unique, 1000 chars) — generated from publisher name and team name |
-| `api_detail_url` | URLField | ComicVine API endpoint URL |
-| `site_detail_url` | URLField | ComicVine website URL |
-| `crawl_source` | CharField | Either "list" or "detail" indicating data completeness |
+| `watchers` | GenericRelation → WatchedItem | Users watching this team |
+| `tracker` | FieldTracker | Tracks field changes for synchronization |
 
 #### ComicVine Sync Configuration
 
