@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/users/api/auth.md]]
 from dj_rest_auth.jwt_auth import JWTCookieAuthentication
 
 

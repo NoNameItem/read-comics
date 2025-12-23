@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/users/models.md]]
 from typing import TypeVar
 
 from allauth.account.models import EmailAddress

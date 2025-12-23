@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/users/api/serializers.md]]
 from typing import Any
 
 from allauth.account.models import EmailAddress

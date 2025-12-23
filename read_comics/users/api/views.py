@@ -1,5 +1,4 @@
-# Docs: [[docs/backend/api-endpoints.md]]
-# Docs: [[docs/backend/users/endpoints.md]]
+# Docs: [[docs/backend/users/api/views.md]]
 from allauth.account.models import EmailAddress
 from django.contrib.auth import get_user_model
 from django.contrib.auth.models import AnonymousUser
