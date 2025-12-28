@@ -18,29 +18,29 @@ Run all backend commands from repository root using Docker Compose:
 
 ```bash
 # Start all services
-docker-compose -f local.yml up
+docker compose -f local.yml up
 
 # Create superuser
-docker-compose -f local.yml run --rm backend python manage.py createsuperuser
+docker compose -f local.yml run --rm backend python manage.py createsuperuser
 
 # Run migrations
-docker-compose -f local.yml run --rm backend python manage.py migrate
+docker compose -f local.yml run --rm backend python manage.py migrate
 
 # Run tests
-docker-compose -f local.yml run --rm backend pytest
+docker compose -f local.yml run --rm backend pytest
 
 # Run tests with coverage
-docker-compose -f local.yml run --rm backend coverage run -m pytest
-docker-compose -f local.yml run --rm backend coverage html
+docker compose -f local.yml run --rm backend coverage run -m pytest
+docker compose -f local.yml run --rm backend coverage html
 
 # Type checking
-docker-compose -f local.yml run --rm backend mypy read_comics
+docker compose -f local.yml run --rm backend mypy read_comics
 
 # Start Celery worker
-docker-compose -f local.yml up celeryworker
+docker compose -f local.yml up celeryworker
 
 # Django shell
-docker-compose -f local.yml run --rm backend python manage.py shell
+docker compose -f local.yml run --rm backend python manage.py shell
 ```
 
 **Services available:**
@@ -291,3 +291,20 @@ When writing documentation for new modules:
 Always use context7 when I need code generation, setup or configuration steps, or
 library/API documentation. This means you should automatically use the Context7 MCP
 tools to resolve library id and get library docs without me having to explicitly ask.
+
+## Research-Plan-Implement Framework
+
+This repository uses the Research-Plan-Implement framework with the following workflow commands:
+
+1. `/1_research_codebase` - Deep codebase exploration with parallel AI agents
+2. `/2_create_plan` - Create detailed, phased implementation plans
+3. `/3_validate_plan` - Verify implementation matches plan
+4. `/4_implement_plan` - Execute plan systematically
+5. `/5_save_progress` - Save work session state
+6. `/6_resume_work` - Resume from saved session
+7. `/7_research_cloud` - Analyze cloud infrastructure (READ-ONLY)
+
+Research findings are saved in `thoughts/shared/research/`
+Implementation plans are saved in `thoughts/shared/plans/`
+Session summaries are saved in `thoughts/shared/sessions/`
+Cloud analyses are saved in `thoughts/shared/cloud/`

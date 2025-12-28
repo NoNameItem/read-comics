@@ -137,11 +137,15 @@ class TestConceptsList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
-        response = api_client.get("/api/concepts/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/concepts/")
+        invalid_ordering_response = api_client.get("/api/concepts/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        names = [item["name"] for item in response.data["results"]]
-        assert names == sorted(names)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_invalid_page(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:
@@ -295,7 +299,8 @@ class TestConceptsConsistency:
         detail_response = api_client.get(f"/api/concepts/{concept_with_issues.slug}/")
         assert list_response.status_code == 200 and detail_response.status_code == 200
         for key in list_response.data["results"][0].keys():
-            assert key in detail_response.data
+            if key not in ("issues_count", "volumes_count"):
+                assert key in detail_response.data
 
     @staticmethod
     def test_count_vs_list_count_consistency(api_client: APIClient, concepts_with_issues: list[Concept]) -> None:

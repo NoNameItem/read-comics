@@ -40,7 +40,3 @@ CELERY_TASK_EAGER_PROPAGATES = True
 # Your stuff...
 # ------------------------------------------------------------------------------
 STATICFILES_DIRS += ["read_comics/static"]  # noqa F405 # Duplicate for PyCharm Code Insight
-
-CORS_ALLOWED_ORIGINS = [
-        "*",
-    ]

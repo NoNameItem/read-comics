@@ -6,16 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0012_alter_ignoredissue_volume_comicvine_id'),
+        ("missing_issues", "0012_alter_ignoredissue_volume_comicvine_id"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Locks',
+            name="Locks",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('code', models.CharField(max_length=100, unique=True)),
-                ('dttm', models.DateTimeField(null=True)),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("code", models.CharField(max_length=100, unique=True)),
+                ("dttm", models.DateTimeField(null=True)),
             ],
         ),
     ]

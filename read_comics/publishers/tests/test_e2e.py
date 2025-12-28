@@ -156,11 +156,15 @@ class TestPublishersList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
-        response = api_client.get("/api/publishers/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/publishers/")
+        invalid_ordering_response = api_client.get("/api/publishers/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        names = [item["name"] for item in response.data["results"]]
-        assert names == sorted(names)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_invalid_page(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
@@ -171,7 +175,9 @@ class TestPublishersList:
 
 class TestPublishersParametrized:
     @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True)])
-    def test_ordering_parametrized(self, api_client: APIClient, publishers_with_volumes: list[Publisher], ordering: str, is_reverse: bool) -> None:
+    def test_ordering_parametrized(
+        self, api_client: APIClient, publishers_with_volumes: list[Publisher], ordering: str, is_reverse: bool
+    ) -> None:
         response = api_client.get(f"/api/publishers/?ordering={ordering}")
         assert response.status_code == 200
         values = [item[ordering.lstrip("-")] for item in response.data["results"]]
@@ -188,7 +194,9 @@ class TestPublishersEdgeCases:
 class TestPublishersConsistency:
     @staticmethod
     def test_count_vs_list_consistency(api_client: APIClient, publishers_with_volumes: list[Publisher]) -> None:
-        assert api_client.get("/api/publishers/").data["count"] == api_client.get("/api/publishers/count/").data["count"]
+        assert (
+            api_client.get("/api/publishers/").data["count"] == api_client.get("/api/publishers/count/").data["count"]
+        )
 
 
 class TestPublishersHTTPMethods:

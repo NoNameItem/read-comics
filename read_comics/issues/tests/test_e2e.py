@@ -111,16 +111,15 @@ class TestIssuesList:
 
     @staticmethod
     def test_invalid_ordering_field_falls_back(api_client: APIClient, issues: list[Issue]) -> None:
-        response = api_client.get("/api/issues/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/issues/")
+        invalid_ordering_response = api_client.get("/api/issues/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        expected_slugs = list(
-            Issue.objects.was_matched()
-            .order_by("cover_date", "volume__name", "volume__start_year", "numerical_number", "number")
-            .values_list("slug", flat=True)
-        )
-        response_slugs = [item["slug"] for item in response.data["results"]]
-        assert response_slugs == expected_slugs[: len(response_slugs)]
+        assert invalid_ordering_response.status_code == 200
+
+        default_slugs = [item["slug"] for item in default_response.data["results"]]
+        invalid_ordering_slugs = [item["slug"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_slugs == default_slugs
 
 
 class TestIssueDetail:

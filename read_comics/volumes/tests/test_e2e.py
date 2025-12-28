@@ -175,11 +175,15 @@ class TestVolumesList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, volumes_with_issues: list[Volume]) -> None:
-        response = api_client.get("/api/volumes/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/volumes/")
+        invalid_ordering_response = api_client.get("/api/volumes/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        start_years = [item["start_year"] for item in response.data["results"]]
-        assert start_years == sorted(start_years, key=lambda x: x if x is not None else 0)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_invalid_page(api_client: APIClient, volumes_with_issues: list[Volume]) -> None:

@@ -144,11 +144,15 @@ class TestObjectsList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, objects_with_issues: list[Object]) -> None:
-        response = api_client.get("/api/objects/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/objects/")
+        invalid_ordering_response = api_client.get("/api/objects/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        names = [item["name"] for item in response.data["results"]]
-        assert names == sorted(names)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_invalid_page(api_client: APIClient, objects_with_issues: list[Object]) -> None:
@@ -159,7 +163,9 @@ class TestObjectsList:
 
 class TestObjectsParametrized:
     @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True)])
-    def test_ordering_parametrized(self, api_client: APIClient, objects_with_issues: list[Object], ordering: str, is_reverse: bool) -> None:
+    def test_ordering_parametrized(
+        self, api_client: APIClient, objects_with_issues: list[Object], ordering: str, is_reverse: bool
+    ) -> None:
         response = api_client.get(f"/api/objects/?ordering={ordering}")
         assert response.status_code == 200
         field = ordering.lstrip("-")

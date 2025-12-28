@@ -6,14 +6,14 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('issues', '0020_issue_variant_covers'),
+        ("issues", "0020_issue_variant_covers"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='issueperson',
-            name='role',
-            field=models.CharField(blank=True, default='', max_length=100),
+            model_name="issueperson",
+            name="role",
+            field=models.CharField(blank=True, default="", max_length=100),
             preserve_default=False,
         ),
     ]

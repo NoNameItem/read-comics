@@ -6,16 +6,16 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0015_comicvine_endpoints_lock'),
+        ("missing_issues", "0015_comicvine_endpoints_lock"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='APIQueue',
+            name="APIQueue",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('endpoint', models.TextField()),
-                ('comicvine_id', models.TextField()),
+                ("id", models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name="ID")),
+                ("endpoint", models.TextField()),
+                ("comicvine_id", models.TextField()),
             ],
         ),
     ]

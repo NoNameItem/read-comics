@@ -181,12 +181,15 @@ class TestTeamsList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, teams_with_issues: list[Team]) -> None:
-        response = api_client.get("/api/teams/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/teams/")
+        invalid_ordering_response = api_client.get("/api/teams/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        # Should fall back to default ordering (name)
-        names = [item["name"] for item in response.data["results"]]
-        assert names == sorted(names)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_first_page(api_client: APIClient, teams_with_issues: list[Team]) -> None:
@@ -219,7 +222,9 @@ class TestTeamsList:
 
 class TestTeamsParametrized:
     @pytest.mark.parametrize("ordering,is_reverse", [("name", False), ("-name", True), ("issues_count", False)])
-    def test_ordering_parametrized(self, api_client: APIClient, teams_with_issues: list[Team], ordering: str, is_reverse: bool) -> None:
+    def test_ordering_parametrized(
+        self, api_client: APIClient, teams_with_issues: list[Team], ordering: str, is_reverse: bool
+    ) -> None:
         response = api_client.get(f"/api/teams/?ordering={ordering}")
         assert response.status_code == 200
         field = ordering.lstrip("-")
@@ -245,7 +250,9 @@ class TestTeamsConsistency:
         assert api_client.get("/api/teams/").data["count"] == api_client.get("/api/teams/count/").data["count"]
 
     @staticmethod
-    def test_count_with_show_all_consistency(api_client: APIClient, teams_with_issues: list[Team], teams_no_issues: list[Team]) -> None:
+    def test_count_with_show_all_consistency(
+        api_client: APIClient, teams_with_issues: list[Team], teams_no_issues: list[Team]
+    ) -> None:
         list_resp = api_client.get("/api/teams/?show-all=yes")
         count_resp = api_client.get("/api/teams/count/?show-all=yes")
         assert list_resp.data["count"] == count_resp.data["count"]

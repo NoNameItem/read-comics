@@ -8,13 +8,15 @@ import read_comics.utils.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('users', '0002_user_unlimited_downloads'),
+        ("users", "0002_user_unlimited_downloads"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='user',
-            name='_user_image',
-            field=read_comics.utils.fields.ThumbnailImageField(null=True, upload_to=read_comics.users.models.get_user_image_name),
+            model_name="user",
+            name="_user_image",
+            field=read_comics.utils.fields.ThumbnailImageField(
+                null=True, upload_to=read_comics.users.models.get_user_image_name
+            ),
         ),
     ]

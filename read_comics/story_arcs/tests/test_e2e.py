@@ -185,11 +185,15 @@ class TestStoryArcsList:
 
     @staticmethod
     def test_invalid_ordering_field(api_client: APIClient, story_arcs_with_issues: list[StoryArc]) -> None:
-        response = api_client.get("/api/story-arcs/?ordering=invalid_field")
+        """Test that invalid ordering field falls back to default ordering."""
+        default_response = api_client.get("/api/story-arcs/")
+        invalid_ordering_response = api_client.get("/api/story-arcs/?ordering=invalid_field")
 
-        assert response.status_code == 200
-        names = [item["name"] for item in response.data["results"]]
-        assert names == sorted(names)
+        assert invalid_ordering_response.status_code == 200
+
+        default_names = [item["name"] for item in default_response.data["results"]]
+        invalid_ordering_names = [item["name"] for item in invalid_ordering_response.data["results"]]
+        assert invalid_ordering_names == default_names
 
     @staticmethod
     def test_pagination_invalid_page(api_client: APIClient, story_arcs_with_issues: list[StoryArc]) -> None:
