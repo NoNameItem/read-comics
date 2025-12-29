@@ -389,8 +389,8 @@ SIMPLE_JWT = {
 
 # django-cors-headers - https://github.com/adamchainz/django-cors-headers#setup
 CORS_URLS_REGEX = r"^/api/.*$"
+CORS_ALLOW_ALL_ORIGINS = True
 
-CORS_ALLOWED_ORIGINS = env.list("CORS_ALLOWED_ORIGINS", default=["*"])
 # Silk
 # ------------------------------------------------------------------------------
 SILKY_META = True

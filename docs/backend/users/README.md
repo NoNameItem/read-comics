@@ -6,14 +6,13 @@ Custom user model with authentication, profile management, and reading progress 
 
 - [models.md](models.md) — User model extending AbstractUser with profile and progress fields
 - [middleware.md](middleware.md) — LastActiveMiddleware for tracking user activity
-- [api/auth.md](api/auth.md) — JWT cookie authentication configuration
 - [api/serializers.md](api/serializers.md) — User serializers for various API operations
 - [api/views.md](api/views.md) — Profile, statistics, and email management views
 
 ## Key Features
 
 - **Custom User Model**: Extends Django's AbstractUser with profile fields
-- **Authentication**: JWT token-based with cookie storage (dj-rest-auth)
+- **Authentication**: JWT token-based (djangorestframework-simplejwt via dj-rest-auth)
 - **Profile Management**: Users can update name, bio, birth date, gender, avatar
 - **Reading Progress**: Track finished issues, reading speed, in-progress content
 - **Email Management**: Change primary email with verification flow (django-allauth)
@@ -61,7 +60,7 @@ User properties:
 
 ## Authentication
 
-- JWT tokens stored in HTTP-only cookies (via dj-rest-auth)
-- Custom Auth class checks session before JWT auth
-- Integration with django-allauth for email verification
+- JWT tokens via dj-rest-auth and djangorestframework-simplejwt
+- Tokens stored in localStorage (not HTTP-only cookies)
+- Integration with django-allauth for email verification and social auth
 - Multiple email addresses per user supported

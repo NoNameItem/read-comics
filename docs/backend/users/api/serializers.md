@@ -188,6 +188,5 @@ After email change:
 
 ## References
 
-- [auth.md](auth.md) — JWT authentication configuration
 - [views.md](views.md) — API endpoints using these serializers
 - [../models.md](../models.md) — User model definition

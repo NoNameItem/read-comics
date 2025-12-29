@@ -4,23 +4,6 @@ import { ref } from 'vue'
 
 const open = ref(false)
 
-const breadcrumb = useBreadcrumbsStore()
-
-const bredcrumbItems = ref([
-  {
-    label: 'Docs',
-    to: '/docs'
-  },
-  {
-    label: 'Components',
-    to: '/docs/components'
-  },
-  {
-    label: 'Breadcrumb',
-    to: '/docs/components/breadcrumb'
-  }
-])
-
 const brand: NavigationMenuItem[] = [
   {
     label: 'Read Comics',
@@ -39,61 +22,6 @@ const menuItems: NavigationMenuItem[] = [
     onSelect: () => {
       open.value = false
     }
-  },
-  {
-    label: 'Inbox',
-    icon: 'i-lucide-inbox',
-    to: '/inbox',
-    badge: '4',
-    onSelect: () => {
-      open.value = false
-    }
-  },
-  {
-    label: 'Customers',
-    icon: 'i-lucide-users',
-    to: '/customers',
-    onSelect: () => {
-      open.value = false
-    }
-  },
-  {
-    label: 'Settings',
-    to: '/settings',
-    icon: 'i-lucide-settings',
-    defaultOpen: true,
-    type: 'trigger',
-    children: [
-      {
-        label: 'General',
-        to: '/settings',
-        exact: true,
-        onSelect: () => {
-          open.value = false
-        }
-      },
-      {
-        label: 'Members',
-        to: '/settings/members',
-        onSelect: () => {
-          open.value = false
-        }
-      },
-      {
-        label: 'Notifications',
-        to: '/settings/notifications',
-        onSelect: () => {
-          open.value = false
-        }
-      },
-      {
-        label: 'Security',
-        to: '/settings/security',
-        onSelect: () => {
-          open.value = false
-        }
-      }
-    ]
   }
 ]
 </script>
@@ -135,7 +63,7 @@ const menuItems: NavigationMenuItem[] = [
       </template>
     </UDashboardSidebar>
 
-    <!--    <UDashboardSearch :groups="groups" />-->
+    <!--    <UDashboardSearch :groups="groups" /> -->
     <slot />
   </UDashboardGroup>
 </template>

@@ -98,9 +98,9 @@ Check existing plan files to determine next sequence number, then write the plan
 - [ ] Backend tests pass: `docker compose -f local.yml run --rm backend pytest`
 - [ ] Backend formating passes: `docker compose -f local.yml run --rm backend black .`
 - [ ] Backend flake8 passes: `docker compose -f local.yml run --rm backend flake8`
-- [ ] Frontend formating passes: `npm run format`
-- [ ] Frontend type checking passes: `npm run typecheck`
-- [ ] Frontend linting passes: `npm run lint`
+- [ ] Frontend formating passes: `pnpm run format`
+- [ ] Frontend type checking passes: `pnpm run typecheck`
+- [ ] Frontend linting passes: `pnpm run lint`
 
 #### Manual Verification:
 - [ ] Feature works as expected in UI

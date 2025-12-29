@@ -146,7 +146,6 @@ After email change via ChangeEmailView:
 
 ## References
 
-- [auth.md](auth.md) — JWT authentication used by views
 - [serializers.md](serializers.md) — ProfileSerializer and ChangeEmailSerializer
 - [../models.md](../models.md) — User model with properties accessed by views
 - [../middleware.md](../middleware.md) — LastActiveMiddleware tracking activity

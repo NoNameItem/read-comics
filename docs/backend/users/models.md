@@ -156,4 +156,3 @@ Used by properties to provide filtered querysets of user's in-progress reading.
 - [middleware.md](middleware.md) — LastActiveMiddleware for tracking activity timestamps
 - [api/serializers.md](api/serializers.md) — User serialization for API responses
 - [api/views.md](api/views.md) — Profile management and statistics views
-- [api/auth.md](api/auth.md) — JWT authentication configuration

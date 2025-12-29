@@ -5,43 +5,22 @@ defineProps<{
   collapsed?: boolean
 }>()
 
-const colorMode = useColorMode()
-const appConfig = useAppConfig()
+const route = useRoute()
+const userStore = useUserStore()
 
-const colors = [
-  'red',
-  'orange',
-  'amber',
-  'yellow',
-  'lime',
-  'green',
-  'emerald',
-  'teal',
-  'cyan',
-  'sky',
-  'blue',
-  'indigo',
-  'violet',
-  'purple',
-  'fuchsia',
-  'pink',
-  'rose'
-]
-const neutrals = ['slate', 'gray', 'zinc', 'neutral', 'stone']
-
-const user = ref({
-  name: 'Benjamin Canac',
+const user = computed(() => ({
+  name: userStore.name || '',
   avatar: {
-    src: 'https://github.com/benjamincanac.png',
-    alt: 'Benjamin Canac'
+    src: '~/assets/images/avatars/U_thumb.png',
+    alt: userStore.name || ''
   }
-})
+}))
 
 const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: 'label',
-      label: user.value.name,
+      label: user.value.name || '',
       avatar: user.value.avatar
     }
   ],
@@ -62,6 +41,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
 
 <template>
   <UDropdownMenu
+    v-if="userStore.loggedIn"
     :items="items"
     :content="{ align: 'center', collisionPadding: 12 }"
     :ui="{ content: collapsed ? 'w-48' : 'w-(--reka-dropdown-menu-trigger-width)' }"
@@ -69,7 +49,7 @@ const items = computed<DropdownMenuItem[][]>(() => [
     <UButton
       v-bind="{
         ...user,
-        label: collapsed ? undefined : user?.name,
+        label: collapsed ? undefined : user.name || '',
         trailingIcon: collapsed ? undefined : 'i-lucide-chevrons-up-down'
       }"
       color="neutral"
@@ -94,4 +74,21 @@ const items = computed<DropdownMenuItem[][]>(() => [
       </div>
     </template>
   </UDropdownMenu>
+  <UButton
+    v-else
+    v-bind="{
+      label: collapsed ? undefined : 'Log in',
+      trailingIcon: collapsed ? undefined : 'i-lucide-log-in',
+      leadingIcon: collapsed ? 'i-lucide-log-in' : undefined
+    }"
+    color="neutral"
+    variant="ghost"
+    block
+    :square="collapsed"
+    :ui="{
+      trailingIcon: 'text-dimmed',
+      leadingIcon: 'text-dimmed'
+    }"
+    :to="{ path: '/users/login', query: { to: route.fullPath } }"
+  />
 </template>
