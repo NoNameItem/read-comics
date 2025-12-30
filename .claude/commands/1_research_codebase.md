@@ -36,7 +36,13 @@ Then wait for the user's research query.
    - Include specific file paths and line numbers for reference
    - Highlight patterns, connections, and architectural decisions
 
-5. **Generate research document:**
+5. **Ask clarifying questions before finalizing:**
+   - Review findings and identify any ambiguities or decision points
+   - Ask the user questions that arose during analysis (implementation choices, scope, preferences)
+   - Wait for user's answers before proceeding to document generation
+   - This ensures the final document contains decisions, not open questions
+
+6. **Generate research document:**
    Structure the document with YAML frontmatter followed by content:
    ```markdown
    ---
@@ -76,7 +82,7 @@ Then wait for the user's research query.
    [Any areas that need further investigation]
    ```
 
-6. **Save and present findings:**
+7. **Save and present findings:**
    - Check existing research files to determine next sequence number
    - Save to `thoughts/shared/research/NNN_topic.md` where NNN is a 3-digit sequential number (001, 002, etc.)
    - Present a concise summary of findings to the user

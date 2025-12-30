@@ -14,6 +14,11 @@ const toast = useToast()
 const loading = ref(false)
 const formError = ref<string | null>(null)
 
+const registerLink = computed(() => ({
+  path: '/users/register',
+  query: route.query.to ? { to: route.query.to } : undefined
+}))
+
 const fields: AuthFormField[] = [
   {
     name: 'login',
@@ -79,7 +84,8 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
         @submit="onSubmit"
       >
         <template #description>
-          Don't have an account? <ULink to="#" class="text-primary font-medium">Sign up</ULink>.
+          Don't have an account?
+          <ULink :to="registerLink" class="text-primary font-medium">Sign up</ULink>.
         </template>
         <template #password-hint>
           <ULink to="#" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
