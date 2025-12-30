@@ -116,13 +116,13 @@ Response with tokens + UserLoginSerializer(user)
 | Component | Новый фронтенд (`frontend/`) | Старый фронтенд (`frontend_old/`) |
 |-----------|------------------------------|-----------------------------------|
 | Registration page | **Отсутствует** | `frontend_old/pages/register.vue` |
-| User store `register()` | `frontend/app/stores/user.js:125-146` | `frontend_old/stores/user.js:131-152` |
+| User store `register()` | `frontend/app/stores/user.ts:125-146` | `frontend_old/stores/user.ts:131-152` |
 | Verify email page | **Отсутствует** | `frontend_old/pages/verify-email.vue` |
 | Confirm email page | **Отсутствует** | `frontend_old/pages/confirm-email.vue` |
 
 ### Frontend: User Store Registration Function
 
-**File:** `frontend/app/stores/user.js:125-146`
+**File:** `frontend/app/stores/user.ts:125-146`
 
 ```javascript
 const register = async (username, email, password) => {
@@ -174,7 +174,7 @@ const register = async (username, email, password) => {
 - `read_comics/users/models.py:29-119` — Custom User model
 
 ### Frontend (New)
-- `frontend/app/stores/user.js:125-146` — Функция `register()`
+- `frontend/app/stores/user.ts:125-146` — Функция `register()`
 - `frontend/app/pages/users/login.vue:82` — Placeholder ссылка на регистрацию
 
 ### Frontend (Old - Reference)

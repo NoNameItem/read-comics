@@ -4,7 +4,7 @@
 Реализация страницы регистрации с поддержкой редиректа на исходную страницу после успешной регистрации. Аналогично login flow с `?to=` параметром.
 
 ## Current State Analysis
-- **User store**: `frontend/app/stores/user.js:125-146` — функция `register(username, email, password)` готова
+- **User store**: `frontend/app/stores/user.ts:125-146` — функция `register(username, email, password)` готова
 - **Login page**: `frontend/app/pages/users/login.vue` — образец для регистрации
 - **Login link**: `frontend/app/pages/users/login.vue:82` — placeholder `to="#"` для Sign up
 - **Backend**: `POST /api/auth/registration/` — готов (dj-rest-auth)
@@ -183,7 +183,7 @@ const loginLink = computed(() => ({
 
 #### Automated Verification:
 - [x] Frontend type checking passes: `npm run typecheck`
-- [x] Frontend linting passes: `npm run lint`
+- [xl] Frontend linting passes: `npm run lint`
 
 #### Manual Verification:
 - [ ] Страница `/users/register` открывается

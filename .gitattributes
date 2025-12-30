@@ -6,3 +6,6 @@ read_comics/static/twbsPagination/** linguist-vendored
 read_comics/static/slick/** linguist-vendored
 
 docs/** linguist-documentation
+
+# Use bd merge for beads JSONL files
+.beads/issues.jsonl merge=beads

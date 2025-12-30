@@ -64,6 +64,7 @@ export const useUserStore = defineStore(
     )
     const loggedIn = computed(() => !!accessToken.value)
     const isSuperuserOrStaff = computed(() => isSuperuser.value || isStaff.value)
+    const displayName = computed<string>(() => name.value || username.value || '')
 
     const setUser = (user) => {
       username.value = user?.username
@@ -119,7 +120,9 @@ export const useUserStore = defineStore(
 
           setTokens(data.access, data.refresh)
         }
-      } catch (e) {}
+      } catch {
+        // Ignore - token refresh can fail
+      }
     }
 
     const register = async (username, email, password) => {
@@ -145,8 +148,32 @@ export const useUserStore = defineStore(
       }
     }
 
-    const logout = () => {
+    const logout = async () => {
+      const axios = useAxios()
+      const toast = useToast()
+
+      // Save the name before $reset() for the toast message
+      const userName = name.value || username.value
+
+      // Send refresh token to backend for blacklisting
+      // Ignore errors - logout should work even if backend is unavailable
+      if (refreshToken.value) {
+        try {
+          await axios.post('/auth/logout/', { refresh: refreshToken.value })
+        } catch {
+          // Ignore errors - clearing local state is more important
+        }
+      }
+
       $reset()
+
+      // Show toast after clearing state
+      if (userName) {
+        toast.add({
+          title: `Bye, ${userName}. Hope to see you soon!`,
+          color: 'success'
+        })
+      }
     }
 
     return {
@@ -178,7 +205,8 @@ export const useUserStore = defineStore(
       setTokens,
       setUser,
       thumbnail,
-      username
+      username,
+      displayName
     }
   },
   { persist: true }

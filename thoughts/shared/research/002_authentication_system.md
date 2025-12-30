@@ -244,7 +244,7 @@ Used for admin-only actions like technical info endpoints.
 ### Frontend Authentication
 
 #### User Store (Pinia)
-**Location**: `frontend/app/stores/user.js`
+**Location**: `frontend/app/stores/user.ts`
 
 **State** (lines 30-43):
 ```javascript
@@ -528,7 +528,7 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False   # Don't logout on password change
                ▼
 ┌─────────────────────────────────────────┐
 │ 2. userStore.login(username, password)  │
-│    frontend/app/stores/user.js:94       │
+│    frontend/app/stores/user.ts:94       │
 └──────────────┬──────────────────────────┘
                │
                ▼
@@ -660,12 +660,12 @@ ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = False   # Don't logout on password change
 - `read_comics/utils/api/permissions.py:7-9` - IsSuperuserOrStaff permission
 
 ### Frontend Core Files
-- `frontend/app/stores/user.js:30-43` - Authentication state
-- `frontend/app/stores/user.js:94-109` - Login method
-- `frontend/app/stores/user.js:111-123` - Token refresh method
-- `frontend/app/stores/user.js:125-146` - Registration method
-- `frontend/app/stores/user.js:148-150` - Logout method
-- `frontend/app/stores/user.js:184` - Persistence configuration
+- `frontend/app/stores/user.ts:30-43` - Authentication state
+- `frontend/app/stores/user.ts:94-109` - Login method
+- `frontend/app/stores/user.ts:111-123` - Token refresh method
+- `frontend/app/stores/user.ts:125-146` - Registration method
+- `frontend/app/stores/user.ts:148-150` - Logout method
+- `frontend/app/stores/user.ts:184` - Persistence configuration
 - `frontend/app/composables/useAxios.js:4-13` - Request interceptor (token injection)
 - `frontend/app/composables/useAxios.js:15-52` - Response error interceptor (auto-refresh)
 - `frontend/app/composables/useAxios.js:57` - Axios instance creation (hardcoded URL)

@@ -117,7 +117,7 @@ app/
 ├── pages/           # File-based routing
 ├── components/      # Vue components
 ├── layouts/         # default.vue, blank.vue
-├── stores/          # Pinia state (user.js, breadcrumbs.js)
+├── stores/          # Pinia state (user.ts, breadcrumbs.js)
 ├── composables/     # useAxios.js, useDashboard.ts
 ├── types/           # TypeScript definitions
 └── utils/           # Utility functions
@@ -134,7 +134,7 @@ app/
 
 #### Key Stores
 
-**User Store** (`frontend/app/stores/user.js`)
+**User Store** (`frontend/app/stores/user.ts`)
 - JWT authentication (access/refresh tokens)
 - User profile (username, email, gender, images)
 - Actions: `login()`, `register()`, `refreshTokens()`, `logout()`
@@ -281,7 +281,7 @@ Push/PR → qa.yml → linters.yml (flake8, pylint, mypy, prettier, eslint)
 ### Frontend
 - `frontend/nuxt.config.ts` - Nuxt configuration
 - `frontend/app/layouts/default.vue` - Main layout
-- `frontend/app/stores/user.js` - Authentication store
+- `frontend/app/stores/user.ts` - Authentication store
 - `frontend/app/composables/useAxios.js` - HTTP client
 
 ### Infrastructure

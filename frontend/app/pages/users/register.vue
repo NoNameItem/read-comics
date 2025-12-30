@@ -47,10 +47,14 @@ const fields: AuthFormField[] = [
 
 const schema = z
   .object({
-    username: z.string().trim().min(1, 'Username is required'),
-    email: z.string().trim().min(1, 'Email is required').email('Invalid email address'),
-    password: z.string().min(8, 'Password must be at least 8 characters'),
-    confirmPassword: z.string().min(1, 'Please confirm your password')
+    username: z.string('Username is required').trim().min(1, 'Username is required'),
+    email: z
+      .string('Email is required')
+      .trim()
+      .min(1, 'Email is required')
+      .email('Invalid email address'),
+    password: z.string('Password is required').min(8, 'Password must be at least 8 characters'),
+    confirmPassword: z.string('Email is required').min(1, 'Please confirm your password')
   })
   .refine((data) => data.password === data.confirmPassword, {
     message: 'Passwords do not match',
@@ -97,7 +101,7 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
   }
 
   toast.add({
-    title: `Welcome, ${userStore.name || userStore.username}!`,
+    title: `Welcome, ${userStore.displayName}!`,
     color: 'success'
   })
 

@@ -1,4 +1,4 @@
-import { useUserStore } from '@/stores/user'
+import { useUserStore } from '~/stores/user.ts'
 import axios from 'axios'
 
 const requestInterceptor = async (config) => {
@@ -16,12 +16,24 @@ function responseErrorInterceptor(axiosIns) {
   return async (error) => {
     const userStore = useUserStore()
 
-    // Any status codes that falls outside the range of 2xx cause this function to trigger
+    // Any status code that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     const originalRequest = error.config
     if (error.response?.status === 401 && originalRequest.url.includes('auth/token/refresh/')) {
-      userStore.logout()
+      await userStore.logout()
       userStore.$persist()
+
+      // Redirect to login if current page requires authentication
+      const route = useRoute()
+      const requiresAuth = route.meta?.loginRequired
+      const requiresAdmin = route.meta?.staffRequired || route.meta?.superuserRequired
+
+      if (requiresAuth || requiresAdmin) {
+        await navigateTo({
+          path: '/users/login',
+          query: { to: route.fullPath }
+        })
+      }
 
       return Promise.reject(error)
     } else if (error.response?.status === 401 && !originalRequest._retry) {

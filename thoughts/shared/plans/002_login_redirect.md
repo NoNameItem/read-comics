@@ -5,7 +5,7 @@
 
 ## Current State Analysis
 - **Login page**: `frontend/app/pages/users/login.vue` - базовая форма без обработки редиректа
-- **User store**: `frontend/app/stores/user.js` - функция `login()` возвращает ошибку или undefined при успехе
+- **User store**: `frontend/app/stores/user.ts` - функция `login()` возвращает ошибку или undefined при успехе
 - **UserMenu**: `frontend/app/components/UserMenu.vue` - кнопка логина с фиксированным `to="/users/login"`
 - **Middleware**: отсутствует - нет защиты роутов и автоматического редиректа на логин
 - **Reference implementation**: `frontend_old/middleware/02.auth.global.ts` и `frontend_old/pages/login.vue`

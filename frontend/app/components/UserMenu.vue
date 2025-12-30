@@ -9,18 +9,35 @@ const route = useRoute()
 const userStore = useUserStore()
 
 const user = computed(() => ({
-  name: userStore.name || '',
+  name: userStore.displayName,
   avatar: {
-    src: '~/assets/images/avatars/U_thumb.png',
-    alt: userStore.name || ''
+    src: userStore.thumbnail,
+    alt: userStore.displayName
   }
 }))
+
+const handleLogout = async () => {
+  // Check if the current page requires authentication or admin privileges
+  const requiresAuth = route.meta?.loginRequired
+  const requiresAdmin = route.meta?.staffRequired || route.meta?.superuserRequired
+
+  await userStore.logout()
+
+  // If page requires auth or admin privileges - redirect to login
+  if (requiresAuth || requiresAdmin) {
+    await navigateTo({
+      path: '/users/login',
+      query: { to: route.fullPath }
+    })
+  }
+  // Otherwise stay on the current page
+}
 
 const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
       type: 'label',
-      label: user.value.name || '',
+      label: user.value.name,
       avatar: user.value.avatar
     }
   ],
@@ -33,7 +50,8 @@ const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
       label: 'Log out',
-      icon: 'i-lucide-log-out'
+      icon: 'i-lucide-log-out',
+      onSelect: handleLogout
     }
   ]
 ])
