@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/pages/users/register.md]] -->
 <script setup lang="ts">
 import * as z from 'zod'
 import type { FormSubmitEvent, AuthFormField } from '@nuxt/ui'

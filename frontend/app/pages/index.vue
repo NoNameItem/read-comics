@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/pages/index.md]] -->
 <script setup lang="ts">
 const breadcrumb = useBreadcrumbsStore()
 useServerSeoMeta({ title: 'Read Comics' })

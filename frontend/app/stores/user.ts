@@ -1,3 +1,4 @@
+// Docs: [[docs/frontend/stores/user.md]]
 // noinspection D
 
 import FThumb from '~/assets/images/avatars/F_thumb.png'

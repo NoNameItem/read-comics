@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/components/UserMenu.md]] -->
 <script setup lang="ts">
 import type { DropdownMenuItem } from '@nuxt/ui'
 

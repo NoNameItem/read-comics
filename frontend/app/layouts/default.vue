@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/layouts/default.md]] -->
 <script setup lang="ts">
 import type { NavigationMenuItem } from '@nuxt/ui'
 import { ref } from 'vue'

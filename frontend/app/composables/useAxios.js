@@ -1,3 +1,4 @@
+// Docs: [[docs/frontend/composables/useAxios.md]]
 import { useUserStore } from '~/stores/user.ts'
 import axios from 'axios'
 

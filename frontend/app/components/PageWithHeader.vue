@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/components/PageWithHeader.md]] -->
 <script setup lang="ts">
 const breadcrumb = useBreadcrumbsStore()
 </script>

@@ -1,3 +1,4 @@
+<!-- Docs: [[docs/frontend/layouts/blank.md]] -->
 <script setup lang="ts"></script>
 
 <template>

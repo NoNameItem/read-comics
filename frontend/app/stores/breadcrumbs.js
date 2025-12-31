@@ -1,3 +1,4 @@
+// Docs: [[docs/frontend/stores/breadcrumbs.md]]
 import { useHead } from '#unhead/composables'
 
 export const useBreadcrumbsStore = defineStore('breadcrumbs', () => {
