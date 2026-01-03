@@ -92,5 +92,173 @@ export default defineAppConfig({
 
 ### Runtime Config
 
-- API base URL currently hardcoded in `useAxios.js`
-- Future: move to `runtimeConfig` for environment-based configuration
+```typescript
+// nuxt.config.ts
+export default defineNuxtConfig({
+  runtimeConfig: {
+    public: {
+      apiBase: 'http://127.0.0.1:8000/api'
+    }
+  }
+})
+```
+
+Environment variables:
+- `.env.development`: `NUXT_PUBLIC_API_BASE=http://127.0.0.1:8000/api`
+- `.env.production`: `NUXT_PUBLIC_API_BASE=https://readcomics.net/api`
+
+## Data Fetching (Pinia Colada)
+
+### Query Pattern
+
+Keys Factory + defineQuery hybrid:
+
+```typescript
+// composables/api/characters.ts
+
+export const characterKeys = {
+  all: ['characters'] as const,
+  lists: () => [...characterKeys.all, 'list'] as const,
+  list: (params: object) => [...characterKeys.lists(), params] as const,
+  details: () => [...characterKeys.all, 'detail'] as const,
+  detail: (slug: string) => [...characterKeys.details(), slug] as const,
+}
+
+export const useCharactersList = defineQuery(() => {
+  const route = useRoute()
+  const axios = useAxios()
+
+  return {
+    key: () => characterKeys.list(route.query),
+    query: async () => {
+      const { data } = await axios.get('/characters/', { params: route.query })
+      return data
+    },
+    staleTime: 5 * 60 * 1000  // 5 min
+  }
+})
+```
+
+### Caching Strategy
+
+| Data Type | staleTime | gcTime |
+|-----------|-----------|--------|
+| Entity lists | 5 min | 30 min |
+| Entity details | 5 min | 30 min |
+| Profile / reading progress | 1 min | 30 min |
+
+### Mutations
+
+Pessimistic updates with cache invalidation:
+
+```typescript
+export const useMarkIssueRead = defineMutation(() => {
+  const axios = useAxios()
+  const cache = useQueryCache()
+
+  return {
+    mutation: async (issueSlug: string) => {
+      await axios.post(`/issues/${issueSlug}/mark-read/`)
+    },
+    onSuccess: (_data, issueSlug) => {
+      // Invalidate all affected caches
+      cache.invalidateQueries({ key: issueKeys.all })
+      cache.invalidateQueries({ key: volumeKeys.all })
+      cache.invalidateQueries({ key: storyArcKeys.all })
+      cache.invalidateQueries({ key: profileKeys.all })
+      // ... all entities with reading progress
+    }
+  }
+})
+```
+
+## Forms and Validation
+
+### Schema (Zod)
+
+Schemas defined inline in components (1 component = 1 schema).
+
+### Server Error Handling
+
+```typescript
+// composables/useFormErrors.ts
+export function useFormErrors(formRef: Ref<FormInstance | null>) {
+  async function handleSubmit<T>(submitFn: () => Promise<T>): Promise<T | undefined> {
+    try {
+      return await submitFn()
+    } catch (error) {
+      if (isAxiosError(error) && error.response?.status === 400) {
+        const errors = Object.entries(error.response.data).map(
+          ([path, messages]) => ({
+            path,
+            message: Array.isArray(messages) ? messages[0] : messages
+          })
+        )
+        formRef.value?.setErrors(errors)
+        return undefined
+      }
+      throw error
+    }
+  }
+
+  return { handleSubmit }
+}
+```
+
+## TypeScript Types
+
+Generated from OpenAPI schema:
+
+```bash
+npm run generate:types  # openapi-ts --input ../schema.yaml --output app/types/api
+```
+
+Structure:
+```
+types/
+├── api/           # Generated
+│   ├── models/
+│   │   ├── Character.ts
+│   │   ├── Volume.ts
+│   │   └── ...
+│   └── index.ts
+└── index.d.ts     # Manual types
+```
+
+## SSR/SSG Strategy
+
+| Pages | Mode | Reason |
+|-------|------|--------|
+| Entity lists/details | SSR | SEO |
+| Search | SSR | SEO |
+| Auth, Profile | CSR | Private |
+| Missing issues (admin) | CSR | Staff only |
+
+```typescript
+// nuxt.config.ts
+routeRules: {
+  '/users/**': { ssr: false },
+  '/missing-issues/**': { ssr: false },
+}
+```
+
+## Error Handling
+
+| Error | Handler |
+|-------|---------|
+| 401 | axios interceptor → redirect to login |
+| 403 | axios interceptor → toast |
+| 400 | useFormErrors → inline form errors |
+| 404/500 | error.vue (UError component) |
+
+## SEO
+
+```vue
+<script setup>
+useSeoMeta({
+  title: () => entity.value?.name,
+  description: () => entity.value?.short_description,
+  ogImage: () => entity.value?.image
+})
+</script>
+```

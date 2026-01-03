@@ -82,10 +82,46 @@ API testing uses JWT Bearer tokens:
 - Test both standard and custom action endpoints
 
 ### E2E Tests
-- Test complete workflows (HTTP → ViewSet → Database → Serializer → Response)
-- Validate authentication, filtering, response structure
-- Test business logic and computed fields
-- Use realistic test data from fixtures
+
+Test complete workflows (HTTP → ViewSet → Database → Serializer → Response).
+
+**Test Categories:**
+
+| Category | What to Test |
+|----------|--------------|
+| Count | `/count/` endpoint with filters |
+| List | Response keys, data values, ordering, pagination |
+| Detail | All fields, 404 for non-existent |
+| TechnicalInfo | Permissions (401 no auth, 403 non-staff, 200 staff) |
+| EdgeCases | Boundary conditions (page=0, page=-1, large page_size) |
+| Consistency | List vs Detail field match, List vs Count consistency |
+| HTTPMethods | POST/PUT/PATCH/DELETE rejection on read-only endpoints |
+| CrossEndpoint | Integration between related endpoints |
+
+**Example structure:**
+
+```python
+pytestmark = pytest.mark.django_db
+
+class TestCharactersList:
+    list_keys = {"slug", "image", "name", ...}  # Expected response fields
+
+    def test_data(self, api_client: APIClient, character_with_issues: Character) -> None:
+        response = api_client.get("/api/characters/")
+        assert response.status_code == 200
+        assert response.data["results"][0]["slug"] == character_with_issues.slug
+
+class TestCharacterTechnicalInfo:
+    @staticmethod
+    def test_no_auth(api_client, character) -> None:
+        response = api_client.get(f"/api/characters/{character.slug}/technical-info/")
+        assert response.status_code == 401
+
+    @staticmethod
+    def test_staff(staff_api_client, character) -> None:
+        response = staff_api_client.get(...)
+        assert response.status_code == 200
+```
 
 ## Running Tests
 

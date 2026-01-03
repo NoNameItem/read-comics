@@ -10,31 +10,43 @@ ReadComics.net — Django + Nuxt 3 app for comic book data management.
 
 ## Architecture
 
+**Detailed docs:**
+- Backend: `docs/backend/architecture.md`
+- Frontend: `docs/frontend/architecture.md`
+- Migration plan: `docs/plans/2026-01-02-drf-nuxt-migration-design.md`
+
 ### Data Flow
 ComicVine API → Scrapy → MongoDB → Celery Tasks → PostgreSQL → DRF API → Nuxt Frontend
 
 ### Key Patterns
 
-**ComicvineSyncModel** (`read_comics/utils/models.py`) — Base for all comic entities:
-- `MONGO_COLLECTION` — MongoDB collection name
-- `COMICVINE_INFO_TASK` — Celery sync task
-- `FIELDS_MAPPING` — ComicVine → Django field mapping
-- `.sync()` — trigger MongoDB → PostgreSQL sync
+**ComicvineSyncModel** (`read_comics/utils/models.py`) — Base for all comic entities
 
 **API Structure:**
 - `<app>/api/viewsets.py`, `<app>/api/serializers.py`
 - Routes: `config/api_router.py` (DRF Extensions router)
 - Auth: JWT (SimpleJWT), session in DEBUG
 
-**Celery Routing** (`config/celery_app.py`):
-- `*_update` tasks → `read_comics_spiders` queue
-- Missing issues → entity-specific queues
-- Default: `read_comics_default`
+**Frontend Stack:**
+- Data fetching: Pinia Colada (defineQuery + Keys Factory)
+- Forms: Zod + useFormErrors composable
+- Types: Generated from OpenAPI via openapi-ts
+- SSR by default, CSR for private pages
 
 ### Structure
 - Backend: `read_comics/` (Django apps: issues, volumes, characters, etc.)
 - Frontend: `frontend/app/` (pages, components, stores, composables)
 - Spiders: `read_comics/spiders/spiders/`
+
+## Testing
+
+**Detailed docs:**
+- Backend: `docs/backend/testing/README.md`
+- Frontend: `docs/frontend/testing/README.md`
+
+**Backend:** pytest + Factory Boy, files: `test_drf_urls.py` (URL resolution), `test_e2e.py` (API integration)
+
+**Frontend:** Vitest for composables (high priority), Vue Test Utils for components (medium), Playwright for E2E (later)
 
 ## Token Optimization
 
@@ -48,16 +60,20 @@ ComicVine API → Scrapy → MongoDB → Celery Tasks → PostgreSQL → DRF API
 - **Jira:** RC @ https://nonameitem.atlassian.net
 - **Version:** 1.26.0 (`pyproject.toml`)
 
+## Git Rules
+
+- **NEVER commit without explicit user request** — `git add` is OK, but no `git commit` unless explicitly asked
+
 ## Integrations
 
+**Atlassian (Jira/Confluence):**
+- **CRITICAL:** NEVER call `mcp__atlassian__*` tools directly — responses are too large and consume context quickly
+- ALWAYS wrap Atlassian operations in `Task` tool with `subagent_type="general-purpose"`
+- In the prompt, specify exactly what data to return (e.g., "return only: key, summary, status")
+- Example:
+  ```
+  Task(subagent_type="general-purpose",
+       prompt="Find Jira issue RC-123. Return only: key, summary, status, assignee displayName")
+  ```
+
 **Context7:** Auto-use for library docs, code generation, API references.
-
-**Research-Plan-Implement Framework:**
-1. `/1_research_codebase` — Explore codebase
-2. `/2_create_plan` — Create implementation plan
-3. `/3_validate_plan` — Verify plan
-4. `/4_implement_plan` — Execute
-5. `/5_save_progress` / `/6_resume_work` — Session management
-7. `/7_research_cloud` — Cloud infrastructure (READ-ONLY)
-
-Artifacts: `thoughts/shared/{research,plans,sessions,cloud}/`
