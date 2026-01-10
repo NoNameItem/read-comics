@@ -20,15 +20,19 @@ Read Comics is a web application for exploring and managing comic data. Django R
 docker compose -f local.yml up                    # Start all services
 docker compose -f local.yml run --rm backend pytest  # Run tests
 docker compose -f local.yml run --rm backend pytest path/to/test.py::TestClass::test_method  # Single test
+docker compose -f local.yml run --rm backend pytest -vv -s  # Verbose with print output
+docker compose -f local.yml run --rm backend coverage run -m pytest  # Run with coverage
+docker compose -f local.yml run --rm backend coverage html           # Generate HTML report (htmlcov/)
 docker compose -f local.yml run --rm backend mypy read_comics   # Type check
 docker compose -f local.yml run --rm backend flake8             # Lint
 docker compose -f local.yml run --rm backend python manage.py migrate
 docker compose -f local.yml run --rm backend python manage.py createsuperuser
 ```
 
-### Frontend (`frontend/` directory)
+### Frontend (run from `frontend/` directory)
 
 ```bash
+cd frontend
 pnpm dev          # Dev server (localhost:3000)
 pnpm build        # Production build
 pnpm lint:fix     # Fix ESLint issues
