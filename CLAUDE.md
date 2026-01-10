@@ -4,62 +4,75 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Read Comics is a web application for exploring and managing comic data. Django REST Framework backend + Nuxt 4 frontend, Docker-based development, ComicVine API integration.
+Read Comics is a full-stack web application for browsing and managing comic data. It scrapes data from ComicVine, stores it in PostgreSQL, and serves it via a REST API to a Nuxt 3 frontend.
 
-**Documentation:** `docs/backend/README.md`, `docs/backend/architecture.md`, `docs/frontend/README.md`
-
-## Instructions for Claude
-
-- Before modifying files, read the corresponding documentation in `docs/` (e.g., `docs/backend/characters/` before changing `read_comics/characters/`)
+**Data flow:** ComicVine API → Scrapy spiders → MongoDB (raw) → Celery tasks → PostgreSQL → DRF API → Nuxt frontend
 
 ## Development Commands
 
-### Backend (Docker-based)
+### Backend (run from repository root with Docker)
 
 ```bash
-docker compose -f local.yml up                    # Start all services
-docker compose -f local.yml run --rm backend pytest  # Run tests
-docker compose -f local.yml run --rm backend pytest path/to/test.py::TestClass::test_method  # Single test
-docker compose -f local.yml run --rm backend pytest -vv -s  # Verbose with print output
-docker compose -f local.yml run --rm backend coverage run -m pytest  # Run with coverage
-docker compose -f local.yml run --rm backend coverage html           # Generate HTML report (htmlcov/)
-docker compose -f local.yml run --rm backend mypy read_comics   # Type check
-docker compose -f local.yml run --rm backend flake8             # Lint
-docker compose -f local.yml run --rm backend python manage.py migrate
-docker compose -f local.yml run --rm backend python manage.py createsuperuser
+docker compose -f local.yml up                              # Start all services
+docker compose -f local.yml run --rm django pytest          # Run all tests
+docker compose -f local.yml run --rm django pytest path/to/test.py::TestClass::test_method  # Run single test
+docker compose -f local.yml run --rm django coverage run -m pytest && coverage html  # Test coverage
+docker compose -f local.yml run --rm django mypy read_comics  # Type checking
+
+# Linting (inside container)
+docker compose -f local.yml run --rm django black read_comics config
+docker compose -f local.yml run --rm django isort read_comics config
+docker compose -f local.yml run --rm django flake8 read_comics config
 ```
 
 ### Frontend (run from `frontend/` directory)
 
 ```bash
-cd frontend
-pnpm dev          # Dev server (localhost:3000)
+pnpm dev          # Dev server on localhost:3000
 pnpm build        # Production build
-pnpm lint:fix     # Fix ESLint issues
-pnpm format:fix   # Fix Prettier issues
-pnpm typecheck    # TypeScript check
+pnpm lint         # ESLint
+pnpm lint:fix     # Auto-fix lint issues
+pnpm format       # Check Prettier formatting
+pnpm format:fix   # Auto-format
+pnpm typecheck    # TypeScript checking
 ```
+
+### Running services
+
+- Django API: http://localhost:8000
+- Nuxt frontend: http://localhost:3000
+- MailHog (email): http://localhost:8025
+- Documentation: http://localhost:7001
 
 ## Architecture
 
-### Backend
-- **`config/`** — settings (`base.py`, `local.py`, `production.py`), `api_router.py`, `celery_app.py`
-- **`read_comics/`** — Django apps (users, characters, issues, volumes, etc.), each with `api/viewsets.py`, `api/serializers.py`, `models.py`, `tests/`
-- **`read_comics/utils/`** — shared utilities, `ComicvineSyncModel` base class
+### Backend Structure
 
-### Frontend (`frontend/app/`)
-- **`pages/`** — file-based routing
-- **`stores/`** — Pinia (`user.ts`, `breadcrumbs.ts`)
-- **`composables/`** — `useAxios.js` (JWT interceptors)
-- **`layouts/`** — `default.vue` (dashboard), `blank.vue` (auth)
+Django apps are domain-driven under `read_comics/`:
+- `characters/`, `issues/`, `volumes/`, `publishers/`, etc. - Comic entity apps
+- `core/` - Shared utilities, collectors, base models
+- `users/` - Authentication and user management
+- `search/` - Search functionality (django-watson)
 
-### Data Flow
-ComicVine API → Scrapy → MongoDB → Celery → PostgreSQL → Django REST API → Nuxt frontend
+**Key patterns:**
+- `ComicvineSyncModel` - Base class for all comic entities with MongoDB sync
+- API endpoints registered in `config/api_router.py` using DRF Extensions router
+- Celery task routing configured in `config/celery_app.py`
 
-### Databases
-- **PostgreSQL** — app data, users
-- **MongoDB** — scraped ComicVine data
-- **Redis** — cache, Celery broker
+### Frontend Structure
+
+Nuxt 4 app under `frontend/app/`:
+- `pages/` - File-based routing
+- `stores/` - Pinia stores (`user.ts` for auth, `breadcrumbs.ts` for navigation)
+- `composables/useAxios.js` - Axios instance with JWT interceptor and token refresh
+- `middleware/auth.global.ts` - Route protection based on `route.meta.loginRequired`
+- `layouts/` - `default.vue` (dashboard with sidebar), `blank.vue` (auth pages)
+
+**Authentication flow:**
+1. Login POST to `/api/auth/login/` returns JWT tokens
+2. Tokens stored in Pinia with localStorage persistence
+3. `useAxios()` adds `Authorization: Bearer {token}` to requests
+4. On 401, attempts refresh via `/api/auth/token/refresh/`
 
 ## Code Style
 
@@ -81,100 +94,3 @@ When writing documentation under `docs/`:
 2. Add `# Docs: [[docs/path/to_file.md]]` comment at top of Python modules
 3. Endpoint documentation goes in `endpoints.md`, not `viewsets.md`
 4. Test documentation: describe fixtures and assertions, not source code
-
-## Testing
-
-See `docs/testing.md` for comprehensive guide.
-
-**Structure:** `<app>/tests/` — `conftest.py`, `factories.py`, `test_drf_urls.py`, `test_e2e.py`
-
-**Key concepts:**
-- **Factories** (Factory Boy): `VolumeFactory(add_issues=3)` — create test data
-- **Fixtures**: `api_client`, `authenticated_api_client`, `user`, `staff`, `superuser`
-- **URL tests**: verify `reverse()` ↔ `resolve()` mapping
-- **E2E tests**: full API workflow (request → response validation)
-
-**Fixtures pattern:**
-- `volume_no_issues` / `volume_with_issues` — single objects
-- `volumes_no_issues` / `volumes_with_issues` — batches
-- `finished_volume(user)` / `finished_volumes(user)` — user-specific state
-
-## Common Tasks
-
-### Add API endpoint
-1. `read_comics/<app>/api/viewsets.py` — ViewSet
-2. `read_comics/<app>/api/serializers.py` — Serializer
-3. `config/api_router.py` — register route
-
-### Add frontend page
-1. `frontend/app/pages/<path>.vue`
-2. `definePageMeta({ layout: 'blank', loginRequired: true })`
-
-## Naming Conventions
-
-### Backend
-- ViewSet: `CharacterViewSet` → route `characters`
-- Serializer: `CharacterDetailSerializer`, `CharactersListSerializer`
-- URL lookup: `slug` (not `id`)
-
-### Frontend
-- Components: PascalCase (`UserMenu.vue`)
-- Stores: `useUserStore`
-- Composables: `useAxios`
-
-## Reference Files (use as templates)
-
-### Backend
-- ViewSet: `read_comics/characters/api/viewsets.py`
-- Serializer: `read_comics/characters/api/serializers.py`
-- Tests: `read_comics/characters/tests/`
-- Fixtures: `read_comics/conftest.py`
-
-### Frontend
-- Store: `frontend/app/stores/user.ts`
-- Composable: `frontend/app/composables/useAxios.js`
-- Page: `frontend/app/pages/users/login.vue`
-
-## Key Backend Utilities
-
-See `docs/backend/utils/` for details.
-
-**ViewSet Mixins** (`read_comics/utils/api/viewsets.py`):
-- `CountActionMixin` — `GET /count/`
-- `TechnicalInfoActionMixin` — `GET /<slug>/technical-info/`
-- `OnlyWithIssuesQuerySetMixin`, `IssuesCountQuerySetMixin`, `FinishedQuerySetMixin`, etc.
-
-**ComicvineSyncModel** (`read_comics/utils/models.py`):
-- Base model for ComicVine entities
-- `MONGO_COLLECTION`, `FIELD_MAPPING`, `fill_from_comicvine()`
-
-## Frontend Patterns
-
-See `docs/frontend/architecture.md` for details.
-
-**Auth:** JWT tokens in `useUserStore`, axios interceptor refreshes on 401
-**Data fetching:** Pinia Colada with keys factory pattern
-**Route protection:** `definePageMeta({ loginRequired: true })`
-**Error handling:** 401→login redirect, 400→form errors, 404/500→error.vue
-
-## Query Parameters
-
-- `?show-all=yes` — include entities with zero issues
-- `?hide-finished=yes` — hide completed (authenticated)
-- `?ordering=name` / `?ordering=-issues_count`
-
-## Environment
-
-**Backend:** `.envs/.local/` (`.django`, `.postgres`, `.mongo`)
-**Frontend:** `NUXT_PUBLIC_API_BASE` (default `http://127.0.0.1:8000/api`)
-
-## Docker Services
-
-| Service | Port | Purpose |
-|---------|------|---------|
-| backend | 8000 | Django API |
-| postgres | 5432 | Database |
-| mongodb | 27017 | Scraped data |
-| redis | 6379 | Cache/broker |
-| mailhog | 8026 | Email testing |
-| celeryworker | - | Async tasks |

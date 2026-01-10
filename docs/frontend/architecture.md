@@ -1,12 +1,16 @@
 # Frontend Architecture
 
-High-level overview of the Nuxt 4 frontend architecture.
+High-level overview of the Nuxt 3 frontend architecture.
 
 ## Summary
 
 - [Technology Stack](#technology-stack) — frameworks and libraries
 - [Directory Structure](#directory-structure) — project organization
 - [Key Patterns](#key-patterns) — authentication, state management, API integration
+- [Data Fetching](#data-fetching-pinia-colada) — Pinia Colada queries and mutations
+- [Forms and Validation](#forms-and-validation) — Zod schemas and error handling
+- [SSR/SSG Strategy](#ssrssg-strategy) — rendering modes by route
+- [Error Handling](#error-handling) — centralized and per-request handling
 
 ## Technology Stack
 
@@ -15,6 +19,7 @@ High-level overview of the Nuxt 4 frontend architecture.
 | Framework | Nuxt 3 | SSR/SSG Vue.js framework |
 | UI Library | Nuxt UI v4 | Component library with dashboard components |
 | State Management | Pinia | Reactive stores with persistence |
+| Data Fetching | Pinia Colada | Query caching with stale-while-revalidate |
 | HTTP Client | Axios | API requests with interceptors |
 | Styling | UnoCSS | Utility-first CSS |
 | Color Mode | @nuxtjs/color-mode | Dark/light theme switching |
