@@ -89,7 +89,9 @@ async function onSubmit(payload: FormSubmitEvent<Schema>) {
           <ULink :to="registerLink" class="text-primary font-medium">Sign up</ULink>.
         </template>
         <template #password-hint>
-          <ULink to="#" class="text-primary font-medium" tabindex="-1">Forgot password?</ULink>
+          <ULink to="/users/forgot-password" class="text-primary font-medium" tabindex="-1"
+            >Forgot password?</ULink
+          >
         </template>
         <template #validation>
           <UAlert v-if="formError" color="error" icon="i-lucide-circle-alert" :title="formError" />
