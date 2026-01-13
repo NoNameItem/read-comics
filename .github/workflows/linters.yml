@@ -9,46 +9,37 @@ on:
         type: boolean
         required: false
 
+env:
+  CI_IMAGE: cr.yandex/crp2m71jbo1s20lvf839/ci-python:latest
+
 jobs:
   flake8:
     name: Flake8
     runs-on: ubuntu-latest
     steps:
-
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Generate .django_unsafe
-        run: |
-          touch .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
-          echo "COMICVINE_API_KEYS=test" >>  .envs/.local/.django_unsafe
-          echo "MONGO_URL=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
-          echo "CELERY_BROKER_URL=amqp://test:test@rabbitmq:5672/test" >> .envs/.local/.django_unsafe
-          echo "CELERY_RESULT_BACKEND=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
-          echo "FLOWER_MAX_TASKS=999999" >> .envs/.local/.django_unsafe
-          echo "FLOWER_BROKER_API=http://test:test@rabbitmq:15672/api/" >> .envs/.local/.django_unsafe
-          touch .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_USER=test" >> .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_PASS=test" >> .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_VHOST=test" >> .envs/.local/.rabbit_unsafe
+      - name: Yandex Cloud CR Login
+        uses: yc-actions/yc-cr-login@v1
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
-      - name: Build the Stack
-        run: docker compose -f local.yml build
-
-      - name: set pipefail
-        run: set -o pipefail
+      - name: Pull CI image
+        run: docker pull ${{ env.CI_IMAGE }}
 
       - name: Run flake8 silent
         if: ${{ inputs.silent_linters }}
-        run: docker compose -f local.yml run --rm django flake8 --count | tee flake8.txt
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            flake8 --count | tee flake8.txt
 
       - name: Run flake8
         if: ${{ !inputs.silent_linters }}
         run: |
           set -o pipefail
-          docker compose -f local.yml run --rm django flake8 --count | tee flake8.txt
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            flake8 --count | tee flake8.txt
 
       - name: Upload flake8 report
         if: success() || failure()
@@ -57,53 +48,33 @@ jobs:
           name: flake8_report
           path: flake8.txt
 
-      - name: Tear down the Stack
-        if: success() || failure()
-        run: docker compose -f local.yml down
-
   pylint:
     name: PyLint
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
+      - name: Yandex Cloud CR Login
+        uses: yc-actions/yc-cr-login@v1
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
-      - name: Generate .django_unsafe
-        run: |
-          touch .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
-          echo "COMICVINE_API_KEYS=test" >>  .envs/.local/.django_unsafe
-          echo "MONGO_URL=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
-          echo "CELERY_BROKER_URL=amqp://test:test@rabbitmq:5672/test" >> .envs/.local/.django_unsafe
-          echo "CELERY_RESULT_BACKEND=mongodb://read_comics:read_comics@mongodb:27017/read_comics" >> .envs/.local/.django_unsafe
-          echo "FLOWER_MAX_TASKS=999999" >> .envs/.local/.django_unsafe
-          echo "FLOWER_BROKER_API=http://test:test@rabbitmq:15672/api/" >> .envs/.local/.django_unsafe
-          touch .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_USER=test" >> .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_PASS=test" >> .envs/.local/.rabbit_unsafe
-          echo "RABBITMQ_DEFAULT_VHOST=test" >> .envs/.local/.rabbit_unsafe
-
-      - name: Build the Stack
-        run: docker compose -f local.yml build
-
-      - name: set pipefail
-        run: set -o pipefail
+      - name: Pull CI image
+        run: docker pull ${{ env.CI_IMAGE }}
 
       - name: Run pylint silent
         if: ${{ inputs.silent_linters }}
-        run: docker compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            pylint read_comics --output-format=parseable | tee pylint.txt
 
       - name: Run pylint
         if: ${{ !inputs.silent_linters }}
         run: |
           set -o pipefail
-          docker compose -f local.yml run --rm django pylint read_comics --output-format=parseable | tee pylint.txt
-
-      - name: reset pipefail
-        if: success() || failure()
-        run: set +o pipefail
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            pylint read_comics --output-format=parseable | tee pylint.txt
 
       - name: Upload pylint report
         if: success() || failure()
@@ -112,93 +83,79 @@ jobs:
           name: pylint_report
           path: pylint.txt
 
-      - name: Tear down the Stack
-        if: success() || failure()
-        run: docker compose -f local.yml down
-
   mypy:
     name: MyPy
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
+      - name: Yandex Cloud CR Login
+        uses: yc-actions/yc-cr-login@v1
+        with:
+          yc-sa-json-credentials: ${{ secrets.YC_SECRET }}
 
-      - name: Generate .django_unsafe
-        run: |
-          touch .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_KEY=test" >> .envs/.local/.django_unsafe
-          echo "DO_SPACE_DATA_SECRET=test" >> .envs/.local/.django_unsafe
-          echo "COMICVINE_API_KEY=test" >>  .envs/.local/.django_unsafe
-
-      - name: Build the Stack
-        run: docker-compose -f local.yml build
-
-      - name: set pipefail
-        run: set -o pipefail
+      - name: Pull CI image
+        run: docker pull ${{ env.CI_IMAGE }}
 
       - name: Run mypy silent
         if: ${{ inputs.silent_linters }}
-        run: docker-compose -f local.yml run --rm django mypy --soft-error-limit=-1 .  | tee mypy.txt
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            mypy --soft-error-limit=-1 . | tee mypy.txt
 
       - name: Run mypy
         if: ${{ !inputs.silent_linters }}
         run: |
           set -o pipefail
-          docker-compose -f local.yml run --rm django mypy --soft-error-limit=-1 .  | tee mypy.txt
-
-      - name: reset pipefail
-        if: success() || failure()
-        run: set +o pipefail
+          docker run --rm -v ${{ github.workspace }}:/app -w /app ${{ env.CI_IMAGE }} \
+            mypy --soft-error-limit=-1 . | tee mypy.txt
 
       - name: Upload mypy report
         if: success() || failure()
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mypy_report
           path: mypy.txt
 
-      - name: Tear down the Stack
-        if: success() || failure()
-        run: docker-compose -f local.yml down
-
-  prettier:
-    name: prettier
+  frontend:
+    name: Frontend (prettier, eslint, typecheck)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install dependencies
         working-directory: frontend
-        run: yarn
+        run: pnpm install
 
       - name: Run prettier
         working-directory: frontend
-        run: yarn prettier:check
-
-  eslint:
-    name: eslint
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Code Repository
-        uses: actions/checkout@v3
-
-      - name: Install dependencies
-        working-directory: frontend
-        run: |
-          echo $FONTAWESOME_NPM_AUTH_TOKEN
-          yarn
+        run: pnpm format
 
       - name: Run eslint
         working-directory: frontend
-        run: |
-          echo $FONTAWESOME_NPM_AUTH_TOKEN
-          yarn lint:check:ci | true
-          sed -i 's+/home/runner/work/read-comics/read-comics+/github/workspace+g' eslint-report.json
+        run: pnpm eslint . --format json --output-file eslint-report.json || true
+
+      - name: Run typecheck
+        working-directory: frontend
+        run: pnpm typecheck
 
       - name: Upload eslint report
-        uses: actions/upload-artifact@v3
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
         with:
           name: eslint_report
           path: frontend/eslint-report.json
