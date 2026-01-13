@@ -44,7 +44,7 @@ class UserLoginSerializer(serializers.ModelSerializer):
 
 def password_reset_url_generator(request, user, temp_key) -> str:
     return (
-        f"{settings.FRONTEND_BASE_URL}/password-reset-confirm"
+        f"{settings.FRONTEND_BASE_URL}/users/password-reset"
         f"?uid={user_pk_to_url_str(user)}&token={temp_key}&email={user.email}"
     )
 

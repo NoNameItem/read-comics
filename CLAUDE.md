@@ -94,3 +94,8 @@ When writing documentation under `docs/`:
 2. Add `# Docs: [[docs/path/to_file.md]]` comment at top of Python modules
 3. Endpoint documentation goes in `endpoints.md`, not `viewsets.md`
 4. Test documentation: describe fixtures and assertions, not source code
+
+## Workflow Rules
+
+- Never run `git commit` without explicit user request, even if skill instructions suggest it
+- After brainstorming creates a design doc, update the current beads task with full design content via `bd update <task-id> --design="..."`

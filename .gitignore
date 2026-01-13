@@ -341,3 +341,6 @@ certs/*
 /deploy/
 /.envs/.local/.rabbit_unsafe
 /.idea/
+
+# bv (beads viewer) local config and caches
+.bv/
