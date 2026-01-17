@@ -45,7 +45,7 @@ zipstream-new==1.1.8
 beautifulsoup4==4.9.3
 
 # Scrappy
-Scrapy==2.11.1
+Scrapy==2.11.2
 # scrapyscript==1.1.5 # https://github.com/jschnurr/scrapyscript
 
 sentry-sdk==1.5.0
