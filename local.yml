@@ -1,6 +1,5 @@
 volumes:
   local_postgres_data: {}
-  local_postgres_data_backups: {}
   local_mongodb_data: { }
   local_mongodb_config: { }
   local_rabbitmq_data: { }
@@ -8,7 +7,7 @@ volumes:
 
 
 services:
-  django: &django
+  backend: &backend
     build:
       context: .
       dockerfile: ./compose/local/django/Dockerfile
@@ -32,19 +31,30 @@ services:
     command: /start
 
   postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: read_comics_production_postgres
+    image: postgres:18.1
     container_name: postgres
     volumes:
-      - local_postgres_data:/var/lib/postgresql/data:Z
-      - local_postgres_data_backups:/backups:z
+      - local_postgres_data:/var/lib/postgresql:Z
     env_file:
       - ./.envs/.local/.postgres
     ports:
       - "5432:5432"
 
+  docs:
+    image: read_comics_local_docs
+    container_name: docs
+    build:
+      context: .
+      dockerfile: ./compose/local/docs/Dockerfile
+    env_file:
+      - ./.envs/.local/.django
+    volumes:
+      - ./docs:/docs:z
+      - ./config:/app/config:z
+      - ./read_comics:/app/read_comics:z
+    ports:
+      - "7001:7001"
+    command: /start-docs
   mongodb:
     image: mongo:8.0.4
     container_name: mongodb
@@ -58,28 +68,11 @@ services:
     ports:
       - "27017:27017"
 
-
-  #  docs:
-#    image: read_comics_local_docs
-#    container_name: docs
-#    build:
-#      context: .
-#      dockerfile: ./compose/local/docs/Dockerfile
-#    env_file:
-#      - ./.envs/.local/.django
-#    volumes:
-#      - ./docs:/docs:z
-#      - ./config:/app/config:z
-#      - ./read_comics:/app/read_comics:z
-#    ports:
-#      - "7001:7001"
-#    command: /start-docs
-
   mailhog:
     image: mailhog/mailhog:v1.0.0
     container_name: mailhog
     ports:
-      - "8025:8025"
+      - "8026:8025"
 
   redis:
     image: redis:6
@@ -98,7 +91,7 @@ services:
       - "5672:5672"   # Default RabbitMQ Port
 
   celeryworker:
-    <<: *django
+    <<: *backend
     image: read_comics_local_celeryworker
     container_name: celeryworker
     depends_on:
@@ -112,19 +105,19 @@ services:
       WORKER_NAME: worker
     command: /start-celeryworker
 
-#  celerybeat:
-#    <<: *django
-#    image: read_comics_local_celerybeat
-#    container_name: celerybeat
-#    depends_on:
-#      - redis
-#      - postgres
-#      - mailhog
-#    ports: []
-#    command: /start-celerybeat
+  #  celerybeat:
+  #    <<: *django
+  #    image: read_comics_local_celerybeat
+  #    container_name: celerybeat
+  #    depends_on:
+  #      - redis
+  #      - postgres
+  #      - mailhog
+  #    ports: []
+  #    command: /start-celerybeat
 
   flower:
-    <<: *django
+    <<: *backend
     image: read_comics_local_flower
     container_name: flower
     ports:

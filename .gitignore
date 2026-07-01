@@ -329,8 +329,6 @@ read_comics/media/
 .pytest_cache/
 .ipython/
 .env
-.envs/*
-!.envs/.local/
 certs/*
 /.idea/sonarlint/
 /flake8.txt
@@ -338,6 +336,26 @@ certs/*
 /pylint.txt
 /yc_read_comics_authorized_key.json
 /.envs/.local/.django_unsafe
+/frontend_old/eslint-report.json
+/staticfiles/
 /deploy/
 /.envs/.local/.rabbit_unsafe
 /.idea/
+
+# bv (beads viewer) local config and caches
+.bv/
+
+# Beads / Dolt files (added by bd init)
+.dolt/
+*.db
+.beads-credential-key
+.beads/proxieddb/
+
+# Beads Dolt store (shared-server) + JSONL exports — data lives in refs/dolt/data, not files
+.beads/issues.jsonl
+.beads/interactions.jsonl
+.beads/embeddeddolt/
+.beads/dolt/
+# 0.47 migration backups (kept locally until confident, then removed)
+.beads.old/
+.beads.backup-0.47/

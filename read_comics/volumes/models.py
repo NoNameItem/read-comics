@@ -1,16 +1,17 @@
+# Docs: [[docs/backend/volumes/models.md]]
 from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 
 from read_comics.missing_issues.models import IgnoredIssue, IgnoredVolume, WatchedItem
-from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.model_mixins import AliasesListMixin, DownloadSizeMixin, ImageMixin
 from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
 from .tasks import volume_comicvine_info_task
 
 
-class Volume(ImageMixin, ComicvineSyncModel):
+class Volume(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
     MONGO_COLLECTION = "comicvine_volumes"
     MONGO_PROJECTION = {
         "characters": 0,
@@ -79,10 +80,7 @@ class Volume(ImageMixin, ComicvineSyncModel):
     tracker = FieldTracker()
 
     class Meta:
-        ordering = (
-            "name",
-            "start_year",
-        )
+        ordering = ("name", "start_year")
 
     def __str__(self):
         publisher_name = self.get_publisher_name()
@@ -124,6 +122,8 @@ class Volume(ImageMixin, ComicvineSyncModel):
         IgnoredIssue.objects.filter(volume_comicvine_id=self.comicvine_id).delete()
 
     def update_issues_do_metadata(self):
+        if not self._is_pk_set():
+            return
         for issue in self.issues.all():
             issue.update_do_metadata(self.name, self.start_year)
 
@@ -150,9 +150,11 @@ class Volume(ImageMixin, ComicvineSyncModel):
         return f"{self.name} ({self.start_year or 'Unknown'})"
 
     @property
-    def real_last_issue_number(self) -> str:
+    def real_last_issue_number(self) -> str | None:
         try:
             real_last_issue = self.issues.order_by("-numerical_number", "-number")[0]
             return real_last_issue.number
         except IndexError:
-            return self.last_issue.number
+            if self.last_issue is not None:
+                return self.last_issue.number
+            return None

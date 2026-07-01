@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/api/viewsets.md]]
 from django.conf import settings
 from pymongo import MongoClient
 from rest_framework import viewsets

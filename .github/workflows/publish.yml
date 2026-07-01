@@ -1,0 +1,43 @@
+name: Publish project
+
+on:
+  workflow_call:
+    inputs:
+      release:
+        description: release version
+        default: "next"
+        type: string
+        required: false
+      tag_latest:
+        description: tag image as latest
+        type: boolean
+        default: false
+        required: false
+
+jobs:
+  publish_backend:
+    name: Backend
+    uses: ./.github/workflows/publish_image.yml
+    with:
+      image_name: "backend"
+      dockerfile: "./compose/production/django/Dockerfile"
+      release: ${{ inputs.release }}
+      tag_latest: ${{ inputs.tag_latest }}
+      context: "."
+    secrets: inherit
+    permissions:
+      checks: none
+      pull-requests: none
+  publish_frontend:
+    name: Frontend
+    uses: ./.github/workflows/publish_image.yml
+    with:
+      image_name: "frontend"
+      dockerfile: "./frontend/Dockerfile"
+      release: ${{ inputs.release }}
+      tag_latest: ${{ inputs.tag_latest }}
+      context: "./frontend"
+    secrets: inherit
+    permissions:
+      checks: none
+      pull-requests: none

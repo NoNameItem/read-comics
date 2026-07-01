@@ -1,9 +1,9 @@
 import allauth.account.signals
 import django_magnificent_messages as dmm
 from allauth.account.adapter import get_adapter
-from allauth.account.utils import logout_on_password_change
+from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout, update_session_auth_hash
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.http import HttpResponseRedirect, JsonResponse
 from django.urls import reverse, reverse_lazy
@@ -15,6 +15,13 @@ from utils.view_mixins import BreadcrumbMixin
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
+
+
+def handle_password_change(request, user):
+    if getattr(settings, "ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE", False):
+        logout(request)
+    else:
+        update_session_auth_hash(request, user)
 
 
 class UserListView(BreadcrumbMixin, ListView):
@@ -110,7 +117,7 @@ class UserEditView(BreadcrumbMixin, LoginRequiredMixin, UpdateView):
         elif "password" in self.request.POST:
             logger.debug("form: password success")
             form.save()
-            logout_on_password_change(self.request, form.user)
+            handle_password_change(self.request, form.user)
             get_adapter(self.request).add_message(self.request, messages.SUCCESS, "account/messages/password_set.txt")
             allauth.account.signals.password_set.send(
                 sender=self.request.user.__class__, request=self.request, user=self.request.user

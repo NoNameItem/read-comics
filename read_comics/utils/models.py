@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/models.md]]
 import datetime
 import random
 import re
@@ -35,7 +36,7 @@ class ComicvineSyncModelConfigurationError(Exception):
 
 class ComicvineSyncModel(models.Model):
     MONGO_COLLECTION = ""
-    MONGO_PROJECTION = {}
+    MONGO_PROJECTION: dict[str, int] = {}
     _DEFAULT_FIELDS_MAPPING = {
         "name": "name",
         "aliases": "aliases",
@@ -85,7 +86,7 @@ class ComicvineSyncModel(models.Model):
             self.logger.info(f"Document with id `{self.comicvine_id}` found in collection `{self.MONGO_COLLECTION}`")
             self.logger.debug(f"Document: {str(document)}")
             crawl_date = document["crawl_date"]
-            return self.comicvine_last_match > pytz.UTC.localize(crawl_date)
+            return self.comicvine_last_match is not None and self.comicvine_last_match > pytz.UTC.localize(crawl_date)
         else:
             self.logger.warning(
                 f"Document with id `{self.comicvine_id}` not found in collection `{self.MONGO_COLLECTION}`"
@@ -101,11 +102,12 @@ class ComicvineSyncModel(models.Model):
         return collection.find_one({"id": self.comicvine_id}, self.MONGO_PROJECTION)
 
     def pre_save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        # Method should be only defined in classes which need pre_save behaviour
         pass
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         self.pre_save(force_insert, force_update, using, update_fields)
-        if self.tracker.changed():
+        if hasattr(self, "tracker") and self.tracker.changed():  # pylint: disable=E1101
             self.logger.debug("Changes detected, updating modified_dt")
             self.modified_dt = timezone.now()
         super(ComicvineSyncModel, self).save(force_insert, force_update, using, update_fields)
@@ -264,7 +266,7 @@ class ComicvineSyncModel(models.Model):
     @staticmethod
     def strip_links(text):
         if text:
-            return re.sub(r"<(a|/a).*?>", "", text)
+            return re.sub(r"<(a|/a)[^>]*>", "", text)
         return None
 
     @staticmethod
@@ -310,7 +312,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.characters.models import Character
 
-        character, created, matched = Character.objects.get_or_create_from_comicvine(
+        character, _, _ = Character.objects.get_or_create_from_comicvine(
             comicvine_id, defaults={"name": name}, delay=True
         )
         return character
@@ -325,9 +327,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.concepts.models import Concept
 
-        concept, created, matched = Concept.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        concept, _, _ = Concept.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return concept
 
     @staticmethod
@@ -340,7 +340,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.locations.models import Location
 
-        location, created, matched = Location.objects.get_or_create_from_comicvine(
+        location, _, _ = Location.objects.get_or_create_from_comicvine(
             comicvine_id, defaults={"name": name}, delay=True
         )
         return location
@@ -355,9 +355,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.objects.models import Object
 
-        obj, created, matched = Object.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        obj, _, _ = Object.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return obj
 
     @staticmethod
@@ -370,9 +368,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.powers.models import Power
 
-        power, created, matched = Power.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        power, _, _ = Power.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return power
 
     @staticmethod
@@ -385,7 +381,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.story_arcs.models import StoryArc
 
-        story_arc, created, matched = StoryArc.objects.get_or_create_from_comicvine(
+        story_arc, _, _ = StoryArc.objects.get_or_create_from_comicvine(
             comicvine_id, defaults={"name": name}, delay=True
         )
         return story_arc
@@ -400,9 +396,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.teams.models import Team
 
-        team, created, matched = Team.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        team, _, _ = Team.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return team
 
     @staticmethod
@@ -415,9 +409,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.volumes.models import Volume
 
-        volume, created, matched = Volume.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=False
-        )
+        volume, _, _ = Volume.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=False)
         return volume
 
     @staticmethod
@@ -430,7 +422,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.publishers.models import Publisher
 
-        publisher, created, matched = Publisher.objects.get_or_create_from_comicvine(
+        publisher, _, _ = Publisher.objects.get_or_create_from_comicvine(
             comicvine_id, defaults={"name": name}, delay=False
         )
         return publisher
@@ -445,9 +437,7 @@ class ComicvineSyncModel(models.Model):
             return None
         from read_comics.people.models import Person
 
-        person, created, matched = Person.objects.get_or_create_from_comicvine(
-            comicvine_id, defaults={"name": name}, delay=True
-        )
+        person, _, _ = Person.objects.get_or_create_from_comicvine(comicvine_id, defaults={"name": name}, delay=True)
         return person
 
     def _fill_field_from_document(self, document, field, source, follow_m2m):
@@ -464,7 +454,7 @@ class ComicvineSyncModel(models.Model):
             override_m2m = True
         elif isinstance(source, dict):
             path = source.get("path", "")
-            method = getattr(self, source.get("method"), None)
+            method = getattr(self, source.get("method", ""), None)
             if not method or not callable(method):
                 raise ComicvineSyncModelConfigurationError(f"Wrong method `{source.get('method')}`")
             inner_path = source.get("inner_path", "")
@@ -487,8 +477,8 @@ class ComicvineSyncModel(models.Model):
         if method:
             try:
                 value = method(value)
-            except TypeError:
-                ComicvineSyncModelConfigurationError("Wrong method")
+            except TypeError as err:
+                raise ComicvineSyncModelConfigurationError("Wrong method") from err
         setattr(self, field, value)
 
     def _get_value_by_path(self, document, path):
@@ -539,7 +529,7 @@ class ComicvineSyncModel(models.Model):
                     inner_value, defaults = value
                 except TypeError:
                     inner_value = value
-                    defaults = None
+                    defaults = {}
             if inner_value:
                 f.add(inner_value, through_defaults=defaults)
 
@@ -549,11 +539,12 @@ class ComicvineSyncModel(models.Model):
             self.logger = default_logger
 
     def post_save(self):
+        # By default no post_save logic is required
         pass
 
     @property
     def description(self):
-        if self.html_description:
+        if hasattr(self, "html_description") and self.html_description:  # pylint: disable=E1101
             d = self.html_description  # .replace("https:", "http:")
             from bs4 import BeautifulSoup
 

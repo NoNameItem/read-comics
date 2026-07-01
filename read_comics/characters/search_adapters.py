@@ -1,4 +1,5 @@
-from search.search_adapters import BaseSearchAdapter
+# Docs: [[docs/backend/characters/search_adapters.md]]
+from read_comics.search.search_adapters import BaseSearchAdapter
 
 
 class CharacterSearchAdapter(BaseSearchAdapter):

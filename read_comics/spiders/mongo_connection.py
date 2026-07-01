@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/infrastructure.md#mongo_connectionpy]]
 from pymongo import MongoClient
 
 

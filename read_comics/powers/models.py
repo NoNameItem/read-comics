@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/powers/models.md]]
 from django.db import models
 from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker

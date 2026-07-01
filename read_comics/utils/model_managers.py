@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/utils/model_managers.md]]
 from time import sleep
 
 from celery.utils.log import get_task_logger
@@ -59,5 +60,6 @@ class ComicvineSyncQuerySet(models.QuerySet):
         return self.filter(comicvine_last_match__isnull=False)
 
 
-class ComicvineSyncManager(BaseManager.from_queryset(ComicvineSyncQuerySet)):
+# pylint: disable-next=R0903
+class ComicvineSyncManager(BaseManager.from_queryset(ComicvineSyncQuerySet)):  # type: ignore[misc]
     pass

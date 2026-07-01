@@ -1,3 +1,5 @@
+# Docs: [[docs/backend/characters/models.md]]
+
 from datetime import datetime
 
 from django.contrib.contenttypes.fields import GenericRelation
@@ -6,13 +8,13 @@ from django_extensions.db.fields import AutoSlugField
 from model_utils import FieldTracker
 
 from read_comics.missing_issues.models import WatchedItem
-from read_comics.utils.model_mixins import ImageMixin
+from read_comics.utils.model_mixins import AliasesListMixin, DownloadSizeMixin, ImageMixin
 from read_comics.utils.models import ComicvineSyncModel, slugify_function
 
 from .tasks import character_comicvine_info_task
 
 
-class Character(ImageMixin, ComicvineSyncModel):
+class Character(ImageMixin, DownloadSizeMixin, AliasesListMixin, ComicvineSyncModel):
     class Gender(models.IntegerChoices):
         OTHER = 0, "Other"
         MALE = 1, "Male"
@@ -101,12 +103,12 @@ class Character(ImageMixin, ComicvineSyncModel):
     class Meta:
         ordering = ("name",)
 
-    def __str__(self):
-        if self.get_publisher_name():
+    def __str__(self) -> str:
+        if self.publisher is not None:
             return f"{self.name} ({self.publisher.name})"
-        return self.name
+        return self.name or ""
 
-    def get_publisher_name(self):
+    def get_publisher_name(self) -> str | None:
         if self.publisher:
             return self.publisher.name
         else:
@@ -133,13 +135,8 @@ class Character(ImageMixin, ComicvineSyncModel):
             except Issue.DoesNotExist:
                 self.first_issue = None
 
-    def get_aliases_list(self):
-        if self.aliases:
-            return self.aliases.split("\n")
-        return []
-
     @property
-    def download_link(self):
+    def download_link(self) -> str:
         from django.urls import reverse
 
         return reverse("characters:download", args=[self.slug])

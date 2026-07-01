@@ -7,13 +7,13 @@ import django.utils.timezone
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('missing_issues', '0016_apiqueue'),
+        ("missing_issues", "0016_apiqueue"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='apiqueue',
-            name='added_in_queue',
+            model_name="apiqueue",
+            name="added_in_queue",
             field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now),
             preserve_default=False,
         ),

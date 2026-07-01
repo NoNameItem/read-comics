@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/people/models.md]]
 from datetime import datetime
 
 from django.contrib.contenttypes.fields import GenericRelation

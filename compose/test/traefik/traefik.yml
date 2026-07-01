@@ -15,8 +15,15 @@ entryPoints:
     # https
     address: ":443"
 
-  flower:
-    address: ":5555"
+#  flower:
+#    address: "flower.next.read-comics.net:80"
+#    http:
+#      redirections:
+#        entryPoint:
+#          to: flower-secure
+#
+#  flower-secure:
+#    address: "flower.next.read-comics.net:443"
 
 certificatesResolvers:
   letsencrypt:
@@ -31,7 +38,7 @@ certificatesResolvers:
 http:
   routers:
     web-secure-router:
-      rule: "Host(`read-comics.net`) || Host(`www.read-comics.net`)"
+      rule: "Host(`next.read-comics.net`) || Host(`www.next.read-comics.net`) || Host(`api.next.read-comics.net`)"
       entryPoints:
         - web-secure
       middlewares:
@@ -42,9 +49,9 @@ http:
         certResolver: letsencrypt
 
     flower-secure-router:
-      rule: "Host(`read-comics.net`)"
+      rule: "Host(`flower.next.read-comics.net`)"
       entryPoints:
-        - flower
+        - web-secure
       service: flower
       tls:
         # https://docs.traefik.io/master/routing/routers/#certresolver

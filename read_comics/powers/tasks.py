@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/powers/tasks.md]]
 from celery import shared_task
 from scrapy.settings import Settings
 from spiders.spiders.powers_spider import PowersSpider

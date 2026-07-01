@@ -1,0 +1,42 @@
+{
+  "name": "read-comics-frontend",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --check .",
+    "format:fix": "prettier --write .",
+    "typecheck": "nuxt typecheck"
+  },
+  "dependencies": {
+    "@iconify-json/lucide": "^1.2.75",
+    "@iconify-json/simple-icons": "^1.2.60",
+    "@nuxt/ui": "^4.2.1",
+    "@nuxtjs/color-mode": "4.0.0",
+    "@pinia/nuxt": "0.11.3",
+    "@unovis/ts": "^1.6.2",
+    "@unovis/vue": "^1.6.2",
+    "@vueuse/nuxt": "^13.9.0",
+    "axios": "^1.13.2",
+    "date-fns": "^4.1.0",
+    "nuxt": "^4.2.2",
+    "pinia": "^3.0.4",
+    "pinia-plugin-persistedstate": "^4.7.1",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@nuxt/eslint": "^1.10.0",
+    "eslint": "^9.39.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "prettier": "^3.7.4",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.1.5"
+  },
+  "packageManager": "pnpm@10.23.0"
+}

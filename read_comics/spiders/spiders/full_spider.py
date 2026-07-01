@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/full_spider.md]]
 import datetime
 import json
 import random

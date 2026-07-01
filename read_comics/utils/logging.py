@@ -16,7 +16,7 @@ SUCCESS = 25
 class ReprEncoder(json.JSONEncoder):
     def default(self, o):
         try:
-            if isinstance(o, QuerySet):
+            if isinstance(o, QuerySet):  # type: ignore[misc]
                 try:
                     return str(o.query)
                 except EmptyResultSet:
@@ -50,7 +50,7 @@ class LogUserFilter(logging.Filter):
 
 def log_value(arg):
     arg_type = type(arg)
-    if isinstance(arg, QuerySet):
+    if isinstance(arg, QuerySet):  # type: ignore[misc]
         arg = {"db": arg.db, "query": str(arg.query)}
     if isinstance(arg, DRFRequest):
         _resolver_match = arg._request.resolver_match  # noqa
@@ -184,7 +184,7 @@ def methods_logged(logger, methods=None):
                 _method = getattr(cls, method_name)
                 if not callable(_method):
                     raise TypeError(
-                        f"Cannot decorate '{method_name}' as it isn't a callable attribute of " f"{cls} ({_method})."
+                        f"Cannot decorate '{method_name}' as it isn't a callable attribute of {cls} ({_method})."
                     )
                 _methods.append((_method, method_name, method_conf))
 

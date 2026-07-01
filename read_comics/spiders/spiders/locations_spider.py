@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/spiders/locations_spider.md]]
 from .base_spider import BaseSpider
 
 

@@ -1,3 +1,4 @@
+# Docs: [[docs/backend/teams/tasks.md]]
 from celery import shared_task
 from scrapy.settings import Settings
 from spiders.spiders.teams_spider import TeamsSpider
