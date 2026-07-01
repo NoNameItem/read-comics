@@ -350,3 +350,12 @@ certs/*
 *.db
 .beads-credential-key
 .beads/proxieddb/
+
+# Beads Dolt store (shared-server) + JSONL exports — data lives in refs/dolt/data, not files
+.beads/issues.jsonl
+.beads/interactions.jsonl
+.beads/embeddeddolt/
+.beads/dolt/
+# 0.47 migration backups (kept locally until confident, then removed)
+.beads.old/
+.beads.backup-0.47/
