@@ -47,7 +47,7 @@ jobs:
     environment: ${{ inputs.env_name }}
     steps:
       - name: Deploy to Yandex Cloud VM via SSH action
-        uses: appleboy/ssh-action@v0.1.3
+        uses: appleboy/ssh-action@v1.2.2
         with:
           HOST: ${{ secrets.YC_HOST }}
           USERNAME: ${{ secrets.YC_USER }}
