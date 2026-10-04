@@ -31,6 +31,7 @@ djangorestframework==3.12.4  # https://github.com/encode/django-rest-framework
 django-cors-headers==3.10.0  # https://github.com/adamchainz/django-cors-headers
 dj-rest-auth==2.2.5  # https://github.com/iMerica/dj-rest-auth
 djangorestframework-simplejwt==5.2.0  # https://github.com/jazzband/djangorestframework-simplejwt
+setuptools<82  # simplejwt 5.2.0 imports pkg_resources, removed in setuptools 82
 
 # MongoDB
 pymongo==3.11.3 # https://github.com/mongodb/mongo-python-driver
@@ -46,6 +47,7 @@ beautifulsoup4==4.9.3
 
 # Scrappy
 Scrapy==2.11.1
+w3lib<2.5  # Scrapy 2.11.1 imports w3lib.url._safe_chars, removed in w3lib 2.5
 # scrapyscript==1.1.5 # https://github.com/jschnurr/scrapyscript
 
 sentry-sdk==1.5.0

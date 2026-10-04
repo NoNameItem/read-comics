@@ -1,4 +1,4 @@
-ARG PYTHON_VERSION=3.10-slim-bullseye
+ARG PYTHON_VERSION=3.10-slim-bookworm
 
 
 
@@ -19,6 +19,9 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
 
 # Requirements are installed here to ensure they will be cached.
 COPY ./requirements .
+
+# Legacy setup.py sdists (e.g. django-allauth 0.46.0) import setuptools.convert_path, removed in setuptools 70
+RUN pip install --no-cache-dir setuptools==65.5.1 wheel==0.45.1
 
 # Create Python Dependency and Sub-Dependency Wheels.
 RUN pip wheel --wheel-dir /usr/src/app/wheels  \
