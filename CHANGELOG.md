@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.26.1](https://github.com/NoNameItem/read-comics/compare/1.26.0...1.26.1) (2026-10-04)
+
+
+### Bug Fixes
+
+* **spiders:** Changed incremental time delta to 1 day insted of 1 hour. 1 hour leads to data loss due to timezone difference ([df0ac21](https://github.com/NoNameItem/read-comics/commit/df0ac21afccc92a8f1ae838926a020365b5e5486))
+
+
+### Build System
+
+* **local:** Changed mailhog local port ([2ee946b](https://github.com/NoNameItem/read-comics/commit/2ee946b7365aa9fca2c2a62d22957a155035db62))
+
 ## [1.26.0](https://github.com/NoNameItem/read-comics/compare/1.25.3...1.26.0) (2025-11-21)
 
 
