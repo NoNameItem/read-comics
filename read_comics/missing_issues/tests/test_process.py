@@ -83,6 +83,27 @@ def test_apply_batch_keeps_skip_set_during_run(mongo_db, seeded, linked_characte
     assert (mi.name, mi.skip) == ("N", True)
 
 
+def test_apply_batch_keeps_skip_renewed_during_run(mongo_db, seeded, linked_character, settings):
+    settings.SKIP_DAYS = 7
+    MissingIssue.objects.create(comicvine_id=10, skip=True, skip_date=date.today() - timedelta(days=8))
+    plan, volumes = planned(mongo_db, linked_character)
+    assert plan["skip_reset_ids"] == [10]
+    MissingIssue.objects.filter(comicvine_id=10).update(skip_date=date.today())
+    character_missing_issues_task.apply_batch(linked_character, plan, volumes)
+    assert MissingIssue.objects.get(comicvine_id=10).skip is True
+
+
+def test_run_processes_several_batches(mongo_db, seeded, linked_character, issues_col, volumes_col, monkeypatch):
+    monkeypatch.setattr(BaseMissingIssuesTask, "BATCH_SIZE", 1)
+    for issue_id, volume_id in ((11, 100), (12, 101)):
+        issues_col.insert_one({"id": issue_id, "volume": {"id": volume_id}, "character_credits": [{"id": 1699}]})
+    volumes_col.insert_one({"id": 101, "name": "Vol2"})
+    character_missing_issues_task.run(pk=linked_character.pk)
+    names = dict(MissingIssue.objects.values_list("comicvine_id", "volume_name"))
+    assert names == {10: "Vol", 11: "Vol", 12: "Vol2"}
+    assert set(linked_character.missing_issues.values_list("comicvine_id", flat=True)) == {10, 11, 12}
+
+
 def test_apply_batch_links_row_created_concurrently(mongo_db, seeded, linked_character):  # Review Focus 4
     plan, volumes = planned(mongo_db, linked_character)
     MissingIssue.objects.create(comicvine_id=10, name="other task")

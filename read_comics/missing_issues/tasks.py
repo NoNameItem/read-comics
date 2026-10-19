@@ -250,7 +250,9 @@ class BaseMissingIssuesTask(Task):
         try:
             obj.missing_issues.add(*missing_issues)
         except IntegrityError:
-            # A row was deleted after it was re-read: link only the rows that still exist
+            # A row was deleted after it was re-read: link only the rows that still exist.
+            # Relies on autocommit and DEFERRABLE INITIALLY DEFERRED FKs: the error surfaces when .add()'s own atomic
+            # block commits; an outer transaction.atomic here or in apply_batch would raise it outside this except.
             pks = [missing_issue.pk for missing_issue in missing_issues]
             obj.missing_issues.add(*MissingIssue.objects.filter(pk__in=pks).order_by("comicvine_id"))
 
