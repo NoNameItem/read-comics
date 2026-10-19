@@ -103,6 +103,10 @@ class BaseMissingIssuesTask(Task):
             volumes.setdefault(doc["id"], doc)
 
     @staticmethod
+    def get_volume_publisher(volumes, volume_id):
+        return (volumes.get(volume_id) or {}).get("publisher") or {}
+
+    @staticmethod
     def check_batch(issue_ids, volume_ids, publisher_ids):
         query = " union all ".join(
             f"select '{kind}', comicvine_id from {model._meta.db_table} where comicvine_id = any(%s)"
@@ -123,12 +127,8 @@ class BaseMissingIssuesTask(Task):
     def check_candidates(self, batch, volumes):
         issue_ids = [candidate["id"] for candidate in batch]
         volume_ids = {candidate["volume_id"] for candidate in batch if candidate["volume_id"] is not None}
-        publisher_ids = {
-            publisher["id"]
-            for volume_id in volume_ids
-            for publisher in [(volumes.get(volume_id) or {}).get("publisher") or {}]
-            if publisher.get("id") is not None
-        }
+        publishers = (self.get_volume_publisher(volumes, volume_id) for volume_id in volume_ids)
+        publisher_ids = {publisher["id"] for publisher in publishers if publisher.get("id") is not None}
         found = self.check_batch(issue_ids, volume_ids, publisher_ids)
 
         to_write = []
@@ -137,7 +137,7 @@ class BaseMissingIssuesTask(Task):
         for candidate in batch:
             issue_id = candidate["id"]
             volume_id = candidate["volume_id"]
-            publisher = (volumes.get(volume_id) or {}).get("publisher") or {}
+            publisher = self.get_volume_publisher(volumes, volume_id)
             if (
                 issue_id in found["ignored_issue"]
                 or volume_id in found["ignored_volume"]
@@ -149,6 +149,52 @@ class BaseMissingIssuesTask(Task):
             else:
                 to_write.append(candidate)
         return to_write, in_library_ids, ignored_ids
+
+    def get_rows(self, db, object_filter, candidates, volumes):
+        issue_ids = [candidate["id"] for candidate in candidates]
+        issue_projection = {"_id": 0, "id": 1, "site_detail_url": 1, "name": 1, "issue_number": 1, "cover_date": 1}
+        issues = {}
+        cursor = db[self.MONGO_COLLECTION].find({"$and": [object_filter, {"id": {"$in": issue_ids}}]}, issue_projection)
+        for doc in cursor:
+            issues[doc["id"]] = doc
+
+        publisher_ids = {
+            publisher["id"]
+            for publisher in (self.get_volume_publisher(volumes, candidate["volume_id"]) for candidate in candidates)
+            if publisher.get("id") is not None
+        }
+        publisher_urls = {}
+        if publisher_ids:
+            publishers = db[self.PUBLISHERS_COLLECTION].find(
+                {"id": {"$in": list(publisher_ids)}}, {"_id": 0, "id": 1, "site_detail_url": 1}
+            )
+            for doc in publishers:
+                publisher_urls[doc["id"]] = doc.get("site_detail_url")
+
+        volume_ids = {candidate["id"]: candidate["volume_id"] for candidate in candidates}
+        rows = []
+        for issue_id in sorted(issues):
+            issue = issues[issue_id]
+            volume_id = volume_ids[issue_id]
+            volume = volumes.get(volume_id) or {}
+            publisher = self.get_volume_publisher(volumes, volume_id)
+            rows.append(
+                {
+                    "comicvine_id": issue_id,
+                    "comicvine_url": issue.get("site_detail_url"),
+                    "name": issue.get("name"),
+                    "number": issue.get("issue_number"),
+                    "cover_date": issue.get("cover_date"),
+                    "volume_comicvine_id": volume.get("id"),
+                    "volume_comicvine_url": volume.get("site_detail_url"),
+                    "volume_name": volume.get("name"),
+                    "volume_start_year": volume.get("start_year"),
+                    "publisher_name": publisher.get("name"),
+                    "publisher_comicvine_id": publisher.get("id"),
+                    "publisher_comicvine_url": publisher_urls.get(publisher.get("id")),
+                }
+            )
+        return rows
 
     def get_match(self, obj):
         return {
