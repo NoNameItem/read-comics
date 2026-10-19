@@ -63,6 +63,21 @@ class BaseMissingIssuesTask(Task):
         "publisher_comicvine_url": {"$arrayElemAt": ["$publisher.site_detail_url", 0]},
     }
 
+    DATA_FIELDS = (
+        "comicvine_url",
+        "name",
+        "number",
+        "numerical_number",
+        "cover_date",
+        "volume_comicvine_id",
+        "volume_comicvine_url",
+        "volume_name",
+        "volume_start_year",
+        "publisher_name",
+        "publisher_comicvine_id",
+        "publisher_comicvine_url",
+    )
+
     FILTER_PATH = None
     MODEL = None
 
@@ -195,6 +210,37 @@ class BaseMissingIssuesTask(Task):
                 }
             )
         return rows
+
+    def build_write_plan(self, rows):
+        existing = {
+            missing_issue.comicvine_id: missing_issue
+            for missing_issue in MissingIssue.objects.filter(comicvine_id__in=[row["comicvine_id"] for row in rows])
+        }
+        skip_border = date.today() - timedelta(days=settings.SKIP_DAYS)
+        plan = {"create": [], "update": [], "skip_reset_ids": []}
+        for row in rows:
+            missing_issue = existing.get(row["comicvine_id"])
+            if missing_issue is None:
+                missing_issue = MissingIssue(comicvine_id=row["comicvine_id"])
+                plan["create"].append(missing_issue)
+                old_values = None
+            else:
+                old_values = {name: getattr(missing_issue, name) for name in self.DATA_FIELDS}
+                if missing_issue.skip and missing_issue.skip_date and missing_issue.skip_date < skip_border:
+                    plan["skip_reset_ids"].append(missing_issue.comicvine_id)
+            for name in self.DATA_FIELDS:
+                if name == "numerical_number":
+                    continue
+                value = row.get(name)
+                if name == "cover_date":
+                    if not value:
+                        continue
+                    value = datetime.fromisoformat(value).date()
+                setattr(missing_issue, name, MissingIssue._meta.get_field(name).to_python(value))
+            missing_issue.set_numerical_number()
+            if old_values is not None and any(getattr(missing_issue, name) != old_values[name] for name in old_values):
+                plan["update"].append(missing_issue)
+        return plan
 
     def get_match(self, obj):
         return {
