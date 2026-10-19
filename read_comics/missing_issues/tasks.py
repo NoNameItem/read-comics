@@ -3,7 +3,7 @@ from datetime import date, datetime, timedelta
 from billiard.exceptions import WorkerLostError
 from celery import Task, signature
 from django.conf import settings
-from django.db import IntegrityError, OperationalError
+from django.db import IntegrityError, OperationalError, connection
 from django.db.models import Count, Q
 from pymongo import MongoClient
 from pymongo.errors import CursorNotFound
@@ -94,6 +94,61 @@ class BaseMissingIssuesTask(Task):
                 continue
             candidates[doc["id"]] = {"id": doc["id"], "volume_id": (doc.get("volume") or {}).get("id")}
         return [candidates[issue_id] for issue_id in sorted(candidates)]
+
+    def load_volumes(self, db, volume_ids, volumes):
+        missing = {volume_id for volume_id in volume_ids if volume_id is not None and volume_id not in volumes}
+        if not missing:
+            return
+        for doc in db[self.VOLUMES_COLLECTION].find({"id": {"$in": list(missing)}}, self.VOLUME_PROJECTION):
+            volumes.setdefault(doc["id"], doc)
+
+    @staticmethod
+    def check_batch(issue_ids, volume_ids, publisher_ids):
+        query = " union all ".join(
+            f"select '{kind}', comicvine_id from {model._meta.db_table} where comicvine_id = any(%s)"
+            for kind, model in (
+                ("issue", Issue),
+                ("ignored_issue", IgnoredIssue),
+                ("ignored_volume", IgnoredVolume),
+                ("ignored_publisher", IgnoredPublisher),
+            )
+        )
+        found = {"issue": set(), "ignored_issue": set(), "ignored_volume": set(), "ignored_publisher": set()}
+        with connection.cursor() as cursor:
+            cursor.execute(query, [list(issue_ids), list(issue_ids), list(volume_ids), list(publisher_ids)])
+            for kind, comicvine_id in cursor.fetchall():
+                found[kind].add(comicvine_id)
+        return found
+
+    def check_candidates(self, batch, volumes):
+        issue_ids = [candidate["id"] for candidate in batch]
+        volume_ids = {candidate["volume_id"] for candidate in batch if candidate["volume_id"] is not None}
+        publisher_ids = {
+            publisher["id"]
+            for volume_id in volume_ids
+            for publisher in [(volumes.get(volume_id) or {}).get("publisher") or {}]
+            if publisher.get("id") is not None
+        }
+        found = self.check_batch(issue_ids, volume_ids, publisher_ids)
+
+        to_write = []
+        in_library_ids = set()
+        ignored_ids = set()
+        for candidate in batch:
+            issue_id = candidate["id"]
+            volume_id = candidate["volume_id"]
+            publisher = (volumes.get(volume_id) or {}).get("publisher") or {}
+            if (
+                issue_id in found["ignored_issue"]
+                or volume_id in found["ignored_volume"]
+                or publisher.get("id") in found["ignored_publisher"]
+            ):
+                ignored_ids.add(issue_id)
+            elif issue_id in found["issue"]:
+                in_library_ids.add(issue_id)
+            else:
+                to_write.append(candidate)
+        return to_write, in_library_ids, ignored_ids
 
     def get_match(self, obj):
         return {
