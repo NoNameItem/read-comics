@@ -30,6 +30,20 @@ class BaseMissingIssuesTask(Task):
     retry_backoff_max = 60
 
     MONGO_COLLECTION = "comicvine_issues"
+    VOLUMES_COLLECTION = "comicvine_volumes"
+    PUBLISHERS_COLLECTION = "comicvine_publishers"
+
+    BATCH_SIZE = 500
+
+    VOLUME_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "site_detail_url": 1,
+        "name": 1,
+        "start_year": 1,
+        "publisher.id": 1,
+        "publisher.name": 1,
+    }
 
     LOOKUP = {"from": "comicvine_volumes", "localField": "volume.id", "foreignField": "id", "as": "volume"}
 
@@ -67,6 +81,19 @@ class BaseMissingIssuesTask(Task):
     @staticmethod
     def get_ignored_publishers():
         return list(IgnoredPublisher.objects.values_list("comicvine_id", flat=True))
+
+    def get_object_filter(self, db, obj, volumes):
+        return {self.FILTER_PATH: obj.comicvine_id}
+
+    def get_candidates(self, db, obj, object_filter):
+        existing = set(self.get_existing_issues(obj))
+        cursor = db[self.MONGO_COLLECTION].find(object_filter, {"_id": 0, "id": 1, "volume.id": 1})
+        candidates = {}
+        for doc in cursor:
+            if doc["id"] in existing:
+                continue
+            candidates[doc["id"]] = {"id": doc["id"], "volume_id": (doc.get("volume") or {}).get("id")}
+        return [candidates[issue_id] for issue_id in sorted(candidates)]
 
     def get_match(self, obj):
         return {
@@ -159,7 +186,7 @@ class BaseMissingIssuesTask(Task):
 
     @staticmethod
     def check_object(obj):
-        return obj.issues.count() > 0 or obj.watchers.count() > 0
+        return obj.issues.exists() or obj.watchers.exists()
 
     def run(self, *args, **kwargs):
         try:
