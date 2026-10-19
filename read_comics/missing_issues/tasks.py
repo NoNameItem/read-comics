@@ -298,8 +298,8 @@ volume_missing_issues_task = celery_app.register_task(VolumeMissingIssuesTask())
 
 
 class PublisherMissingIssuesTask(BaseMissingIssuesTask):
-    FILTER_PATH = "volume.publisher.id"
     MODEL = Publisher
+    LINK_FK = "publisher"
 
     def get_objects(self):
         ignored_publishers = list(IgnoredPublisher.objects.values_list("comicvine_id", flat=True))
@@ -311,46 +311,11 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         # True if publisher not ignored
         return not IgnoredPublisher.objects.filter(comicvine_id=obj.comicvine_id).exists()
 
-    def get_match(self, obj):
-        client = MongoClient(settings.MONGO_URL)
-        db = client.get_default_database()
-        collection = db["comicvine_volumes"]
-
-        volumes = collection.find({"publisher.id": obj.comicvine_id}, {"id": 1})
-        volume_ids = [volume["id"] for volume in volumes]
-        client.close()
-
-        return {
-            "$and": [
-                {"volume.id": {"$in": volume_ids}},
-                {"id": {"$not": {"$in": self.get_existing_issues(obj)}}},
-                {"id": {"$not": {"$in": self.get_ignored_issues()}}},
-                {"volume.id": {"$not": {"$in": self.get_ignored_volumes()}}},
-            ]
-        }
-
-    def get_issues_from_mongo(self, obj):
-        client = MongoClient(settings.MONGO_URL)
-        db = client.get_default_database()
-        collection = db[self.MONGO_COLLECTION]
-
-        issues = collection.aggregate(
-            [
-                {"$match": self.get_match(obj)},
-                {"$lookup": self.LOOKUP},
-                {
-                    "$lookup": {
-                        "from": "comicvine_publishers",
-                        "localField": "volume.publisher.id",
-                        "foreignField": "id",
-                        "as": "publisher",
-                    }
-                },
-                {"$project": self.PROJECT},
-            ]
-        )
-        client.close()
-        return issues  # noqa R504
+    def get_object_filter(self, db, obj, volumes):
+        for doc in db[self.VOLUMES_COLLECTION].find({"publisher.id": obj.comicvine_id}, self.VOLUME_PROJECTION):
+            volumes[doc["id"]] = doc
+        ignored = self.check_batch([], volumes, [])["ignored_volume"]
+        return {"volume.id": {"$in": sorted(set(volumes) - ignored)}}
 
     @staticmethod
     def get_existing_issues(obj):
