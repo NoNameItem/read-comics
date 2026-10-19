@@ -52,3 +52,35 @@ def make_issue(db):
         return Issue.objects.create(comicvine_id=comicvine_id, space_key=f"test/{comicvine_id}.cbz", **fields)
 
     return _make_issue
+
+
+@pytest.fixture
+def seeded(issues_col, volumes_col, publishers_col):
+    issues_col.insert_one(
+        {
+            "id": 10,
+            "volume": {"id": 100},
+            "character_credits": [{"id": 1699}],
+            "site_detail_url": "https://cv/i10",
+            "name": "N",
+            "issue_number": "1",
+            "cover_date": "2020-01-31",
+            "description": "dropped",
+        }
+    )
+    volumes_col.insert_one(
+        {
+            "id": 100,
+            "site_detail_url": "https://cv/v100",
+            "name": "Vol",
+            "start_year": "1940",
+            "publisher": {"id": 500, "name": "Pub"},
+        }
+    )
+    publishers_col.insert_one({"id": 500, "site_detail_url": "https://cv/p500"})
+
+
+@pytest.fixture
+def linked_character(character, make_issue):
+    make_issue(99).characters.add(character)
+    return character
