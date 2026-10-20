@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.2](https://github.com/NoNameItem/read-comics/compare/1.26.1...1.26.2) (2026-10-04)
+
+
+### Bug Fixes
+
+* **docker:** Build images on Debian bookworm ([6f8ccf4](https://github.com/NoNameItem/read-comics/commit/6f8ccf43424a9b7de5630d9aea38b466ddf42298))
+
 ## [1.26.1](https://github.com/NoNameItem/read-comics/compare/1.26.0...1.26.1) (2026-10-04)
 
 
