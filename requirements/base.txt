@@ -37,7 +37,7 @@ setuptools<82  # simplejwt 5.2.0 imports pkg_resources, removed in setuptools 82
 pymongo==3.11.3 # https://github.com/mongodb/mongo-python-driver
 
 boto3==1.17.57
-requests==2.25.1
+requests==2.32.2
 unidecode==1.2.0
 
 urllib3~=1.26.2
