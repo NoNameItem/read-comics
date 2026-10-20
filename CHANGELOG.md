@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.3](https://github.com/NoNameItem/read-comics/compare/1.26.2...1.26.3) (2026-10-20)
+
+
+### Performance Improvements
+
+* **missing-issues:** Speed up missing issues tasks ([#260](https://github.com/NoNameItem/read-comics/issues/260)) ([970aae8](https://github.com/NoNameItem/read-comics/commit/970aae8e9eba96d404f9b2945d00e904d6e8ef46))
+
 ## [1.26.2](https://github.com/NoNameItem/read-comics/compare/1.26.1...1.26.2) (2026-10-04)
 
 
