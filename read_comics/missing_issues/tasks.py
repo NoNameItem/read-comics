@@ -3,8 +3,8 @@ from datetime import date, datetime, timedelta
 from billiard.exceptions import WorkerLostError
 from celery import Task, signature
 from django.conf import settings
-from django.db import IntegrityError, OperationalError, connection
-from django.db.models import Count, Q
+from django.db import IntegrityError, OperationalError
+from django.db.models import Count, Q, Value
 from pymongo import MongoClient
 from pymongo.errors import CursorNotFound
 
@@ -35,6 +35,16 @@ class BaseMissingIssuesTask(Task):
 
     BATCH_SIZE = 500
 
+    ISSUE_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "site_detail_url": 1,
+        "name": 1,
+        "issue_number": 1,
+        "cover_date": 1,
+        "volume.id": 1,
+    }
+
     VOLUME_PROJECTION = {
         "_id": 0,
         "id": 1,
@@ -44,6 +54,8 @@ class BaseMissingIssuesTask(Task):
         "publisher.id": 1,
         "publisher.name": 1,
     }
+
+    PUBLISHER_PROJECTION = {"_id": 0, "id": 1, "site_detail_url": 1}
 
     DATA_FIELDS = (
         "comicvine_url",
@@ -64,56 +76,86 @@ class BaseMissingIssuesTask(Task):
     MODEL = None
     LINK_FK = None
 
+    # Celery registers one instance per task and reuses it for every run in the worker process, so these caches hold
+    # data of one object only: process_object resets them before and after the run. This relies on the prefork pool,
+    # where a process runs one task at a time.
+    volumes = None
+    publisher_urls = None
+
     @staticmethod
     def get_existing_issues(obj):
         return list(obj.issues.values_list("comicvine_id", flat=True))
 
-    def get_object_filter(self, db, obj, volumes):
+    def get_object_filter(self, db, obj):
         return {self.FILTER_PATH: obj.comicvine_id}
 
     def get_candidates(self, db, obj, object_filter):
         existing = set(self.get_existing_issues(obj))
-        cursor = db[self.MONGO_COLLECTION].find(object_filter, {"_id": 0, "id": 1, "volume.id": 1})
-        candidates = {}
-        for doc in cursor:
-            if doc["id"] in existing:
-                continue
-            candidates[doc["id"]] = {"id": doc["id"], "volume_id": (doc.get("volume") or {}).get("id")}
-        return [candidates[issue_id] for issue_id in sorted(candidates)]
+        candidates = []
+        for doc in db[self.MONGO_COLLECTION].find(object_filter, self.ISSUE_PROJECTION):
+            if doc["id"] not in existing:
+                doc["volume_id"] = (doc.pop("volume", None) or {}).get("id")
+                candidates.append(doc)
+        return candidates
 
-    def load_volumes(self, db, volume_ids, volumes):
-        missing = {volume_id for volume_id in volume_ids if volume_id is not None and volume_id not in volumes}
+    def load_volumes(self, db, volume_ids):
+        missing = {volume_id for volume_id in volume_ids if volume_id is not None and volume_id not in self.volumes}
         if not missing:
             return
         for doc in db[self.VOLUMES_COLLECTION].find({"id": {"$in": list(missing)}}, self.VOLUME_PROJECTION):
-            volumes.setdefault(doc["id"], doc)
+            self.volumes.setdefault(doc["id"], doc)
+        # Volumes without a document are remembered as empty, so later batches do not ask for them again
+        for volume_id in missing:
+            self.volumes.setdefault(volume_id, {})
 
-    @staticmethod
-    def get_volume_publisher(volumes, volume_id):
-        return (volumes.get(volume_id) or {}).get("publisher") or {}
+    def load_publishers(self, db, publisher_ids):
+        missing = {
+            publisher_id
+            for publisher_id in publisher_ids
+            if publisher_id is not None and publisher_id not in self.publisher_urls
+        }
+        if not missing:
+            return
+        # Publishers without a document are remembered too, so later batches do not ask for them again
+        self.publisher_urls.update(dict.fromkeys(missing))
+        for doc in db[self.PUBLISHERS_COLLECTION].find({"id": {"$in": list(missing)}}, self.PUBLISHER_PROJECTION):
+            self.publisher_urls[doc["id"]] = doc.get("site_detail_url")
+
+    def get_volume_publisher(self, volume_id):
+        return self.volumes.get(volume_id, {}).get("publisher") or {}
 
     @staticmethod
     def check_batch(issue_ids, volume_ids, publisher_ids):
-        query = " union all ".join(
-            f"select '{kind}', comicvine_id from {model._meta.db_table} where comicvine_id = any(%s)"
-            for kind, model in (
-                ("issue", Issue),
-                ("ignored_issue", IgnoredIssue),
-                ("ignored_volume", IgnoredVolume),
-                ("ignored_publisher", IgnoredPublisher),
-            )
+        issues = (
+            Issue.objects.filter(comicvine_id__in=issue_ids)
+            .order_by()  # Meta.ordering would join volumes
+            .annotate(kind=Value("issue"))
+            .values_list("kind", "comicvine_id")
+        )
+        ignored_issues = (
+            IgnoredIssue.objects.filter(comicvine_id__in=issue_ids)
+            .annotate(kind=Value("ignored_issue"))
+            .values_list("kind", "comicvine_id")
+        )
+        ignored_volumes = (
+            IgnoredVolume.objects.filter(comicvine_id__in=volume_ids)
+            .annotate(kind=Value("ignored_volume"))
+            .values_list("kind", "comicvine_id")
+        )
+        ignored_publishers = (
+            IgnoredPublisher.objects.filter(comicvine_id__in=publisher_ids)
+            .annotate(kind=Value("ignored_publisher"))
+            .values_list("kind", "comicvine_id")
         )
         found = {"issue": set(), "ignored_issue": set(), "ignored_volume": set(), "ignored_publisher": set()}
-        with connection.cursor() as cursor:
-            cursor.execute(query, [list(issue_ids), list(issue_ids), list(volume_ids), list(publisher_ids)])
-            for kind, comicvine_id in cursor.fetchall():
-                found[kind].add(comicvine_id)
+        for kind, comicvine_id in issues.union(ignored_issues, ignored_volumes, ignored_publishers, all=True):
+            found[kind].add(comicvine_id)
         return found
 
-    def check_candidates(self, batch, volumes):
+    def check_candidates(self, batch):
         issue_ids = [candidate["id"] for candidate in batch]
         volume_ids = {candidate["volume_id"] for candidate in batch if candidate["volume_id"] is not None}
-        publishers = (self.get_volume_publisher(volumes, volume_id) for volume_id in volume_ids)
+        publishers = (self.get_volume_publisher(volume_id) for volume_id in volume_ids)
         publisher_ids = {publisher["id"] for publisher in publishers if publisher.get("id") is not None}
         found = self.check_batch(issue_ids, volume_ids, publisher_ids)
 
@@ -123,7 +165,7 @@ class BaseMissingIssuesTask(Task):
         for candidate in batch:
             issue_id = candidate["id"]
             volume_id = candidate["volume_id"]
-            publisher = self.get_volume_publisher(volumes, volume_id)
+            publisher = self.get_volume_publisher(volume_id)
             if (
                 issue_id in found["ignored_issue"]
                 or volume_id in found["ignored_volume"]
@@ -136,48 +178,25 @@ class BaseMissingIssuesTask(Task):
                 to_write.append(candidate)
         return to_write, in_library_ids, ignored_ids
 
-    def get_rows(self, db, object_filter, candidates, volumes):
-        issue_ids = [candidate["id"] for candidate in candidates]
-        issue_projection = {"_id": 0, "id": 1, "site_detail_url": 1, "name": 1, "issue_number": 1, "cover_date": 1}
-        issues = {}
-        cursor = db[self.MONGO_COLLECTION].find({"$and": [object_filter, {"id": {"$in": issue_ids}}]}, issue_projection)
-        for doc in cursor:
-            issues[doc["id"]] = doc
-
-        publisher_ids = {
-            publisher["id"]
-            for publisher in (self.get_volume_publisher(volumes, candidate["volume_id"]) for candidate in candidates)
-            if publisher.get("id") is not None
-        }
-        publisher_urls = {}
-        if publisher_ids:
-            publishers = db[self.PUBLISHERS_COLLECTION].find(
-                {"id": {"$in": list(publisher_ids)}}, {"_id": 0, "id": 1, "site_detail_url": 1}
-            )
-            for doc in publishers:
-                publisher_urls[doc["id"]] = doc.get("site_detail_url")
-
-        volume_ids = {candidate["id"]: candidate["volume_id"] for candidate in candidates}
+    def get_rows(self, candidates):
         rows = []
-        for issue_id in sorted(issues):
-            issue = issues[issue_id]
-            volume_id = volume_ids[issue_id]
-            volume = volumes.get(volume_id) or {}
-            publisher = self.get_volume_publisher(volumes, volume_id)
+        for candidate in candidates:
+            volume = self.volumes.get(candidate["volume_id"], {})
+            publisher = self.get_volume_publisher(candidate["volume_id"])
             rows.append(
                 {
-                    "comicvine_id": issue_id,
-                    "comicvine_url": issue.get("site_detail_url"),
-                    "name": issue.get("name"),
-                    "number": issue.get("issue_number"),
-                    "cover_date": issue.get("cover_date"),
+                    "comicvine_id": candidate["id"],
+                    "comicvine_url": candidate.get("site_detail_url"),
+                    "name": candidate.get("name"),
+                    "number": candidate.get("issue_number"),
+                    "cover_date": candidate.get("cover_date"),
                     "volume_comicvine_id": volume.get("id"),
                     "volume_comicvine_url": volume.get("site_detail_url"),
                     "volume_name": volume.get("name"),
                     "volume_start_year": volume.get("start_year"),
                     "publisher_name": publisher.get("name"),
                     "publisher_comicvine_id": publisher.get("id"),
-                    "publisher_comicvine_url": publisher_urls.get(publisher.get("id")),
+                    "publisher_comicvine_url": self.publisher_urls.get(publisher.get("id")),
                 }
             )
         return rows
@@ -213,13 +232,15 @@ class BaseMissingIssuesTask(Task):
                 plan["update"].append(missing_issue)
         return plan
 
-    def plan_batch(self, db, object_filter, batch, volumes):
-        self.load_volumes(db, [candidate["volume_id"] for candidate in batch], volumes)
-        to_write, in_library_ids, _ = self.check_candidates(batch, volumes)
-        rows = self.get_rows(db, object_filter, to_write, volumes)
+    def plan_batch(self, db, batch):
+        self.load_volumes(db, [candidate["volume_id"] for candidate in batch])
+        to_write, in_library_ids, _ = self.check_candidates(batch)
+        publishers = [self.get_volume_publisher(candidate["volume_id"]) for candidate in to_write]
+        self.load_publishers(db, [publisher.get("id") for publisher in publishers])
+        rows = self.get_rows(to_write)
         return {**self.build_write_plan(rows), "rows": rows, "candidates": to_write, "delete_ids": in_library_ids}
 
-    def apply_batch(self, obj, plan, volumes):
+    def apply_batch(self, obj, plan):
         if plan["delete_ids"]:
             MissingIssue.objects.filter(comicvine_id__in=plan["delete_ids"]).delete()
         MissingIssue.objects.bulk_create(plan["create"], ignore_conflicts=True)
@@ -233,10 +254,10 @@ class BaseMissingIssuesTask(Task):
         if not plan["rows"]:
             return
         comicvine_ids = [row["comicvine_id"] for row in plan["rows"]]
-        missing_issues = list(MissingIssue.objects.filter(comicvine_id__in=comicvine_ids).order_by("comicvine_id"))
+        missing_issues = list(MissingIssue.objects.filter(comicvine_id__in=comicvine_ids))
         self.add_missing_issues(obj, missing_issues)
         # Issues ignored or added to the library while the batch was written must not keep their rows
-        _, in_library_ids, ignored_ids = self.check_candidates(plan["candidates"], volumes)
+        _, in_library_ids, ignored_ids = self.check_candidates(plan["candidates"])
         if in_library_ids or ignored_ids:
             MissingIssue.objects.filter(comicvine_id__in=in_library_ids | ignored_ids).delete()
 
@@ -254,19 +275,20 @@ class BaseMissingIssuesTask(Task):
             # Relies on autocommit and DEFERRABLE INITIALLY DEFERRED FKs: the error surfaces when .add()'s own atomic
             # block commits; an outer transaction.atomic here or in apply_batch would raise it outside this except.
             pks = [missing_issue.pk for missing_issue in missing_issues]
-            obj.missing_issues.add(*MissingIssue.objects.filter(pk__in=pks).order_by("comicvine_id"))
+            obj.missing_issues.add(*MissingIssue.objects.filter(pk__in=pks))
 
     def process_object(self, obj):
         client = MongoClient(settings.MONGO_URL)
+        self.volumes, self.publisher_urls = {}, {}
         try:
             db = client.get_default_database()
-            volumes = {}
-            object_filter = self.get_object_filter(db, obj, volumes)
+            object_filter = self.get_object_filter(db, obj)
             candidates = self.get_candidates(db, obj, object_filter)
             for start in range(0, len(candidates), self.BATCH_SIZE):
                 batch = candidates[start : start + self.BATCH_SIZE]
-                self.apply_batch(obj, self.plan_batch(db, object_filter, batch, volumes), volumes)
+                self.apply_batch(obj, self.plan_batch(db, batch))
         finally:
+            self.volumes, self.publisher_urls = None, None
             client.close()
 
     def get_objects(self):
@@ -313,11 +335,13 @@ class PublisherMissingIssuesTask(BaseMissingIssuesTask):
         # True if publisher not ignored
         return not IgnoredPublisher.objects.filter(comicvine_id=obj.comicvine_id).exists()
 
-    def get_object_filter(self, db, obj, volumes):
+    def get_object_filter(self, db, obj):
+        volume_ids = set()
         for doc in db[self.VOLUMES_COLLECTION].find({"publisher.id": obj.comicvine_id}, self.VOLUME_PROJECTION):
-            volumes[doc["id"]] = doc
-        ignored = self.check_batch([], volumes, [])["ignored_volume"]
-        return {"volume.id": {"$in": sorted(set(volumes) - ignored)}}
+            self.volumes[doc["id"]] = doc
+            volume_ids.add(doc["id"])
+        ignored = self.check_batch([], volume_ids, [])["ignored_volume"]
+        return {"volume.id": {"$in": list(volume_ids - ignored)}}
 
     @staticmethod
     def get_existing_issues(obj):

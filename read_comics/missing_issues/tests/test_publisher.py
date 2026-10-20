@@ -8,7 +8,7 @@ from read_comics.volumes.models import Volume
 pytestmark = pytest.mark.django_db
 
 
-def test_publisher_filter_skips_ignored_volumes_and_caches_volumes(mongo_db, volumes_col):
+def test_publisher_filter_skips_ignored_volumes_and_caches_volumes(mongo_db, volumes_col, run_caches):
     publisher = Publisher.objects.create(comicvine_id=500, name="Pub")
     volumes_col.insert_many(
         [
@@ -18,11 +18,10 @@ def test_publisher_filter_skips_ignored_volumes_and_caches_volumes(mongo_db, vol
         ]
     )
     IgnoredVolume.objects.create(comicvine_id=101, name="B")
-    volumes = {}
-    assert publisher_missing_issues_task.get_object_filter(mongo_db, publisher, volumes) == {
-        "volume.id": {"$in": [100]}
-    }
-    assert set(volumes) == {100, 101}
+    task = publisher_missing_issues_task
+    task.volumes[103] = {"id": 103, "name": "cached volume of another publisher"}
+    assert task.get_object_filter(mongo_db, publisher) == {"volume.id": {"$in": [100]}}
+    assert set(task.volumes) == {100, 101, 103}
 
 
 def test_publisher_run_end_to_end(mongo_db, issues_col, volumes_col, make_issue):

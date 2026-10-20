@@ -4,7 +4,11 @@ from pymongo import MongoClient
 
 from read_comics.characters.models import Character
 from read_comics.issues.models import Issue
-from read_comics.missing_issues.tasks import BaseMissingIssuesTask
+from read_comics.missing_issues.tasks import (
+    BaseMissingIssuesTask,
+    character_missing_issues_task,
+    publisher_missing_issues_task,
+)
 
 ISSUES = "test_missing_issues_issues"
 VOLUMES = "test_missing_issues_volumes"
@@ -24,6 +28,14 @@ def mongo_db(monkeypatch):
     for name in (ISSUES, VOLUMES, PUBLISHERS):
         db.drop_collection(name)
     client.close()
+
+
+@pytest.fixture
+def run_caches(monkeypatch):
+    # Methods called outside process_object need the per-run caches it would set up
+    for task in (character_missing_issues_task, publisher_missing_issues_task):
+        monkeypatch.setattr(task, "volumes", {})
+        monkeypatch.setattr(task, "publisher_urls", {})
 
 
 @pytest.fixture

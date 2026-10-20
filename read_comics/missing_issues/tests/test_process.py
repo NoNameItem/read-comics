@@ -57,40 +57,63 @@ def test_run_without_candidates_plans_nothing(mongo_db, seeded, linked_character
 
 
 def planned(mongo_db, character):
-    task, volumes = character_missing_issues_task, {}
-    object_filter = task.get_object_filter(mongo_db, character, volumes)
-    batch = task.get_candidates(mongo_db, character, object_filter)
-    return task.plan_batch(mongo_db, object_filter, batch, volumes), volumes
+    task = character_missing_issues_task
+    batch = task.get_candidates(mongo_db, character, task.get_object_filter(mongo_db, character))
+    return task.plan_batch(mongo_db, batch)
 
 
+@pytest.mark.usefixtures("run_caches")
 @pytest.mark.parametrize("change", ["ignore_volume", "add_to_library"])
 def test_apply_batch_drops_row_changed_after_planning(mongo_db, seeded, linked_character, make_issue, change):
-    plan, volumes = planned(mongo_db, linked_character)
+    plan = planned(mongo_db, linked_character)
     if change == "ignore_volume":
         IgnoredVolume.objects.create(comicvine_id=100, name="Vol")
     else:
         make_issue(10)
-    character_missing_issues_task.apply_batch(linked_character, plan, volumes)
+    character_missing_issues_task.apply_batch(linked_character, plan)
     assert not MissingIssue.objects.filter(comicvine_id=10).exists()
 
 
+@pytest.mark.usefixtures("run_caches")
 def test_apply_batch_keeps_skip_set_during_run(mongo_db, seeded, linked_character):
     MissingIssue.objects.create(comicvine_id=10, name="Old")
-    plan, volumes = planned(mongo_db, linked_character)
+    plan = planned(mongo_db, linked_character)
     MissingIssue.objects.filter(comicvine_id=10).update(skip=True, skip_date=date.today())
-    character_missing_issues_task.apply_batch(linked_character, plan, volumes)
+    character_missing_issues_task.apply_batch(linked_character, plan)
     mi = MissingIssue.objects.get(comicvine_id=10)
     assert (mi.name, mi.skip) == ("N", True)
 
 
+@pytest.mark.usefixtures("run_caches")
 def test_apply_batch_keeps_skip_renewed_during_run(mongo_db, seeded, linked_character, settings):
     settings.SKIP_DAYS = 7
     MissingIssue.objects.create(comicvine_id=10, skip=True, skip_date=date.today() - timedelta(days=8))
-    plan, volumes = planned(mongo_db, linked_character)
+    plan = planned(mongo_db, linked_character)
     assert plan["skip_reset_ids"] == [10]
     MissingIssue.objects.filter(comicvine_id=10).update(skip_date=date.today())
-    character_missing_issues_task.apply_batch(linked_character, plan, volumes)
+    character_missing_issues_task.apply_batch(linked_character, plan)
     assert MissingIssue.objects.get(comicvine_id=10).skip is True
+
+
+def test_run_uses_fresh_caches_and_drops_them(mongo_db, seeded, linked_character, monkeypatch):
+    task = character_missing_issues_task
+    monkeypatch.setattr(task, "volumes", {100: {"id": 100, "name": "stale"}})
+    monkeypatch.setattr(task, "publisher_urls", {500: "stale"})
+    task.run(pk=linked_character.pk)
+    mi = MissingIssue.objects.get(comicvine_id=10)
+    assert (mi.volume_name, mi.publisher_comicvine_url) == ("Vol", "https://cv/p500")
+    assert task.volumes is None and task.publisher_urls is None
+
+
+def test_run_drops_caches_when_processing_fails(mongo_db, seeded, linked_character, monkeypatch):
+    def fail(*args, **kwargs):
+        raise RuntimeError("write failed")
+
+    monkeypatch.setattr(BaseMissingIssuesTask, "apply_batch", fail)
+    task = character_missing_issues_task
+    with pytest.raises(RuntimeError):
+        task.run(pk=linked_character.pk)
+    assert task.volumes is None and task.publisher_urls is None
 
 
 def test_run_processes_several_batches(mongo_db, seeded, linked_character, issues_col, volumes_col, monkeypatch):
@@ -104,10 +127,11 @@ def test_run_processes_several_batches(mongo_db, seeded, linked_character, issue
     assert set(linked_character.missing_issues.values_list("comicvine_id", flat=True)) == {10, 11, 12}
 
 
+@pytest.mark.usefixtures("run_caches")
 def test_apply_batch_links_row_created_concurrently(mongo_db, seeded, linked_character):  # Review Focus 4
-    plan, volumes = planned(mongo_db, linked_character)
+    plan = planned(mongo_db, linked_character)
     MissingIssue.objects.create(comicvine_id=10, name="other task")
-    character_missing_issues_task.apply_batch(linked_character, plan, volumes)
+    character_missing_issues_task.apply_batch(linked_character, plan)
     assert MissingIssue.objects.filter(comicvine_id=10).count() == 1
     assert linked_character.missing_issues.filter(comicvine_id=10).exists()
 
