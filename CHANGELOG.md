@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.27.0](https://github.com/NoNameItem/read-comics/compare/1.26.3...1.27.0) (2026-10-22)
+
+
+### Features
+
+* **missing-issues:** Add ComicVine details modal as a fallback when the site is down ([#262](https://github.com/NoNameItem/read-comics/issues/262)) ([4bc0546](https://github.com/NoNameItem/read-comics/commit/4bc0546a6fd62b2f68960a3dd5fbcbbdf0bf9406))
+
 ## [1.26.3](https://github.com/NoNameItem/read-comics/compare/1.26.2...1.26.3) (2026-10-20)
 
 
