@@ -708,7 +708,7 @@ class ComicvineDetailsView(IsAdminMixin, View):
         if key not in doc:
             return Field("missing", None)
         value = doc[key]
-        if value is None or value == "" or value == []:
+        if value in (None, "", []):
             return Field("empty", None)
         if transform is not None:
             value = transform(value)
