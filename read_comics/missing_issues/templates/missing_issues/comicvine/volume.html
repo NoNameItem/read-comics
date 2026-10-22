@@ -17,7 +17,7 @@
     <div><small class="text-muted text-uppercase">Covers</small></div>
     {% if covers %}
       <div class="d-flex flex-wrap">
-        {% for cover in covers %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=True %}{% endfor %}
+        {% for cover in covers %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=True only %}{% endfor %}
       </div>
     {% else %}<span class="text-muted">none</span>
     {% endif %}

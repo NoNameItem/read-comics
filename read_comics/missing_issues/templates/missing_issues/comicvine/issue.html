@@ -25,7 +25,7 @@
     <div><small class="text-muted text-uppercase">Variant covers{% if fields.associated_images.state == "value" %} ({{ fields.associated_images.value|length }}){% endif %}</small></div>
     {% if fields.associated_images.state == "value" %}
       <div class="d-flex flex-wrap">
-        {% for cover in fields.associated_images.value %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=False %}{% endfor %}
+        {% for cover in fields.associated_images.value %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=False only %}{% endfor %}
       </div>
     {% elif fields.associated_images.state == "missing" %}<span class="text-muted">not downloaded yet</span>
     {% else %}<span class="text-muted">none</span>
