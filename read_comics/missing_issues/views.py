@@ -825,9 +825,10 @@ class ComicvineDetailsView(IsAdminMixin, View):
         Cover = self.Cover
 
         def main_cover(image: dict):
-            if not (image.get("medium_url") or image.get("original_url")):
+            medium, original = image.get("medium_url"), image.get("original_url")
+            if not (medium or original):
                 return None
-            return Cover(None, None, image.get("medium_url"), image.get("original_url"))
+            return Cover(None, None, medium or original, original or medium)
 
         def credits_list(credits: list) -> list:
             return [f"{c['name']} — {c['role']}" if c.get("role") else c["name"] for c in credits if c.get("name")]

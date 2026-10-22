@@ -228,3 +228,26 @@ def test_issue_credits_without_role_and_title_without_volume(staff_client, cv_is
     assert response.context["title"] == "#7"
     assert response.context["fields"]["person_credits"] == Field("value", ["Solo"])
     assert response.context["fields"]["image"] == Field("missing", None)
+
+
+@pytest.mark.parametrize(
+    "image, src, href",
+    [
+        ({"original_url": "https://img/o40.jpg"}, "https://img/o40.jpg", "https://img/o40.jpg"),
+        ({"medium_url": "https://img/m41.jpg"}, "https://img/m41.jpg", "https://img/m41.jpg"),
+    ],
+)
+def test_issue_cover_with_single_url(staff_client, cv_issues, image, src, href):
+    cv_issues.insert_one({"id": 40, "issue_number": "1", "image": image})
+    content = staff_client.get(url("issue", 40)).content.decode()
+    assert f'src="{src}"' in content
+    assert f'href="{href}"' in content
+    assert "None" not in content
+
+
+@pytest.mark.parametrize("image", [{}, {"medium_url": None, "original_url": None}])
+def test_issue_cover_without_urls(staff_client, cv_issues, image):
+    cv_issues.insert_one({"id": 42, "issue_number": "1", "image": image})
+    response = staff_client.get(url("issue", 42))
+    assert response.context["fields"]["image"] == Field("empty", None)
+    assert "None" not in response.content.decode()
