@@ -18,6 +18,7 @@ from read_comics.missing_issues.models import IgnoredIssue, MissingIssue
 from read_comics.objects.models import Object
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
+from read_comics.utils.comicvine_text import numerical_issue_number, strip_issue_description
 from read_comics.utils.model_mixins import ImageMixin
 from read_comics.utils.models import ComicvineSyncModel, slugify_function
 from read_comics.volumes.models import Volume
@@ -186,13 +187,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
 
     @staticmethod
     def get_description(text):
-        description = text
-        if description:
-            description = re.sub(r"<(a|/a).*?>", "", description)
-            description = re.sub(
-                r"<h4>List of covers and their creators:<\/h4><table[^>]*>.*?<\/table>", "", description
-            )
-        return description
+        return strip_issue_description(text)
 
     def get_full_name(self, volume_name=None, volume_start_year=None):
         if not self.volume:
@@ -252,18 +247,7 @@ class Issue(ImageMixin, ComicvineSyncModel):
         return reverse("issues:detail", args=[self.slug])
 
     def set_numerical_number(self):
-        if self.number:
-            if self.number == "½":
-                self.numerical_number = 0.5
-            else:
-                r = re.compile(r"^\d+(\.\d+)?")
-                match = r.match(self.number)
-                if match:
-                    self.numerical_number = float(match.group(0))
-                else:
-                    self.numerical_number = 0
-        else:
-            self.numerical_number = None
+        self.numerical_number = numerical_issue_number(self.number)
 
     @property
     def display_name(self):
