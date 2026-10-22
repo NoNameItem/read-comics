@@ -43,12 +43,45 @@ function initButtons() {
       updateBadges();
       initButtons();
       initCopy();
+      initComicvineButtons();
       $('[data-toggle="tooltip"]').tooltip();
     }).fail(function (jqXHR, textStatus, errorThrown) {
       if (jqXHR.status === 404) {
         toastr.error("", "Please reload page");
       } else {
         toastr.error("", "Unknown error. Please contact administrator.");
+      }
+    });
+  });
+}
+
+let comicvineRequest = null;
+
+function initComicvineButtons() {
+  $('.btn-comicvine-details').click(function (e) {
+    let url = $(this).attr('data-href');
+    $(this).tooltip('hide');
+    if (comicvineRequest) {
+      comicvineRequest.abort();
+    }
+    $('#comicvineDetailsModal .modal-content').html(
+      '<div class="modal-header">' +
+      '<h5 class="modal-title">Loading…</h5>' +
+      '<button type="button" class="close" data-dismiss="modal" aria-label="Close">' +
+      '<span aria-hidden="true">&times;</span></button>' +
+      '</div>' +
+      '<div class="modal-body"><div class="spinner-border" role="status"></div></div>' +
+      '<div class="modal-footer"><button type="button" class="btn btn-light" data-dismiss="modal">Close</button></div>'
+    );
+    $('#comicvineDetailsModal').modal('show');
+    comicvineRequest = $.ajax({
+      url  : url,
+      type : 'GET'
+    }).done(function (data, textStatus, jqXHR) {
+      $('#comicvineDetailsModal .modal-content').html(data);
+    }).fail(function (jqXHR, textStatus, errorThrown) {
+      if (textStatus !== 'abort') {
+        $('#comicvineDetailsModal .modal-body').text('Failed to load data');
       }
     });
   });
@@ -96,6 +129,7 @@ function startReload(){
 $(document).ready(function () {
   initButtons();
   initCopy();
+  initComicvineButtons();
 
   $('#doReloadModal').on('shown.bs.modal', function () {
     if (!treeInitiated) {

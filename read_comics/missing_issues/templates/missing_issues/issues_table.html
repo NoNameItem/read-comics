@@ -18,6 +18,11 @@
               {% if obj %}{% url urls.category_ignore_publisher category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_publisher missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}{% if q %}&q={{ q }}{% endif %}"
                     type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
                     title="Ignore"><i class="fad fa-times"></i></button>
+            {% if missing_issue.publisher_comicvine_id %}
+            <button data-href="{% url 'missing_issues:comicvine_details' level='publisher' comicvine_id=missing_issue.publisher_comicvine_id %}"
+                    type="button" class="btn btn-outline-primary btn-comicvine-details" data-toggle="tooltip"
+                    data-placement="bottom" title="ComicVine details"><i class="fad fa-info-circle"></i></button>
+            {% endif %}
           </div>
         </td>
         <td class="pl-1 pt-50 pb-50"><a href="{{ missing_issue.publisher_comicvine_url }}"
@@ -41,6 +46,11 @@
               {% if obj %}{% url urls.category_ignore_volume category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_volume missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}{% if q %}&q={{ q }}{% endif %}"
                     type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
                     title="Ignore"><i class="fad fa-times"></i></button>
+            {% if missing_issue.volume_comicvine_id %}
+            <button data-href="{% url 'missing_issues:comicvine_details' level='volume' comicvine_id=missing_issue.volume_comicvine_id %}"
+                    type="button" class="btn btn-outline-primary btn-comicvine-details" data-toggle="tooltip"
+                    data-placement="bottom" title="ComicVine details"><i class="fad fa-info-circle"></i></button>
+            {% endif %}
           </div>
         </td>
         <td class="pl-3 pt-50 pb-50"><a href="{{ missing_issue.volume_comicvine_url }}"
@@ -62,6 +72,9 @@
             {% if obj %}{% url urls.category_ignore_issue category=category_key slug=obj.slug comicvine_id=missing_issue.comicvine_id %}{% else %}{% url urls.ignore_issue missing_issue.comicvine_id %}{% endif %}?page={{ page_obj.number }}{% if q %}&q={{ q }}{% endif %}"
                   type="button" class="btn btn-danger btn-ignore" data-toggle="tooltip" data-placement="bottom"
                   title="Ignore"><i class="fad fa-times"></i></button>
+          <button data-href="{% url 'missing_issues:comicvine_details' level='issue' comicvine_id=missing_issue.comicvine_id %}"
+                  type="button" class="btn btn-outline-primary btn-comicvine-details" data-toggle="tooltip"
+                  data-placement="bottom" title="ComicVine details"><i class="fad fa-info-circle"></i></button>
         </div>
       </td>
       <td class="pl-5 pt-50 pb-50"><a href="{{ missing_issue.comicvine_url }}" target="_blank">{{ missing_issue }}</a></td>
