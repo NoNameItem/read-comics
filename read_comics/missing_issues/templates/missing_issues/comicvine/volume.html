@@ -1,0 +1,25 @@
+{% extends "missing_issues/comicvine/_base.html" %}
+{% block body %}
+  <div class="d-flex flex-wrap">
+    <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="Year" field=fields.year kind="text" %}</div>
+    <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="Publisher" field=fields.publisher kind="text" %}</div>
+    <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="First issue" field=fields.first_issue kind="text" %}</div>
+    <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="Last issue" field=fields.last_issue kind="text" %}</div>
+    <div class="mr-4 mb-2">
+      <div><small class="text-muted text-uppercase">Issues in our DB</small></div>
+      <div>{{ issues_count }}</div>
+    </div>
+  </div>
+  {% include "missing_issues/comicvine/_field.html" with label="Aliases" field=fields.aliases kind="list" %}
+  {% include "missing_issues/comicvine/_field.html" with label="Deck" field=fields.deck kind="text" %}
+  {% include "missing_issues/comicvine/_field.html" with label="Description" field=fields.description kind="html" %}
+  <div class="mb-2">
+    <div><small class="text-muted text-uppercase">Covers</small></div>
+    {% if covers %}
+      <div class="d-flex flex-wrap">
+        {% for cover in covers %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=True %}{% endfor %}
+      </div>
+    {% else %}<span class="text-muted">none</span>
+    {% endif %}
+  </div>
+{% endblock %}

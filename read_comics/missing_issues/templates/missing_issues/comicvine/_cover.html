@@ -1,0 +1,7 @@
+{% comment %}Parameters: cover (Cover namedtuple), caption (bool). Also used for variant covers with caption=False.{% endcomment %}
+<figure class="figure mr-2 mb-2">
+  {% if cover.image_url %}<a href="{{ cover.full_url }}" target="_blank" rel="noopener"><img class="figure-img rounded width-150 h-auto" src="{{ cover.image_url }}" loading="lazy" width="412" height="640" alt=""></a>
+  {% else %}<div class="width-150 text-muted">No cover</div>
+  {% endif %}
+  {% if caption %}<figcaption class="figure-caption text-center">{% if cover.number %}#{{ cover.number }}{% endif %}{% if cover.cover_date %} {{ cover.cover_date }}{% endif %}</figcaption>{% endif %}
+</figure>

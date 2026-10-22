@@ -31,7 +31,7 @@ from read_comics.publishers.models import Publisher
 from read_comics.publishers.tasks import publisher_entry_task, publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
-from read_comics.utils.comicvine_text import set_lazy_image_sources, split_aliases, strip_links
+from read_comics.utils.comicvine_text import numerical_issue_number, set_lazy_image_sources, split_aliases, strip_links
 from read_comics.volumes.models import Volume
 
 from .do_spaces import get_level
@@ -699,8 +699,38 @@ class ComicvineDetailsView(IsAdminMixin, View):
         "crawl_source": 1,
     }
 
+    VOLUME_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "start_year": 1,
+        "publisher": 1,
+        "first_issue": 1,
+        "last_issue": 1,
+        "aliases": 1,
+        "deck": 1,
+        "description": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+    VOLUME_ISSUES_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "issue_number": 1,
+        "cover_date": 1,
+        "image.small_url": 1,
+        "image.original_url": 1,
+    }
+
+    # image_url is the displayed picture, full_url is the original opened on click; both None without an image
+    Cover = namedtuple("Cover", "number cover_date image_url full_url")
+
     # level -> (collection attribute, projection, context method); later levels only add entries
-    LEVELS = {"publisher": ("PUBLISHERS_COLLECTION", PUBLISHER_PROJECTION, "publisher_context")}
+    LEVELS = {
+        "publisher": ("PUBLISHERS_COLLECTION", PUBLISHER_PROJECTION, "publisher_context"),
+        "volume": ("VOLUMES_COLLECTION", VOLUME_PROJECTION, "volume_context"),
+    }
 
     @staticmethod
     def make_field(doc: dict, key: str, transform: Callable | None = None) -> "ComicvineDetailsView.Field":
@@ -716,15 +746,53 @@ class ComicvineDetailsView(IsAdminMixin, View):
                 return Field("empty", None)
         return Field("value", value)
 
-    def publisher_context(self, db, doc: dict) -> dict:
-        make_field = self.make_field
+    @staticmethod
+    def cover_sort_key(issue: dict) -> tuple:
+        number = numerical_issue_number(issue.get("issue_number"))
+        return (number is None, number or 0, issue.get("issue_number") or "", issue["id"])
+
+    @classmethod
+    def text_fields(cls, doc: dict) -> dict:
+        """Aliases, deck and description: shared by the publisher and the volume."""
         return {
-            "title": doc.get("name") or f"Publisher {doc['id']}",
+            "aliases": cls.make_field(doc, "aliases", split_aliases),
+            "deck": cls.make_field(doc, "deck"),
+            "description": cls.make_field(doc, "description", lambda text: set_lazy_image_sources(strip_links(text))),
+        }
+
+    def publisher_context(self, db, doc: dict) -> dict:
+        return {"title": doc.get("name") or f"Publisher {doc['id']}", "fields": self.text_fields(doc)}
+
+    def volume_context(self, db, doc: dict) -> dict:
+        make_field = self.make_field
+
+        def issue_label(issue: dict) -> str | None:
+            number = issue.get("issue_number")
+            return f"#{number}" if number else None
+
+        issues = sorted(
+            db[self.ISSUES_COLLECTION].find({"volume.id": doc["id"]}, self.VOLUME_ISSUES_PROJECTION),
+            key=self.cover_sort_key,
+        )
+        covers = []
+        for issue in issues:
+            image = issue.get("image") or {}
+            number, cover_date = issue.get("issue_number"), issue.get("cover_date")
+            covers.append(self.Cover(number, cover_date, image.get("small_url"), image.get("original_url")))
+
+        name = doc.get("name") or f"Volume {doc['id']}"
+        start_year = doc.get("start_year")
+        return {
+            "title": f"{name} ({start_year})" if start_year else name,
             "fields": {
-                "aliases": make_field(doc, "aliases", split_aliases),
-                "deck": make_field(doc, "deck"),
-                "description": make_field(doc, "description", lambda text: set_lazy_image_sources(strip_links(text))),
+                "year": make_field(doc, "start_year"),
+                "publisher": make_field(doc, "publisher", lambda publisher: publisher.get("name")),
+                "first_issue": make_field(doc, "first_issue", issue_label),
+                "last_issue": make_field(doc, "last_issue", issue_label),
+                **self.text_fields(doc),
             },
+            "covers": covers,
+            "issues_count": len(covers),
         }
 
     def get(self, request, level: str, comicvine_id: int, **kwargs):
