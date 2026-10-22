@@ -76,6 +76,7 @@ def test_list_only_document(staff_client, cv_publishers):
     assert fields["aliases"] == fields["description"] == Field("missing", None)
     assert fields["deck"] == Field("empty", None)
     assert 'text-muted">none<' in response.content.decode()
+    assert "not downloaded yet" in response.content.decode()
 
 
 def test_footer_without_date_and_url(staff_client, cv_publishers):
@@ -218,8 +219,15 @@ def test_issue(staff_client, cv_issues):
 
 def test_issue_variant_states(staff_client, cv_issues):
     cv_issues.insert_many([{"id": 20, "issue_number": "2", "associated_images": []}, {"id": 21, "issue_number": "3"}])
-    assert staff_client.get(url("issue", 20)).context["fields"]["associated_images"] == Field("empty", None)
-    assert staff_client.get(url("issue", 21)).context["fields"]["associated_images"] == Field("missing", None)
+    empty = staff_client.get(url("issue", 20))
+    missing = staff_client.get(url("issue", 21))
+    assert empty.context["fields"]["associated_images"] == Field("empty", None)
+    assert missing.context["fields"]["associated_images"] == Field("missing", None)
+    empty_block = empty.content.decode().split("Variant covers", 1)[1]
+    missing_block = missing.content.decode().split("Variant covers", 1)[1]
+    assert empty_block.startswith("</small>") and 'text-muted">none<' in empty_block
+    assert missing_block.startswith("</small>") and 'text-muted">not downloaded yet<' in missing_block
+    assert "Variant covers (" not in empty.content.decode() + missing.content.decode()
 
 
 def test_issue_credits_without_role_and_title_without_volume(staff_client, cv_issues):
