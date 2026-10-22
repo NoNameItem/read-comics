@@ -81,6 +81,7 @@ function initComicvineButtons() {
       $('#comicvineDetailsModal .modal-content').html(data);
     }).fail(function (jqXHR, textStatus, errorThrown) {
       if (textStatus !== 'abort') {
+        $('#comicvineDetailsModal .modal-title').text('Error');
         $('#comicvineDetailsModal .modal-body').text('Failed to load data');
       }
     });

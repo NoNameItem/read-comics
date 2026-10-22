@@ -7,7 +7,7 @@
   <div><small class="text-muted text-uppercase">{{ label }}</small></div>
   {% if field.state == "missing" %}<span class="text-muted">not downloaded yet</span>
   {% elif field.state == "empty" %}<span class="text-muted">none</span>
-  {% elif kind == "html" %}<div class="detail-full-description">{{ field.value|safe }}</div>
+  {% elif kind == "html" %}<div class="detail-full-description clearfix">{{ field.value|safe }}</div>
   {% elif kind == "list" %}<ul class="card-columns">{% for item in field.value %}<li>{{ item }}</li>{% endfor %}</ul>
   {% else %}<div>{{ field.value }}</div>
   {% endif %}
