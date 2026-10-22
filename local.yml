@@ -1,6 +1,5 @@
 volumes:
   local_postgres_data: {}
-  local_postgres_data_backups: {}
   local_mongodb_data: { }
   local_mongodb_config: { }
   local_rabbitmq_data: { }
@@ -32,14 +31,10 @@ services:
     command: /start
 
   postgres:
-    build:
-      context: .
-      dockerfile: ./compose/production/postgres/Dockerfile
-    image: read_comics_production_postgres
+    image: postgres:18.1
     container_name: postgres
     volumes:
-      - local_postgres_data:/var/lib/postgresql/data:Z
-      - local_postgres_data_backups:/backups:z
+      - local_postgres_data:/var/lib/postgresql:Z
     env_file:
       - ./.envs/.local/.postgres
     ports:

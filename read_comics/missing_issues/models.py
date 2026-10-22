@@ -1,9 +1,9 @@
-import re
-
 from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+
+from read_comics.utils.comicvine_text import numerical_issue_number
 
 
 class Locks(models.Model):
@@ -83,18 +83,7 @@ class MissingIssue(models.Model):
     skip_date = models.DateField(null=True)
 
     def set_numerical_number(self):
-        if self.number:
-            if self.number == "½":
-                self.numerical_number = 0.5
-            else:
-                r = re.compile(r"^\d+(\.\d+)?")
-                match = r.match(self.number)
-                if match:
-                    self.numerical_number = float(match.group(0))
-                else:
-                    self.numerical_number = 0
-        else:
-            self.numerical_number = None
+        self.numerical_number = numerical_issue_number(self.number)
 
     def __str__(self):
         if self.name:

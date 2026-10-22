@@ -1,0 +1,34 @@
+{% extends "missing_issues/comicvine/_base.html" %}
+{% block body %}
+  <div class="d-flex mb-2">
+    {% if fields.image.state == "value" %}
+      <div class="flex-shrink-0 mr-2">
+        <a href="{{ fields.image.value.full_url }}" target="_blank" rel="noopener"><img class="img-fluid rounded width-300" src="{{ fields.image.value.image_url }}" alt="Cover"></a>
+      </div>
+    {% else %}
+      <div class="flex-shrink-0 mr-2">
+        {% include "missing_issues/comicvine/_field.html" with label="Cover" field=fields.image kind="text" %}
+      </div>
+    {% endif %}
+    <div class="flex-grow-1">
+      <div class="d-flex flex-wrap">
+        <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="Cover date" field=fields.cover_date kind="text" %}</div>
+        <div class="mr-4">{% include "missing_issues/comicvine/_field.html" with label="Store date" field=fields.store_date kind="text" %}</div>
+      </div>
+      {% include "missing_issues/comicvine/_field.html" with label="Name" field=fields.name kind="text" %}
+      {% include "missing_issues/comicvine/_field.html" with label="Deck" field=fields.deck kind="text" %}
+      {% include "missing_issues/comicvine/_field.html" with label="Description" field=fields.description kind="html" %}
+      {% include "missing_issues/comicvine/_field.html" with label="Credits" field=fields.person_credits kind="list" %}
+    </div>
+  </div>
+  <div class="mb-2">
+    <div><small class="text-muted text-uppercase">Variant covers{% if fields.associated_images.state == "value" %} ({{ fields.associated_images.value|length }}){% endif %}</small></div>
+    {% if fields.associated_images.state == "value" %}
+      <div class="d-flex flex-wrap">
+        {% for cover in fields.associated_images.value %}{% include "missing_issues/comicvine/_cover.html" with cover=cover caption=False only %}{% endfor %}
+      </div>
+    {% elif fields.associated_images.state == "missing" %}<span class="text-muted">not downloaded yet</span>
+    {% else %}<span class="text-muted">none</span>
+    {% endif %}
+  </div>
+{% endblock %}

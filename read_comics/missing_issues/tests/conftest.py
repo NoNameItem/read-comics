@@ -9,6 +9,8 @@ from read_comics.missing_issues.tasks import (
     character_missing_issues_task,
     publisher_missing_issues_task,
 )
+from read_comics.missing_issues.views import ComicvineDetailsView
+from read_comics.users.tests.factories import UserFactory
 
 ISSUES = "test_missing_issues_issues"
 VOLUMES = "test_missing_issues_volumes"
@@ -59,6 +61,12 @@ def character(db):
 
 
 @pytest.fixture
+def staff_client(client, db):
+    client.force_login(UserFactory(is_staff=True))
+    return client
+
+
+@pytest.fixture
 def make_issue(db):
     def _make_issue(comicvine_id, **fields):
         return Issue.objects.create(comicvine_id=comicvine_id, space_key=f"test/{comicvine_id}.cbz", **fields)
@@ -96,3 +104,39 @@ def seeded(issues_col, volumes_col, publishers_col):
 def linked_character(character, make_issue):
     make_issue(99).characters.add(character)
     return character
+
+
+CV_PUBLISHERS = "test_cv_details_publishers"
+CV_VOLUMES = "test_cv_details_volumes"
+CV_ISSUES = "test_cv_details_issues"
+
+
+@pytest.fixture
+def cv_db(monkeypatch):
+    # Only the literal test_* names are dropped, never the view attributes: local Mongo holds a copy of production
+    monkeypatch.setattr(ComicvineDetailsView, "PUBLISHERS_COLLECTION", CV_PUBLISHERS)
+    monkeypatch.setattr(ComicvineDetailsView, "VOLUMES_COLLECTION", CV_VOLUMES)
+    monkeypatch.setattr(ComicvineDetailsView, "ISSUES_COLLECTION", CV_ISSUES)
+    client = MongoClient(settings.MONGO_URL)
+    db = client.get_default_database()
+    for name in (CV_PUBLISHERS, CV_VOLUMES, CV_ISSUES):
+        db.drop_collection(name)
+    yield db
+    for name in (CV_PUBLISHERS, CV_VOLUMES, CV_ISSUES):
+        db.drop_collection(name)
+    client.close()
+
+
+@pytest.fixture
+def cv_publishers(cv_db):
+    return cv_db[CV_PUBLISHERS]
+
+
+@pytest.fixture
+def cv_volumes(cv_db):
+    return cv_db[CV_VOLUMES]
+
+
+@pytest.fixture
+def cv_issues(cv_db):
+    return cv_db[CV_ISSUES]

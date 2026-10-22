@@ -1,19 +1,23 @@
 import datetime
 import json
-from typing import Any, List
+from collections import namedtuple
+from typing import Any, Callable, List
 
 from celery import signature
 from django import http
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.db.models import Q, QuerySet
 from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
 from issues.tasks import issue_entry_task, purge_deleted
+from pymongo import MongoClient
 from utils import logging
 from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, IsAdminMixin
 from volumes.tasks import volume_entry_task
@@ -27,6 +31,13 @@ from read_comics.publishers.models import Publisher
 from read_comics.publishers.tasks import publisher_entry_task, publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
+from read_comics.utils.comicvine_text import (
+    numerical_issue_number,
+    set_lazy_image_sources,
+    split_aliases,
+    strip_issue_description,
+    strip_links,
+)
 from read_comics.volumes.models import Volume
 
 from .do_spaces import get_level
@@ -62,7 +73,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
     context_object_name = "missing_issues"
     paginate_by = 100
     category_skip_publisher_url = "missing_issues:category_skip_publisher"
-    category_ignore_publisher_url = "missing_issues:category_skip_publisher"
+    category_ignore_publisher_url = "missing_issues:category_ignore_publisher"
     category_skip_volume_url = "missing_issues:category_skip_volume"
     category_ignore_volume_url = "missing_issues:category_ignore_volume"
     category_skip_issue_url = "missing_issues:category_skip_issue"
@@ -672,3 +683,197 @@ class DOSpaceView(IsAdminMixin, View):
 
 
 do_space_view = DOSpaceView.as_view()
+
+
+@logging.methods_logged(logger, ["setup", "get"])
+class ComicvineDetailsView(IsAdminMixin, View):
+    Field = namedtuple("Field", "state value")
+
+    PUBLISHERS_COLLECTION = "comicvine_publishers"
+    VOLUMES_COLLECTION = "comicvine_volumes"
+    ISSUES_COLLECTION = "comicvine_issues"
+
+    PUBLISHER_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "aliases": 1,
+        "deck": 1,
+        "description": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+
+    VOLUME_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "start_year": 1,
+        "publisher": 1,
+        "first_issue": 1,
+        "last_issue": 1,
+        "aliases": 1,
+        "deck": 1,
+        "description": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+    VOLUME_ISSUES_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "issue_number": 1,
+        "cover_date": 1,
+        "image.small_url": 1,
+        "image.original_url": 1,
+    }
+
+    ISSUE_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "issue_number": 1,
+        "volume": 1,
+        "cover_date": 1,
+        "store_date": 1,
+        "image": 1,
+        "deck": 1,
+        "description": 1,
+        "person_credits": 1,
+        "associated_images": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+
+    # image_url is the displayed picture, full_url is the original opened on click; both None without an image
+    Cover = namedtuple("Cover", "number cover_date image_url full_url")
+
+    # level -> (collection attribute, projection, context method); later levels only add entries
+    LEVELS = {
+        "publisher": ("PUBLISHERS_COLLECTION", PUBLISHER_PROJECTION, "publisher_context"),
+        "volume": ("VOLUMES_COLLECTION", VOLUME_PROJECTION, "volume_context"),
+        "issue": ("ISSUES_COLLECTION", ISSUE_PROJECTION, "issue_context"),
+    }
+
+    @classmethod
+    def make_field(cls, doc: dict, key: str, transform: Callable | None = None) -> "ComicvineDetailsView.Field":
+        if key not in doc:
+            return cls.Field("missing", None)
+        value = doc[key]
+        if value in (None, "", []):
+            return cls.Field("empty", None)
+        if transform is not None:
+            value = transform(value)
+            if not value:
+                return cls.Field("empty", None)
+        return cls.Field("value", value)
+
+    @staticmethod
+    def cover_sort_key(issue: dict) -> tuple:
+        number = numerical_issue_number(issue.get("issue_number"))
+        return (number is None, number or 0, issue.get("issue_number") or "", issue["id"])
+
+    @classmethod
+    def text_fields(cls, doc: dict) -> dict:
+        """Aliases, deck and description: shared by the publisher and the volume."""
+        return {
+            "aliases": cls.make_field(doc, "aliases", split_aliases),
+            "deck": cls.make_field(doc, "deck"),
+            "description": cls.make_field(doc, "description", lambda text: set_lazy_image_sources(strip_links(text))),
+        }
+
+    def publisher_context(self, db, doc: dict) -> dict:
+        return {"title": doc.get("name") or f"Publisher {doc['id']}", "fields": self.text_fields(doc)}
+
+    def volume_context(self, db, doc: dict) -> dict:
+        def issue_label(issue: dict) -> str | None:
+            number = issue.get("issue_number")
+            return f"#{number}" if number else None
+
+        issues = sorted(
+            db[self.ISSUES_COLLECTION].find({"volume.id": doc["id"]}, self.VOLUME_ISSUES_PROJECTION),
+            key=self.cover_sort_key,
+        )
+        covers = []
+        for issue in issues:
+            image = issue.get("image") or {}
+            number, cover_date = issue.get("issue_number"), issue.get("cover_date")
+            covers.append(self.Cover(number, cover_date, image.get("small_url"), image.get("original_url")))
+
+        name = doc.get("name") or f"Volume {doc['id']}"
+        start_year = doc.get("start_year")
+        return {
+            "title": f"{name} ({start_year})" if start_year else name,
+            "fields": {
+                "year": self.make_field(doc, "start_year"),
+                "publisher": self.make_field(doc, "publisher", lambda publisher: publisher.get("name")),
+                "first_issue": self.make_field(doc, "first_issue", issue_label),
+                "last_issue": self.make_field(doc, "last_issue", issue_label),
+                **self.text_fields(doc),
+            },
+            "covers": covers,
+            "issues_count": len(covers),
+        }
+
+    def issue_context(self, db, doc: dict) -> dict:
+        def main_cover(image: dict):
+            medium, original = image.get("medium_url"), image.get("original_url")
+            if not (medium or original):
+                return None
+            return self.Cover(None, None, medium or original, original or medium)
+
+        def credits_list(credits: list) -> list:
+            return [f"{c['name']} — {c['role']}" if c.get("role") else c["name"] for c in credits if c.get("name")]
+
+        def variant_covers(images: list) -> list:
+            return [
+                self.Cover(None, None, i["original_url"], i["original_url"]) for i in images if i.get("original_url")
+            ]
+
+        number = doc.get("issue_number")
+        volume_name = (doc.get("volume") or {}).get("name")
+        title = f"{volume_name} #{number}" if volume_name else f"#{number}"
+        return {
+            "title": title,
+            "fields": {
+                "image": self.make_field(doc, "image", main_cover),
+                "cover_date": self.make_field(doc, "cover_date"),
+                "store_date": self.make_field(doc, "store_date"),
+                "name": self.make_field(doc, "name"),
+                "deck": self.make_field(doc, "deck"),
+                "description": self.make_field(
+                    doc, "description", lambda text: set_lazy_image_sources(strip_issue_description(text))
+                ),
+                "person_credits": self.make_field(doc, "person_credits", credits_list),
+                "associated_images": self.make_field(doc, "associated_images", variant_covers),
+            },
+        }
+
+    def get(self, request, level: str, comicvine_id: int, **kwargs):
+        if level not in self.LEVELS:
+            raise Http404
+        collection_attr, projection, context_method = self.LEVELS[level]
+
+        client = MongoClient(settings.MONGO_URL)
+        try:
+            db = client.get_default_database()
+            doc = db[getattr(self, collection_attr)].find_one({"id": comicvine_id}, projection)
+            if doc is None:
+                return render(
+                    request, "missing_issues/comicvine/no_data.html", {"level": level, "comicvine_id": comicvine_id}
+                )
+            context = getattr(self, context_method)(db, doc)
+        finally:
+            client.close()
+
+        context.update(
+            site_detail_url=doc.get("site_detail_url"),
+            crawl_date=doc.get("crawl_date"),
+            list_only=doc.get("crawl_source") == "list",
+        )
+        return render(request, f"missing_issues/comicvine/{level}.html", context)
+
+
+comicvine_details_view = ComicvineDetailsView.as_view()

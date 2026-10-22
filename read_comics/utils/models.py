@@ -1,6 +1,5 @@
 import datetime
 import random
-import re
 from json import JSONDecodeError
 from time import sleep
 
@@ -18,6 +17,7 @@ from slugify import slugify
 from urllib3 import Retry
 
 from read_comics.missing_issues.models import APIQueue, Locks
+from read_comics.utils.comicvine_text import set_lazy_image_sources, strip_links
 
 from .logging import Logger
 from .model_managers import ComicvineSyncManager
@@ -263,9 +263,7 @@ class ComicvineSyncModel(models.Model):
 
     @staticmethod
     def strip_links(text):
-        if text:
-            return re.sub(r"<(a|/a).*?>", "", text)
-        return None
+        return strip_links(text)
 
     @staticmethod
     def get_issue_name(comicvine_id):
@@ -554,21 +552,7 @@ class ComicvineSyncModel(models.Model):
     @property
     def description(self):
         if self.html_description:
-            d = self.html_description  # .replace("https:", "http:")
-            from bs4 import BeautifulSoup
-
-            soup = BeautifulSoup(d, "html.parser")
-            lazy_images = soup.select("img.js-lazy-load-image")
-            for image in lazy_images:
-                image["src"] = image.get("data-src")
-
-            images = soup.select("img")
-            for image in images:
-                classes = image.get("class", [])
-                classes.append("image-full-size")
-                image["class"] = classes
-
-            return str(soup)
+            return set_lazy_image_sources(self.html_description, img_class="image-full-size")
         return ""
 
     @property

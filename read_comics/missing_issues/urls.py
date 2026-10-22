@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    comicvine_details_view,
     do_space_view,
     ignore_issue_view,
     ignore_publisher_view,
@@ -56,6 +57,7 @@ urlpatterns = [
         view=watched_ignore_publisher_view,
         name="watched_ignore_publisher",
     ),
+    path("comicvine/<str:level>/<int:comicvine_id>/", view=comicvine_details_view, name="comicvine_details"),
     path("<str:category>/<str:slug>/", view=missing_issues_list_view, name="category"),
     path("<str:category>/<str:slug>/skip_issue/<int:comicvine_id>/", view=skip_issue_view, name="category_skip_issue"),
     path(
