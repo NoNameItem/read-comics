@@ -62,7 +62,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
     context_object_name = "missing_issues"
     paginate_by = 100
     category_skip_publisher_url = "missing_issues:category_skip_publisher"
-    category_ignore_publisher_url = "missing_issues:category_skip_publisher"
+    category_ignore_publisher_url = "missing_issues:category_ignore_publisher"
     category_skip_volume_url = "missing_issues:category_skip_volume"
     category_ignore_volume_url = "missing_issues:category_ignore_volume"
     category_skip_issue_url = "missing_issues:category_skip_issue"

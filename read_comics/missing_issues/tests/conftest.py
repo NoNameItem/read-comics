@@ -9,6 +9,7 @@ from read_comics.missing_issues.tasks import (
     character_missing_issues_task,
     publisher_missing_issues_task,
 )
+from read_comics.users.tests.factories import UserFactory
 
 ISSUES = "test_missing_issues_issues"
 VOLUMES = "test_missing_issues_volumes"
@@ -56,6 +57,12 @@ def publishers_col(mongo_db):
 @pytest.fixture
 def character(db):
     return Character.objects.create(comicvine_id=1699, name="Batman")
+
+
+@pytest.fixture
+def staff_client(client, db):
+    client.force_login(UserFactory(is_staff=True))
+    return client
 
 
 @pytest.fixture
