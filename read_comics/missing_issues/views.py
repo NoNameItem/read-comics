@@ -31,7 +31,13 @@ from read_comics.publishers.models import Publisher
 from read_comics.publishers.tasks import publisher_entry_task, publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
-from read_comics.utils.comicvine_text import numerical_issue_number, set_lazy_image_sources, split_aliases, strip_links
+from read_comics.utils.comicvine_text import (
+    numerical_issue_number,
+    set_lazy_image_sources,
+    split_aliases,
+    strip_issue_description,
+    strip_links,
+)
 from read_comics.volumes.models import Volume
 
 from .do_spaces import get_level
@@ -723,6 +729,24 @@ class ComicvineDetailsView(IsAdminMixin, View):
         "image.original_url": 1,
     }
 
+    ISSUE_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "issue_number": 1,
+        "volume": 1,
+        "cover_date": 1,
+        "store_date": 1,
+        "image": 1,
+        "deck": 1,
+        "description": 1,
+        "person_credits": 1,
+        "associated_images": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+
     # image_url is the displayed picture, full_url is the original opened on click; both None without an image
     Cover = namedtuple("Cover", "number cover_date image_url full_url")
 
@@ -730,6 +754,7 @@ class ComicvineDetailsView(IsAdminMixin, View):
     LEVELS = {
         "publisher": ("PUBLISHERS_COLLECTION", PUBLISHER_PROJECTION, "publisher_context"),
         "volume": ("VOLUMES_COLLECTION", VOLUME_PROJECTION, "volume_context"),
+        "issue": ("ISSUES_COLLECTION", ISSUE_PROJECTION, "issue_context"),
     }
 
     @staticmethod
@@ -793,6 +818,40 @@ class ComicvineDetailsView(IsAdminMixin, View):
             },
             "covers": covers,
             "issues_count": len(covers),
+        }
+
+    def issue_context(self, db, doc: dict) -> dict:
+        make_field = self.make_field
+        Cover = self.Cover
+
+        def main_cover(image: dict):
+            if not (image.get("medium_url") or image.get("original_url")):
+                return None
+            return Cover(None, None, image.get("medium_url"), image.get("original_url"))
+
+        def credits_list(credits: list) -> list:
+            return [f"{c['name']} — {c['role']}" if c.get("role") else c["name"] for c in credits if c.get("name")]
+
+        def variant_covers(images: list) -> list:
+            return [Cover(None, None, i["original_url"], i["original_url"]) for i in images if i.get("original_url")]
+
+        number = doc.get("issue_number")
+        volume_name = (doc.get("volume") or {}).get("name")
+        title = f"{volume_name} #{number}" if volume_name else f"#{number}"
+        return {
+            "title": title,
+            "fields": {
+                "image": make_field(doc, "image", main_cover),
+                "cover_date": make_field(doc, "cover_date"),
+                "store_date": make_field(doc, "store_date"),
+                "name": make_field(doc, "name"),
+                "deck": make_field(doc, "deck"),
+                "description": make_field(
+                    doc, "description", lambda text: set_lazy_image_sources(strip_issue_description(text))
+                ),
+                "person_credits": make_field(doc, "person_credits", credits_list),
+                "associated_images": make_field(doc, "associated_images", variant_covers),
+            },
         }
 
     def get(self, request, level: str, comicvine_id: int, **kwargs):

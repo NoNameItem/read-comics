@@ -177,3 +177,54 @@ def test_volume_issues_with_empty_number_and_image(staff_client, cv_volumes, cv_
     assert [c.number for c in covers] == ["1", None, ""]
     assert all(c.image_url is None and c.full_url is None for c in covers)
     assert response.content.decode().count("No cover") == 3
+
+
+def test_issue(staff_client, cv_issues):
+    cv_issues.insert_one(
+        {
+            "id": 10,
+            "name": "The Beginning",
+            "issue_number": "1",
+            "volume": {"id": 100, "name": "Fictional Tales"},
+            "cover_date": "1999-01-01",
+            "store_date": "1998-12-01",
+            "deck": "First",
+            "image": {"medium_url": "https://img/m10.jpg", "original_url": "https://img/o10.jpg"},
+            "description": '<p>Story by <a href="https://cv/x">John Doe</a></p>'
+            "<h4>List of covers and their creators:</h4><table><tr><td>x</td></tr></table>",
+            "person_credits": [{"name": "John Doe", "role": "writer"}, {"name": "Jane Roe", "role": "penciler, inker"}],
+            "associated_images": [{"original_url": "https://img/v1.jpg"}, {"original_url": "https://img/v2.jpg"}],
+            "crawl_source": "detail",
+        }
+    )
+    content = staff_client.get(url("issue", 10)).content.decode()
+    for text in (
+        "Fictional Tales #1",
+        'src="https://img/m10.jpg"',
+        'href="https://img/o10.jpg"',
+        "1999-01-01",
+        "1998-12-01",
+        "The Beginning",
+        "Story by John Doe",
+        "John Doe — writer",
+        "Jane Roe — penciler, inker",
+        "Variant covers (2)",
+        'src="https://img/v1.jpg"',
+    ):
+        assert text in content
+    assert "List of covers" not in content
+    assert content.count('loading="lazy"') == 2
+
+
+def test_issue_variant_states(staff_client, cv_issues):
+    cv_issues.insert_many([{"id": 20, "issue_number": "2", "associated_images": []}, {"id": 21, "issue_number": "3"}])
+    assert staff_client.get(url("issue", 20)).context["fields"]["associated_images"] == Field("empty", None)
+    assert staff_client.get(url("issue", 21)).context["fields"]["associated_images"] == Field("missing", None)
+
+
+def test_issue_credits_without_role_and_title_without_volume(staff_client, cv_issues):
+    cv_issues.insert_one({"id": 30, "issue_number": "7", "person_credits": [{"name": "Solo", "role": ""}]})
+    response = staff_client.get(url("issue", 30))
+    assert response.context["title"] == "#7"
+    assert response.context["fields"]["person_credits"] == Field("value", ["Solo"])
+    assert response.context["fields"]["image"] == Field("missing", None)
