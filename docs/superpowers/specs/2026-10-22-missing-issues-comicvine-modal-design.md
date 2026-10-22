@@ -136,9 +136,8 @@
 `volume.id` этого тома.
 
 - **Шапка:** `name (start_year)`.
-- **Строка метаданных:** год (`start_year`); издатель (`publisher.name`); «Issues in our DB» —
-  число документов `comicvine_issues` с этим `volume.id` (подпись именно «in our DB»: Mongo может
-  отставать от ComicVine); номера первого и последнего выпуска (`first_issue.issue_number`,
+- **Строка метаданных:** год (`start_year`); издатель (`publisher.name`); «Issues in ComicVine dump» —
+  число документов `comicvine_issues` с этим `volume.id` (подпись именно «in ComicVine dump» (решение пользователя): это число выпусков в нашей копии данных ComicVine, а не скачанных в основную базу и S3; копия может отставать от ComicVine); номера первого и последнего выпуска (`first_issue.issue_number`,
   `last_issue.issue_number` — значения ComicVine). Число выпусков и первый/последний — предложены
   мной, приняты пользователем.
 - **Алиасы** — как у издателя.
@@ -300,7 +299,7 @@
 | Элемент | Классы | Откуда |
 |---|---|---|
 | Модалка | `.modal.fade` > `.modal-dialog.modal-dialog-scrollable.modal-full` > `.modal-content` с `.modal-header` (`.modal-title`, `button.close[data-dismiss=modal]`), `.modal-body`, `.modal-footer` | готовые: Bootstrap; `.modal-full` — тема (`bootstrap-extended.css`) |
-| Кнопка открытия в строке | `button.btn` в цвете, отличном от Skip/Ignore (например `btn-outline-primary`), размер как у соседних Skip/Ignore (без `btn-sm`), иконка `fad`, `data-toggle="tooltip" data-placement="bottom"` | готовые: Bootstrap, Font Awesome |
+| Кнопка открытия в строке | `button.btn.btn-primary` (цвет, отличный от Skip/Ignore; между Skip и Ignore, решение пользователя), размер как у соседних Skip/Ignore (без `btn-sm`), иконка `fad`, `data-toggle="tooltip" data-placement="bottom"` | готовые: Bootstrap, Font Awesome |
 | Подвал | дата скачивания — `small.text-muted.mr-auto`; `a.btn.btn-primary[target=_blank]` «Open on ComicVine», `button.btn.btn-light[data-dismiss=modal]` «Close» | готовые: Bootstrap |
 | Индикатор загрузки | `.spinner-border` | готовый: Bootstrap |
 | Подписи полей | `small.text-muted.text-uppercase` | готовые: Bootstrap |
