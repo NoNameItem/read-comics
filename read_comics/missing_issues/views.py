@@ -757,19 +757,18 @@ class ComicvineDetailsView(IsAdminMixin, View):
         "issue": ("ISSUES_COLLECTION", ISSUE_PROJECTION, "issue_context"),
     }
 
-    @staticmethod
-    def make_field(doc: dict, key: str, transform: Callable | None = None) -> "ComicvineDetailsView.Field":
-        Field = ComicvineDetailsView.Field
+    @classmethod
+    def make_field(cls, doc: dict, key: str, transform: Callable | None = None) -> "ComicvineDetailsView.Field":
         if key not in doc:
-            return Field("missing", None)
+            return cls.Field("missing", None)
         value = doc[key]
         if value in (None, "", []):
-            return Field("empty", None)
+            return cls.Field("empty", None)
         if transform is not None:
             value = transform(value)
             if not value:
-                return Field("empty", None)
-        return Field("value", value)
+                return cls.Field("empty", None)
+        return cls.Field("value", value)
 
     @staticmethod
     def cover_sort_key(issue: dict) -> tuple:
@@ -789,8 +788,6 @@ class ComicvineDetailsView(IsAdminMixin, View):
         return {"title": doc.get("name") or f"Publisher {doc['id']}", "fields": self.text_fields(doc)}
 
     def volume_context(self, db, doc: dict) -> dict:
-        make_field = self.make_field
-
         def issue_label(issue: dict) -> str | None:
             number = issue.get("issue_number")
             return f"#{number}" if number else None
@@ -810,10 +807,10 @@ class ComicvineDetailsView(IsAdminMixin, View):
         return {
             "title": f"{name} ({start_year})" if start_year else name,
             "fields": {
-                "year": make_field(doc, "start_year"),
-                "publisher": make_field(doc, "publisher", lambda publisher: publisher.get("name")),
-                "first_issue": make_field(doc, "first_issue", issue_label),
-                "last_issue": make_field(doc, "last_issue", issue_label),
+                "year": self.make_field(doc, "start_year"),
+                "publisher": self.make_field(doc, "publisher", lambda publisher: publisher.get("name")),
+                "first_issue": self.make_field(doc, "first_issue", issue_label),
+                "last_issue": self.make_field(doc, "last_issue", issue_label),
                 **self.text_fields(doc),
             },
             "covers": covers,
@@ -821,20 +818,19 @@ class ComicvineDetailsView(IsAdminMixin, View):
         }
 
     def issue_context(self, db, doc: dict) -> dict:
-        make_field = self.make_field
-        Cover = self.Cover
-
         def main_cover(image: dict):
             medium, original = image.get("medium_url"), image.get("original_url")
             if not (medium or original):
                 return None
-            return Cover(None, None, medium or original, original or medium)
+            return self.Cover(None, None, medium or original, original or medium)
 
         def credits_list(credits: list) -> list:
             return [f"{c['name']} — {c['role']}" if c.get("role") else c["name"] for c in credits if c.get("name")]
 
         def variant_covers(images: list) -> list:
-            return [Cover(None, None, i["original_url"], i["original_url"]) for i in images if i.get("original_url")]
+            return [
+                self.Cover(None, None, i["original_url"], i["original_url"]) for i in images if i.get("original_url")
+            ]
 
         number = doc.get("issue_number")
         volume_name = (doc.get("volume") or {}).get("name")
@@ -842,16 +838,16 @@ class ComicvineDetailsView(IsAdminMixin, View):
         return {
             "title": title,
             "fields": {
-                "image": make_field(doc, "image", main_cover),
-                "cover_date": make_field(doc, "cover_date"),
-                "store_date": make_field(doc, "store_date"),
-                "name": make_field(doc, "name"),
-                "deck": make_field(doc, "deck"),
-                "description": make_field(
+                "image": self.make_field(doc, "image", main_cover),
+                "cover_date": self.make_field(doc, "cover_date"),
+                "store_date": self.make_field(doc, "store_date"),
+                "name": self.make_field(doc, "name"),
+                "deck": self.make_field(doc, "deck"),
+                "description": self.make_field(
                     doc, "description", lambda text: set_lazy_image_sources(strip_issue_description(text))
                 ),
-                "person_credits": make_field(doc, "person_credits", credits_list),
-                "associated_images": make_field(doc, "associated_images", variant_covers),
+                "person_credits": self.make_field(doc, "person_credits", credits_list),
+                "associated_images": self.make_field(doc, "associated_images", variant_covers),
             },
         }
 
