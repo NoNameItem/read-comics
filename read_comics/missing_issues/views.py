@@ -1,19 +1,23 @@
 import datetime
 import json
-from typing import Any, List
+from collections import namedtuple
+from typing import Any, Callable, List
 
 from celery import signature
 from django import http
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.db.models import Q, QuerySet
 from django.http import Http404, HttpResponseRedirect, JsonResponse
+from django.shortcuts import render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 from django_magnificent_messages import notifications
 from issues.tasks import issue_entry_task, purge_deleted
+from pymongo import MongoClient
 from utils import logging
 from utils.view_mixins import ActiveMenuMixin, BreadcrumbMixin, ElidedPagesPaginatorMixin, IsAdminMixin
 from volumes.tasks import volume_entry_task
@@ -27,6 +31,7 @@ from read_comics.publishers.models import Publisher
 from read_comics.publishers.tasks import publisher_entry_task, publishers_space_task
 from read_comics.story_arcs.models import StoryArc
 from read_comics.teams.models import Team
+from read_comics.utils.comicvine_text import set_lazy_image_sources, split_aliases, strip_links
 from read_comics.volumes.models import Volume
 
 from .do_spaces import get_level
@@ -672,3 +677,79 @@ class DOSpaceView(IsAdminMixin, View):
 
 
 do_space_view = DOSpaceView.as_view()
+
+
+@logging.methods_logged(logger, ["setup", "get"])
+class ComicvineDetailsView(IsAdminMixin, View):
+    Field = namedtuple("Field", "state value")
+
+    PUBLISHERS_COLLECTION = "comicvine_publishers"
+    VOLUMES_COLLECTION = "comicvine_volumes"
+    ISSUES_COLLECTION = "comicvine_issues"
+
+    PUBLISHER_PROJECTION = {
+        "_id": 0,
+        "id": 1,
+        "name": 1,
+        "aliases": 1,
+        "deck": 1,
+        "description": 1,
+        "site_detail_url": 1,
+        "crawl_date": 1,
+        "crawl_source": 1,
+    }
+
+    # level -> (collection attribute, projection, context method); later levels only add entries
+    LEVELS = {"publisher": ("PUBLISHERS_COLLECTION", PUBLISHER_PROJECTION, "publisher_context")}
+
+    @staticmethod
+    def make_field(doc: dict, key: str, transform: Callable | None = None) -> "ComicvineDetailsView.Field":
+        Field = ComicvineDetailsView.Field
+        if key not in doc:
+            return Field("missing", None)
+        value = doc[key]
+        if value is None or value == "" or value == []:
+            return Field("empty", None)
+        if transform is not None:
+            value = transform(value)
+            if not value:
+                return Field("empty", None)
+        return Field("value", value)
+
+    def publisher_context(self, db, doc: dict) -> dict:
+        make_field = self.make_field
+        return {
+            "title": doc.get("name") or f"Publisher {doc['id']}",
+            "fields": {
+                "aliases": make_field(doc, "aliases", split_aliases),
+                "deck": make_field(doc, "deck"),
+                "description": make_field(doc, "description", lambda text: set_lazy_image_sources(strip_links(text))),
+            },
+        }
+
+    def get(self, request, level: str, comicvine_id: int, **kwargs):
+        if level not in self.LEVELS:
+            raise Http404
+        collection_attr, projection, context_method = self.LEVELS[level]
+
+        client = MongoClient(settings.MONGO_URL)
+        try:
+            db = client.get_default_database()
+            doc = db[getattr(self, collection_attr)].find_one({"id": comicvine_id}, projection)
+            if doc is None:
+                return render(
+                    request, "missing_issues/comicvine/no_data.html", {"level": level, "comicvine_id": comicvine_id}
+                )
+            context = getattr(self, context_method)(db, doc)
+        finally:
+            client.close()
+
+        context.update(
+            site_detail_url=doc.get("site_detail_url"),
+            crawl_date=doc.get("crawl_date"),
+            list_only=doc.get("crawl_source") == "list",
+        )
+        return render(request, f"missing_issues/comicvine/{level}.html", context)
+
+
+comicvine_details_view = ComicvineDetailsView.as_view()

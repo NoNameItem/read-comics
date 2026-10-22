@@ -1,0 +1,6 @@
+{% extends "missing_issues/comicvine/_base.html" %}
+{% block body %}
+  {% include "missing_issues/comicvine/_field.html" with label="Aliases" field=fields.aliases kind="list" %}
+  {% include "missing_issues/comicvine/_field.html" with label="Deck" field=fields.deck kind="text" %}
+  {% include "missing_issues/comicvine/_field.html" with label="Description" field=fields.description kind="html" %}
+{% endblock %}
