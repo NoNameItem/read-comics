@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.28.0](https://github.com/NoNameItem/read-comics/compare/1.27.0...1.28.0) (2026-11-27)
+
+
+### Features
+
+* **missing-issues:** Choose how long to skip issues ([#264](https://github.com/NoNameItem/read-comics/issues/264)) ([7c67303](https://github.com/NoNameItem/read-comics/commit/7c67303e3487a5d4ee857196cb04c89bbeb08b65))
+
 ## [1.27.0](https://github.com/NoNameItem/read-comics/compare/1.26.3...1.27.0) (2026-10-22)
 
 
