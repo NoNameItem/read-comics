@@ -1,13 +1,16 @@
 from django.db.models import Q
+from django.utils import timezone
 
 from read_comics.missing_issues.models import MissingIssue
 
 
 def get_watched_missing_issues_query(user, search_query=None):
-    def get_subquery(field):
-        f = {f"{field}__watchers__user": user, "skip": False}
+    today = timezone.localdate()
 
-        q = MissingIssue.objects.filter(**f)
+    def get_subquery(field):
+        f = {f"{field}__watchers__user": user}
+
+        q = MissingIssue.objects.visible(today).filter(**f)
 
         if search_query:
             return q.filter(

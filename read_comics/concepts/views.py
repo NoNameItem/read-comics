@@ -72,7 +72,7 @@ class ConceptDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Brea
     def get_context_data(self, **kwargs):
         context = super(ConceptDetailView, self).get_context_data(**kwargs)
         concept = self.object
-        context["missing_issues_count"] = concept.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = concept.missing_issues.visible().count()
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()
 

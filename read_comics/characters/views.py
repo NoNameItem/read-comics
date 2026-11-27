@@ -96,7 +96,7 @@ class CharacterDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Br
         context.update(get_first_page_old("team_friends", self.sublist_querysets.get_team_friends_queryset(character)))
         context.update(get_first_page_old("team_enemies", self.sublist_querysets.get_team_enemies_queryset(character)))
 
-        context["missing_issues_count"] = character.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = character.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

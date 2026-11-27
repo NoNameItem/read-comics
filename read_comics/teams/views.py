@@ -89,7 +89,7 @@ class TeamDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Breadcr
             )
         )
 
-        context["missing_issues_count"] = team.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = team.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

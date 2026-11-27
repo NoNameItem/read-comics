@@ -29,10 +29,11 @@ function updateBadges() {
 }
 
 function initButtons() {
-  $('.btn-skip, .btn-ignore').click(function (e) {
+  $('.btn-skip-duration, .btn-ignore').click(function () {
     let url = $(this).attr('data-href');
     $(this).tooltip('hide');
-    $('.btn-skip, .btn-ignore').attr('disabled', 'disabled');
+    const $buttons = $('.btn-skip, .btn-skip-duration, .btn-ignore');
+    $buttons.prop('disabled', true);
     const scrollPosition = $('#inner-table-wrapper').scrollTop();
     $.ajax({
       url  : url,
@@ -46,6 +47,7 @@ function initButtons() {
       initComicvineButtons();
       $('[data-toggle="tooltip"]').tooltip();
     }).fail(function (jqXHR, textStatus, errorThrown) {
+      $buttons.prop('disabled', false);
       if (jqXHR.status === 404) {
         toastr.error("", "Please reload page");
       } else {

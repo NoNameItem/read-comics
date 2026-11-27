@@ -40,7 +40,7 @@ class HomeView(TemplateView):
         logger.info(f"get_context_data: {kwargs}")
         context = super(HomeView, self).get_context_data(**kwargs)
         context["matched_stats"] = get_matched_stats()
-        context["missing_issues_count"] = MissingIssue.objects.filter(skip=False).count()
+        context["missing_issues_count"] = MissingIssue.objects.visible().count()
 
         context["update_history"] = (
             Issue.objects.values(created_day=Trunc("created_dt", "day", output_field=DateTimeField()))

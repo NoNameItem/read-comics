@@ -42,11 +42,11 @@ def test_run_leaves_ignored_row_untouched(mongo_db, seeded, linked_character):
     assert not linked_character.missing_issues.exists()
 
 
-def test_run_resets_expired_skip(mongo_db, seeded, linked_character, settings):
-    settings.SKIP_DAYS = 7
-    MissingIssue.objects.create(comicvine_id=10, skip=True, skip_date=date.today() - timedelta(days=8))
+def test_run_keeps_expired_skip_date(mongo_db, seeded, linked_character):
+    deadline = date.today() - timedelta(days=1)
+    MissingIssue.objects.create(comicvine_id=10, skip_until=deadline)
     character_missing_issues_task.run(pk=linked_character.pk)
-    assert MissingIssue.objects.filter(comicvine_id=10, skip=False, skip_date=None).exists()
+    assert MissingIssue.objects.visible().get(comicvine_id=10).skip_until == deadline
 
 
 def test_run_without_candidates_plans_nothing(mongo_db, seeded, linked_character, make_issue, monkeypatch):  # RF 3
@@ -78,21 +78,21 @@ def test_apply_batch_drops_row_changed_after_planning(mongo_db, seeded, linked_c
 def test_apply_batch_keeps_skip_set_during_run(mongo_db, seeded, linked_character):
     MissingIssue.objects.create(comicvine_id=10, name="Old")
     plan = planned(mongo_db, linked_character)
-    MissingIssue.objects.filter(comicvine_id=10).update(skip=True, skip_date=date.today())
+    deadline = date.today() + timedelta(days=30)
+    MissingIssue.objects.filter(comicvine_id=10).update(skip_until=deadline)
     character_missing_issues_task.apply_batch(linked_character, plan)
     mi = MissingIssue.objects.get(comicvine_id=10)
-    assert (mi.name, mi.skip) == ("N", True)
+    assert (mi.name, mi.skip_until) == ("N", deadline)
 
 
 @pytest.mark.usefixtures("run_caches")
-def test_apply_batch_keeps_skip_renewed_during_run(mongo_db, seeded, linked_character, settings):
-    settings.SKIP_DAYS = 7
-    MissingIssue.objects.create(comicvine_id=10, skip=True, skip_date=date.today() - timedelta(days=8))
+def test_apply_batch_keeps_skip_renewed_during_run(mongo_db, seeded, linked_character):
+    MissingIssue.objects.create(comicvine_id=10, skip_until=date.today() - timedelta(days=1))
     plan = planned(mongo_db, linked_character)
-    assert plan["skip_reset_ids"] == [10]
-    MissingIssue.objects.filter(comicvine_id=10).update(skip_date=date.today())
+    deadline = date.today() + timedelta(days=365)
+    MissingIssue.objects.filter(comicvine_id=10).update(skip_until=deadline)
     character_missing_issues_task.apply_batch(linked_character, plan)
-    assert MissingIssue.objects.get(comicvine_id=10).skip is True
+    assert MissingIssue.objects.get(comicvine_id=10).skip_until == deadline
 
 
 def test_run_uses_fresh_caches_and_drops_them(mongo_db, seeded, linked_character, monkeypatch):
@@ -130,10 +130,11 @@ def test_run_processes_several_batches(mongo_db, seeded, linked_character, issue
 @pytest.mark.usefixtures("run_caches")
 def test_apply_batch_links_row_created_concurrently(mongo_db, seeded, linked_character):  # Review Focus 4
     plan = planned(mongo_db, linked_character)
-    MissingIssue.objects.create(comicvine_id=10, name="other task")
+    deadline = date.today() + timedelta(days=7)
+    MissingIssue.objects.create(comicvine_id=10, name="other task", skip_until=deadline)
     character_missing_issues_task.apply_batch(linked_character, plan)
     assert MissingIssue.objects.filter(comicvine_id=10).count() == 1
-    assert linked_character.missing_issues.filter(comicvine_id=10).exists()
+    assert linked_character.missing_issues.get(comicvine_id=10).skip_until == deadline
 
 
 @pytest.mark.django_db(transaction=True)  # deferred FK checks fire only on a real commit

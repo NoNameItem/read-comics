@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
+from django.utils import timezone
 
 from read_comics.utils.comicvine_text import numerical_issue_number
 
@@ -50,7 +51,15 @@ class IgnoredIssue(models.Model):
     publisher_comicvine_id = models.IntegerField(null=True)
 
 
+class MissingIssueQuerySet(models.QuerySet):
+    def visible(self, on_date=None):
+        today = on_date if on_date is not None else timezone.localdate()
+        return self.filter(models.Q(skip_until__isnull=True) | models.Q(skip_until__lte=today))
+
+
 class MissingIssue(models.Model):
+    objects = MissingIssueQuerySet.as_manager()
+
     comicvine_id = models.IntegerField(unique=True)
     comicvine_url = models.URLField(max_length=1000, null=True)
     name = models.TextField(null=True)
@@ -79,8 +88,7 @@ class MissingIssue(models.Model):
         "publishers.Publisher", related_name="missing_issues", on_delete=models.CASCADE, null=True
     )
 
-    skip = models.BooleanField(default=False)
-    skip_date = models.DateField(null=True)
+    skip_until = models.DateField(null=True)
 
     def set_numerical_number(self):
         self.numerical_number = numerical_issue_number(self.number)

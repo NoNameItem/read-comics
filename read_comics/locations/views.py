@@ -72,7 +72,7 @@ class LocationDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bre
     def get_context_data(self, **kwargs):
         context = super(LocationDetailView, self).get_context_data(**kwargs)
         location = self.object
-        context["missing_issues_count"] = location.missing_issues.count()
+        context["missing_issues_count"] = location.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()
