@@ -135,7 +135,7 @@ class StoryArcDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bre
             get_first_page_old("first_appearances", self.sublist_querysets.get_first_appearance_queryset(story_arc))
         )
 
-        context["missing_issues_count"] = story_arc.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = story_arc.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

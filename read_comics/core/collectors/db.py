@@ -72,7 +72,7 @@ class DBCollector(BaseCollector):
 
         # Missing issues metrics
         self._register_metric("read_comics_missing_count", help_string="Number of missing issues")
-        missing_count = MissingIssue.objects.filter(skip=False).count()
+        missing_count = MissingIssue.objects.visible().count()
         try:
             watched_count = get_watched_missing_issues_query(User.objects.get(is_superuser=True)).count()
         except User.DoesNotExist:

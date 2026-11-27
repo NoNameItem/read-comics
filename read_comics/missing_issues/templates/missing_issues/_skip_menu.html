@@ -1,0 +1,14 @@
+<div class="btn-group" role="group">
+  <button type="button" class="btn btn-success btn-skip dropdown-toggle" data-toggle="dropdown"
+          data-boundary="viewport" aria-expanded="false" aria-label="Skip" title="Skip">
+    <i class="fad fa-check" aria-hidden="true"></i>
+  </button>
+  <div class="dropdown-menu">
+    {% for code, option in skip_durations.items %}
+      <button class="dropdown-item btn-skip-duration" type="button"
+              data-href="{{ skip_url }}?duration={{ code }}&amp;page={{ page_obj.number }}{% if q %}&amp;q={{ q|urlencode:"" }}{% endif %}">
+        {{ option.0 }}
+      </button>
+    {% endfor %}
+  </div>
+</div>

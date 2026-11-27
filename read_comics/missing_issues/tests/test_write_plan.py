@@ -1,4 +1,4 @@
-from datetime import date, timedelta
+from datetime import date
 
 import pytest
 
@@ -35,7 +35,7 @@ def test_plan_creates_new_row():
         1.0,
     )
     assert mi.pk is None
-    assert result["update"] == [] and result["skip_reset_ids"] == []
+    assert result["update"] == []
 
 
 def test_plan_new_row_without_cover_date_has_none():
@@ -45,7 +45,7 @@ def test_plan_new_row_without_cover_date_has_none():
 
 def test_plan_skips_unchanged_row():
     MissingIssue.objects.create(**STORED)
-    assert plan([dict(ROW)]) == {"create": [], "update": [], "skip_reset_ids": []}
+    assert plan([dict(ROW)]) == {"create": [], "update": []}
 
 
 def test_plan_updates_changed_row():
@@ -74,21 +74,12 @@ def test_plan_keeps_cover_date_when_mongo_has_none():
 
 
 def test_plan_does_not_mutate_rows_or_skip():
-    MissingIssue.objects.create(**dict(STORED, name="Old", skip=True, skip_date=date.today() - timedelta(days=100)))
+    deadline = date(2027, 1, 5)
+    MissingIssue.objects.create(**dict(STORED, name="Old", skip_until=deadline))
     rows = [dict(ROW)]
     [mi] = plan(rows)["update"]
     assert rows == [ROW]
-    assert mi.skip is True and mi.skip_date == date.today() - timedelta(days=100)
-
-
-def test_plan_skip_reset_ids(settings):
-    settings.SKIP_DAYS = 7
-    today = date.today()
-    MissingIssue.objects.create(**dict(STORED, comicvine_id=1, skip=True, skip_date=today - timedelta(days=8)))
-    MissingIssue.objects.create(**dict(STORED, comicvine_id=2, skip=True, skip_date=today - timedelta(days=1)))
-    MissingIssue.objects.create(**dict(STORED, comicvine_id=3))
-    rows = [dict(ROW, comicvine_id=i) for i in (1, 2, 3)]
-    assert plan(rows)["skip_reset_ids"] == [1]
+    assert mi.skip_until == deadline
 
 
 def test_plan_reads_existing_rows_with_one_query(django_assert_num_queries):

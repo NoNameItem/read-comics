@@ -61,8 +61,13 @@ def character(db):
 
 
 @pytest.fixture
-def staff_client(client, db):
-    client.force_login(UserFactory(is_staff=True))
+def staff_user(db):
+    return UserFactory(is_staff=True)
+
+
+@pytest.fixture
+def staff_client(client, staff_user):
+    client.force_login(staff_user)
     return client
 
 

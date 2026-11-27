@@ -153,7 +153,7 @@ class VolumeDetailView(IssuesViewMixin, ActiveMenuMixin, BreadcrumbMixin, Detail
         context.update(get_first_page_old("disbanded", sublist_querysets.get_disbanded_queryset(volume)))
         context.update(get_first_page_old("first_appearances", sublist_querysets.get_first_appearance_queryset(volume)))
 
-        context["missing_issues_count"] = volume.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = volume.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

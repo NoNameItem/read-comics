@@ -84,7 +84,7 @@ class PublisherDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Br
         context.update(get_first_page_old("story_arcs", self.sublist_querysets.get_story_arcs_queryset(publisher)))
         context.update(get_first_page_old("teams", self.sublist_querysets.get_teams_queryset(publisher)))
 
-        context["missing_issues_count"] = publisher.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = publisher.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

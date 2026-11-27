@@ -2,3 +2,7 @@
   height: calc(100vh - 380px);
   overflow-y: scroll;
 }
+
+#issues-table .btn-skip::after {
+  display: none;
+}

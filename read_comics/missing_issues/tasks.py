@@ -1,4 +1,4 @@
-from datetime import date, datetime, timedelta
+from datetime import datetime
 
 from billiard.exceptions import WorkerLostError
 from celery import Task, signature
@@ -206,8 +206,7 @@ class BaseMissingIssuesTask(Task):
             missing_issue.comicvine_id: missing_issue
             for missing_issue in MissingIssue.objects.filter(comicvine_id__in=[row["comicvine_id"] for row in rows])
         }
-        skip_border = date.today() - timedelta(days=settings.SKIP_DAYS)
-        plan = {"create": [], "update": [], "skip_reset_ids": []}
+        plan = {"create": [], "update": []}
         for row in rows:
             missing_issue = existing.get(row["comicvine_id"])
             if missing_issue is None:
@@ -216,8 +215,6 @@ class BaseMissingIssuesTask(Task):
                 old_values = None
             else:
                 old_values = {name: getattr(missing_issue, name) for name in self.DATA_FIELDS}
-                if missing_issue.skip and missing_issue.skip_date and missing_issue.skip_date < skip_border:
-                    plan["skip_reset_ids"].append(missing_issue.comicvine_id)
             for name in self.DATA_FIELDS:
                 if name == "numerical_number":
                     continue
@@ -245,12 +242,6 @@ class BaseMissingIssuesTask(Task):
             MissingIssue.objects.filter(comicvine_id__in=plan["delete_ids"]).delete()
         MissingIssue.objects.bulk_create(plan["create"], ignore_conflicts=True)
         MissingIssue.objects.bulk_update(plan["update"], self.DATA_FIELDS)
-        if plan["skip_reset_ids"]:
-            MissingIssue.objects.filter(
-                comicvine_id__in=plan["skip_reset_ids"],
-                skip=True,
-                skip_date__lt=date.today() - timedelta(days=settings.SKIP_DAYS),
-            ).update(skip=False, skip_date=None)
         if not plan["rows"]:
             return
         comicvine_ids = [row["comicvine_id"] for row in plan["rows"]]

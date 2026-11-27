@@ -73,7 +73,7 @@ class ObjectDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bread
         context = super(ObjectDetailView, self).get_context_data(**kwargs)
         obj = self.object
 
-        context["missing_issues_count"] = obj.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = obj.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

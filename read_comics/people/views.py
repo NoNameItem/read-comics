@@ -77,7 +77,7 @@ class PersonDetailView(IssuesViewMixin, VolumesViewMixin, ActiveMenuMixin, Bread
         context["characters_count"] = obj.created_characters.count()
         context.update(get_first_page_old("created_characters", obj.created_characters.all()))
 
-        context["missing_issues_count"] = obj.missing_issues.filter(skip=False).count()
+        context["missing_issues_count"] = obj.missing_issues.visible().count()
 
         if self.request.user.is_authenticated:
             context["watched"] = self.object.watchers.filter(user=self.request.user).exists()

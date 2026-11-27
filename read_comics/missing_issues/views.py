@@ -1,7 +1,7 @@
-import datetime
 import json
 from collections import namedtuple
 from typing import Any, Callable, List
+from urllib.parse import urlencode
 
 from celery import signature
 from django import http
@@ -12,6 +12,7 @@ from django.db.models import Q, QuerySet
 from django.http import Http404, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse_lazy
+from django.utils import timezone
 from django.views import View
 from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
@@ -43,6 +44,7 @@ from read_comics.volumes.models import Volume
 from .do_spaces import get_level
 from .models import IgnoredIssue, IgnoredPublisher, IgnoredVolume, MissingIssue, WatchedItem
 from .queries import get_watched_missing_issues_query
+from .skip import SKIP_DURATIONS, get_skip_until
 
 logger = logging.getLogger(__name__)
 
@@ -107,7 +109,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
 
     def get_queryset(self) -> QuerySet:
         if self.obj:
-            q = self.obj.missing_issues.filter(skip=False).order_by(
+            q = self.obj.missing_issues.visible().order_by(
                 "publisher_name",
                 "publisher_comicvine_id",
                 "volume_name",
@@ -118,7 +120,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
                 "comicvine_id",
             )
         else:
-            q = MissingIssue.objects.filter(skip=False).order_by(
+            q = MissingIssue.objects.visible().order_by(
                 "publisher_name",
                 "publisher_comicvine_id",
                 "volume_name",
@@ -178,6 +180,7 @@ class MissingIssuesListView(IsAdminMixin, ElidedPagesPaginatorMixin, BreadcrumbM
             "skip_issue": self.skip_issue_url,
             "ignore_issue": self.ignore_issue_url,
         }
+        context["skip_durations"] = SKIP_DURATIONS
         context["q"] = self.request.GET.get("q")
         return context
 
@@ -279,18 +282,21 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
         else:
             url = reverse_lazy(self.redirect_url)
 
-        if request.GET.get("page"):
-            url = url + f"?page={request.GET.get('page')}&response_type=partial"
-        else:
-            url = url + "?response_type=partial"
-
-        if request.GET.get("q"):
-            url += f"&q={request.GET.get('q')}"
-
-        return HttpResponseRedirect(url)
+        params = {key: request.GET[key] for key in ("page", "q") if request.GET.get(key)}
+        params["response_type"] = "partial"
+        return HttpResponseRedirect(f"{url}?{urlencode(params)}")
 
     def process(self):
         raise NotImplementedError
+
+
+class BaseSkipView(BaseSkipIgnoreView):
+    def get(self, request, **kwargs):
+        duration = request.GET.get("duration")
+        if duration not in SKIP_DURATIONS:
+            return JsonResponse({"message": "Invalid skip duration"}, status=400)
+        self.skip_until = get_skip_until(duration, timezone.localdate())
+        return super().get(request, **kwargs)
 
 
 @logging.methods_logged(
@@ -300,11 +306,9 @@ class BaseSkipIgnoreView(IsAdminMixin, View):
         "get",
     ],
 )
-class SkipIssueView(BaseSkipIgnoreView):
+class SkipIssueView(BaseSkipView):
     def process(self):
-        self.missing_issue.skip = True
-        self.missing_issue.skip_date = datetime.date.today()
-        self.missing_issue.save()
+        MissingIssue.objects.filter(pk=self.missing_issue.pk).update(skip_until=self.skip_until)
 
 
 skip_issue_view = SkipIssueView.as_view()
@@ -331,10 +335,10 @@ watched_skip_issue_view = WatchedSkipIssueView.as_view()
         "get",
     ],
 )
-class SkipVolumeView(BaseSkipIgnoreView):
+class SkipVolumeView(BaseSkipView):
     def process(self):
         MissingIssue.objects.filter(volume_comicvine_id=self.missing_issue.volume_comicvine_id).update(
-            skip=True, skip_date=datetime.date.today()
+            skip_until=self.skip_until
         )
 
 
@@ -362,10 +366,10 @@ watched_skip_volume_view = WatchedSkipVolumeView.as_view()
         "get",
     ],
 )
-class SkipPublisherView(BaseSkipIgnoreView):
+class SkipPublisherView(BaseSkipView):
     def process(self):
         MissingIssue.objects.filter(publisher_comicvine_id=self.missing_issue.publisher_comicvine_id).update(
-            skip=True, skip_date=datetime.date.today()
+            skip_until=self.skip_until
         )
 
 
